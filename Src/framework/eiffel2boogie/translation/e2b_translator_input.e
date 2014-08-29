@@ -16,9 +16,8 @@ feature {NONE} -- Initialization
 		do
 			create class_list.make
 			create feature_list.make
-		ensure
-			class_list_empty: class_list.is_empty
-			feature_list_empty: feature_list.is_empty
+			create feature_of_type_list.make
+			create class_check_list.make
 		end
 
 feature -- Acces
@@ -28,6 +27,12 @@ feature -- Acces
 
 	feature_list: attached LINKED_LIST [attached FEATURE_I]
 			-- List of features to be translated.
+
+	feature_of_type_list: attached LINKED_LIST [TUPLE [f: FEATURE_I; t: TYPE_A]]
+			-- List of features with a specific type to be translated.
+
+	class_check_list: attached LINKED_LIST [CL_TYPE_A]
+			-- List of classes whose class check is to be generated.
 
 feature -- Element change
 
@@ -41,6 +46,18 @@ feature -- Element change
 			-- Add `a_feature' to be translated.
 		do
 			feature_list.extend (a_feature)
+		end
+
+	add_feature_of_type (a_feature: attached FEATURE_I; a_type: TYPE_A)
+			-- Add `a_feature' to be translated.
+		do
+			feature_of_type_list.extend ([a_feature, a_type])
+		end
+
+	add_class_check (a_class: CL_TYPE_A)
+			-- Add `a_class' to be translated.
+		do
+			class_check_list.extend (a_class)
 		end
 
 end

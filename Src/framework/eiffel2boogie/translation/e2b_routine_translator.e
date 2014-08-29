@@ -1123,6 +1123,7 @@ feature -- Translation: agents
 			l_type_value: IV_VALUE
 			l_binop1, l_binop2, l_binop3: IV_BINARY_OPERATION
 		do
+			translation_pool.add_type (a_postcondition_type)
 			create l_mapping.make
 			create l_fcall.make (name_translator.postcondition_predicate_name (a_feature, a_context_type), types.bool)
 			l_heap := factory.heap_entity ("heap")

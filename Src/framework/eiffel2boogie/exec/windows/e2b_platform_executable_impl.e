@@ -98,7 +98,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_from_string (system.eiffel_project.project_directory.target_path.out)
 			Result.extend ("Proofs")
-			Result.extend ("autoproof.bpl")
+			Result.extend ("autoproof" + unique_number.out + ".bpl")
 		end
 
 	default_boogie_output_file_name: FILE_NAME
@@ -109,7 +109,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_from_string (system.eiffel_project.project_directory.target_path.out)
 			Result.extend ("Proofs")
-			Result.extend ("output.txt")
+			Result.extend ("output" + unique_number.out + ".txt")
 		end
 
 	default_model_file_name: FILE_NAME
@@ -120,4 +120,16 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_from_string ("C:\temp\output.model")
 		end
+
+	global_counter: CELL [INTEGER]
+		once
+			create Result.put (0)
+		end
+
+	unique_number: INTEGER
+		do
+			Result := global_counter.item
+			global_counter.put (Result + 1)
+		end
+
 end

@@ -87,7 +87,7 @@ feature -- Basic operations
 		end
 
 invariant
-	ancestor_exists: ancestor /= Void
+	ancestor_exists: not (included = Void and excluded = Void) implies ancestor /= Void
 	not_both: included = Void or excluded = Void
 
 end

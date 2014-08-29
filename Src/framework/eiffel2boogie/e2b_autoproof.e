@@ -24,14 +24,6 @@ feature -- Access
 	input: E2B_TRANSLATOR_INPUT
 			-- Input for translator.
 
-	last_result: detachable E2B_RESULT
-			-- Result of last verification.
-		do
-			if verify_task /= Void then
-				Result := verify_task.verifier_result
-			end
-		end
-
 feature -- Status report
 
 	is_running: BOOLEAN
@@ -89,7 +81,6 @@ feature -- Basic operations
 			l_context.options.routines_to_inline.wipe_out
 		ensure
 			not_running: not is_running
-			no_result: last_result = Void
 			no_notifiers: notification_agents.is_empty
 		end
 
@@ -101,10 +92,26 @@ feature -- Basic operations
 			l_notify_task: E2B_NOTIFY_TASK
 		do
 			if attached rota as l_rota then
-				create verify_task.make (input)
-				create l_notify_task.make (verify_task)
-				l_notify_task.notification_agents.append (notification_agents)
-				verify_task.append_task (l_notify_task)
+				create {E2B_BULK_VERIFICATION_TASK} verify_task.make (input)
+				verify_task.set_notification_agents (notification_agents)
+				if not rota.has_task (verify_task) then
+					rota.run_task (verify_task)
+				end
+			end
+		ensure
+			running_or_finished: is_running or is_finished
+		end
+
+	verify_forked
+			-- Verify input.
+		require
+			not_running: not is_running
+		local
+			l_notify_task: E2B_NOTIFY_TASK
+		do
+			if attached rota as l_rota then
+				create {E2B_FORK_VERIFICATION_TASK} verify_task.make (input)
+				verify_task.set_notification_agents (notification_agents)
 				if not rota.has_task (verify_task) then
 					rota.run_task (verify_task)
 				end

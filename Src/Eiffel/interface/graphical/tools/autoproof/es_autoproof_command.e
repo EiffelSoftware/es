@@ -31,6 +31,8 @@ inherit
 
 	EB_SHARED_WINDOW_MANAGER
 
+	E2B_SHARED_CONTEXT
+
 create
 	make
 
@@ -178,8 +180,15 @@ feature {NONE} -- Basic operations
 			create l_context
 			l_context.status_notifier_agent_cell.put (agent window_manager.display_message)
 			window_manager.display_message ("AutoProof running")
-			autoproof.add_notification (agent process_result)
-			autoproof.verify
+
+			if options.is_bulk_verification_enabled then
+				autoproof.add_notification (agent process_result)
+				autoproof.verify
+			else
+				event_list.prune_event_items (event_context_cookie)
+				autoproof.add_notification (agent process_partial_result)
+				autoproof.verify_forked
+			end
 		end
 
 	process_result (a_result: E2B_RESULT)
@@ -192,6 +201,18 @@ feature {NONE} -- Basic operations
 			show_proof_tool
 			enable_tool_button
 			window_manager.display_message ("AutoProof finished")
+		end
+
+	process_partial_result (a_result: E2B_RESULT)
+			-- Process verification result.
+		do
+			across a_result.verification_results as i loop
+				event_list.put_event_item (event_context_cookie, create {E2B_VERIFICATION_EVENT}.make (i.item))
+			end
+			if autoproof.is_finished then
+				show_proof_tool
+				enable_tool_button
+			end
 		end
 
 	event_context_cookie: UUID

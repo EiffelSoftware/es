@@ -55,7 +55,7 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 			-- <Precursor>
 		do
 			across notification_agents as i loop
-				i.item.call ([verify_task.verifier_result])
+--				i.item.call ([verify_task.verifier_result])
 			end
 			has_next_step := False
 		end

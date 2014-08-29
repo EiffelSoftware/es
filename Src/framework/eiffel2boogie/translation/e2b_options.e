@@ -43,6 +43,8 @@ feature {NONE} -- Initialization
 			is_trace_enabled := False
 
 			is_generating_trivial_loop_variants := True
+
+			is_bulk_verification_enabled := True
 		end
 
 feature -- Inlining verification step
@@ -278,5 +280,14 @@ feature -- Other
 
 	is_generating_trivial_loop_variants: BOOLEAN
 			-- Are trivially false loop variants generated?
+
+	is_bulk_verification_enabled: BOOLEAN
+			-- Are classes verified in bulk or by individual routines?
+
+	set_bulk_verification_enabled (a_value: BOOLEAN)
+			-- Set `is_bulk_verification_enabled' to `a_value'.
+		do
+			is_bulk_verification_enabled := a_value
+		end
 
 end

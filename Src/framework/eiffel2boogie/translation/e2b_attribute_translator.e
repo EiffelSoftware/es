@@ -30,6 +30,7 @@ feature -- Basic operations
 			l_boogie_type: IV_TYPE
 			is_ghost: BOOLEAN
 		do
+			translation_pool.add_type (a_context_type)
 			set_context (a_feature, a_context_type)
 			l_class_type := helper.class_type_in_context (current_feature.type, current_type.base_class, Void, current_type)
 			l_attribute_name := name_translator.boogie_procedure_for_feature (current_feature, current_type)

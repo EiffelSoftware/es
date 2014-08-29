@@ -308,6 +308,17 @@ feature {NONE} -- Initialization
 				l_item.toggle
 			end
 			Result.extend (l_item)
+
+			Result.extend (create {EV_MENU_SEPARATOR})
+
+			create l_item.make_with_text_and_action ("Bulk verification",
+				agent do
+					options.set_bulk_verification_enabled (not options.is_bulk_verification_enabled)
+				end)
+			if options.is_bulk_verification_enabled then
+				l_item.toggle
+			end
+			Result.extend (l_item)
 		end
 
 	build_tool_interface (a_widget: ES_GRID)
