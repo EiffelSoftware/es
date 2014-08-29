@@ -90,10 +90,11 @@ feature -- Basic operations
 			not_running: not is_running
 		local
 			l_notify_task: E2B_NOTIFY_TASK
+			l_context: E2B_SHARED_CONTEXT
 		do
 			if attached rota as l_rota then
-				create {E2B_BULK_VERIFICATION_TASK} verify_task.make (input)
-				verify_task.set_notification_agents (notification_agents)
+				create {E2B_BULK_VERIFICATION_TASK} verify_task.make (input, True)
+				verify_task.add_notification_agents (notification_agents)
 				if not rota.has_task (verify_task) then
 					rota.run_task (verify_task)
 				end
@@ -111,7 +112,7 @@ feature -- Basic operations
 		do
 			if attached rota as l_rota then
 				create {E2B_FORK_VERIFICATION_TASK} verify_task.make (input)
-				verify_task.set_notification_agents (notification_agents)
+				verify_task.add_notification_agents (notification_agents)
 				if not rota.has_task (verify_task) then
 					rota.run_task (verify_task)
 				end

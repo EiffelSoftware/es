@@ -44,6 +44,12 @@ feature -- Element change
 			across a_input.feature_list as i loop
 				add_feature (i.item)
 			end
+			across a_input.feature_of_type_list as i loop
+				add_feature_of_type (i.item.f, i.item.t)
+			end
+			across a_input.class_check_list as i loop
+				translation_pool.add_class_check (i.item)
+			end
 		end
 
 	add_class (a_class: CLASS_C)

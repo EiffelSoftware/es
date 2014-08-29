@@ -22,7 +22,7 @@ create
 
 feature {NONE} -- Implementation
 
-	make (a_translator_input: E2B_TRANSLATOR_INPUT)
+	make (a_translator_input: E2B_TRANSLATOR_INPUT; a_wipe_out_global_state: BOOLEAN)
 			-- Initialize task.
 		do
 				-- Initialize global state
@@ -31,8 +31,10 @@ feature {NONE} -- Implementation
 			boogie_universe_cell.put (universe)
 			helper.reset
 			translation_pool.reset
-			autoproof_errors.wipe_out
-			result_handlers.wipe_out
+			if a_wipe_out_global_state then
+				result_handlers.wipe_out
+				autoproof_errors.wipe_out
+			end
 
 			create verifier.make
 			create result_generator.make
@@ -84,6 +86,11 @@ feature -- Element change
 			-- Append a task to do after other tasks finished.
 		do
 			remaining_tasks.extend (a_task)
+		end
+
+	set_context (a_string: STRING)
+		do
+			verifier.input.set_context (a_string)
 		end
 
 feature {NONE} -- Implementation

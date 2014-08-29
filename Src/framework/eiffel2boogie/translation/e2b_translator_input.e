@@ -28,7 +28,7 @@ feature -- Acces
 	feature_list: attached LINKED_LIST [attached FEATURE_I]
 			-- List of features to be translated.
 
-	feature_of_type_list: attached LINKED_LIST [TUPLE [f: FEATURE_I; t: TYPE_A]]
+	feature_of_type_list: attached LINKED_LIST [TUPLE [f: FEATURE_I; t: CL_TYPE_A]]
 			-- List of features with a specific type to be translated.
 
 	class_check_list: attached LINKED_LIST [CL_TYPE_A]
@@ -48,7 +48,7 @@ feature -- Element change
 			feature_list.extend (a_feature)
 		end
 
-	add_feature_of_type (a_feature: attached FEATURE_I; a_type: TYPE_A)
+	add_feature_of_type (a_feature: attached FEATURE_I; a_type: CL_TYPE_A)
 			-- Add `a_feature' to be translated.
 		do
 			feature_of_type_list.extend ([a_feature, a_type])

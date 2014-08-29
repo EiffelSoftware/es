@@ -141,7 +141,11 @@ feature {NONE} -- Implementation
 			end
 
 			if {PLATFORM}.is_windows then
-				create l_output_file.make ("C:\temp\autoproof.bpl")
+				if input.context /= Void then
+					create l_output_file.make ("C:\temp\autoproof-" + input.context + ".bpl")
+				else
+					create l_output_file.make ("C:\temp\autoproof.bpl")
+				end
 				l_output_file.recursive_open_write
 				if l_output_file.is_open_write then
 					append_header (l_output_file)
@@ -233,7 +237,11 @@ feature {NONE} -- Implementation
 		do
 			if {PLATFORM}.is_windows then
 				create l_f1.make_open_read (boogie_output_file_name)
-				create l_f2.make_open_write ("C:\temp\ap_output.txt")
+				if input.context /= Void then
+					create l_f2.make_open_write ("C:\temp\ap_output-" + input.context + ".txt")
+				else
+					create l_f2.make_open_write ("C:\temp\ap_output.txt")
+				end
 				from
 					l_f1.start
 				until

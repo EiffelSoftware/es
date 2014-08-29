@@ -29,6 +29,9 @@ feature -- Access
 	custom_content: attached LINKED_LIST [attached STRING]
 			-- Custom content which will be included when running Boogie.
 
+	context: detachable STRING
+			-- Optional context.
+
 feature -- Status report
 
 	is_empty: BOOLEAN
@@ -58,6 +61,12 @@ feature -- Element change
 			custom_content.extend (a_string.twin)
 		ensure
 			custom_content.last.is_equal (a_string)
+		end
+
+	set_context (a_string: STRING)
+			-- Set `context' to `a_context'.
+		do
+			context := a_string
 		end
 
 feature -- Removal

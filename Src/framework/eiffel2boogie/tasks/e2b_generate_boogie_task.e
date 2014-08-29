@@ -37,6 +37,9 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 			-- <Precursor>
 		do
 			boogie_generator.generate_verifier_input
+			if verifier.input.context /= Void then
+				boogie_generator.last_generated_verifier_input.set_context (verifier.input.context)
+			end
 			verifier.set_input (boogie_generator.last_generated_verifier_input)
 			has_next_step := False
 		end

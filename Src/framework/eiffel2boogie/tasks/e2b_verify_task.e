@@ -25,10 +25,13 @@ feature -- Access
 
 feature -- Element change
 
-	set_notification_agents (a_agents: LINKED_LIST [PROCEDURE [ANY, TUPLE [E2B_RESULT]]])
+	add_notification_agents (a_agents: LINKED_LIST [PROCEDURE [ANY, TUPLE [E2B_RESULT]]])
 			-- Set `notification_agents' to `a_agents'.
 		do
-			notification_agents := a_agents
+			if notification_agents = Void then
+				create notification_agents.make
+			end
+			notification_agents.append (a_agents)
 		end
 
 feature -- Basic operations

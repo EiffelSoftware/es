@@ -25,6 +25,9 @@ feature {NONE} -- Initialization
 		local
 			l_part_input: E2B_TRANSLATOR_INPUT
 		do
+			result_handlers.wipe_out
+			autoproof_errors.wipe_out
+
 			create remaining_inputs.make
 			create verification_tasks.make
 			across a_translator_input.feature_list as l_cursor loop
@@ -76,13 +79,13 @@ feature {NONE} -- Initialization
 			remaining_inputs.extend (l_input)
 		end
 
-	add_sub_task_for_feature_of_type (a_feature: FEATURE_I; a_type: TYPE_A)
+	add_sub_task_for_feature_of_type (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add single subtask for feature `a_feature'.
 		local
 			l_input: E2B_TRANSLATOR_INPUT
 		do
 			create l_input.make
-			l_input.add_feature (a_feature)
+			l_input.add_feature_of_type (a_feature, constraint_type (a_context_type.base_class))
 			remaining_inputs.extend (l_input)
 		end
 
@@ -159,7 +162,8 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Basic operation
 
 			if translation_task = Void and not remaining_inputs.is_empty then
 				remaining_inputs.start
-				create translation_task.make (remaining_inputs.item)
+				create translation_task.make (remaining_inputs.item, False)
+				translation_task.set_context (context_from_input (remaining_inputs.item))
 				remaining_inputs.remove
 			end
 			if translation_task /= Void then
@@ -191,6 +195,23 @@ feature {NONE} -- Implementation
 		do
 			Result := a_class.constraint_actual_type
 			a_class.update_types (Result)
+		end
+
+	context_from_input (a_input: E2B_TRANSLATOR_INPUT): STRING
+		do
+			if not a_input.class_check_list.is_empty then
+				Result := "CC-" + a_input.class_check_list.first.base_class.name_in_upper
+			end
+			if not a_input.class_list.is_empty then
+				check False end
+				Result := "C-" + a_input.class_list.first.name_in_upper
+			end
+			if not a_input.feature_list.is_empty then
+				Result := "F-" + a_input.feature_list.first.written_class.name_in_upper + "." + a_input.feature_list.first.feature_name_32.out
+			end
+			if not a_input.feature_of_type_list.is_empty then
+				Result := "FT-" + a_input.feature_of_type_list.first.t.base_class.name_in_upper + "." + a_input.feature_of_type_list.first.f.feature_name_32.out
+			end
 		end
 
 end

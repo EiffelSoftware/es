@@ -62,7 +62,7 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 				helper.reset
 				translation_pool.reset
 				autoproof_errors.wipe_out
-				result_handlers.wipe_out
+--				result_handlers.wipe_out
 
 				create inlining_verifier.make
 				create result_generator.make
