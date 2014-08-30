@@ -272,9 +272,19 @@ feature {NONE} -- Implementation - skipping and handling of breaks
 		do
 			if a_insert_blank_line and not blank_line_inserted then
 					-- Prepare it for real
-				l_new_line_with_tabs := tab_string (current_indentation)
+
+				if hidden_region_indentation = -1 then
+						-- We are entering a new hidden region.
+					hidden_region_indentation := current_indentation
+				else
+						-- We are already in a hidden region, otherwise `hidden_region_indentation'
+						-- would be -1. Keep that indentation.
+				end
+
+				l_new_line_with_tabs := tab_string (hidden_region_indentation)
 				l_new_line_with_tabs.prepend ("%N")
 				blank_line_inserted := True
+
 			else
 					-- Fake blank line, actually an empty string
 				l_new_line_with_tabs := ""
@@ -369,6 +379,11 @@ feature {NONE} -- Implementation - skipping and handling of breaks
 	placeholder_inserted: BOOLEAN
 			-- Did we already insert a placeholder for the current skipping section?
 
+	hidden_region_indentation: INTEGER
+			-- What is the base indentation of the region currently being hidden?
+			-- -1 if we currently are not inside a hidden region.
+			-- (used for the placeholder and for textual hints)
+
 
 feature {NONE} -- Implementation - printing
 
@@ -393,8 +408,8 @@ feature {NONE} -- Implementation - printing
 				l_indentation := count_leading ('%T', a_line)
 			else
 					-- We are in a hidden region, use the indentation of the current
-					-- section for indenting the hint.
-				l_indentation := current_indentation
+					-- region for indenting the hint.
+				l_indentation := if hidden_region_indentation >= 0 then hidden_region_indentation else current_indentation end
 			end
 
 				-- This is necessary, otherwise we might not be on a new line.
@@ -411,6 +426,10 @@ feature {NONE} -- Implementation - printing
 				-- character at the end of a_line (or there should have been), but we ate it
 				-- when we called l_line.adjust.
 			last_unprinted_break_line := "%N"
+
+				-- If more code is hidden after the hint, we want another placeholder.
+			blank_line_inserted := False
+			placeholder_inserted := False
 		end
 
 	put_string_to_context (a_string: STRING)
@@ -422,6 +441,7 @@ feature {NONE} -- Implementation - printing
 				context.add_string (a_string)
 				blank_line_inserted := False
 				placeholder_inserted := False
+				hidden_region_indentation := -1
 			else
 				skip_with_current_placeholder
 			end
@@ -450,6 +470,8 @@ feature {NONE} -- Implementation - miscellanea
 		do
 			make_with_default_context
 			options := a_options.twin
+
+			hidden_region_indentation := -1
 
 			create oracle.make_with_options (a_options)
 			oracle.set_message_output_action (agent print_message)
