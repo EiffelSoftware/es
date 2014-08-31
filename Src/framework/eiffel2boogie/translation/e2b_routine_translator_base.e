@@ -107,7 +107,6 @@ feature -- Helper functions: contracts
 		local
 			l_pre, l_post, l_modifies, l_reads, l_decreases: LINKED_LIST [E2B_ASSERT_ORIGIN]
 			l_class: CLASS_C
-			l_name: STRING_32
 		do
 			create l_pre.make
 			create l_post.make
@@ -185,7 +184,6 @@ feature -- Helper functions: contracts
 			end
 			Result := [l_pre, l_post, l_modifies, l_reads, l_decreases]
 		end
-
 
 	contracts_of_current_feature: like contracts_of
 			-- Contracts for `current_feature'.

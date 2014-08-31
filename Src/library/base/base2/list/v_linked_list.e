@@ -277,7 +277,7 @@ feature -- Extension
 				loop
 					check it.inv_only ("no_observers", "subjects_definition", "sequence_definition") end
 					it.extend_right (input.item)
-					check it.inv_only ("after_definition", "sequence_definition") end
+					check it.inv_only ("sequence_definition") end
 					it.forth
 					input.forth
 				variant
@@ -295,6 +295,7 @@ feature -- Extension
 			explicit: contracts, wrapping
 		local
 			it: V_LINKED_LIST_ITERATOR [G]
+			s: like sequence
 		do
 			if i = 1 then
 				prepend (input)
@@ -308,7 +309,8 @@ feature -- Extension
 					i - 1 <= it.index_
 					it.index_ <= it.sequence.count
 					it.index_ - i + 1 = input.index_ - input.index_.old_
-					sequence ~ sequence.old_.front (i - 1) + input.sequence.interval (input.index_.old_, input.index_ - 1) + sequence.old_.tail (i)
+					s = input.sequence.interval (input.index_.old_, input.index_ - 1)
+					sequence ~ sequence.old_.front (i - 1) + s + sequence.old_.tail (i)
 					is_wrapped
 					input.is_wrapped
 					it.is_wrapped
@@ -320,7 +322,8 @@ feature -- Extension
 				loop
 					check it.inv_only ("no_observers", "subjects_definition", "sequence_definition") end
 					it.extend_right (input.item)
-					check it.inv_only ("after_definition", "sequence_definition") end
+					s := s & input.item
+					check it.inv_only ("sequence_definition") end
 					it.forth
 					input.forth
 				variant

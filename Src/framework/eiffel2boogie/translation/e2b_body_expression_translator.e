@@ -41,7 +41,6 @@ feature -- Basic operations
 			Precursor
 			context_implementation := Void
 			create side_effect.make
-			create procedure_calls.make
 		end
 
 feature -- Visitors
@@ -586,9 +585,6 @@ feature -- Translation
 		end
 
 feature {NONE} -- Implementation
-
-	procedure_calls: LINKED_STACK [IV_PROCEDURE_CALL]
-			-- Stack of procedure calls.
 
 	create_local (a_type: CL_TYPE_A)
 			-- Create new local.

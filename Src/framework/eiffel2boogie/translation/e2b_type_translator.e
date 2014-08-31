@@ -101,20 +101,30 @@ feature -- Basic operations
 
 						-- Inheritance relations
 					generate_inheritance_relations
-
-						-- Model
-					generate_model_axiom
 				end
 				add_default_field_ids
 			end
+		end
 
-				-- Check model clause
-			across
-				helper.model_queries (l_class) as m
-			loop
-				if a_type.base_class.feature_named_32 (m.item) = Void then
-					helper.add_semantic_error (l_class, messages.unknown_attribute (m.item, l_class.name_in_upper), -1)
+	translate_model (a_type: CL_TYPE_A)
+			-- Translate model of `a_type'.
+		require
+			a_type_exists: a_type /= Void
+		local
+			l_class: CLASS_C
+		do
+			type := a_type
+			l_class := type.base_class
+			if not helper.is_class_logical (l_class) and not l_class.is_tuple then
+					-- Check model clause
+				across
+					helper.model_queries (l_class) as m
+				loop
+					if a_type.base_class.feature_named_32 (m.item) = Void then
+						helper.add_semantic_error (l_class, messages.unknown_attribute (m.item, l_class.name_in_upper), -1)
+					end
 				end
+				generate_model_axiom
 			end
 		end
 

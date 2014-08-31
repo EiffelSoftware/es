@@ -3,6 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	model: sequence
 	manual_inv: true
+	false_guards: true
 
 frozen class
 	V_LINKED_STACK [G]
@@ -22,7 +23,6 @@ feature {NONE} -- Initialization
 			status: creator
 		do
 			create list
-			set_owns ([list])
 		ensure then
 			sequence_effect: sequence.is_empty
 		end
@@ -61,6 +61,7 @@ feature -- Measurement
 			-- Number of elements.
 		do
 			check inv end
+			check list.transitive_owns <= transitive_owns end
 			Result := list.count
 		end
 
@@ -72,7 +73,7 @@ feature -- Iteration
 			status: impure
 			explicit: contracts
 		local
-			list_cursor: V_LINKED_LIST_ITERATOR_2 [G]
+			list_cursor: V_LINKED_LIST_ITERATOR [G]
 		do
 			unwrap
 			list_cursor := list.new_cursor
@@ -86,7 +87,6 @@ feature -- Extension
 			-- Push `v' on the stack.
 		do
 			list.extend_front (v)
-			check sequence.prepended (v) = sequence.old_.extended_at (1, v) end
 		end
 
 feature -- Removal
@@ -105,7 +105,7 @@ feature -- Removal
 
 feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
-	list: V_LINKED_LIST_2 [G]
+	list: V_LINKED_LIST [G]
 			-- Underlying list.
 			-- Should not be reassigned after creation.
 

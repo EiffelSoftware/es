@@ -177,16 +177,15 @@ axiom (forall<T> s: Seq T, i: int, val: T :: { Seq#Length(Seq#ExtendedAt(s, i, v
 	Seq#Length(Seq#ExtendedAt(s, i, val)) == Seq#Length(s) + 1);
 
 // Sequence prepended with x at the beginning
-function Seq#Prepended<T>(s: Seq T, val: T): Seq T
-{
-  Seq#Concat (Seq#Singleton(val), s)
-}
-axiom (forall<T> s: Seq T, val: T, i: int :: { Seq#Item(Seq#Prepended(s, val), i) }
-  2 <= i && i <= Seq#Length(s) + 1 ==> Seq#Item(Seq#Prepended(s, val), i) == Seq#Item(s, i - 1));
-axiom (forall<T> s: Seq T, val: T :: { Seq#Item(Seq#Prepended(s, val), 1) }
-  Seq#Item(Seq#Prepended(s, val), 1) == val);
-axiom (forall<T> s: Seq T, val: T :: { Seq#Length(Seq#Prepended(s, val)) }
-	Seq#Length(Seq#Prepended(s, val)) == Seq#Length(s) + 1);  
+function Seq#Prepended<T>(s: Seq T, val: T): Seq T;
+// {
+  // Seq#Concat (Seq#Singleton(val), s)
+// }
+axiom (forall<T> s: Seq T, v: T :: { Seq#Length(Seq#Prepended(s, v)) }
+	Seq#Length(Seq#Prepended(s, v)) == Seq#Length(s) + 1);    
+axiom (forall<T> s: Seq T, v: T, i: int :: { Seq#Item(Seq#Prepended(s, v), i) }
+  (2 <= i && i <= Seq#Length(s) + 1 ==> Seq#Item(Seq#Prepended(s, v), i) == Seq#Item(s, i - 1)) &&
+  (i == 1 ==> Seq#Item(Seq#Prepended(s, v), 1) == v));
   
 // Concatenation of two sequences
 function Seq#Concat<T>(Seq T, Seq T): Seq T;
@@ -231,7 +230,10 @@ axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] } Seq#ToBag(s)[x] == Seq#Oc
 
 // removed axiom
 axiom (forall<T> s: Seq T, i: int :: { Seq#ToBag(Seq#RemovedAt(s, i)) }
-1 <= i && i <= Seq#Length(s) ==> Seq#ToBag(Seq#RemovedAt(s, i)) == Bag#Difference(Seq#ToBag(s), Bag#Singleton(Seq#Item(s,i))));
+  1 <= i && i <= Seq#Length(s) ==> Seq#ToBag(Seq#RemovedAt(s, i)) == Bag#Difference(Seq#ToBag(s), Bag#Singleton(Seq#Item(s,i))));
+// prepend axiom
+axiom (forall<T> s: Seq T, v: T :: { Seq#ToBag(Seq#Prepended(s, v)) }
+  Seq#ToBag(Seq#Prepended(s, v)) == Bag#Extended(Seq#ToBag(s), v));
 
 // Sequence converted to map
 function Seq#ToMap<T>(Seq T): Map int T;

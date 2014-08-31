@@ -3,12 +3,16 @@ note
 	author: "Nadia Polikarpova"
 	model: sequence
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_DISPENSER [G]
 
 inherit
 	V_CONTAINER [G]
+		redefine
+			count
+		end
 
 feature -- Access
 
@@ -21,6 +25,15 @@ feature -- Access
 		deferred
 		ensure
 			definition: Result = sequence.first
+		end
+
+feature -- Measurement
+
+	count: INTEGER
+			-- Number of elements.
+		deferred
+		ensure then
+			definition_sequence: Result = sequence.count
 		end
 
 feature -- Iteration
@@ -85,7 +98,7 @@ feature -- Specification
 
 invariant
 	bag_definition: bag ~ sequence.to_bag
-	
+
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

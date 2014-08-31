@@ -1,8 +1,9 @@
 note
 	description: "Iterators over linked stacks."
 	author: "Nadia Polikarpova"
-	model: target, sequence, index_
+	model: target, index_
 	manual_inv: true
+	false_guards: true
 
 class
 	V_LINKED_STACK_ITERATOR [G]
@@ -18,13 +19,13 @@ create {V_CONTAINER}
 
 feature {NONE} -- Initialization
 
-	make (t: V_LINKED_STACK [G]; it: V_LINKED_LIST_ITERATOR_2 [G])
+	make (t: V_LINKED_STACK [G]; it: V_LINKED_LIST_ITERATOR [G])
 			-- Create a proxy for `it' with target `t'.
 		note
 			status: creator
 			explicit: contracts
 		require
-			t_wrapped: t.is_open
+			t_open: t.is_open
 			it_wrapped: it.is_wrapped
 			it_target_owned: t.owns [it.target]
 			same_elements: t.bag ~ it.target.bag
@@ -47,6 +48,7 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	target: V_LINKED_STACK [G]
+			-- Stack to iterate over.
 
 	item: G
 			-- Item at current position.
@@ -144,10 +146,11 @@ feature -- Cursor movement
 
 feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
-	iterator: V_LINKED_LIST_ITERATOR_2 [G]
+	iterator: V_LINKED_LIST_ITERATOR [G]
 			-- Iterator over the storage.
 
 invariant
+	sequence_definition: sequence ~ target.sequence
 	iterator_exists: iterator /= Void
 	owns_structure: owns = [ iterator ]
 	targets_connected: target.owns [iterator.target]

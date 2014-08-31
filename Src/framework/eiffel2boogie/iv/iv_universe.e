@@ -44,6 +44,21 @@ feature -- Access
 			end
 		end
 
+	constant_named (a_name: STRING): detachable IV_CONSTANT
+			-- Boogie constant with name `a_name'.
+		do
+			from
+				declarations.start
+			until
+				declarations.after or Result /= Void
+			loop
+				if attached {IV_CONSTANT} declarations.item as l_const and then l_const.name ~ a_name then
+					Result := l_const
+				end
+				declarations.forth
+			end
+		end
+
 	function_named (a_name: STRING): detachable IV_FUNCTION
 			-- Boogie function with name `a_name'.
 		do

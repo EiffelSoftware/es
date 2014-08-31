@@ -80,6 +80,7 @@ feature -- Basic operations
 		do
 			create l_translator
 			if included = Void and excluded = Void then
+				l_translator.translate_model (type) -- ToDo: refactor
 				l_translator.translate_invariant (type)
 			else
 				l_translator.translate_filtered_invariant_function (type, included, excluded, ancestor)

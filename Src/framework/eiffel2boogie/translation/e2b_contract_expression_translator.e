@@ -64,7 +64,6 @@ feature -- Basic operations
 			Precursor
 			origin_class := Void
 			create side_effect.make
-			create calls.make
 			create field_accesses.make
 		end
 
@@ -197,10 +196,5 @@ feature -- Translation
 		do
 			a_handler.handle_routine_call_in_contract (Current, a_feature, a_parameters)
 		end
-
-feature {NONE} -- Implementation
-
-	calls: LINKED_STACK [IV_FUNCTION_CALL]
-			-- Stack of procedure calls.
 
 end

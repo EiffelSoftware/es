@@ -163,6 +163,22 @@ feature -- Convenience
 			Result := helper.class_type_in_context (a_feature.type, current_target_type.base_class, a_feature, current_target_type)
 		end
 
+	expression_class_type (a_node: EXPR_B): CL_TYPE_A
+			-- Type of `a_expr' in current context (takes redefinition into account).
+		require
+			a_node_attched: attached a_node
+			current_target_type_attached: attached current_target_type
+		do
+			if attached { CALL_ACCESS_B } a_node as ca then
+				Result := feature_class_type (helper.feature_for_call_access (ca, current_target_type))
+			elseif attached { RESULT_B } a_node as res then
+				check attached context_feature and then context_feature.has_return_value end
+				Result := feature_class_type (context_feature)
+			else
+				Result := class_type_in_current_context (a_node.type)
+			end
+		end
+
 feature -- Element change
 
 	set_last_expression (a_expression: IV_EXPRESSION)
@@ -815,7 +831,7 @@ feature -- Visitors
 				l_target := current_target
 				l_target_type := current_target_type
 				current_target := last_expression
-				current_target_type := class_type_in_current_context (a_node.target.type)
+				current_target_type := expression_class_type (a_node.target)
 
 					-- Check if target is attached;
 					-- skip if target is expanded or a mathematical type, or this is a special any feature

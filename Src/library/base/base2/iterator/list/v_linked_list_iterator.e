@@ -100,7 +100,6 @@ feature -- Measurement
 			-- Current position.
 		do
 			check inv end
-			check target.inv end
 			if after then
 				Result := target.count + 1
 			elseif is_last then
@@ -325,6 +324,7 @@ feature -- Extension
 			until
 				other.after
 			loop
+				check inv_only ("after_definition", "sequence_definition") end
 				extend_right (other.item)
 				check inv_only ("after_definition", "sequence_definition") end
 				forth
