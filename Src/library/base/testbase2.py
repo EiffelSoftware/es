@@ -26,7 +26,10 @@ classes = [
   'V_DISPENSER',
   'V_STACK',
   'V_LINKED_STACK',
-  'V_LINKED_STACK_ITERATOR'
+  'V_LINKED_STACK_ITERATOR',
+  'V_QUEUE',
+  'V_LINKED_QUEUE',
+  'V_LINKED_QUEUE_ITERATOR'
 ]
 
 outfile_name = 'base2.out'
