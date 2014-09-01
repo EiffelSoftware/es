@@ -22,7 +22,11 @@ classes = [
   'V_CELL',
   'V_LINKABLE',
   'V_LINKED_LIST',  
-  'V_LINKED_LIST_ITERATOR',    
+  'V_LINKED_LIST_ITERATOR',
+  'V_DISPENSER',
+  'V_STACK',
+  'V_LINKED_STACK',
+  'V_LINKED_STACK_ITERATOR'
 ]
 
 outfile_name = 'base2.out'

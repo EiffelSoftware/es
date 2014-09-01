@@ -39,10 +39,12 @@ feature -- Cursor movement
 	forth
 			-- Move one position forward.
 		require
-			subjects_wrapped: subjects.any_item.is_wrapped
+			subjects_closed: subjects.any_item.closed
 			not_off: not off
 			modify_model (["box"], Current)
 		deferred
+		ensure
+			subjects_closed: subjects.any_item.closed
 		end
 
 	search (v: G)

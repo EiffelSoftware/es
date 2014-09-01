@@ -305,6 +305,8 @@ feature -- Extension
 			-- Append sequence of values, over which `input' iterates to the right of current position. Move cursor to the last element of inserted sequence.
 		note
 			explicit: wrapping
+		local
+			s: like sequence
 		do
 			from
 				check inv_only ("subjects_definition", "no_observers", "A2") end
@@ -318,14 +320,15 @@ feature -- Extension
 				target.is_wrapped
 				target /= Current
 				across target.observers as o all o.item /= Current implies o.item.is_open end
+				s = other.sequence.old_.interval (other.index_.old_, other.index_ - 1)
 				target.sequence ~ (target.sequence.front (index_.old_).old_ +
-					other.sequence.old_.interval (other.index_.old_, other.index_ - 1) +
-					target.sequence.tail (index_.old_ + 1).old_)
+					s + target.sequence.tail (index_.old_ + 1).old_)
 			until
 				other.after
 			loop
 				check inv_only ("after_definition", "sequence_definition") end
 				extend_right (other.item)
+				s := s & other.item
 				check inv_only ("after_definition", "sequence_definition") end
 				forth
 				check other.inv_only ("no_observers") end

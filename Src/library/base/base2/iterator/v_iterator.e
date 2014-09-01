@@ -126,6 +126,7 @@ feature -- Cursor movement
 		deferred
 		ensure then
 			index_effect: index_ = 1
+			target_closed: target.closed
 		end
 
 	finish
@@ -136,6 +137,7 @@ feature -- Cursor movement
 		deferred
 		ensure
 			index_effect: index_ = sequence.count
+			target_closed: target.closed
 		end
 
 	forth
@@ -149,11 +151,12 @@ feature -- Cursor movement
 			-- Go one position backward.
 		require
 			not_off: not off
-			target_wrapped: target.is_wrapped
+			target_closed: target.closed
 			modify_model ("index_", Current)
 		deferred
 		ensure
 			index_effect: index_ = old index_ - 1
+			target_closed: target.closed
 		end
 
 	go_to (i: INTEGER)
@@ -212,6 +215,7 @@ feature -- Cursor movement
 		deferred
 		ensure
 			index_effect: index_ = sequence.count + 1
+			target_closed: target.closed
 		end
 
 	search_forth (v: G)

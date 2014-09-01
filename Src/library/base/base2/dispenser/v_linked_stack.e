@@ -119,6 +119,7 @@ feature -- Specification
 		do
 			it.unwrap
 			set_observers (observers / it)
+			check it.iterator.inv_only ("subjects_definition", "A2") end
 			list.forget_iterator (it.iterator)
 		end
 
@@ -129,7 +130,7 @@ invariant
 	observers_correspond: observers.count = list.observers.count
 
 note
-	explicit: observers, owns
+	explicit: observers
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
