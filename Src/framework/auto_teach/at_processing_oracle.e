@@ -553,21 +553,6 @@ feature {NONE} -- Implementation: miscellaneous
 			-- A copy of the original options passed to the initialization procedure.
 			-- This copy is restored at the end of the processing of every class.
 
-	make_with_options (a_options: AT_OPTIONS)
-			-- Initialization for `Current'.
-		do
-			set_options (a_options)
-
-			create {ARRAYED_STACK [AT_BLOCK_TYPE]} block_type_call_stack.make (32)
-			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY_DESCRIPTOR]} block_stack.make (32)
-			create {ARRAYED_STACK [BOOLEAN]} effective_visibility_stack.make (32)
-			create {ARRAYED_STACK [TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_strength: AT_POLICY_STRENGTH]]} content_visibility_stack.make (32)
-			create undefined_visibility_warning_set.make (enum_block_type.values.count)
-			initialize_visibility_descriptors_table
-
-			refresh
-		end
-
 	initialize_visibility_descriptors_table
 			-- Fill `visibility_descriptors' with the proper descriptors.
 		local
@@ -620,6 +605,25 @@ feature {NONE} -- Implementation: miscellaneous
 			-- Used to throw a warning at the end of processing of every class.
 
 	last_processed_command: detachable AT_COMMAND
+
+
+feature {NONE} -- Initialization
+
+	make_with_options (a_options: AT_OPTIONS)
+			-- Initialization for `Current'.
+		do
+			set_options (a_options)
+
+			create {ARRAYED_STACK [AT_BLOCK_TYPE]} block_type_call_stack.make (32)
+			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY_DESCRIPTOR]} block_stack.make (32)
+			create {ARRAYED_STACK [BOOLEAN]} effective_visibility_stack.make (32)
+			create {ARRAYED_STACK [TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_strength: AT_POLICY_STRENGTH]]} content_visibility_stack.make (32)
+			create undefined_visibility_warning_set.make (enum_block_type.values.count)
+			initialize_visibility_descriptors_table
+
+			refresh
+		end
+
 
 feature {NONE} -- Consistency
 

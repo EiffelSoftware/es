@@ -33,7 +33,8 @@ feature -- Access
 	payload: STRING
 			-- The payload of the command, if any.
 
-feature {NONE} -- Initialization
+
+feature {NONE} -- Implementation
 
 	fail
 			-- Throws a parsing exception.
@@ -134,6 +135,9 @@ feature {NONE} -- Initialization
 
 
 		end
+
+
+feature {NONE} -- Initialization
 
 	make_from_line (a_line: STRING)
 			-- Initialization for `Current'.

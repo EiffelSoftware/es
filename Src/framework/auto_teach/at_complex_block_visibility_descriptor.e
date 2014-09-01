@@ -121,6 +121,13 @@ feature {NONE} -- Setters
 			local_treat_as_complex_override := a_value
 		end
 
+
+feature {NONE} -- Implementation
+
+	default_content_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], AT_TRI_STATE_BOOLEAN]
+			-- Agent for retrieving the default content visibility for this block type.
+
+
 feature {NONE} -- Initialization
 
 	make_with_two_agents (a_block_type: AT_BLOCK_TYPE; a_default_visibility_agent: like default_visibility_agent; a_default_content_visibility_agent: like default_content_visibility_agent)
@@ -134,10 +141,6 @@ feature {NONE} -- Initialization
 			global_treat_as_complex := True
 		end
 
-feature {NONE} -- Implementation
-
-	default_content_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], AT_TRI_STATE_BOOLEAN]
-			-- Agent for retrieving the default content visibility for this block type.
 
 invariant
 	is_complex_block: block_type.enum_type.is_complex_block_type (block_type)

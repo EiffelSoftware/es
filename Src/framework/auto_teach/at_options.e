@@ -14,6 +14,7 @@ inherit
 create
 	make_with_defaults
 
+
 feature {NONE} -- Initialization
 
 	make_with_defaults
@@ -25,6 +26,7 @@ feature {NONE} -- Initialization
 
 			hint_table := hint_tables.default_auto_hint_table
 		end
+
 
 feature -- AutoTeach options
 

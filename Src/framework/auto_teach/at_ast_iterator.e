@@ -465,6 +465,20 @@ feature {NONE} -- Implementation - miscellanea
 	options: AT_OPTIONS
 			-- The AutoTeach options.
 
+	message_output_action: detachable PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]
+			-- The action to be called for outputting messages.
+
+	print_message (a_string: READABLE_STRING_GENERAL)
+			-- Prints a line to output, if a message output action has been specified.
+		do
+			if attached message_output_action as l_message_output_action then
+				l_message_output_action.call (a_string + "%N")
+			end
+		end
+
+
+feature {NONE} -- Initialization
+
 	make_with_options (a_options: AT_OPTIONS)
 			-- Initialize Current
 		do
@@ -479,16 +493,6 @@ feature {NONE} -- Implementation - miscellanea
 			reset
 		end
 
-	message_output_action: detachable PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]
-			-- The action to be called for outputting messages.
-
-	print_message (a_string: READABLE_STRING_GENERAL)
-			-- Prints a line to output, if a message output action has been specified.
-		do
-			if attached message_output_action as l_message_output_action then
-				l_message_output_action.call (a_string + "%N")
-			end
-		end
 
 feature {NONE} -- Auxiliary location flags
 
