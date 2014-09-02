@@ -19,7 +19,6 @@ inherit
 			default_create,
 			first,
 			last,
-			is_empty,
 			put,
 			prepend,
 			reverse,
@@ -94,14 +93,6 @@ feature -- Access
 		do
 			check inv end
 			Result := last_cell.item
-		end
-
-	is_empty: BOOLEAN
-			-- Is container empty?
-		do
-			Result := count = 0
-		ensure then
-			definition: Result = sequence.is_empty
 		end
 
 feature -- Iteration

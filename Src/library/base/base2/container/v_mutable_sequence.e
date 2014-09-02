@@ -36,6 +36,7 @@ feature -- Replacement
 	put (v: G; i: INTEGER)
 			-- Replace value at position `i' with `v'.
 		note
+			status: dynamic
 			explicit: contracts, wrapping
 		require
 			is_wrapped: is_wrapped
@@ -57,6 +58,7 @@ feature -- Replacement
 	swap (i1, i2: INTEGER)
 			-- Swap values at positions `i1' and `i2'.
 		note
+			status: dynamic
 			explicit: contracts, wrapping
 		require
 			is_wrapped: is_wrapped
@@ -80,6 +82,7 @@ feature -- Replacement
 	fill (v: G; l, u: INTEGER)
 			-- Put `v' at positions [`l', `u'].
 		note
+			status: dynamic
 			explicit: contracts, wrapping
 		require
 			is_wrapped: is_wrapped
@@ -126,6 +129,7 @@ feature -- Replacement
 	clear (l, u: INTEGER)
 			-- Put default value at positions [`l', `u'].
 		note
+			status: dynamic
 			explicit: wrapping
 		require
 			is_wrapped: is_wrapped
@@ -148,6 +152,7 @@ feature -- Replacement
 	copy_range (other: V_SEQUENCE [G]; other_first, other_last, index: INTEGER)
 			-- Copy items of `other' within bounds [`other_first', `other_last'] to current sequence starting at index `index_'.
 		note
+			status: dynamic
 			explicit: wrapping
 		require
 			is_wrapped: is_wrapped
@@ -212,6 +217,7 @@ feature -- Replacement
 	reverse
 			-- Reverse the order of elements.
 		note
+			status: dynamic
 			explicit: contracts, wrapping
 		require
 			is_wrapped: is_wrapped

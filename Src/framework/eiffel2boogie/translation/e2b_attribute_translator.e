@@ -62,7 +62,7 @@ feature -- Basic operations
 			end
 
 				-- Add type properties
-			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access)
+			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access, helper.is_type_exact (current_feature.type, l_class_type, Void))
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (
 						factory.is_heap (l_heap),
@@ -116,9 +116,10 @@ feature -- Basic operations
 					translation_pool.add_referenced_feature (l_guard_feature, current_type)
 						-- Generate guard axiom from `l_guard_feature'
 					l_fname := name_translator.boogie_function_for_feature (l_guard_feature, current_type)
-					l_def := factory.function_call (name_translator.boogie_free_function_precondition (l_fname), << l_h, l_cur, l_v, l_o >>, types.bool)
-					l_def := factory.and_ (l_def,
-						factory.function_call (name_translator.boogie_function_precondition (l_fname), << l_h, l_cur, l_v, l_o >>, types.bool))
+--					l_def := factory.function_call (name_translator.boogie_free_function_precondition (l_fname), << l_h, l_cur, l_v, l_o >>, types.bool)
+--					l_def := factory.and_ (l_def,
+--						factory.function_call (name_translator.boogie_function_precondition (l_fname), << l_h, l_cur, l_v, l_o >>, types.bool))
+					l_def := factory.function_call (name_translator.boogie_function_precondition (l_fname), << l_h, l_cur, l_v, l_o >>, types.bool)
 					l_def := factory.and_ (l_def,
 						factory.function_call (l_fname, << l_h, l_cur, l_v, l_o >>, types.bool))
 					create l_forall.make (factory.equiv (l_fcall, l_def))
@@ -147,6 +148,7 @@ feature -- Basic operations
 			tuple_type: a_context_type.is_tuple
 		local
 			l_attribute_name: STRING
+			l_type: TYPE_A
 			l_class_type: CL_TYPE_A
 			l_type_prop, l_context_type: IV_EXPRESSION
 			l_forall: IV_FORALL
@@ -155,7 +157,8 @@ feature -- Basic operations
 			l_boogie_type: IV_TYPE
 		do
 			set_context (Void, a_context_type)
-			l_class_type := helper.class_type_in_context (a_context_type.generics [a_position], current_type.base_class, Void, current_type)
+			l_type := a_context_type.generics [a_position]
+			l_class_type := helper.class_type_in_context (l_type, current_type.base_class, Void, current_type)
 			l_attribute_name := name_translator.boogie_field_for_tuple_field (current_type, a_position)
 			l_boogie_type := types.for_class_type (l_class_type)
 			l_context_type := factory.type_value (current_type)
@@ -173,7 +176,7 @@ feature -- Basic operations
 			l_heap := factory.heap_entity ("heap")
 			l_o := factory.ref_entity ("o")
 			l_heap_access := factory.heap_access (l_heap, l_o, l_attribute_name, l_boogie_type)
-			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access)
+			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access, helper.is_type_exact (l_type, l_class_type, Void))
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (
 						factory.is_heap (l_heap),

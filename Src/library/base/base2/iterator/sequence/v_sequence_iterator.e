@@ -23,6 +23,8 @@ feature -- Access
 
 	target_index: INTEGER
 			-- Target index at current position.
+		note
+			status: dynamic
 		do
 			check inv end
 			Result := target.lower + index_ - 1

@@ -52,6 +52,7 @@ feature -- Cursor movement
 			-- If `v' does not occur, move `after'.
 			-- (Use reference equality.)
 		note
+			status: dynamic
 			explicit: wrapping
 		require
 			subjects_wrapped: subjects.any_item.is_wrapped

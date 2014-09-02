@@ -20,7 +20,7 @@ feature -- Comparison
 			-- Is list made of the same values in the same order as `other'?
 			-- (Use reference comparison.)
 		note
-			status: impure
+			status: impure, dynamic
 		require
 			modify_model ("observers", [Current, other])
 		local

@@ -191,6 +191,12 @@ feature -- Feature status helpers
 			Result := is_feature_status (a_feature, "lemma")
 		end
 
+	is_dynamic (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' a dynamic feature (i.e. does not know the exact type of Current)?
+		do
+			Result := is_feature_status (a_feature, "dynamic")
+		end
+
 	is_public (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' a public feature?
 		do
@@ -356,6 +362,18 @@ feature -- Ownership helpers
 			-- Is contract clause `a_clause' a decreases clause?
 		do
 			Result := attached {FEATURE_B} a_clause.expr as l_call and then l_call.feature_name ~ "decreases"
+		end
+
+	is_type_exact (a_type: TYPE_A; a_class_type: CL_TYPE_A; a_context_feature: FEATURE_I): BOOLEAN
+			-- Is `a_type' (which corresponds to `a_class_type')
+			-- in the context of `a_context_feature' represent a fixed dynamic type?
+		require
+			type_exists: attached a_type
+			class_type_exists: attached a_class_type
+		do
+				-- Yes, if the base class is frozen, or the type is "like Current" (provided we are not inside a dynamic feature)
+			Result := a_class_type.base_class.is_frozen or
+				(a_type.is_like_current and not (attached a_context_feature and then is_dynamic (a_context_feature)))
 		end
 
 	boogie_name_for_attribute (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING_32

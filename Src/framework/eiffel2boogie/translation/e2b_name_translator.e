@@ -121,15 +121,15 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_free_function_precondition (a_function_name: STRING): STRING
-			-- Free precondition predicate name for function named `a_function_name'.
-		require
-			a_function_name_attached: attached a_function_name
-		do
-			Result := "free_pre." + a_function_name
-		ensure
-			result_attached: attached Result
-		end
+--	boogie_free_function_precondition (a_function_name: STRING): STRING
+--			-- Free precondition predicate name for function named `a_function_name'.
+--		require
+--			a_function_name_attached: attached a_function_name
+--		do
+--			Result := "free_pre." + a_function_name
+--		ensure
+--			result_attached: attached Result
+--		end
 
 	boogie_function_trigger (a_function_name: STRING): STRING
 			-- Trigger predicate name for opaque function named `a_function_name'.

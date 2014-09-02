@@ -177,8 +177,9 @@ feature -- Type translation
 			end
 		end
 
-	type_property (a_type: CL_TYPE_A; a_heap, a_expr: IV_EXPRESSION): IV_EXPRESSION
-			-- For an expression `a_expr' originally of Eiffel type `a_type', an expression that states its precise Eiffel type in `a_heap'.
+	type_property (a_type: CL_TYPE_A; a_heap, a_expr: IV_EXPRESSION; a_exact_type: BOOLEAN): IV_EXPRESSION
+			-- For an expression `a_expr' originally of Eiffel type `a_type', an expression that states its precise Eiffel type in `a_heap';
+			-- if `a_exact_type', then the dynamic type of the expression is known (for example, because it's Current).
 		local
 			l_boogie_type: IV_TYPE
 			l_content_type: CL_TYPE_A
@@ -190,12 +191,14 @@ feature -- Type translation
 			l_boogie_type := for_class_type (a_type)
 			if l_boogie_type ~ ref then
 				l_content_type := a_type
-				if attached {IV_ENTITY} a_expr as a_entity and then a_entity.name ~ "Current" then
-					-- For Current the exact dynamic type is considered known
-					l_fname := "attached_exact"
-				elseif l_content_type.base_class.name_in_upper /~ "ANY" then
+				if a_exact_type then
 					if l_content_type.is_attached then
-						-- ToDo: for attached any generate /= Void?
+						l_fname := "attached_exact"
+					else
+						l_fname := "detachable_exact"
+					end
+				elseif not helper.is_class_any (l_content_type.base_class) then
+					if l_content_type.is_attached then
 						l_fname := "attached"
 					else
 						l_fname := "detachable"
@@ -204,15 +207,14 @@ feature -- Type translation
 				if l_fname /= Void then
 					Result := factory.function_call (l_fname, << a_heap, a_expr, factory.type_value (l_content_type) >>, bool)
 				end
-				-- ToDo: refactor
-				if not a_type.is_formal and then a_type.base_class.name_in_upper ~ "ARRAY" then
+				if helper.is_class_array (l_content_type.base_class) then
 					Result := factory.and_clean (Result, factory.function_call ("ARRAY.inv", << a_heap, a_expr >>, bool))
 				end
 			elseif l_boogie_type ~ int and options.is_checking_overflow then
 					-- If we are not checking for overflows, no need to differentiate between kinds of ints
 				Result := numeric_property (a_type, a_expr)
 			elseif helper.is_class_logical (a_type.base_class) then
---					 Check if it is a logical type with some type properties
+					-- Check if it is a logical type with some type properties
 				l_type_properties := helper.class_note_values (a_type.base_class, "type_properties")
 				if not l_type_properties.is_empty then
 					if l_type_properties.count /= a_type.generics.count then

@@ -17,7 +17,8 @@ inherit
 			has_key as has_index,
 			at_key as at
 		redefine
-			item
+			item,
+			is_empty
 		end
 
 feature -- Access
@@ -31,6 +32,8 @@ feature -- Access
 
 	first: G
 			-- First element.
+		note
+			status: dynamic
 		require
 			closed: closed
 			not_empty: not is_empty
@@ -44,6 +47,8 @@ feature -- Access
 
 	last: G
 			-- Last element.
+		note
+			status: dynamic
 		require
 			closed: closed
 			not_empty: not is_empty
@@ -69,6 +74,8 @@ feature -- Measurement
 
 	upper: INTEGER
 			-- Upper bound of index interval.
+		note
+			status: dynamic
 		require
 			closed: closed
 			reads (ownership_domain)
@@ -88,6 +95,8 @@ feature -- Measurement
 
 	has_index (i: INTEGER): BOOLEAN
 			-- Is any value associated with `i'?
+		note
+			status: dynamic
 		do
 			check inv end
 			Result := lower <= i and i <= upper
@@ -95,13 +104,25 @@ feature -- Measurement
 			Result = (lower_ <= i and i <= upper_)
 		end
 
+feature -- Status report
+
+	is_empty: BOOLEAN
+			-- Is container empty?
+		note
+			status: dynamic
+		do
+			Result := count = 0
+		ensure then
+			definition: Result = sequence.is_empty
+		end
+
 feature -- Search
 
 	index_of (v: G): INTEGER
 			-- Index of the first occurrence of `v';
-			-- out of range, if `v' does not occur.
+			-- out of range, if `v' does not occur.			
 		note
-			status: impure
+			status: impure, dynamic
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
@@ -126,7 +147,7 @@ feature -- Search
 			-- Index of the first occurrence of `v' starting from position `i';
 			-- out of range, if `v' does not occur.
 		note
-			status: impure
+			status: impure, dynamic
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
@@ -157,7 +178,7 @@ feature -- Iteration
 	new_cursor: like at
 			-- New iterator pointing to the first position.
 		note
-			status: impure
+			status: impure, dynamic
 			explicit: contracts
 		do
 			Result := at (lower)
@@ -167,7 +188,7 @@ feature -- Iteration
 	at_last: like at
 			-- New iterator pointing to the last position.
 		note
-			status: impure
+			status: impure, dynamic
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
@@ -223,7 +244,7 @@ feature -- Specification
 
 	idx (i: INTEGER): INTEGER
 		note
-			status: ghost, functional
+			status: ghost, functional, dynamic
 		do
 			Result := i - lower_ + 1
 		end

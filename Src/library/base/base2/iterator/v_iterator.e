@@ -55,7 +55,7 @@ feature -- Measurement
 	valid_index (i: INTEGER): BOOLEAN
 			-- Is `i' a valid position for a cursor?
 		note
-			status: functional, ghost
+			status: functional, ghost, dynamic
 		require
 			target_exists: target /= Void
 			reads (Current, target)
@@ -87,6 +87,8 @@ feature -- Status report
 
 	off: BOOLEAN
 			-- Is current position off scope?
+		note
+			status: dynamic
 		do
 			check inv end
 			Result := before or after
@@ -162,6 +164,7 @@ feature -- Cursor movement
 	go_to (i: INTEGER)
 			-- Go to position `i'.
 		note
+			status: dynamic
 			explicit: wrapping
 		require
 			has_index: valid_index (i)
@@ -223,6 +226,7 @@ feature -- Cursor movement
 			-- If `v' does not occur, move `after'.
 			-- (Use reference equality.)
 		note
+			status: dynamic
 			explicit: wrapping
 		do
 			check inv_only ("subjects_definition") end
@@ -255,6 +259,7 @@ feature -- Cursor movement
 			-- If `v' does not occur, move `before'.
 			-- (Use reference equality.)
 		note
+			status: dynamic
 			explicit: wrapping
 		require
 			target_wrapped: target.is_wrapped

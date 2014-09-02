@@ -351,17 +351,22 @@ procedure wrap_all(Current: ref, s: Set ref);
 // ----------------------------------------------------------------------
 // Attached/Detachable functions
 
-// Property that reference `o' is attached to an object of type `t' on heap `heap'.
+// Reference `o' is attached to an object of type `t' on heap `heap'.
 function attached_exact(heap: HeapType, o: ref, t: Type) returns (bool) {
 	(o != Void) && (heap[o, allocated]) && (type_of(o) == t)
 }
 
-// Property that reference `o' is attached and conforms to type `t' on heap `heap'.
+// Reference `o' is either Void or attached to an object of type `t' on heap `heap'.
+function detachable_exact(heap: HeapType, o: ref, t: Type) returns (bool) {
+	(o == Void) || attached_exact(heap, o, t)
+}
+
+// Reference `o' is attached and conforms to type `t' on heap `heap'.
 function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
 	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
 }
 
-// Property that reference `o' is either Void or attached and conforms to `t' on heap `heap'.
+// Reference `o' is either Void or attached and conforms to `t' on heap `heap'.
 function detachable(heap: HeapType, o: ref, t: Type) returns (bool) {
 	(o == Void) || attached(heap, o, t)
 }

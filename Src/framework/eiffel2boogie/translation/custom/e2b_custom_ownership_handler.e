@@ -51,6 +51,10 @@ feature -- Basic operations
 					l_trig.arguments.append (l_fcall.arguments)
 					a_translator.side_effect.extend (create {IV_ASSERT}.make_assume (l_trig))
 				end
+			elseif l_name ~ "transitive_owns" then
+				a_translator.process_builtin_routine_call (a_feature, a_parameters, "trans_owns")
+			elseif l_name ~ "ownership_domain" then
+				a_translator.process_builtin_routine_call (a_feature, a_parameters, "domain")
 			elseif translation_mapping.builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_function_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.builtin_any_procedures.has (l_name) then
@@ -287,7 +291,8 @@ feature -- Basic operations
 				-- If processing a call to `wrap',
 				-- generate appropriate guarded assignments to implicit model queries and an invariant check
 			if a_feature.feature_name ~ "wrap" then
-				if a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
+				if use_static_invariant (a_translator) then
+						-- Check exact invariant definition.
 					across helper.flat_model_queries (a_translator.current_target_type.base_class) as m loop
 						set_implicit_model_query (a_translator, m.item)
 					end
@@ -301,6 +306,7 @@ feature -- Basic operations
 						a_translator.add_independent_check (c.item)
 					end
 				else
+						-- Use dynamically bound invariant function.
 					l_check := factory.function_call ("user_inv", << a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool)
 					a_translator.add_safety_check (l_check, "inv", "unknown_invariant", a_translator.context_line_number)
 					a_translator.last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
@@ -317,13 +323,15 @@ feature -- Basic operations
 				-- If processing a call to `unwrap',
 				-- assume either generic `user_inv' or class-specific invariant function, depending if the target is `Current'.
 			if a_feature.feature_name ~ "unwrap" then
-				if a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
+				if use_static_invariant (a_translator) then
+						-- Use exact invariant definition.
 					create l_assume.make_assume (
 						factory.function_call (name_translator.boogie_function_for_invariant (a_translator.current_target_type),
 						<< a_translator.entity_mapping.heap, a_translator.current_target >>,
 						types.bool))
 					a_translator.side_effect.extend (l_assume)
 				else
+						-- Use dynamically bound invariant function.
 					create l_assume.make_assume (
 						factory.function_call ("user_inv",
 						<< a_translator.entity_mapping.heap, a_translator.current_target >>,
@@ -336,6 +344,14 @@ feature -- Basic operations
 					end
 				end
 			end
+		end
+
+	use_static_invariant (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR): BOOLEAN
+			-- Should the static definition of the ivnariant be used for the current target of `a_translator'?
+		do
+				-- Yes if the current target is Current and the context feature is not marked as dynamic.
+			Result := a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) and
+				not helper.is_dynamic (a_translator.context_feature)
 		end
 
 	set_implicit_model_query (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_attr: FEATURE_I)

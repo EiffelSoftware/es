@@ -30,6 +30,8 @@ feature -- Status report
 
 	is_empty: BOOLEAN
 			-- Is container empty?
+		note
+			status: dynamic
 		require
 			closed: closed
 			reads (ownership_domain)
@@ -45,7 +47,7 @@ feature -- Search
 			-- Is value `v' contained?
 			-- (Uses reference equality.)
 		note
-			status: impure
+			status: impure, dynamic
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
@@ -67,7 +69,7 @@ feature -- Search
 			-- How many times is value `v' contained?
 			-- (Uses reference equality.)
 		note
-			status: impure
+			status: impure, dynamic
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped

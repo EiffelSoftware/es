@@ -63,9 +63,8 @@ feature
 			s1: MML_SET [INTEGER]
 		do
 			create in1.from_range (1, 10)
+			check in1.count = 10 end
 			check in1 [5] end
-			check in1.lower = 1 end
-			check in1.upper = 10 end
 
 			s1 := in1 + create {MML_INTERVAL}.from_range (21, 30)
 			check s1 [5] end
@@ -74,19 +73,6 @@ feature
 
 			check in1 <= in1 & 11 end
 			check in1 >= in1.removed (5) end
-
-			in1 := in1 |+| create {MML_INTERVAL}.from_range (21, 30)
-			check in1.lower = 1 end
-			check in1.upper = 30 end
-			check in1 [15] end
-
-			create in1.singleton (1)
-			check in1 [1] end
-			check in1.lower = 1 end
-			check in1.upper = 1 end
-
-			create in1
-			check not in1 [1] end
 		end
 
 invariant

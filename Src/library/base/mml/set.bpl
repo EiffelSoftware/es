@@ -145,6 +145,6 @@ type Interval = Set int;
 function Interval#FromRange(int, int): Interval;
 axiom (forall l, u: int :: { Set#Card(Interval#FromRange(l, u)) }
   (u < l ==> Set#Card(Interval#FromRange(l, u)) == 0) &&
-  (u <= l ==> Set#Card(Interval#FromRange(l, u)) == u - l + 1));
+  (l <= u ==> Set#Card(Interval#FromRange(l, u)) == u - l + 1));
 axiom (forall l, u, x: int :: { Interval#FromRange(l, u)[x] }
   Interval#FromRange(l, u)[x] <==> l <= x && x <= u);  

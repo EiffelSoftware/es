@@ -49,6 +49,7 @@ feature -- Replacement
 	output (v: G)
 			-- Replace item at current position with `v' and go to the next position.
 		note
+			status: dynamic
 			explicit: wrapping
 		require else
 			modify_model (["sequence", "index_"], Current)

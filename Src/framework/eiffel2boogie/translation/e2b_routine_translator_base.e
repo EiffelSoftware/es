@@ -37,7 +37,7 @@ feature -- Element change
 
 feature -- Helper functions: arguments and result
 
-	arguments_of (a_feature: FEATURE_I; a_context: CL_TYPE_A): ARRAYED_LIST [TUPLE [name: STRING; type: CL_TYPE_A; boogie_type: IV_TYPE]]
+	arguments_of (a_feature: FEATURE_I; a_context: CL_TYPE_A): ARRAYED_LIST [TUPLE [name: STRING; orig_type: TYPE_A; type: CL_TYPE_A; boogie_type: IV_TYPE]]
 			-- List of feature arguments of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
@@ -51,6 +51,7 @@ feature -- Helper functions: arguments and result
 				l_type := helper.class_type_in_context (a_feature.arguments.i_th (i), a_context.base_class, a_feature, a_context)
 				Result.extend([
 					a_feature.arguments.item_name (i),
+					a_feature.arguments.i_th (i),
 					l_type,
 					types.for_class_type (l_type)
 				])
@@ -67,7 +68,7 @@ feature -- Helper functions: arguments and result
 			Result := arguments_of (current_feature, current_type)
 		end
 
-	add_argument_with_property (a_name: STRING; a_type: CL_TYPE_A; a_boogie_type: IV_TYPE)
+	add_argument_with_property (a_name: STRING; a_orig_type: TYPE_A; a_type: CL_TYPE_A; a_boogie_type: IV_TYPE)
 			-- Add argument and property to current procedure.
 		require
 			current_procedure_set: attached current_boogie_procedure
@@ -75,7 +76,8 @@ feature -- Helper functions: arguments and result
 			l_pre: IV_PRECONDITION
 		do
 			current_boogie_procedure.add_argument (create {IV_ENTITY}.make (a_name, a_boogie_type))
-			create l_pre.make (types.type_property (a_type, factory.global_heap, factory.entity (a_name, a_boogie_type)))
+			create l_pre.make (types.type_property (a_type, factory.global_heap, factory.entity (a_name, a_boogie_type),
+				helper.is_type_exact (a_orig_type, a_type, current_feature)))
 			l_pre.set_free
 			l_pre.node_info.set_attribute ("info", "type property for argument " + a_name)
 			current_boogie_procedure.add_contract (l_pre)
@@ -95,7 +97,8 @@ feature -- Helper functions: arguments and result
 				current_boogie_procedure.add_result_with_property (
 					"Result",
 					l_iv_type,
-					types.type_property (l_type, factory.global_heap, factory.entity ("Result", l_iv_type)))
+					types.type_property (l_type, factory.global_heap, factory.entity ("Result", l_iv_type),
+						helper.is_type_exact (current_feature.type, l_type, current_feature)))
 			end
 		end
 

@@ -31,6 +31,8 @@ feature -- Measurement
 
 	lower: INTEGER
 			-- Lower bound of index interval.
+		note
+			status: dynamic
 		once
 			check inv_only ("lower_definition") end
 			Result := 1
@@ -38,6 +40,8 @@ feature -- Measurement
 
 	count: INTEGER
 			-- Number of elements.
+		note
+			status: dynamic
 		require else
 			reads (Current)
 		do
@@ -63,7 +67,7 @@ feature -- Comparison
 			-- Is list made of the same values in the same order as `other'?
 			-- (Use reference comparison.)
 		note
-			status: impure
+			status: impure, dynamic
 		require
 			modify_model ("observers", [Current, other])
 		local
@@ -149,6 +153,7 @@ feature -- Extension
 	append (input: V_ITERATOR [G])
 			-- Append sequence of values produced by `input'.
 		note
+			status: dynamic
 			explicit: contracts, wrapping
 		require
 			is_wrapped: is_wrapped
@@ -280,6 +285,7 @@ feature -- Removal
 	remove (v: G)
 			-- Remove the first occurrence of `v'.
 		note
+			status: dynamic
 			explicit: contracts, wrapping
 		require
 			is_wrapped: is_wrapped
@@ -303,6 +309,7 @@ feature -- Removal
 	remove_all (v: G)
 			-- Remove all occurrences of `v'.
 		note
+			status: dynamic
 			explicit: contracts, wrapping
 		require
 			is_wrapped: is_wrapped
