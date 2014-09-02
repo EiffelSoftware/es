@@ -51,7 +51,7 @@ feature -- Access
 
 feature -- Comparison
 
-	-- The following two features must be callable even if the value has not been initialized.
+	-- The following features must be callable even if the value has not been initialized.
 	-- The first reason is that we cannot enforce a stricter precondition than the ancestor
 	-- version, the second reason is that we cannot prevent them from being called on
 	-- uninitialized values by data structures such as HASH_TABLE [AT_ENUM_VALUE, SOMETHING]

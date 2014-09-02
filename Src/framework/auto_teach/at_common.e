@@ -62,13 +62,6 @@ feature -- For use with contracts
 feature {NONE} -- Utility
 
 		-- Taken from the eweasel source code.
-	is_white (a_char: CHARACTER): BOOLEAN
-			-- Is `a_char' a white space character?
-		do
-			Result := a_char = ' ' or a_char = '%T' or a_char = '%R' or a_char = '%N';
-		end;
-
-		-- Taken from the eweasel source code.
 	broken_into_words (a_line: STRING): DYNAMIC_LIST [STRING]
 			-- Result of breaking `line' into words, where each
 			-- word is terminated by white space
@@ -83,7 +76,7 @@ feature {NONE} -- Utility
 			until
 				l_pos > a_line.count
 			loop
-				l_is_white_char := is_white (a_line.item (l_pos));
+				l_is_white_char := a_line.item (l_pos).is_space;
 				if l_in_word then
 					if l_is_white_char then
 						l_in_word := False;

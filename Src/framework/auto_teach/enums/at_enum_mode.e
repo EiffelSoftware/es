@@ -41,7 +41,7 @@ feature -- Access
 
 feature {AT_ENUM} -- Value list
 
-	value_list: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
+	value_list: ARRAY [TUPLE [numerical_value: INTEGER; value_name: STRING]]
 			-- Effective list of values.
 		once ("PROCESS")
 			Result := <<	[1, "auto"],
