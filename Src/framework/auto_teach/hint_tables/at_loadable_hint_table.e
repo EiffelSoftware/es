@@ -113,6 +113,8 @@ feature {NONE} -- Initialization
 			end
 		end
 
+feature {NONE} -- Implementation
+
 		last_file_line: detachable STRING
 				-- The last meaningful line read from the text file.
 

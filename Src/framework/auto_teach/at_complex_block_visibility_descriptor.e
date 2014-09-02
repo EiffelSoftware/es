@@ -19,6 +19,19 @@ inherit
 create
 	default_create, make_with_two_agents
 
+feature {NONE} -- Initialization
+
+	make_with_two_agents (a_block_type: AT_BLOCK_TYPE; a_default_visibility_agent: like default_visibility_agent; a_default_content_visibility_agent: like default_content_visibility_agent)
+			-- Initialize `Current', setting the block type and the agents for retrieving
+			-- the block default visibility and default content visibility respectively.
+		require
+			complex_block: a_block_type.enum_type.is_complex_block_type (a_block_type)
+		do
+			make_with_visibility_agent (a_block_type, a_default_visibility_agent)
+			default_content_visibility_agent := a_default_content_visibility_agent
+			global_treat_as_complex := True
+		end
+
 feature -- Content visibility
 
 	default_content_visibility: AT_TRI_STATE_BOOLEAN
@@ -126,21 +139,6 @@ feature {NONE} -- Implementation
 
 	default_content_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], AT_TRI_STATE_BOOLEAN]
 			-- Agent for retrieving the default content visibility for this block type.
-
-
-feature {NONE} -- Initialization
-
-	make_with_two_agents (a_block_type: AT_BLOCK_TYPE; a_default_visibility_agent: like default_visibility_agent; a_default_content_visibility_agent: like default_content_visibility_agent)
-			-- Initialize `Current', setting the block type and the agents for retrieving
-			-- the block default visibility and default content visibility respectively.
-		require
-			complex_block: a_block_type.enum_type.is_complex_block_type (a_block_type)
-		do
-			make_with_visibility_agent (a_block_type, a_default_visibility_agent)
-			default_content_visibility_agent := a_default_content_visibility_agent
-			global_treat_as_complex := True
-		end
-
 
 invariant
 	is_complex_block: block_type.enum_type.is_complex_block_type (block_type)

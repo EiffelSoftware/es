@@ -18,6 +18,17 @@ inherit
 create
 	make_with_options
 
+feature {NONE} -- Initialization
+
+	make_with_options (a_options: AT_OPTIONS)
+			-- Initialization for `Current'.
+		do
+			options := a_options
+			create input_classes.make
+
+			create ast_iterator.make_with_options (options)
+			ast_iterator.set_message_output_action (agent print_message)
+		end
 
 feature -- Interface
 
@@ -139,18 +150,5 @@ feature {NONE} -- Implementation
 
 	options: AT_OPTIONS
 			-- The AutoTeach options.
-
-
-feature {NONE} -- Initialization
-
-	make_with_options (a_options: AT_OPTIONS)
-			-- Initialization for `Current'.
-		do
-			options := a_options
-			create input_classes.make
-
-			create ast_iterator.make_with_options (options)
-			ast_iterator.set_message_output_action (agent print_message)
-		end
 
 end

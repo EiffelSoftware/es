@@ -22,6 +22,25 @@ inherit
 			is_less
 		end
 
+feature {NONE} -- Initialization - to be used by descendants
+
+	make_with_numerical_value (a_numerical_value: INTEGER)
+			-- Initialization for `Current'.
+		require
+			valid_numerical_value: enum_type.is_valid_numerical_value (a_numerical_value)
+		do
+			internal_numerical_value := a_numerical_value
+			initialized := True
+		end
+
+	make_with_value_name (a_value_name: STRING)
+			-- Initialization for `Current'.
+		require
+			valid_value_name: enum_type.is_valid_value_name (a_value_name)
+		do
+			internal_numerical_value := enum_type.numerical_value (a_value_name)
+			initialized := True
+		end
 
 feature -- Access
 
@@ -81,26 +100,6 @@ feature {AT_ENUM_VALUE} -- Implementation
 
 	internal_numerical_value: INTEGER
 			-- The numerical value of this enumeration value. Immutable.
-
-feature {NONE} -- Initialization - to be used by descendants
-
-	make_with_numerical_value (a_numerical_value: INTEGER)
-			-- Initialization for `Current'.
-		require
-			valid_numerical_value: enum_type.is_valid_numerical_value (a_numerical_value)
-		do
-			internal_numerical_value := a_numerical_value
-			initialized := True
-		end
-
-	make_with_value_name (a_value_name: STRING)
-			-- Initialization for `Current'.
-		require
-			valid_value_name: enum_type.is_valid_value_name (a_value_name)
-		do
-			internal_numerical_value := enum_type.numerical_value (a_value_name)
-			initialized := True
-		end
 
 invariant
 

@@ -79,6 +79,22 @@ inherit
 create
 	make_with_options
 
+feature {NONE} -- Initialization
+
+	make_with_options (a_options: AT_OPTIONS)
+			-- Initialize Current
+		do
+			make_with_default_context
+			options := a_options.twin
+
+			hidden_region_indentation := -1
+
+			create oracle.make_with_options (a_options)
+			oracle.set_message_output_action (agent print_message)
+
+			reset
+		end
+
 feature -- Interface
 
 	set_options (a_options: AT_OPTIONS)
@@ -475,24 +491,6 @@ feature {NONE} -- Implementation - miscellanea
 				l_message_output_action.call (a_string + "%N")
 			end
 		end
-
-
-feature {NONE} -- Initialization
-
-	make_with_options (a_options: AT_OPTIONS)
-			-- Initialize Current
-		do
-			make_with_default_context
-			options := a_options.twin
-
-			hidden_region_indentation := -1
-
-			create oracle.make_with_options (a_options)
-			oracle.set_message_output_action (agent print_message)
-
-			reset
-		end
-
 
 feature {NONE} -- Auxiliary location flags
 

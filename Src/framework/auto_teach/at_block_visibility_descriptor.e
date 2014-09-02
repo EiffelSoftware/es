@@ -10,6 +10,16 @@ class
 create
 	make_with_visibility_agent
 
+feature {NONE} -- Initialization
+
+	make_with_visibility_agent (a_block_type: AT_BLOCK_TYPE; a_default_visibility_agent: like default_visibility_agent)
+			-- Initialize `Current', setting the block type
+			-- and the agent for retrieving the block default visibility.
+		do
+			block_type := a_block_type
+			default_visibility_agent := a_default_visibility_agent
+		end
+
 feature -- Access
 
 	block_type: AT_BLOCK_TYPE
@@ -96,16 +106,6 @@ feature {NONE} -- Implementation
 			-- Instance of the `AT_ENUM_POLICY_STRENGTH' type class.
 		once ("PROCESS")
 			create Result
-		end
-
-feature {NONE} -- Initialization
-
-	make_with_visibility_agent (a_block_type: AT_BLOCK_TYPE; a_default_visibility_agent: like default_visibility_agent)
-			-- Initialize `Current', setting the block type
-			-- and the agent for retrieving the block default visibility.
-		do
-			block_type := a_block_type
-			default_visibility_agent := a_default_visibility_agent
 		end
 
 end

@@ -13,6 +13,24 @@ inherit
 create
 	make_from_line
 
+feature {NONE} -- Initialization
+
+	make_from_line (a_line: STRING)
+			-- Initialization for `Current'.
+		local
+			l_failed: BOOLEAN
+		do
+			if not l_failed then
+				parse (a_line)
+			else
+				valid := False
+			end
+			valid := True
+		rescue
+			l_failed := True
+			retry
+		end
+
 feature -- Access
 
 	original_line: STRING
@@ -132,27 +150,6 @@ feature {NONE} -- Implementation
 			end
 
 			payload := l_line
-
-
-		end
-
-
-feature {NONE} -- Initialization
-
-	make_from_line (a_line: STRING)
-			-- Initialization for `Current'.
-		local
-			l_failed: BOOLEAN
-		do
-			if not l_failed then
-				parse (a_line)
-			else
-				valid := False
-			end
-			valid := True
-		rescue
-			l_failed := True
-			retry
 		end
 
 end

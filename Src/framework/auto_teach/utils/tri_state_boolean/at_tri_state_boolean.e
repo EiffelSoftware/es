@@ -19,6 +19,21 @@ inherit
 create
 	default_create, make_undefined, make_defined
 
+feature {NONE} -- Initialization
+
+	make_undefined, default_create
+			-- Initialize `Current' in the undefined state.
+		do
+			is_defined := False
+		end
+
+	make_defined (a_value: BOOLEAN)
+			-- Initialize `Current' to `a_value'.
+		do
+			is_defined := True
+			internal_value := a_value
+		end
+
 feature -- Value
 
 	value: BOOLEAN
@@ -211,6 +226,11 @@ feature -- Operations
 			end
 		end
 
+feature {NONE} -- Implementation
+
+	internal_value: BOOLEAN
+			-- Attribute storing the boolean value. Not exposed so that the boolean
+			-- value is only readable from outside if `is_defined' is True.
 
 feature {NONE} -- String representation
 
@@ -251,25 +271,6 @@ feature {NONE} -- String representation
 		once ("PROCESS")
 			Result := << "undefined", "u", "?" >>
 			Result.compare_objects
-		end
-
-feature {NONE} -- Initialization
-
-	internal_value: BOOLEAN
-			-- Attribute storing the boolean value. Not exposed so that the boolean
-			-- value is only readable from outside if `is_defined' is True.
-
-	make_undefined, default_create
-			-- Initialize `Current' in the undefined state.
-		do
-			is_defined := False
-		end
-
-	make_defined (a_value: BOOLEAN)
-			-- Initialize `Current' to `a_value'.
-		do
-			is_defined := True
-			internal_value := a_value
 		end
 
 end
