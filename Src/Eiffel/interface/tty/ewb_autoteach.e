@@ -134,7 +134,7 @@ feature {NONE} -- Implementation
 						l_errors.force (at_strings.at_code_placeholder + " " + if autoteach_arguments.after then "" else autoteach_arguments.item end + "%N" + at_strings.init_boolean_value_expected)
 						autoteach_arguments.back
 					else
-						autoteach_options.insert_code_placeholder := autoteach_arguments.item.to_boolean
+						autoteach_options.must_insert_code_placeholder := autoteach_arguments.item.to_boolean
 					end
 				elseif autoteach_arguments.item.same_string (at_strings.at_output_path) then
 					autoteach_arguments.forth
@@ -145,7 +145,7 @@ feature {NONE} -- Implementation
 						autoteach_options.output_directory := l_output_dir
 					end
 				elseif autoteach_arguments.item.same_string (at_strings.at_level_subfolders) then
-					autoteach_options.create_level_subfolders := True
+					autoteach_options.must_create_level_subfolders := True
 				elseif autoteach_arguments.item.same_string (at_strings.at_mode) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
@@ -178,7 +178,7 @@ feature {NONE} -- Implementation
 				autoteach_arguments.forth
 			end
 
-			if autoteach_options.min_hint_level /= autoteach_options.max_hint_level and not autoteach_options.create_level_subfolders then
+			if autoteach_options.min_hint_level /= autoteach_options.max_hint_level and not autoteach_options.must_create_level_subfolders then
 				l_warnings.force (at_strings.init_no_level_subfolders_option)
 			end
 

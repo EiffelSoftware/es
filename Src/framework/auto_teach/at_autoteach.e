@@ -69,7 +69,7 @@ feature -- Interface
 					across
 						input_classes as ic
 					loop
-						if options.create_level_subfolders then
+						if options.must_create_level_subfolders then
 							l_io := True
 							create l_dir.make_with_path (options.output_directory.path.extended (options.hint_level.out))
 							if not l_dir.exists then

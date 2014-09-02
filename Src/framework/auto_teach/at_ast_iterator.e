@@ -307,7 +307,7 @@ feature {NONE} -- Implementation - skipping and handling of breaks
 		local
 			l_placeholder: AT_PLACEHOLDER
 		do
-			if options.insert_code_placeholder then
+			if options.must_insert_code_placeholder then
 				l_placeholder := oracle.current_placeholder_type
 			else
 				l_placeholder := enum_placeholder.Ph_none
@@ -1041,36 +1041,36 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 		end
 
 		process_loop_variant_as (a_as: VARIANT_AS)
-			-- Process `a_as', which is a loop invariant block.
-		local
-			l_variant_keyword: detachable KEYWORD_AS
-		do
-			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_loop_variant)
+				-- Process `a_as', which is a loop invariant block.
+			local
+				l_variant_keyword: detachable KEYWORD_AS
+			do
+				process_leading_leaves (a_as.first_token (match_list).index)
+				oracle.begin_process_block (enum_block_type.bt_loop_variant)
 
-			l_variant_keyword := a_as.variant_keyword (match_list)
+				l_variant_keyword := a_as.variant_keyword (match_list)
 
-			check attached l_variant_keyword end
-			if attached l_variant_keyword then
-				current_indentation := indentation (l_variant_keyword)
-				safe_process (l_variant_keyword)
-				 process_next_break (l_variant_keyword)
+				check attached l_variant_keyword end
+				if attached l_variant_keyword then
+					current_indentation := indentation (l_variant_keyword)
+					safe_process (l_variant_keyword)
+					process_next_break (l_variant_keyword)
+				end
+
+				current_indentation := current_indentation + 1
+
+					-- See the long comment in `process_local_dec_list_as'.
+				if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
+					safe_process (a_as.tag)
+					safe_process (a_as.colon_symbol (match_list))
+					safe_process (a_as.expr)
+				else
+					skip_with_current_placeholder
+				end
+
+				process_next_break (a_as)
+				oracle.end_process_block (enum_block_type.bt_loop_variant)
 			end
-
-			current_indentation := current_indentation + 1
-
-				-- See the long comment in `process_local_dec_list_as'.
-			if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
-				safe_process (a_as.tag)
-				safe_process (a_as.colon_symbol (match_list))
-				safe_process (a_as.expr)
-			else
-				skip_with_current_placeholder
-			end
-
-			process_next_break (a_as)
-			oracle.end_process_block (enum_block_type.bt_loop_variant)
-		end
 
 	process_inspect_as (a_as: INSPECT_AS)
 			-- Process `a_as'.

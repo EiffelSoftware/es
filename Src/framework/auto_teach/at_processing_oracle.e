@@ -320,7 +320,7 @@ feature -- Meta-command processing interface
 
 						elseif l_command.command_word.same_string (at_strings.placeholder_command) and then string_is_bool (l_command.payload) then
 								-- Toggle placeholder
-							options.insert_code_placeholder := string_to_bool (l_command.payload)
+							options.must_insert_code_placeholder := string_to_bool (l_command.payload)
 
 						elseif l_command.command_word.same_string (at_strings.mode_command) then
 								-- Switch to another mode

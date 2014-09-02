@@ -53,7 +53,7 @@ feature -- For use with contracts
 				-- 20 is arbitrary. Theoretically any positive number would
 				-- be acceptable, in practice it is probably better to have a limit,
 				-- so that the program throws an error if absurd hint levels are specified.
-			Result := a_level >= 0 and a_level <= 20
+			Result := a_level <= 20
 		ensure
 			Result implies a_level < {INTEGER}.max_value.as_natural_32
 		end
