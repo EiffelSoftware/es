@@ -25,7 +25,7 @@ inherit
 
 feature -- Access
 
-	enum_type: AT_ENUM
+	enum_type: AT_ENUM [like Current]
 			-- The enumeration type of this value.
 		deferred
 		end

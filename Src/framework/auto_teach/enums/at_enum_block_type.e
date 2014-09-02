@@ -9,7 +9,7 @@ class
 
 inherit
 
-	AT_ENUM
+	AT_ENUM [AT_BLOCK_TYPE]
 		redefine
 			name
 		end
@@ -19,21 +19,13 @@ feature -- Access
 	name: STRING = "block_type"
 			-- <Precursor>
 
-	value_type: AT_BLOCK_TYPE
-			-- <Precursor>
-		do
-			check
-				callable: False
-			end
-		end
-
-	value (a_value_name: STRING): like value_type
+	value (a_value_name: STRING): AT_BLOCK_TYPE
 			-- The value with name `a_value_name'.
 		do
 			create Result.make_with_value_name (a_value_name)
 		end
 
-	value_from_number (a_numerical_value: INTEGER): like value_type
+	value_from_number (a_numerical_value: INTEGER): AT_BLOCK_TYPE
 			-- The value with numerical value `a_numerical_value'.
 		do
 			create Result.make_with_numerical_value (a_numerical_value)

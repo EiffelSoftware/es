@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AT_ENUM
+	AT_ENUM [G -> AT_ENUM_VALUE]
 
 inherit
 
@@ -21,41 +21,27 @@ feature -- Access
 		deferred
 		end
 
-	value_type: AT_ENUM_VALUE
-			-- The value type of this enum. For typing only.
-		require
-			callable: False
-		deferred
-		end
-
-	values: ARRAY [like value_type]
+	values: ARRAY [G]
 			-- List of all the values of the enumeration.
 		local
-			l_value: like value_type
+			l_value: G
 			i1, i2: INTEGER
-		do
-				-- As 'once' routines do not support type anchors, we will handle
-				-- lazy initialization by ourselves.
-			if attached lazy_values as l_lazy_values then
-				Result := l_lazy_values
-			else
-				create Result.make_filled (default_value, 1, value_list.count)
+		once ("OBJECT")
+			create Result.make_filled (default_value, 1, value_list.count)
 
-					-- The two indices are necessary as, theoretically,
-					-- `value_list' might not be 1-based. We don't know
-					-- what our descendants might think of doing.
-				from
-					i1 := value_list.lower
-					i2 := 1
-				until
-					i1 > value_list.upper
-				loop
-					check valid_index: i2 <= Result.upper end
-					Result [i2] := value_from_number (value_list [i1].numerical_value)
-					i1 := i1 + 1
-					i2 := i2 + 1
-				end
-				lazy_values := Result
+				-- The two indices are necessary as, theoretically,
+				-- `value_list' might not be 1-based. We don't know
+				-- what our descendants might think of doing.
+			from
+				i1 := value_list.lower
+				i2 := 1
+			until
+				i1 > value_list.upper
+			loop
+				check valid_index: i2 <= Result.upper end
+				Result [i2] := value_from_number (value_list [i1].numerical_value)
+				i1 := i1 + 1
+				i2 := i2 + 1
 			end
 		end
 
@@ -71,12 +57,12 @@ feature -- Access
 			Result := value_names_table.has_key (a_value_name)
 		end
 
-	value (a_value_name: STRING): like value_type
+	value (a_value_name: STRING): G
 			-- The value with name `a_value_name'.
 		deferred
 		end
 
-	value_from_number (a_numerical_value: INTEGER): like value_type
+	value_from_number (a_numerical_value: INTEGER): G
 			-- The value with numerical value `a_numerical_value'.
 		deferred
 		end
@@ -178,11 +164,8 @@ feature {NONE} -- Implementation
 			Result := l_first ~ l_second
 		end
 
-	default_value: like value_type
+	default_value: G
 			-- Trick learned from the Eiffel code base, somewhere: this works both for reference and expanded types.
-
-	lazy_values: detachable ARRAY [like value_type]
-			-- Helper field for lazy initialization of `values'.
 
 	numerical_values_table: HASH_TABLE [INTEGER, INTEGER]
 			-- Table mapping numerical values (key) to the index of the
