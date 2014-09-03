@@ -118,7 +118,7 @@ feature {NONE} -- Implementation
 					end
 
 					if attached l_min_max then
-						if is_valid_hint_level (l_min_max.min) and is_valid_hint_level (l_min_max.max) and l_min_max.min <= l_min_max.max then
+						if l_min_max.min <= l_min_max.max then
 							autoteach_options.set_hint_level_range (l_min_max.min, l_min_max.max)
 						else
 							l_min_max := Void

@@ -27,12 +27,4 @@ feature {NONE} -- Constants
 			create Result.make_undefined
 		end
 
-feature {NONE} -- Conversion from BOOLEAN
-
-	to_tri_state (a_value: BOOLEAN): AT_TRI_STATE_BOOLEAN
-			-- Conversion `a_value' from `BOOLEAN' to `AT_TRI_STATE_BOOLEAN'
-		do
-			create Result.make_defined (a_value)
-		end
-
 end

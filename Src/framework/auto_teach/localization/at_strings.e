@@ -59,22 +59,22 @@ feature -- Messages
 
 	welcome_message: STRING_32
 		do
-			Result := locale.translation ("Welcome to " + auto_teach + "!")
+			Result := locale.formatted_string ("Welcome to $1!", [auto_teach])
 		end
 
 	running_at_level (a_level: NATURAL): STRING_32
 		do
-			Result := locale.translation ("Running at hint level " + a_level.out.to_string_32 + ".")
+			Result := locale.formatted_string ("Running at hint level $1.", [a_level.out.to_string_32])
 		end
 
 	processing_class (a_class: STRING): STRING_32
 		do
-			Result := locale.translation ("Processing class " + a_class + "...")
+			Result := locale.formatted_string ("Processing class $1...", [a_class])
 		end
 
 	valid_mode_list (a_valid_modes: STRING): STRING_32
 		do
-			Result := "Valid modes are the following: " + a_valid_modes
+			Result := locale.formatted_string ("Valid modes are the following: $1", [a_valid_modes])
 		end
 
 feature -- Processing warnings (proc)
@@ -101,7 +101,7 @@ feature -- Processing warnings (proc)
 
 	proc_invalid_block_type (a_block_type: STRING): STRING_32
 		do
-			Result := locale.translation ("The following meta-command specifies an invalid block type (" + a_block_type + "), which was ignored:%N")
+			Result := locale.formatted_string ("The following meta-command specifies an invalid block type ($1), which was ignored:%N", [a_block_type])
 		end
 
 	proc_no_custom_hint_table_loaded: STRING_32
@@ -111,16 +111,16 @@ feature -- Processing warnings (proc)
 
 	proc_undefined_visibility (a_block_type_names: STRING): STRING_32
 		do
-			Result := locale.translation ("Warning: one or more occurrences of the following block types have been encountered for the visibility of which was undefined (neither in the hint table, nor with annotations):%N"
-				+ a_block_type_names + "%N"
-				+ "In these cases, the visibility is defaulted to true. However, a well-built hint table should never allow this situation.")
+			Result := locale.formatted_string ("Warning: one or more occurrences of the following block types have been encountered for the visibility of which was undefined (neither in the hint table, nor with annotations):%N"
+				+ "$1%N"
+				+ "In these cases, the visibility is defaulted to true. However, a well-built hint table should never allow this situation.", [a_block_type_names])
 		end
 
 feature -- Initialization errors and warnings (init)
 
 	init_unrecognized_argument (a_argument: STRING): STRING_32
 		do
-			Result := locale.translation ("Syntax error. Unrecognized argument '" + a_argument + "'.")
+			Result := locale.formatted_string ("Syntax error. Unrecognized argument `$1'.", [a_argument])
 		end
 
 	init_no_class_list_specified: STRING_32
@@ -130,12 +130,12 @@ feature -- Initialization errors and warnings (init)
 
 	init_class_not_found (a_class_name: STRING): STRING_32
 		do
-			Result := locale.translation ("Could not find class " + a_class_name + ". Skipping.")
+			Result := locale.formatted_string ("Could not find class `$1'. Skipping.", [a_class_name])
 		end
 
 	init_class_not_compiled (a_class_name: STRING): STRING_32
 		do
-			Result := locale.translation ("Class " + a_class_name + " has not been compiled. Skipping.")
+			Result := locale.formatted_string ("Class `$1' has not been compiled. Skipping.", [a_class_name])
 		end
 
 	init_argument_level_expected: STRING_32
@@ -160,12 +160,12 @@ feature -- Initialization errors and warnings (init)
 
 	init_mode_expected (a_valid_modes: STRING_32): STRING_32
 		do
-			Result := locale.translation ("Syntax error. Mode expected." + valid_mode_list (a_valid_modes))
+			Result := locale.translation ("Syntax error. Mode expected. ") + valid_mode_list (a_valid_modes)
 		end
 
 	init_invalid_mode (a_mode, a_valid_modes: STRING_32): STRING_32
 		do
-			Result := locale.translation (a_mode + "is not a valid mode." + valid_mode_list (a_valid_modes))
+			Result := locale.formatted_string ("`$1' is not a valid mode.", [a_mode]) + valid_mode_list (a_valid_modes)
 		end
 
 	init_invalid_output_dir: STRING_32
@@ -175,7 +175,7 @@ feature -- Initialization errors and warnings (init)
 
 	init_no_level_subfolders_option: STRING_32
 		do
-			Result := locale.translation ("A hint level range was specified without also supplying the " + at_level_subfolders + " command line switch. This will lead to the same output file(s) being overwritten on every run. The final result will be the output of the last run, the result of the other runs will be lost. Unless you are doing this for testing, you might want to supply the " + at_level_subfolders + " switch as well.")
+			Result := locale.formatted_string ("A hint level range was specified without also supplying the `$1' command line switch. This will lead to the same output file(s) being overwritten on every run. The final result will be the output of the last run, the result of the other runs will be lost. Unless you are doing this for testing, you might want to supply the `$1' switch as well.", at_level_subfolders)
 		end
 
 feature -- Errors with custom hint table (cht)
@@ -197,27 +197,27 @@ feature -- Errors with custom hint table (cht)
 
 	cht_invalid_block_type_name (a_line_number: INTEGER; a_block_type_name: STRING): STRING_32
 		do
-			Result := locale.translation ("[line " + a_line_number.out + "] %'" + a_block_type_name + "%' is not a valid block type name.")
+			Result := locale.formatted_string ("[line $1] `$2' is not a valid block type name.", [a_line_number, a_block_type_name])
 		end
 
 	cht_duplicate_entry (a_line_number: INTEGER; a_block_type_name: STRING): STRING_32
 		do
-			Result := locale.translation ("[line " + a_line_number.out + "] Block %'" + a_block_type_name + "%' appears for the second time for the same table. Each block can only appear once for the visibility table and once for the content visibility table")
+			Result := locale.formatted_string ("[line $1] Block `$2' appears for the second time for the same table. Each block can only appear once for the visibility table and once for the content visibility table", [a_line_number, a_block_type_name])
 		end
 
 	cht_empty_row (a_line_number: INTEGER): STRING_32
 		do
-			Result := locale.translation ("[line " + a_line_number.out + "] Lines in visibility tables cannot be empty.")
+			Result := locale.formatted_string ("[line $1] Lines in visibility tables cannot be empty.", [a_line_number])
 		end
 
 	cht_atomic_block_in_content_visibility_table (a_line_number: INTEGER; a_block_type_name: STRING): STRING_32
 		do
-			Result := locale.translation ("[line " + a_line_number.out + "] Block %'" + a_block_type_name + "%' is not a complex block and, as such, is not allowed into the content block visibility table.")
+			Result := locale.formatted_string ("[line $1] Block `$2' is not a complex block and, as such, is not allowed into the content block visibility table.", [a_line_number, a_block_type_name])
 		end
 
 	cht_value_parse_error (a_line_number: INTEGER; a_value, a_type: STRING): STRING_32
 		do
-			Result := locale.translation ("[line " + a_line_number.out + "] '" + a_value + "%' is not a valid text representation of a " + a_type + ".")
+			Result := locale.formatted_string ("[line $1] `$2' is not a valid text representation of a $3.", [a_line_number, a_value, a_type])
 		end
 
 

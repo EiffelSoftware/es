@@ -42,6 +42,12 @@ feature -- Interface
 			end
 		end
 
+	wipe_classes
+			-- Remove all added classes.
+		do
+			input_classes.wipe_out
+		end
+
 	set_message_output_action (a_action: PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]])
 			-- Set `a_action' as the action to be called for outputting messages.
 		do
@@ -49,7 +55,7 @@ feature -- Interface
 		end
 
 	run_autoteach
-			-- Run autoteach.
+			-- Run autoteach on all classes added so far.
 		local
 			l_out_file: PLAIN_TEXT_FILE
 			l_output_path: PATH
@@ -96,7 +102,10 @@ feature -- Interface
 						l_io := False
 
 						print_message (at_strings.processing_class (ic.item.name))
-						process_class (ic.item, l_out_file)
+
+						process_class (ic.item)
+						l_out_file.put_string (last_class_output_text)
+
 						l_out_file.close
 					end
 
@@ -111,6 +120,22 @@ feature -- Interface
 			end
 		end
 
+	last_class_output_text: detachable STRING
+			-- The output text of the last processed class, if any.
+
+	process_class (a_class: CLASS_C)
+			-- Process `a_class', make output available in `last_class_output_text'.
+		do
+			ast_iterator.set_options (options)
+			ast_iterator.process_class (a_class.ast, match_list_server.item (a_class.class_id))
+
+			last_class_output_text := ast_iterator.text.twin
+				-- Fix for Windows double returns:
+			last_class_output_text.prune_all ('%R')
+
+			ast_iterator.reset
+		end
+
 feature {NONE} -- Implementation
 
 	input_classes: LINKED_SET [CLASS_C]
@@ -121,24 +146,6 @@ feature {NONE} -- Implementation
 
 	ast_iterator: AT_AST_ITERATOR
 			-- The iterator performing the real work.
-
-	process_class (a_class: CLASS_C; a_output_file: PLAIN_TEXT_FILE)
-			-- Process `a_class', write output to  `a_output_file'.
-		require
-			file_open_and_writable: a_output_file.is_writable
-		local
-			l_text: STRING_8
-		do
-			ast_iterator.set_options (options)
-			ast_iterator.process_class (a_class.ast, match_list_server.item (a_class.class_id))
-
-			l_text := ast_iterator.text
-				-- Fix for Windows double returns:
-			l_text.prune_all ('%R')
-			a_output_file.put_string (l_text)
-
-			ast_iterator.reset
-		end
 
 	print_message (a_string: READABLE_STRING_GENERAL)
 			-- Prints a line to output, if a message output action has been specified.

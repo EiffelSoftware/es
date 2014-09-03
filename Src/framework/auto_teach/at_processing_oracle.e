@@ -172,7 +172,7 @@ feature -- Status signaling
 					-- as it is, without asking any more questions.
 					-- We are done.
 
-				l_block_visibility := to_tri_state (effective_visibility_stack.item)
+				l_block_visibility := effective_visibility_stack.item
 
 			else
 					-- Determine if this is a complex block and if it should be actually treated as such.

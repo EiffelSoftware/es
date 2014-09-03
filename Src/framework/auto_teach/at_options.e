@@ -55,8 +55,6 @@ feature -- AutoTeach options
 	set_hint_level_range (a_min_level, a_max_level: NATURAL)
 			-- Set the hint level range for which AutoTeach should be run in the current execution.
 		require
-			valid_min: is_valid_hint_level (a_min_level)
-			valid_max: is_valid_hint_level (a_max_level)
 			ordering: a_min_level <= a_max_level
 		do
 			min_hint_level := a_min_level
@@ -97,8 +95,6 @@ feature {NONE} -- Setters
 
 	set_hint_level (a_level: NATURAL)
 			-- Set `hint_level' to `a_level'.
-		require
-			valid_level: is_valid_hint_level (a_level)
 		do
 			hint_level := a_level
 		ensure
@@ -130,8 +126,6 @@ feature {NONE} -- Setters
 		end
 
 invariant
-
 	level_ordering: min_hint_level <= max_hint_level
-	valid_hint_level: is_valid_hint_level (hint_level)
 
 end

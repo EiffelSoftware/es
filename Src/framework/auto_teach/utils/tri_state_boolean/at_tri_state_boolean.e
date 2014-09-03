@@ -19,6 +19,9 @@ inherit
 create
 	default_create, make_undefined, make_defined
 
+convert
+	make_defined ({BOOLEAN})
+
 feature {NONE} -- Initialization
 
 	make_undefined, default_create

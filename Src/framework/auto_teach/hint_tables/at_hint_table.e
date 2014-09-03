@@ -18,8 +18,6 @@ feature -- Access
 			-- If `a_block_type' is present in the table, but no value is defined for `a_hint_level',
 			-- then the highest defined value (or the lowest in case `a_hint_level' is below the lower
 			-- bound of the row) is returned.
-		require
-			valid_hint_level: is_valid_hint_level (a_hint_level)
 		local
 			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
 			l_hint_level: INTEGER
@@ -33,7 +31,6 @@ feature -- Access
 			-- then the highest defined value (or the lowest in case `a_hint_level' is below the lower
 			-- bound of the row) is returned.
 		require
-			valid_hint_level: is_valid_hint_level (a_hint_level)
 			complex_block_type: enum_block_type.is_complex_block_type (a_block_type)
 		local
 			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
@@ -57,8 +54,6 @@ feature {AT_HINT_TABLE} -- Implementation
 			-- If `a_block_type' is present in the table, but no value is defined for `a_hint_level',
 			-- then the highest defined value (or the lowest in case `a_hint_level' is below the lower
 			-- bound of the row) is returned.
-		require
-			valid_hint_level: is_valid_hint_level (a_hint_level)
 		local
 			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
 			l_hint_level: INTEGER
