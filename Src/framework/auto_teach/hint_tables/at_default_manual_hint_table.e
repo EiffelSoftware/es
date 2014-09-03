@@ -57,6 +57,7 @@ feature {NONE} -- Initialization
 
 			table.put 			(<< 	F		>>, enum_block_type.Bt_loop)
 			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_initialization)
+			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_termination)
 			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_invariant)
 			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_body)
 			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_variant)
@@ -70,7 +71,8 @@ feature {NONE} -- Initialization
 			table.put 			(<< 	U		>>, enum_block_type.Bt_assertion)
 			table.put 			(<< 	U		>>, enum_block_type.Bt_instruction)
 			table.put 			(<< 	U		>>, enum_block_type.Bt_if_condition)
-			table.put 			(<< 	U		>>, enum_block_type.Bt_loop_termination_condition)
+			table.put 			(<< 	U		>>, enum_block_type.Bt_loop_termination_expression)
+			table.put 			(<< 	U		>>, enum_block_type.Bt_loop_variant_expression)
 
 		end
 

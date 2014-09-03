@@ -38,26 +38,28 @@ feature {AT_ENUM} -- Value list
 		once ("PROCESS")
 			Result := <<	[1, at_strings.Bt_feature],
 							[2, at_strings.Bt_arguments],
-							[3, at_strings.Bt_argument_declaration],
+							[3, at_strings.Bt_argument_declaration],			-- Atomic
 							[4, at_strings.Bt_precondition],
 							[5, at_strings.Bt_locals],
-							[6, at_strings.Bt_local_declaration],
+							[6, at_strings.Bt_local_declaration],				-- Atomic
 							[7, at_strings.Bt_routine_body],
 							[8, at_strings.Bt_postcondition],
 							[9, at_strings.Bt_class_invariant],
-							[10, at_strings.Bt_assertion],
-							[11, at_strings.Bt_instruction],
+							[10, at_strings.Bt_assertion],						-- Atomic
+							[11, at_strings.Bt_instruction],					-- Atomic
 							[12, at_strings.Bt_if],
-							[13, at_strings.Bt_if_condition],
+							[13, at_strings.Bt_if_condition],					-- Atomic
 							[14, at_strings.Bt_if_branch],
 							[15, at_strings.Bt_inspect],
 							[16, at_strings.Bt_inspect_branch],
 							[17, at_strings.Bt_loop],
 							[18, at_strings.Bt_loop_initialization],
 							[19, at_strings.Bt_loop_invariant],
-							[20, at_strings.Bt_loop_termination_condition],
-							[21, at_strings.Bt_loop_body],
-							[22, at_strings.Bt_loop_variant]		>>
+							[20, at_strings.Bt_loop_termination],
+							[21, at_strings.Bt_loop_termination_expression],	-- Atomic
+							[22, at_strings.Bt_loop_body],
+							[23, at_strings.Bt_loop_variant],
+							[24, at_strings.Bt_loop_variant_expression]	>>		-- Atomic
 		end
 
 feature -- Values
@@ -157,19 +159,29 @@ feature -- Values
 			create Result.make_with_numerical_value (19)
 		end
 
-	Bt_loop_termination_condition: AT_BLOCK_TYPE
+	Bt_loop_termination: AT_BLOCK_TYPE
 		once ("PROCESS")
 			create Result.make_with_numerical_value (20)
 		end
 
-	Bt_loop_body: AT_BLOCK_TYPE
+	Bt_loop_termination_expression: AT_BLOCK_TYPE
 		once ("PROCESS")
 			create Result.make_with_numerical_value (21)
 		end
 
-	Bt_loop_variant: AT_BLOCK_TYPE
+	Bt_loop_body: AT_BLOCK_TYPE
 		once ("PROCESS")
 			create Result.make_with_numerical_value (22)
+		end
+
+	Bt_loop_variant: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (23)
+		end
+
+	Bt_loop_variant_expression: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (24)
 		end
 
 feature -- Complex blocks
@@ -177,7 +189,7 @@ feature -- Complex blocks
 	complex_block_types: ARRAY [AT_BLOCK_TYPE]
 			-- The list of complex block types.
 		once ("PROCESS")
-			Result := <<Bt_feature, Bt_precondition, Bt_arguments, Bt_locals, Bt_routine_body, Bt_postcondition, Bt_class_invariant, Bt_if, Bt_if_branch, Bt_inspect, Bt_inspect_branch, Bt_loop, Bt_loop_initialization, Bt_loop_invariant, Bt_loop_body, Bt_loop_variant>>
+			Result := <<Bt_feature, Bt_arguments, Bt_precondition, Bt_locals, Bt_routine_body, Bt_postcondition, Bt_class_invariant, Bt_if, Bt_if_branch, Bt_inspect, Bt_inspect_branch, Bt_loop, Bt_loop_initialization, Bt_loop_invariant, Bt_loop_termination, Bt_loop_body, Bt_loop_variant>>
 		end
 
 	is_complex_block_type (a_block_type: AT_BLOCK_TYPE): BOOLEAN

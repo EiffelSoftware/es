@@ -310,8 +310,10 @@ feature -- Block types
 	Bt_loop: STRING = "loop"
 	Bt_loop_initialization: STRING = "loop_initialization"
 	Bt_loop_invariant: STRING = "loop_invariant"
-	Bt_loop_termination_condition: STRING = "loop_termination_condition"
+	Bt_loop_termination: STRING = "loop_termination"
+	Bt_loop_termination_expression: STRING = "loop_termination_expression"
 	Bt_loop_body: STRING = "loop_body"
 	Bt_loop_variant: STRING = "loop_variant"
+	Bt_loop_variant_expression: STRING = "loop_variant_expression"
 
 end

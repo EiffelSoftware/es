@@ -982,7 +982,7 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 			end
 
 			if attached a_as.invariant_keyword (match_list) as l_invariant_keyword then
-				oracle.begin_process_block (enum_block_type.bt_loop_invariant)
+				oracle.begin_process_block (enum_block_type.Bt_loop_invariant)
 
 				current_indentation := indentation (l_invariant_keyword)
 				safe_process (l_invariant_keyword)
@@ -1011,11 +1011,15 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 			end
 
 			if attached l_until_keyword then
+				oracle.begin_process_block (enum_block_type.Bt_loop_termination)
+
 				current_indentation := indentation (l_until_keyword)
 				safe_process (l_until_keyword)
 
 				current_indentation := current_indentation + 1
-				process_expression_as (a_as.stop, enum_block_type.Bt_loop_termination_condition)
+				process_expression_as (a_as.stop, enum_block_type.Bt_loop_termination_expression)
+
+				oracle.end_process_block (enum_block_type.Bt_loop_termination)
 			end
 
 			l_loop_keyword := a_as.loop_keyword (match_list)
@@ -1057,14 +1061,11 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 
 				current_indentation := current_indentation + 1
 
-					-- See the long comment in `process_local_dec_list_as'.
-				if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
-					safe_process (a_as.tag)
-					safe_process (a_as.colon_symbol (match_list))
-					safe_process (a_as.expr)
-				else
-					skip_with_current_placeholder
-				end
+				oracle.begin_process_block (enum_block_type.Bt_loop_variant_expression)
+				safe_process (a_as.tag)
+				safe_process (a_as.colon_symbol (match_list))
+				safe_process (a_as.expr)
+				oracle.end_process_block (enum_block_type.Bt_loop_variant_expression)
 
 				process_next_break (a_as)
 				oracle.end_process_block (enum_block_type.bt_loop_variant)
