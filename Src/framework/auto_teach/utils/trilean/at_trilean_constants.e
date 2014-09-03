@@ -1,27 +1,27 @@
 note
-	description: "Constants of the three possible values for tri-state booleans."
+	description: "Constants of the three possible values for trileans."
 	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AT_TRI_STATE_BOOLEAN_CONSTANTS
+	AT_TRILEAN_CONSTANTS
 
 feature {NONE} -- Constants
 
-	Tri_true: AT_TRI_STATE_BOOLEAN
+	Tri_true: AT_TRILEAN
 			-- True value
 		once ("PROCESS")
 			create Result.make_defined (True)
 		end
 
-	Tri_false: AT_TRI_STATE_BOOLEAN
+	Tri_false: AT_TRILEAN
 			-- False value
 		once ("PROCESS")
 			create Result.make_defined (False)
 		end
 
-	Tri_undefined: AT_TRI_STATE_BOOLEAN
+	Tri_undefined: AT_TRILEAN
 			-- Undefined value
 		once ("PROCESS")
 			create Result.make_undefined

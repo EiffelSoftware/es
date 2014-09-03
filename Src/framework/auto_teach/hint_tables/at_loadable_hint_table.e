@@ -29,8 +29,8 @@ feature {NONE} -- Initialization
 			l_block_type: AT_BLOCK_TYPE
 			l_exception: DEVELOPER_EXCEPTION
 			l_table: like table -- and like content_table
-			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
-			l_tri_state: AT_TRI_STATE_BOOLEAN
+			l_table_row: ARRAY [AT_TRILEAN]
+			l_trilean: AT_TRILEAN
 		do
 			create table.make (suggested_tables_initial_size)
 			create content_table.make (suggested_tables_initial_size)
@@ -92,11 +92,11 @@ feature {NONE} -- Initialization
 							i > l_words.count or attached l_exception
 						loop
 							if l_table_row [i].is_valid_string_value (l_words.item) then
-								l_tri_state.from_string (l_words.item)
-								l_table_row [i] := l_tri_state
+								l_trilean.from_string (l_words.item)
+								l_table_row [i] := l_trilean
 							else
 								create l_exception
-								l_exception.set_description (at_strings.cht_value_parse_error (file_line_number, l_words.item, "tri-state boolean"))
+								l_exception.set_description (at_strings.cht_value_parse_error (file_line_number, l_words.item, "trilean"))
 							end
 							i := i + 1
 							l_words.forth

@@ -13,19 +13,19 @@ inherit
 
 feature -- Access
 
-	visibility_for (a_block_type: AT_BLOCK_TYPE; a_hint_level: NATURAL): TUPLE [visibility: AT_TRI_STATE_BOOLEAN; explicitly_defined: BOOLEAN]
+	visibility_for (a_block_type: AT_BLOCK_TYPE; a_hint_level: NATURAL): TUPLE [visibility: AT_TRILEAN; explicitly_defined: BOOLEAN]
 			-- The default visibility for block type `a_block_type' at hint level `a_hint_level'.
 			-- If `a_block_type' is present in the table, but no value is defined for `a_hint_level',
 			-- then the highest defined value (or the lowest in case `a_hint_level' is below the lower
 			-- bound of the row) is returned.
 		local
-			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
+			l_table_row: ARRAY [AT_TRILEAN]
 			l_hint_level: INTEGER
 		do
 			Result := visibility_from_table (table, a_block_type, a_hint_level)
 		end
 
-	content_visibility_for (a_block_type: AT_BLOCK_TYPE; a_hint_level: NATURAL): TUPLE [visibility: AT_TRI_STATE_BOOLEAN; explicitly_defined: BOOLEAN]
+	content_visibility_for (a_block_type: AT_BLOCK_TYPE; a_hint_level: NATURAL): TUPLE [visibility: AT_TRILEAN; explicitly_defined: BOOLEAN]
 			-- The default content visibility for complex block type `a_block_type' at hint level `a_hint_level'.
 			-- If `a_block_type' is present in the table, but no value is defined for `a_hint_level',
 			-- then the highest defined value (or the lowest in case `a_hint_level' is below the lower
@@ -33,7 +33,7 @@ feature -- Access
 		require
 			complex_block_type: enum_block_type.is_complex_block_type (a_block_type)
 		local
-			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
+			l_table_row: ARRAY [AT_TRILEAN]
 			l_hint_level: INTEGER
 		do
 			Result := visibility_from_table (content_table, a_block_type, a_hint_level)
@@ -41,13 +41,13 @@ feature -- Access
 
 feature {AT_HINT_TABLE} -- Implementation
 
-	table: HASH_TABLE [ARRAY [AT_TRI_STATE_BOOLEAN], AT_BLOCK_TYPE]
+	table: HASH_TABLE [ARRAY [AT_TRILEAN], AT_BLOCK_TYPE]
 			-- Contains the visibility defaults for all blocks.
 
-	content_table: HASH_TABLE [ARRAY [AT_TRI_STATE_BOOLEAN], AT_BLOCK_TYPE]
+	content_table: HASH_TABLE [ARRAY [AT_TRILEAN], AT_BLOCK_TYPE]
 			-- Contains the content visibility defaults for complex blocks.
 
-	visibility_from_table (a_table: like table; a_block_type: AT_BLOCK_TYPE; a_hint_level: NATURAL): TUPLE [visibility: AT_TRI_STATE_BOOLEAN; explicitly_defined: BOOLEAN]
+	visibility_from_table (a_table: like table; a_block_type: AT_BLOCK_TYPE; a_hint_level: NATURAL): TUPLE [visibility: AT_TRILEAN; explicitly_defined: BOOLEAN]
 			-- The visibility for block type `a_block_type' at hint level `a_hint_level' in table `a_table'.
 			-- This routine will be called by `visibility_for' and `content_visibility_for', respectively providing
 			-- `table' and `content_table' as the `a_table' argument, and is here for avoiding code duplication.
@@ -55,7 +55,7 @@ feature {AT_HINT_TABLE} -- Implementation
 			-- then the highest defined value (or the lowest in case `a_hint_level' is below the lower
 			-- bound of the row) is returned.
 		local
-			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
+			l_table_row: ARRAY [AT_TRILEAN]
 			l_hint_level: INTEGER
 		do
 				-- The following conversion is guaranteed to succeed, this is
@@ -92,21 +92,21 @@ feature {AT_HINT_TABLE} -- Implementation
 			-- What is the suggested initial size for the two tables?
 			-- This is a suggestion to descendants that may or may not be followed.
 
-		-- Abbreviations for tri-state constants for better table readability.
+		-- Abbreviations for trilean constants for better table readability.
 
-	T: AT_TRI_STATE_BOOLEAN
+	T: AT_TRILEAN
 			-- True
 		once ("PROCESS")
 			Result := Tri_true
 		end
 
-	F: AT_TRI_STATE_BOOLEAN
+	F: AT_TRILEAN
 			-- False
 		once ("PROCESS")
 			Result := Tri_false
 		end
 
-	U: AT_TRI_STATE_BOOLEAN
+	U: AT_TRILEAN
 			-- Undefined
 		once ("PROCESS")
 			Result := Tri_undefined

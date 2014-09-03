@@ -25,22 +25,22 @@ feature -- Access
 	block_type: AT_BLOCK_TYPE
 			-- The type of this block.
 
-	default_visibility: AT_TRI_STATE_BOOLEAN
+	default_visibility: AT_TRILEAN
 			-- The default visibility for this block.
 		do
 			Result := default_visibility_agent.item ([block_type])
 		end
 
-	global_visibility_override: AT_TRI_STATE_BOOLEAN assign set_global_visiblity_override
+	global_visibility_override: AT_TRILEAN assign set_global_visiblity_override
 			-- Global (class-wide) visibility override flag.
 			-- If set to True or False, overrides the default visibility.
 
-	local_visibility_override: AT_TRI_STATE_BOOLEAN assign set_local_visiblity_override
+	local_visibility_override: AT_TRILEAN assign set_local_visiblity_override
 			-- Local (one occurrence only) visibility override flag.
 			-- If set to True or False, overrides the default visibility
 			-- and the global visibility flag.
 
-	effective_visibility: AT_TRI_STATE_BOOLEAN
+	effective_visibility: AT_TRILEAN
 			-- What is the effective visibility for this block type,
 			-- keeping the default value and the overrides into account?
 		do
@@ -84,13 +84,13 @@ feature -- Access
 
 feature {NONE} -- Setters
 
-	set_global_visiblity_override (a_value: AT_TRI_STATE_BOOLEAN)
+	set_global_visiblity_override (a_value: AT_TRILEAN)
 			-- Set `global_visibility_override' to `a_value'.
 		do
 			global_visibility_override := a_value
 		end
 
-	set_local_visiblity_override (a_value: AT_TRI_STATE_BOOLEAN)
+	set_local_visiblity_override (a_value: AT_TRILEAN)
 			-- Set `local_visibility_override' to `a_value'.
 		do
 			local_visibility_override := a_value
@@ -99,7 +99,7 @@ feature {NONE} -- Setters
 
 feature {NONE} -- Implementation
 
-	default_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], AT_TRI_STATE_BOOLEAN]
+	default_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], AT_TRILEAN]
 			-- Agent for retrieving the default visibility for this block type.
 
 	enum_policy_strength: AT_ENUM_POLICY_STRENGTH

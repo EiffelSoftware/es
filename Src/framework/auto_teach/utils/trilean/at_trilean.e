@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 expanded class
-	AT_TRI_STATE_BOOLEAN
+	AT_TRILEAN
 
 inherit
 
@@ -107,7 +107,7 @@ feature -- Assignment
 		end
 
 	from_string (a_string: READABLE_STRING_GENERAL)
-			-- Parse a string representation of a tri-state boolean and set `Current' accordingly.
+			-- Parse a string representation of a trilean and set `Current' accordingly.
 		require
 			valid_string: is_valid_string_value (a_string)
 		local
@@ -129,7 +129,7 @@ feature -- Assignment
 		end
 
 	is_valid_string_value (a_string: READABLE_STRING_GENERAL): BOOLEAN
-			-- Is `a_string' a valid string representation of a tri-state boolean?
+			-- Is `a_string' a valid string representation of a trilean?
 		do
 			if a_string = Void then
 				Result := False
