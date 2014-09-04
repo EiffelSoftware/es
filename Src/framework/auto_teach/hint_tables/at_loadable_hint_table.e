@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 			l_file: PLAIN_TEXT_FILE
 			l_words: LIST [STRING]
 			i: INTEGER
-			l_content: BOOLEAN
+			l_content, l_recognized: BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 			l_exception: DEVELOPER_EXCEPTION
 			l_table: like table -- and like content_table
@@ -37,7 +37,6 @@ feature {NONE} -- Initialization
 
 			create l_file.make_open_read (a_path)
 
-				-- This loop is where I *really really* miss the 'continue' and 'break' instructions.
 			from
 				l_file.start
 				advance_line (l_file)
@@ -45,6 +44,7 @@ feature {NONE} -- Initialization
 				not attached last_file_line or attached l_exception
 			loop
 				l_content := False
+				l_recognized := False
 
 				check attached last_file_line end
 				if attached last_file_line as l_line then
@@ -62,13 +62,15 @@ feature {NONE} -- Initialization
 
 				if enum_block_type.is_valid_value_name (l_words.first.as_lower) then
 					create l_block_type.make_with_value_name (l_words.first.as_lower)
+					l_recognized := True
 					l_words.remove
 				else
 					create l_exception
 					l_exception.set_description (at_strings.cht_invalid_block_type_name (file_line_number, l_words.first))
 				end
 
-				if l_block_type.initialized then
+				if l_recognized then
+					check initialized: l_block_type.initialized end
 					if l_words.is_empty then
 						create l_exception
 						l_exception.set_description (at_strings.cht_empty_row (file_line_number))
@@ -84,12 +86,12 @@ feature {NONE} -- Initialization
 							l_exception.set_description (at_strings.cht_duplicate_entry (file_line_number, l_block_type.value_name))
 						end
 
-						create l_table_row.make_filled (Tri_undefined, 1, l_words.count)
+						create l_table_row.make_filled (Tri_undefined, 0, l_words.count - 1)
 						from
-							i := 1
+							i := 0
 							l_words.start
 						until
-							i > l_words.count or attached l_exception
+							i >= l_words.count or attached l_exception
 						loop
 							if l_table_row [i].is_valid_string_value (l_words.item) then
 								l_trilean.from_string (l_words.item)

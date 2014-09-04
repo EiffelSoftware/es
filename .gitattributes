@@ -1808,6 +1808,8 @@ Src/Delivery/studio/tools/autoproof/arrays.bpl -text
 Src/Delivery/studio/tools/autoproof/base_theory.bpl -text
 Src/Delivery/studio/tools/autoproof/special.bpl -text
 Src/Delivery/studio/tools/autoproof/tuples.bpl -text
+Src/Delivery/studio/tools/autoteach/default_auto_table.txt -text
+Src/Delivery/studio/tools/autoteach/default_manual_table.txt -text
 Src/Delivery/studio/tools/boogie.txt -text
 Src/Delivery/studio/tools/testing/auto_test/image/class_bad_response.gif -text
 Src/Delivery/studio/tools/testing/auto_test/image/class_bad_response.svg -text
@@ -3442,8 +3444,6 @@ Src/framework/auto_teach/at_common.e -text svneol=native#unset
 Src/framework/auto_teach/at_processing_oracle.e -text svneol=native#unset
 Src/framework/auto_teach/enums/at_block_type.e -text svneol=native#unset
 Src/framework/auto_teach/enums/at_enum_block_type.e -text svneol=native#unset
-Src/framework/auto_teach/hint_tables/at_default_auto_hint_table.e -text svneol=native#unset
-Src/framework/auto_teach/hint_tables/at_default_manual_hint_table.e -text svneol=native#unset
 Src/framework/auto_teach/hint_tables/at_hint_table.e -text svneol=native#unset
 Src/framework/auto_teach/localization/at_strings.e -text svneol=native#unset
 Src/framework/auto_teach/utils/enum/at_enum.e -text svneol=native#unset

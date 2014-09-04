@@ -27,21 +27,28 @@ feature -- Hint tables
 
 	default_auto_hint_table: AT_HINT_TABLE
 			-- The default table for auto mode (smart table).
+		local
+			l_path: PATH
 		once ("PROCESS")
-			create {AT_DEFAULT_AUTO_HINT_TABLE} Result.make
+				-- This is the default table, that users should never touch (and break).
+				-- If it can't be loaded, then we have a bug and we can't do much with it.
+				-- Therefore, we don't catch loading exceptions.
+			create l_path.make_from_string (default_tables_directory)
+			create {AT_LOADABLE_HINT_TABLE} Result.make_from_file_path (l_path.extended ("default_auto_table.txt").out)
 		end
 
 	default_manual_hint_table: AT_HINT_TABLE
 			-- The default table for manual mode ("dumb" table, manual annotations required).
+		local
+			l_path: PATH
 		once ("PROCESS")
-			create {AT_DEFAULT_MANUAL_HINT_TABLE} Result.make
+				-- See comment above.
+			create l_path.make_from_string (default_tables_directory)
+			create {AT_LOADABLE_HINT_TABLE} Result.make_from_file_path (l_path.extended ("default_manual_table.txt").out)
 		end
 
 	custom_hint_table: detachable AT_HINT_TABLE
 			-- The currently loaded custom hint table.
-
-		-- BUG in EiffelStudio! For some reason, I cannot step through this function
-		-- with the debugger, no matter how many times I clean-compile.
 
 	load_custom_hint_table (a_full_path: STRING)
 			-- Loads a custom hint table from the specified file path
@@ -72,5 +79,35 @@ feature -- Hint tables
 
 	last_table_load_exception: EXCEPTION
 			-- The exception occurred in the last call to `load_custom_hint_table', if any.
+
+feature {NONE} -- Implementation
+
+	default_tables_directory: DIRECTORY_NAME
+			-- Directory containing the default tables.
+		local
+			l_ee: EXECUTION_ENVIRONMENT
+			l_path: DIRECTORY_NAME
+			l_dir: DIRECTORY
+		once
+			create l_ee
+
+				-- 1. Delivery of installation
+			create l_path.make_from_string (l_ee.get ("ISE_EIFFEL"))
+			l_path.extend ("studio")
+			l_path.extend ("tools")
+			l_path.extend ("autoteach")
+			create l_dir.make (l_path)
+
+				-- 2. Delivery of development version
+			if not l_dir.exists then
+				create l_path.make_from_string (l_ee.get ("EIFFEL_SRC"))
+				l_path.extend ("Delivery")
+				l_path.extend ("studio")
+				l_path.extend ("tools")
+				l_path.extend ("autoteach")
+			end
+
+			Result := l_path
+		end
 
 end
