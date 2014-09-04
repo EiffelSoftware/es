@@ -22,7 +22,7 @@ inherit
 
 				-- Features
 			process_feature_as,
-			process_routine_as,
+			process_body_as,
 
 				-- Routine arguments
 			process_formal_argu_dec_list_as,
@@ -119,7 +119,7 @@ feature -- Interface
 		end
 
 	has_run: BOOLEAN
-		-- Did the `Current' process a class?
+		-- Did `Current' process a class?
 
 	reset
 			-- Reset the status of Current
@@ -535,14 +535,31 @@ feature {AST_EIFFEL} -- Visitors
 		end
 
 
-	process_routine_as (a_as: ROUTINE_AS)
+	process_body_as (a_as: BODY_AS)
 			-- Process `a_as'.
 		do
-			process_leading_leaves (a_as.first_token (match_list).index)
+			safe_process (a_as.internal_arguments)
+			safe_process (a_as.colon_symbol (match_list))
+			safe_process (a_as.type)
+			safe_process (a_as.assign_keyword (match_list))
+			safe_process (a_as.assigner)
+			safe_process (a_as.is_keyword (match_list))
 
-				-- The routine-specific clauses are about to begin, time to reset this flag.
-			processing_feature_comment := False
-			Precursor (a_as)
+			if attached {CONSTANT_AS} a_as.content as c_as then
+				c_as.process (Current)
+				safe_process (a_as.indexing_clause)
+			else
+				safe_process (a_as.indexing_clause)
+
+					-- We have basically redefined this feature just for doing this:
+				if attached a_as.content as l_content then
+					processing_feature_comment := True
+					process_leading_leaves (l_content.first_token (match_list).index)
+					processing_feature_comment := False
+				end
+
+				safe_process (a_as.content)
+			end
 		end
 
 	process_do_as (a_as: DO_AS)
@@ -568,18 +585,9 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_feature)
-
 			current_indentation := indentation (a_as.feature_name.first_token (match_list))
 
-				-- We set the `processing_feature_comment' flag to true a bit earlier than we
-				-- should, but this saves us from overriding other features from the parent
-				-- class just for setting this.
-			processing_feature_comment := True
 			Precursor (a_as)
-
-				-- If this feature is a routine, this should already have been reset in `process_routine_as'.
-				-- If not, we do it here.
-			processing_feature_comment := False
 
 			oracle.end_process_block (enum_block_type.Bt_feature)
 		end

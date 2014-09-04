@@ -92,7 +92,7 @@ feature {NONE} -- Initialization
 				-- Contains instructions.
 			table.put 			(<< 	T																>>, enum_block_type.Bt_loop_variant)
 			content_table.put	(<< 	F,		F,		F,		F,		F,		T						>>, enum_block_type.Bt_loop_variant)
-			content_table.put	(<< 	U																>>, enum_block_type.Bt_loop_variant_expression)
+			table.put			(<< 	U																>>, enum_block_type.Bt_loop_variant_expression)
 				-- Rely on the content visibility of `loop_variant'.
 
 			table.put 			(<< 	T																>>, enum_block_type.Bt_postcondition)
