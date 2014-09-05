@@ -5,7 +5,7 @@ class SUM_AND_MAX
 
 feature
 
-	sum_and_max (a: V_ARRAY [INTEGER]): TUPLE [sum: INTEGER; max: INTEGER]
+	sum_and_max (a: SIMPLE_ARRAY [INTEGER]): TUPLE [sum: INTEGER; max: INTEGER]
 			-- Calculate sum and maximum of array `a'.
 		note
 			status: impure -- We do not intend to use this function in contracts

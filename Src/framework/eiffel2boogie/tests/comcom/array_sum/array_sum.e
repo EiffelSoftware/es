@@ -19,7 +19,7 @@ feature
 --			Result := if s.is_empty then 0 else s.last + seq_sum (s) end
 		end
 
-	array_sum (a: V_ARRAY [INTEGER]): INTEGER
+	array_sum (a: SIMPLE_ARRAY [INTEGER]): INTEGER
 			-- Calculate sum of elements in array `a'.
 		note
 			status: impure -- We do not intend to use this function in contracts

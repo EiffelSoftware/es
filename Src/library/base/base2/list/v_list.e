@@ -42,8 +42,6 @@ feature -- Measurement
 			-- Number of elements.
 		note
 			status: dynamic
-		require else
-			reads (Current)
 		do
 			check inv_only ("count_definition", "map_definition_list", "bag_definition") end
 			Result := count_

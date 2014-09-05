@@ -2,7 +2,7 @@ note
 	description: "New version of an array, for use in verification."
 
 class
-	V_ARRAY [G]
+	SIMPLE_ARRAY [G]
 
 create
 	make, init

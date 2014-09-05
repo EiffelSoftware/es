@@ -842,7 +842,7 @@ feature -- Translation: Functions
 
 					-- Defaults and validity
 				if l_exprs.full_objects.is_empty and l_exprs.partial_objects.is_empty and l_exprs.model_objects.is_empty then
-					-- Missing modify clause: apply defaults
+					-- Missing read clause: apply defaults
 					l_exprs.full_objects.extend (create {IV_ENTITY}.make ("current", types.ref))
 				end
 			else

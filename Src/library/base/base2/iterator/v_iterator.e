@@ -79,7 +79,8 @@ feature -- Status report
 			-- Is current position after any position in `target'?
 		require
 			closed
-			reads (ownership_domain)
+			target.closed
+			reads (ownership_domain, target.ownership_domain)
 		deferred
 		ensure
 			definition: Result = (index_ = sequence.count + 1)

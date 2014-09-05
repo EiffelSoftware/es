@@ -118,6 +118,20 @@ feature -- Status report
 			Result := active = Void
 		end
 
+	after: BOOLEAN
+			-- Is current position after the last container position?
+		do
+			check inv end
+			Result := after_
+		end
+
+	before: BOOLEAN
+			-- Is current position before the first container position?
+		do
+			check inv end
+			Result := active = Void and not after_
+		end
+
 	is_first: BOOLEAN
 			-- Is cursor at the first position?
 		do
@@ -134,22 +148,6 @@ feature -- Status report
 			check target.inv end
 			Result := active /= Void and then active = target.last_cell
 			target.lemma_cells_distinct
-		end
-
-	after: BOOLEAN
-			-- Is current position after the last container position?
-		require else
-			reads (Current)
-		do
-			check inv end
-			Result := after_
-		end
-
-	before: BOOLEAN
-			-- Is current position before the first container position?
-		do
-			check inv end
-			Result := off and not after_
 		end
 
 feature -- Cursor movement

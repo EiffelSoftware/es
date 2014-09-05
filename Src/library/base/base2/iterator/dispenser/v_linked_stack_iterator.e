@@ -85,6 +85,8 @@ feature -- Status report
 		do
 			check inv end
 			check iterator.inv end
+			check target.inv end
+			check iterator.target.ownership_domain <= target.ownership_domain end
 			Result := iterator.after
 		end
 

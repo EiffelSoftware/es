@@ -6,7 +6,7 @@ class
 
 feature
 
-	lcp (a: V_ARRAY [INTEGER]; x, y: INTEGER): INTEGER
+	lcp (a: SIMPLE_ARRAY [INTEGER]; x, y: INTEGER): INTEGER
 			-- Return the length of the logest common prefix of a [x..] and a [y..]
 		note
 			status: impure
@@ -46,7 +46,7 @@ feature
 		note
 			explicit: wrapping
 		local
-			a: V_ARRAY [INTEGER]
+			a: SIMPLE_ARRAY [INTEGER]
 			x: INTEGER
 		do
 			create a.init (<< 1 >>)

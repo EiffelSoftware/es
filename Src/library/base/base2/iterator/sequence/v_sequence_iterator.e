@@ -51,7 +51,6 @@ feature -- Cursor movement
 		end
 
 invariant
---	target_index_sequence_definition: across target_index_sequence.domain as i all target_index_sequence [i.item] = target.lower_ + i.item - 1 end
 	target_index_sequence_definition: across 1 |..| target_index_sequence.count as i all target_index_sequence [i.item] = target.lower_ + i.item - 1 end
 	sequence_definition: sequence ~ target.sequence
 

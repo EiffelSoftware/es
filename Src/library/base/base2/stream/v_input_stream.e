@@ -28,7 +28,8 @@ feature -- Status report
 			-- Is current position off scope?
 		require
 			closed: closed
-			reads (ownership_domain)
+			subjects_closed: subjects.any_item.closed
+			reads (ownership_domain, subjects.any_item.ownership_domain)
 		deferred
 		ensure
 			definition: Result = box.is_empty

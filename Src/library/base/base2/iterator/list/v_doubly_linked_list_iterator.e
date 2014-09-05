@@ -137,8 +137,6 @@ feature -- Status report
 
 	after: BOOLEAN
 			-- Is current position after the last container position?
-		require else
-			reads (Current)
 		do
 			check inv end
 			Result := after_
@@ -148,7 +146,7 @@ feature -- Status report
 			-- Is current position before the first container position?
 		do
 			check inv end
-			Result := off and not after_
+			Result := active = Void and not after_
 		end
 
 feature -- Cursor movement
