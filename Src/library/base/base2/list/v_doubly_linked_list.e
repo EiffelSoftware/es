@@ -1,8 +1,8 @@
 note
 	description: "[
-		Singly linked lists.
-		Random access takes linear time. 
-		Once a position is found, inserting or removing elements to the right of it takes constant time 
+		Doubly linked lists.
+		Random access takes linear time.
+		Once a position is found, inserting or removing elements to the left and right of it takes constant time
 		and doesn't require reallocation of other elements.
 		]"
 	author: "Nadia Polikarpova"
@@ -11,7 +11,7 @@ note
 	false_guards: true
 
 frozen class
-	V_LINKED_LIST [G]
+	V_DOUBLY_LINKED_LIST [G]
 
 inherit
 	V_LIST [G]
@@ -72,11 +72,7 @@ feature -- Access
 			-- Value at position `i'.
 		do
 			check inv end
-			if i = count then
-				Result := last
-			else
-				Result := cell_at (i).item
-			end
+			Result := cell_at (i).item
 		end
 
 	first: G
@@ -95,7 +91,7 @@ feature -- Access
 
 feature -- Iteration
 
-	at (i: INTEGER): V_LINKED_LIST_ITERATOR [G]
+	at (i: INTEGER): V_DOUBLY_LINKED_LIST_ITERATOR [G]
 			-- New iterator pointing at position `i'.
 		note
 			status: impure
@@ -129,37 +125,51 @@ feature -- Replacement
 		note
 			explicit: contracts
 		local
-			rest, next: V_LINKABLE [G]
-			rest_cells: MML_SEQUENCE [V_LINKABLE [G]]
+			rest, next: V_DOUBLY_LINKABLE [G]
+			rest_cells: MML_SEQUENCE [V_DOUBLY_LINKABLE [G]]
 		do
 			lemma_cells_distinct
 			from
 				last_cell := first_cell
 				rest := first_cell
+				if rest /= Void then
+					rest.unwrap
+				end
 				rest_cells := cells
 				first_cell := Void
 				create cells
 				create sequence
 			invariant
-				across 1 |..| count_ as i all cells.old_ [i.item].is_wrapped end
+				across 2 |..| cells.count as i all cells [i.item].is_wrapped end
+				across 2 |..| rest_cells.count as i all rest_cells [i.item].is_wrapped end
+				first_cell = Void or else (first_cell.is_open and first_cell.inv_without ("left_consistent"))
+				rest = Void or else (rest.is_open and rest.inv_without ("left_consistent"))
+
 				rest_cells.count = count_ - cells.count
-				inv_only ("cells_domain", "first_cell_empty", "cells_exist", "sequence_definition", "cells_linked", "cells_first", "cells_last")
+				inv_only ("cells_domain", "first_cell_empty", "cells_exist", "sequence_definition", "cells_linked", "cells_last")
+				cells.count > 0 implies first_cell = cells.first
 
 				rest_cells.non_void
 				is_linked (rest_cells)
 				not rest_cells.is_empty implies rest = rest_cells.first and rest_cells.last.right = Void
 				rest_cells.is_empty = (rest = Void)
 
+				first_cell /= Void implies first_cell.left = rest
+				rest /= Void implies rest.left = first_cell
+
 				cells.old_.tail (cells.count + 1) = rest_cells
 				across 1 |..| cells.count as i all cells [i.item] = cells.old_ [cells.count - i.item + 1] end
 
 				modify_field (["first_cell", "cells", "sequence"], Current)
-				modify_model ("right", cells.old_.range)
+				modify_model (["left", "right", "subjects", "observers"], cells.old_.range)
 			until
 				rest = Void
 			loop
+				check cells.count > 1 implies cells [2] = first_cell.right end
+				check rest_cells.count > 1 implies rest_cells [2] = rest.right end
+
 				next := rest.right
-				rest.put_right (first_cell)
+				reverse_step (first_cell, rest, next)
 				first_cell := rest
 				cells := cells.prepended (first_cell)
 				sequence := sequence.prepended (first_cell.item)
@@ -167,6 +177,9 @@ feature -- Replacement
 				rest_cells := rest_cells.but_first
 			variant
 				rest_cells.count
+			end
+			if first_cell /= Void then
+				first_cell.wrap
 			end
 			check across 1 |..| count_ as i all cells [count_ - i.item + 1] = cells.old_ [i.item] end end
 		end
@@ -178,13 +191,13 @@ feature -- Extension
 		note
 			explicit: contracts
 		local
-			cell: V_LINKABLE [G]
+			cell: V_DOUBLY_LINKABLE [G]
 		do
 			create cell.make (v)
 			if first_cell = Void then
 				last_cell := cell
 			else
-				cell.put_right (first_cell)
+				cell.connect_right (first_cell)
 			end
 			first_cell := cell
 			count_ := count_ + 1
@@ -201,13 +214,13 @@ feature -- Extension
 		note
 			explicit: contracts
 		local
-			cell: V_LINKABLE [G]
+			cell: V_DOUBLY_LINKABLE [G]
 		do
 			create cell.make (v)
 			if first_cell = Void then
 				first_cell := cell
 			else
-				last_cell.put_right (cell)
+				last_cell.connect_right (cell)
 			end
 			last_cell := cell
 			count_ := count_ + 1
@@ -230,7 +243,7 @@ feature -- Extension
 			elseif i = count + 1 then
 				extend_back (v)
 			else
-				extend_after (create {V_LINKABLE [G]}.make (v), cell_at (i - 1), i - 1)
+				extend_after (create {V_DOUBLY_LINKABLE [G]}.make (v), cell_at (i - 1), i - 1)
 			end
 		end
 
@@ -239,7 +252,7 @@ feature -- Extension
 		note
 			explicit: contracts, wrapping
 		local
-			it: V_LINKED_LIST_ITERATOR [G]
+			it: V_DOUBLY_LINKED_LIST_ITERATOR [G]
 		do
 			if not input.after then
 				check input.inv end
@@ -282,7 +295,7 @@ feature -- Extension
 		note
 			explicit: contracts, wrapping
 		local
-			it: V_LINKED_LIST_ITERATOR [G]
+			it: V_DOUBLY_LINKED_LIST_ITERATOR [G]
 			s: like sequence
 		do
 			if i = 1 then
@@ -327,11 +340,20 @@ feature -- Removal
 			-- Remove first element.
 		note
 			explicit: contracts
+		local
+			second: like first_cell
 		do
 			if count_ = 1 then
 				last_cell := Void
 			else
-				check first_cell.right = cells [2] end
+				lemma_cells_distinct
+				second := first_cell.right
+				check second = cells [2] end
+				check second.inv end
+				first_cell.unwrap
+				second.unwrap
+				second.put_left (Void)
+				second.wrap
 			end
 			first_cell := first_cell.right
 			count_ := count_ - 1
@@ -346,15 +368,29 @@ feature -- Removal
 	remove_back
 			-- Remove last element.
 		note
-			explicit: contracts, wrapping
+			explicit: contracts
+		local
+			second_last: like first_cell
 		do
 			check inv end
-			if count = 1 then
-				wipe_out
-				check inv_only ("cells_domain") end
+			if count_ = 1 then
+				first_cell := Void
 			else
-				remove_after (cell_at (count - 1), count - 1)
+				lemma_cells_distinct
+				second_last := last_cell.left
+				check cells [cells.count - 1].inv end
+				check cells [cells.count - 1].right = last_cell end
+				last_cell.unwrap
+				second_last.unwrap
+				second_last.put_right (Void)
+				second_last.wrap
 			end
+			last_cell := last_cell.left
+			count_ := count_ - 1
+
+			cells := cells.but_last
+			sequence := sequence.but_last
+			upper_ := upper_ - 1
 		ensure then
 			cells_preserved: cells ~ old cells.but_last
 		end
@@ -391,42 +427,60 @@ feature -- Removal
 			cells_linked: is_linked (old cells)
 			items_unchanged: across 1 |..| sequence.count.old_ as i all (old sequence) [i.item] = (old cells) [i.item].item end
 			cells_last: old cells.count > 0 implies (old last_cell).right = Void
+			cells_first: old cells.count > 0 implies (old first_cell).left = Void
 		end
 
 feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
-	first_cell: V_LINKABLE [G]
+	first_cell: V_DOUBLY_LINKABLE [G]
 			-- First cell of the list.
 
-	last_cell: V_LINKABLE [G]
+	last_cell: V_DOUBLY_LINKABLE [G]
 			-- Last cell of the list.
 
-	cell_at (i: INTEGER): V_LINKABLE [G]
+	cell_at (i: INTEGER): V_DOUBLY_LINKABLE [G]
 			-- Cell at position `i'.
 		require
 			valid_position: 1 <= i and i <= cells.count
-			inv_only ("cells_domain", "cells_exist", "cells_first", "cells_linked")
+			inv_only ("cells_domain", "cells_exist", "cells_first", "cells_last", "cells_linked", "count_definition")
+			cells_closed: across 1 |..| cells.count as k all cells [k.item].closed end
 			reads (Current, cells.range)
 		local
 			j: INTEGER
 		do
-			from
-				j := 1
-				Result := first_cell
-			invariant
-				1 <= j and j <= i
-				Result = cells [j]
-			until
-				j = i
-			loop
-				Result := Result.right
-				j := j + 1
+			if i + i <= count_ then
+				from
+					j := 1
+					Result := first_cell
+				invariant
+					1 <= j and j <= i
+					Result = cells [j]
+				until
+					j = i
+				loop
+					Result := Result.right
+					j := j + 1
+				end
+			else
+				from
+					j := count_
+					Result := last_cell
+				invariant
+					i <= j and j <= count_
+					Result = cells [j]
+				until
+					j = i
+				loop
+					check cells [j - 1].inv end
+					Result := Result.left
+					j := j - 1
+				end
 			end
 		ensure
 			definition: Result = cells [i]
 		end
 
-	put_cell (v: G; c: V_LINKABLE [G]; index_: INTEGER)
+	put_cell (v: G; c: V_DOUBLY_LINKABLE [G]; index_: INTEGER)
 			-- Put `v' into `c' located at `index_'.
 		require
 			index_in_domain: cells.domain [index_]
@@ -446,7 +500,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			wrapped: is_wrapped
 		end
 
-	extend_after (new, c: V_LINKABLE [G]; index_: INTEGER)
+	extend_after (new, c: V_DOUBLY_LINKABLE [G]; index_: INTEGER)
 			-- Add a new cell with value `v' after `c'.
 		require
 			wrapped: is_wrapped
@@ -457,51 +511,25 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			index_in_domain: 1 <= index_ and index_ <= cells.count
 			c_in_list: cells [index_] = c
 			new_right_void: new.right = Void
+			new_left_void: new.left = Void
 
 			modify_model (["sequence", "owns"], Current)
-			modify_model (["right", "owner"], new)
+			modify (new)
 		do
 			lemma_cells_distinct
 			unwrap
-
---			check across 1 |..| count as i all owns [cells [i.item]] end end
 			check index_ < cells.count implies c.right = cells [index_ + 1] end
 
 			if c.right = Void then
 				last_cell := new
+				c.connect_right (new)
 			else
-				new.put_right (c.right)
+				c.insert_right (new, new)
 			end
-			c.put_right (new)
 			count_ := count_ + 1
-
 			cells := cells.extended_at (index_ + 1, new)
 			sequence := sequence.extended_at (index_ + 1, new.item)
 			upper_ := upper_ + 1
---			map := sequence.to_map
---			bag := sequence.to_bag
---			set_owns (cells.range)
-
---			check v1: count = sequence.count end
---			check v2: sequence.count = cells.count end
---			check v3: cells.is_empty = (first_cell = Void) end
---			check v4: cells.is_empty = (last_cell = Void) end
---			check v16: owns = cells.range end
---			check v5_1: cells.non_void end
---			check v5_3:  across 1 |..| count as i all sequence [i.item] = cells [i.item].item end end
---			check v5_4:  is_linked (cells) end
---			check v6: count > 0 implies first_cell = cells.first end
---			check v7: count > 0 implies last_cell = cells.last and then last_cell.right = Void end
---			check v10: lower_ = 1 end
---			check v_11: map = sequence.to_map end
---			check v_12: sequence.count = upper_ - lower_ + 1 end
---			check v_121: upper_ = count end
---			check v_13: map.domain ~ create {MML_INTERVAL}.from_range (lower_, upper_) end
---			check v_14: across lower_ |..| upper_ as i all map [i.item] = sequence [idx(i.item)] end end
---			check v_15: bag ~ sequence.to_bag end
---			check v_17: not observers [Current] end
---			check v_18: subjects = [] end
-
 			wrap
 		ensure
 			sequence ~ old sequence.extended_at (index_ + 1, new.item)
@@ -509,7 +537,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			wrapped: is_wrapped
 		end
 
-	remove_after (c: V_LINKABLE [G]; index_: INTEGER)
+	remove_after (c: V_DOUBLY_LINKABLE [G]; index_: INTEGER)
 			-- Remove the cell to the right of `c'.
 		require
 			valid_index: 1 <= index_ and index_ <= sequence.count - 1
@@ -523,12 +551,15 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			check c.right = cells [index_ + 1] end
 			check index_ + 1 < cells.count implies c.right.right = cells [index_ + 2] end
 
-			c.put_right (c.right.right)
-			if c.right = Void then
+			if c.right.right = Void then
+				unwrap_all ([c, c.right])
+				c.put_right (Void)
+				c.wrap
 				last_cell := c
+			else
+				c.remove_right
 			end
 			count_ := count_ - 1
-
 			cells := cells.removed_at (index_ + 1)
 			sequence := sequence.removed_at (index_ + 1)
 			upper_ := upper_ - 1
@@ -539,7 +570,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			wrapped: is_wrapped
 		end
 
-	merge_after (other: V_LINKED_LIST [G]; c: V_LINKABLE [G]; index_: INTEGER)
+	merge_after (other: V_DOUBLY_LINKED_LIST [G]; c: V_DOUBLY_LINKABLE [G]; index_: INTEGER)
 			-- Merge `other' into `Current' after cell `c'. If `c' is `Void', merge to the front.
 		require
 			valid_index: 0 <= index_ and index_ <= cells.count
@@ -552,7 +583,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			other_observers_open: across other.observers as o all o.item.is_open end
 			modify_model (["sequence", "owns"], [Current, other])
 		local
-			other_first, other_last: V_LINKABLE [G]
+			other_first, other_last: V_DOUBLY_LINKABLE [G]
 			other_count: INTEGER
 		do
 			check other.inv_only ("count_definition", "cells_domain", "first_cell_empty", "owns_definition", "cells_first", "cells_last") end
@@ -570,17 +601,17 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 					if first_cell = Void then
 						last_cell := other_last
 					else
-						other_last.put_right (first_cell)
+						other_last.connect_right (first_cell)
 					end
 					first_cell := other_first
 				else
 					check index_ < cells.count implies c.right = cells [index_ + 1] end
 					if c.right = Void then
 						last_cell := other_last
+						c.connect_right (other_first)
 					else
-						other_last.put_right (c.right)
+						c.insert_right (other_first, other_last)
 					end
-					c.put_right (other_first)
 				end
 				count_ := count_ + other_count
 				cells := cells.front (index_) + other.cells.old_ + cells.tail (index_ + 1)
@@ -596,16 +627,55 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			cells_effect: cells = old (cells.front (index_) + other.cells + cells.tail (index_ + 1))
 		end
 
+feature {NONE} -- Implementation
+
+	reverse_step (head, rest, next: like first_cell)
+			-- One step of list reversal, where
+			-- `head' is the head of the already reversed statement,
+			-- `rest' is the head of the rest of the list,
+			-- `next' is `rest.right'.
+		require
+			head /= rest
+			head /= Void implies
+				head.is_open and
+				head.inv_without ("left_consistent") and
+				head.left = rest and
+				head.right /= rest
+			rest.is_open
+			rest.inv_without ("left_consistent")
+			rest.left = head
+			next = rest.right
+			next /= Void implies next.is_wrapped
+			modify_field ("closed", ([head, next]).to_mml_set / Void)
+			modify_model (["left", "right", "subjects", "observers"], rest)
+		do
+			if next /= Void then
+				next.unwrap
+			end
+			rest.put_right (head)
+			rest.put_left (next)
+			if head /= Void then
+				head.wrap
+			end
+		ensure
+			head /= Void implies head.is_wrapped
+			rest.is_open
+			rest.inv_without ("left_consistent")
+			rest.right = head
+			rest.left = next
+			next /= Void implies next.is_open and next.inv_without ("left_consistent")
+		end
+
 feature -- Specificaton
 
-	cells: MML_SEQUENCE [V_LINKABLE [G]]
+	cells: MML_SEQUENCE [V_DOUBLY_LINKABLE [G]]
 			-- Sequence of linakble cells.
 		note
 			status: ghost
 		attribute
 		end
 
-feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton	
+feature {V_DOUBLY_LINKED_LIST, V_DOUBLY_LINKED_LIST_ITERATOR} -- Specificaton	
 
 	lemma_cells_distinct
 			-- All cells in `cells' are distinct.
@@ -668,7 +738,7 @@ invariant
 	cells_exist: cells.non_void
 	sequence_definition: across 1 |..| cells.count as i all sequence [i.item] = cells [i.item].item end
 	cells_linked: is_linked (cells)
-	cells_first: cells.count > 0 implies first_cell = cells.first
+	cells_first: cells.count > 0 implies first_cell = cells.first and then first_cell.left = Void
 	cells_last: cells.count > 0 implies last_cell = cells.last and then last_cell.right = Void
 
 note

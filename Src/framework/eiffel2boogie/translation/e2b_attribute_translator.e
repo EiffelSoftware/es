@@ -256,7 +256,7 @@ feature {NONE} -- Implementation
 				helper.add_semantic_error (a_guard_feature, messages.guard_feature_not_predicate, -1)
 			elseif a_guard_feature.argument_count /= 2 then
 				helper.add_semantic_error (a_guard_feature, messages.guard_feature_arg_count, -1)
-			elseif not a_guard_feature.arguments [1].same_as (a_attr_type) then
+			elseif not helper.class_type_in_context (a_guard_feature.arguments [1], a_guard_feature.written_class, a_guard_feature, current_type).same_as (a_attr_type) then
 				helper.add_semantic_error (a_guard_feature, messages.guard_feature_arg1, -1)
 			elseif not a_guard_feature.arguments [2].same_as (system.any_type) then
 				helper.add_semantic_error (a_guard_feature, messages.guard_feature_arg2, -1)

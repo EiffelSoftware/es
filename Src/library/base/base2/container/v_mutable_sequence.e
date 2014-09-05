@@ -36,23 +36,16 @@ feature -- Replacement
 	put (v: G; i: INTEGER)
 			-- Replace value at position `i' with `v'.
 		note
-			status: dynamic
-			explicit: contracts, wrapping
+			explicit: contracts
 		require
 			is_wrapped: is_wrapped
 			has_index: has_index (i)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "observers"], Current)
-		local
-			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
-		do
-			it := at (i)
-			it.put (v)
-			forget_iterator (it)
+			modify_model (["sequence"], Current)
+		deferred
 		ensure
 			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old sequence.replaced_at (idx (i), v)
-			observers_restored: observers ~ old observers
 		end
 
 	swap (i1, i2: INTEGER)
@@ -65,7 +58,7 @@ feature -- Replacement
 			has_index_one: has_index (i1)
 			has_index_two: has_index (i2)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "observers"], Current)
+			modify_model (["sequence"], Current)
 		local
 			v: G
 		do
@@ -76,7 +69,6 @@ feature -- Replacement
 		ensure
 			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old sequence.replaced_at (idx(i1), sequence [idx(i2)]).replaced_at (idx(i2), sequence [idx(i1)])
-			observers_restored: observers ~ old observers
 		end
 
 	fill (v: G; l, u: INTEGER)
@@ -222,7 +214,7 @@ feature -- Replacement
 		require
 			is_wrapped: is_wrapped
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "observers"], Current)
+			modify_model (["sequence"], Current)
 		local
 			j, k: INTEGER
 		do
@@ -250,7 +242,6 @@ feature -- Replacement
 			is_wrapped: is_wrapped
 			sequence_domain_effect: sequence.count = old sequence.count
 			sequence_effect: across 1 |..| sequence.count as i all sequence [i.item] = (old sequence) [sequence.count - i.item + 1] end
-			observers_restored: observers ~ old observers
 		end
 
 note

@@ -1,27 +1,28 @@
 note
-	description: "Iterators over linked lists."
+	description: "Iterators over doubly-linked lists."
 	author: "Nadia Polikarpova"
 	model: target, index_
 	manual_inv: true
 	false_guards: true
 
 class
-	V_LINKED_LIST_ITERATOR [G]
+	V_DOUBLY_LINKED_LIST_ITERATOR [G]
 
 inherit
 	V_LIST_ITERATOR [G]
 		undefine
 			off
 		redefine
-			target
+			target,
+			go_to
 		end
 
-create {V_CONTAINER, V_ITERATOR}
+create
 	make
 
 feature {V_CONTAINER, V_ITERATOR} -- Initialization
 
-	make (list: V_LINKED_LIST [G])
+	make (list: V_DOUBLY_LINKED_LIST [G])
 			-- Create iterator over `list'.
 		note
 			status: creator
@@ -83,7 +84,7 @@ feature -- Initialization
 
 feature -- Access
 
-	target: V_LINKED_LIST [G]
+	target: V_DOUBLY_LINKED_LIST [G]
 			-- Container to iterate over.
 
 	item: G
@@ -102,8 +103,6 @@ feature -- Measurement
 			check inv end
 			if after then
 				Result := target.count + 1
-			elseif is_last then
-				Result := target.count
 			elseif active /= Void then
 				Result := active_index
 			end
@@ -173,7 +172,7 @@ feature -- Cursor movement
 		end
 
 	forth
-			-- Move one position forward.		
+			-- Move one position forward.
 		do
 			check target.inv end
 			active := active.right
@@ -183,35 +182,11 @@ feature -- Cursor movement
 
 	back
 			-- Go one position backwards.
-		note
-			explicit: wrapping
-		local
-			old_active: V_LINKABLE [G]
 		do
-			check inv end
 			check target.inv end
-			if is_first then
-				go_before
-			else
-				old_active := active
-				from
-					start
-					target.lemma_cells_distinct
-				invariant
-					1 <= index_ and index_ < index_.old_
-					inv_only ("cell_not_off", "after_definition")
-					attached active
-					across 1 |..| index_ as i all target.cells [i.item] /= old_active end
-					is_wrapped
-				until
-					active.right = old_active
-				loop
-					forth
-				variant
-					index_.old_ - index_
-				end
-				check target.cells [index_].right = target.cells [index_ + 1] end
-			end
+			active := active.left
+			index_ := index_ - 1
+			check index_ >= 1 implies target.cells [index_].inv end
 		end
 
 	go_before
@@ -230,6 +205,28 @@ feature -- Cursor movement
 			active := Void
 			after_ := True
 			index_ := target.count + 1
+		end
+
+	go_to (i: INTEGER)
+			-- Go to position `i'.
+		note
+			explicit: wrapping
+		local
+			j: INTEGER
+		do
+			check inv end
+			if i = 0 then
+				go_before
+			elseif i = target.count + 1 then
+				go_after
+			else
+				check target.inv end
+				unwrap
+				active := target.cell_at (i)
+				after_ := False
+				index_ := i
+				wrap
+			end
 		end
 
 feature -- Replacement
@@ -271,7 +268,7 @@ feature -- Extension
 			-- Insert `v' to the right of current position. Do not move cursor.
 		do
 			check target.inv_only ("cells_domain") end
-			target.extend_after (create {V_LINKABLE [G]}.make (v), active, index_)
+			target.extend_after (create {V_DOUBLY_LINKABLE [G]}.make (v), active, index_)
 			check target.inv_only ("bag_definition", "map_definition_list", "cells_domain",  "count_definition", "lower_definition") end
 			set_target_index_sequence
 		ensure then
@@ -338,7 +335,7 @@ feature -- Extension
 			end
 		end
 
-	merge (other: V_LINKED_LIST [G])
+	merge (other: V_DOUBLY_LINKED_LIST [G])
 			-- Merge `other' into `target' after current position. Do not copy elements. Empty `other'.
 		require
 			target_wrapped: target.is_wrapped
@@ -402,9 +399,9 @@ feature -- Removal
 			set_target_index_sequence
 		end
 
-feature {V_LINKED_LIST_ITERATOR} -- Implementation
+feature {V_DOUBLY_LINKED_LIST_ITERATOR} -- Implementation
 
-	active: V_LINKABLE [G]
+	active: V_DOUBLY_LINKABLE [G]
 			-- Cell at current position.
 			-- If unreachable from `target.first_cell' iterator is considered `before'.
 
@@ -419,25 +416,38 @@ feature {V_LINKED_LIST_ITERATOR} -- Implementation
 			target_closed: target.closed
 			reads (Current, target.ownership_domain)
 		local
-			c: V_LINKABLE [G]
+			cf, cb: V_DOUBLY_LINKABLE [G]
+			i, j: INTEGER
 		do
 			check inv end
 			check target.inv end
 			from
-				c := target.first_cell
-				Result := 1
+				cf := target.first_cell
+				cb := target.last_cell
+				i := 1
+				j := target.count_
 			invariant
-				1 <= Result and Result <= index_
-				c = target.cells [Result]
+				1 <= i and i <= index_
+				index_ <= j and j <= sequence.count
+				cf = target.cells [i]
+				cb = target.cells [j]
 			until
-				c = active
+				active = cf or active = cb
 			loop
-				Result := Result + 1
-				c := c.right
+				i := i + 1
+				cf := cf.right
+				check target.cells [j - 1].inv end
+				j := j - 1
+				cb := cb.left
 			variant
-				target.count_ - Result
+				target.count_ - i
 			end
 			target.lemma_cells_distinct
+			if active = cf then
+				Result := i
+			else
+				Result := j
+			end
 		ensure
 			definition: Result = index_
 		end
