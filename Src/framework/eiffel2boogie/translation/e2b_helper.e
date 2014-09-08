@@ -540,6 +540,13 @@ feature -- String helpers
 
 feature -- Eiffel helpers
 
+	constraint_type (a_class: CLASS_C): CL_TYPE_A
+			-- Type based on `a_class' without formal generic parameters.
+		do
+			Result := a_class.constraint_actual_type
+			a_class.update_types (Result)
+		end
+
 	is_same_class (c1, c2: CLASS_C): BOOLEAN
 			-- Are `c1' and `c2' the same class?			
 		do
@@ -850,6 +857,15 @@ feature -- Other
 			if not autoproof_errors.has (l_error) then
 				autoproof_errors.extend (l_error)
 			end
+		end
+
+	verify_feature_in_class (a_feature: FEATURE_I; a_class: CLASS_C): BOOLEAN
+			-- Should `a_feature' be verified as part of verification of `a_class'?
+		do
+			Result := a_feature.is_routine and -- is routine
+				not is_feature_logical (a_feature) and -- not logical
+				(a_feature.written_in /= system.any_id or a_feature.rout_id_set.has (system.default_create_rout_id)) and -- is not inherited from ANY
+				not (a_feature.written_in /= a_class.class_id and is_dynamic (a_feature)) -- not an inherited dynamic feature
 		end
 
 feature {NONE} -- Implementation

@@ -92,6 +92,7 @@ feature -- Initialization
 				area.copy_data (other.area, 0, 0, other.count)
 				lower := other.lower
 				upper := other.upper
+				check other.is_wrapped end
 			end
 		ensure
 			observers_open: across observers as o all o.item.is_open end

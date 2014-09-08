@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 			l_feature: FEATURE_I
 		do
 			if not helper.is_class_logical (a_class) then
-				add_sub_task_for_class_check (constraint_type (a_class))
+				add_sub_task_for_class_check (helper.constraint_type (a_class))
 			end
 			if a_class.has_feature_table then
 				from
@@ -59,9 +59,7 @@ feature {NONE} -- Initialization
 					a_class.feature_table.after
 				loop
 					l_feature := a_class.feature_table.item_for_iteration
-					if l_feature.is_routine and
-						not helper.is_feature_logical (l_feature) and
-						(l_feature.written_in /= system.any_id or l_feature.rout_id_set.has (system.default_create_rout_id)) then
+					if helper.verify_feature_in_class (l_feature, a_class) then
 						add_sub_task_for_feature_of_type (l_feature, a_class.actual_type)
 					end
 					a_class.feature_table.forth
@@ -85,7 +83,7 @@ feature {NONE} -- Initialization
 			l_input: E2B_TRANSLATOR_INPUT
 		do
 			create l_input.make
-			l_input.add_feature_of_type (a_feature, constraint_type (a_context_type.base_class))
+			l_input.add_feature_of_type (a_feature, helper.constraint_type (a_context_type.base_class))
 			remaining_inputs.extend (l_input)
 		end
 
@@ -188,14 +186,6 @@ feature {NONE} -- Implementation
 
 	last_result: E2B_RESULT
 			-- Result.
-
-	constraint_type (a_class: CLASS_C): CL_TYPE_A
-			-- Type based on `a_class' without formal generic parameters.
-			-- TODO: combine with E2B_TRANSLATOR.constraint_type
-		do
-			Result := a_class.constraint_actual_type
-			a_class.update_types (Result)
-		end
 
 	context_from_input (a_input: E2B_TRANSLATOR_INPUT): STRING
 		do

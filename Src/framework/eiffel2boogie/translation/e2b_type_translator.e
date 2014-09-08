@@ -510,6 +510,7 @@ feature {NONE} -- Implementation
 			-- If `a_expr' has the form `a_name = def', create a Boogie function that defines `a_name' for `type' as `def'.
 			-- (Only accepting definitions of this form to avoid cycles).
 		local
+			l_fname: STRING
 			l_current, l_heap, l_field: IV_ENTITY
 			l_def: IV_EXPRESSION
 			l_function: IV_FUNCTION
@@ -520,12 +521,19 @@ feature {NONE} -- Implementation
 			l_def := definition_of (a_expr, l_heap, l_current, a_attr)
 			if attached l_def and not helper.is_class_explicit (type.base_class, a_attr.feature_name_32) then
 				l_field := helper.field_from_attribute (a_attr, type)
-				create l_function.make (name_translator.boogie_function_for_ghost_definition (type, l_field.name), l_def.type)
-				if boogie_universe.function_named (l_function.name) = Void then
+				l_fname := name_translator.boogie_function_for_ghost_definition (type, l_field.name)
+				l_function := boogie_universe.function_named (l_fname)
+				if l_function = Void then
+						-- There is no definition for this model query yet
+					create l_function.make (l_fname, l_def.type)
 					l_function.add_argument (l_heap.name, l_heap.type)
 					l_function.add_argument (l_current.name, l_current.type)
 					l_function.set_body (l_def)
 					boogie_universe.add_declaration (l_function)
+				else
+						-- There is a definition already, but we have found a new one, lower in the hierarchy
+						-- so it should take precedence
+					l_function.set_body (l_def)
 				end
 				Result := True
 			end

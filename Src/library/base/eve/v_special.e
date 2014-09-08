@@ -229,7 +229,10 @@ feature -- Element change
 	copy_data (other: V_SPECIAL [T]; source_index, destination_index, n: INTEGER)
 			-- Copy `n' elements of `other' from `source_index' position to Current at
 			-- `destination_index'. Other elements of Current remain unchanged.
+		note
+			explicit: contracts
 		require
+			wrapped: is_wrapped
 			other_not_void: other /= Void
 			source_index_non_negative: source_index >= 0
 			destination_index_non_negative: destination_index >= 0
@@ -249,6 +252,7 @@ feature -- Element change
 				sequence.front (destination_index) +
 				other.sequence.interval (source_index + 1, source_index + n) +
 				sequence.tail (destination_index + n + 1))
+			wrapped: is_wrapped
 		end
 
 	move_data (source_index, destination_index, n: INTEGER)
