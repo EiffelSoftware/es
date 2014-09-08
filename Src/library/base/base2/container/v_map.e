@@ -47,7 +47,6 @@ feature -- Iteration
 			-- New iterator pointing to a position in the map, from which it can traverse all elements by going `forth'.
 		note
 			status: impure
-			explicit: contracts
 		deferred
 		end
 
@@ -56,13 +55,10 @@ feature -- Iteration
 			-- If key does not exist, iterator is off.
 		note
 			status: impure
-			explicit: contracts
 		require
-			is_wrapped: is_wrapped
 			modify_field (["observers", "closed"], Current)
 		deferred
 		ensure
-			is_wrapped: is_wrapped
 			result_fresh: Result.is_fresh
 			result_wrapped: Result.is_wrapped and Result.inv
 			result_in_observers: observers = old observers & Result

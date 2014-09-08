@@ -42,8 +42,8 @@ feature -- Modification
 		note
 			explicit: wrapping
 		require
-			n_exists: n /= Void
 			n_singleton: n.left = n
+			right_wrapped: right.is_wrapped
 			modify (Current, right, n)
 		local
 			r: F_DLL_NODE
@@ -74,6 +74,8 @@ feature -- Modification
 		note
 			explicit: wrapping
 		require
+			left_wrapped: left.is_wrapped
+			right_wrapped: right.is_wrapped
 			modify (Current, left, right)
 		local
 			l, r: F_DLL_NODE

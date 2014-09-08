@@ -219,9 +219,7 @@ feature {NONE} -- Implementation
 				if helper.is_feature_logical (a_feature) then
 					add_logical (a_feature, a_context_type)
 				else
-					if a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) or
-						(a_context_type.base_class.creation_feature /= Void and then a_context_type.base_class.creation_feature.feature_id = a_feature.feature_id)
-					then
+					if helper.is_creator (a_feature, a_context_type.base_class) then
 							-- This is a creation routine
 						add_creator (a_feature, a_context_type, a_is_referenced)
 					end

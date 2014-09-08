@@ -35,8 +35,7 @@ feature {NONE} -- Initialization
 		require
 			non_negative_argument: n >= 0
 		do
-			capacity := n
-			wrap
+			make_empty (n)
 			fill_with (v, 0, n - 1)
 		ensure
 			sequence_domain_effect: sequence.count = n
@@ -175,8 +174,8 @@ feature -- Element change
 				nb = l_count
 				start_index <= i and i <= nb
 				across (start_index + 1) |..| i as k all sequence [k.item] = v end
-				sequence.front (start_index) ~ sequence.front (start_index).old_
-				sequence.tail (end_index + 2) ~ sequence.tail (end_index + 2).old_
+				across 1 |..| start_index as k all sequence [k.item] = sequence.old_ [k.item] end
+				across (end_index + 2) |..| sequence.count as k all sequence [k.item] = sequence.old_ [k.item] end
 			until
 				i = nb
 			loop
@@ -192,8 +191,8 @@ feature -- Element change
 				l_count <= i and i <= nb
 				sequence.count = if sequence.count.old_ < end_index + 1 then i else sequence.count.old_ end
 				across (start_index + 1) |..| i as k all sequence [k.item] = v end
-				sequence.front (start_index) ~ sequence.front (start_index).old_
-				sequence.tail (end_index + 2) ~ sequence.tail (end_index + 2).old_
+				across 1 |..| start_index as k all sequence [k.item] = sequence.old_ [k.item] end
+				across (end_index + 2) |..| sequence.count as k all sequence [k.item] = sequence.old_ [k.item] end
 			until
 				i = nb
 			loop
@@ -203,8 +202,8 @@ feature -- Element change
 		ensure
 			sequence_domain_effect: sequence.count = (old sequence.count).max (end_index + 1)
 			sequence_effect: across (start_index + 1) |..| (end_index + 1) as k all sequence [k.item] = v end
-			sequence_front_unchanged: sequence.front (start_index) ~ old sequence.front (start_index)
-			sequence_tail_unchanged: sequence.tail (end_index + 2) ~ old sequence.tail (end_index + 2)
+			sequence_front_unchanged: across 1 |..| start_index as k all sequence [k.item] = (old sequence) [k.item] end
+			sequence_tail_unchanged: across (end_index + 2) |..| sequence.count as k all sequence [k.item] = (old sequence) [k.item] end
 		end
 
 	fill_with_default (start_index, end_index: INTEGER)
@@ -223,8 +222,8 @@ feature -- Element change
 		ensure
 			sequence_domain_effect: sequence.count = old sequence.count
 			sequence_effect: across (start_index + 1) |..| (end_index + 1) as k all sequence [k.item] = ({T}).default end
-			sequence_front_unchanged: sequence.front (start_index) ~ old sequence.front (start_index)
-			sequence_tail_unchanged: sequence.tail (end_index + 2) ~ old sequence.tail (end_index + 2)
+			sequence_front_unchanged: across 1 |..| start_index as k all sequence [k.item] = (old sequence) [k.item] end
+			sequence_tail_unchanged: across (end_index + 2) |..| sequence.count as k all sequence [k.item] = (old sequence) [k.item] end
 		end
 
 	copy_data (other: V_SPECIAL [T]; source_index, destination_index, n: INTEGER)

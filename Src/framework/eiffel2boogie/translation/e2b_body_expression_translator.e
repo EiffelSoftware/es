@@ -288,7 +288,11 @@ feature -- Translation
 
 				last_expression := l_fcall
 			else
-				if a_for_creator then
+				if a_for_creator or
+						(name_translator.is_creator_name (context_implementation.procedure.name) and helper.is_creator (a_feature, current_target_type.base_class)) then
+						-- Either we are translating a creation expression (`a_for_creator'),
+						-- or we are inside a creation procedure and calling another creation procedure,
+						-- so the creation semantics will be used
 					create l_pcall.make (name_translator.boogie_procedure_for_creator (a_feature, current_target_type))
 				else
 					create l_pcall.make (name_translator.boogie_procedure_for_feature (a_feature, current_target_type))

@@ -123,9 +123,7 @@ feature -- Search
 			-- out of range, if `v' does not occur.			
 		note
 			status: impure, dynamic
-			explicit: contracts
 		require
-			is_wrapped: is_wrapped
 			modify_model (["observers"], Current)
 		do
 			check inv end
@@ -140,7 +138,6 @@ feature -- Search
 			definition_has: sequence.has (v) implies lower_ <= Result and Result <= upper_ and then sequence [idx (Result)] = v
 			constraint: not sequence.front (idx (Result - 1)).has (v)
 			observers_restored: observers ~ old observers
-			is_wrapped: is_wrapped
 		end
 
 	index_of_from (v: G; i: INTEGER): INTEGER
@@ -148,9 +145,7 @@ feature -- Search
 			-- out of range, if `v' does not occur.
 		note
 			status: impure, dynamic
-			explicit: contracts
 		require
-			is_wrapped: is_wrapped
 			has_index: has_index (i)
 			modify_model (["observers"], Current)
 		local
@@ -163,14 +158,12 @@ feature -- Search
 			else
 				Result := it.target_index
 			end
-			check inv_only ("upper_definition") end
 			forget_iterator (it)
 		ensure
 			definition_not_has: not sequence.tail (idx (i)).has (v) implies Result = upper_ + 1
 			definition_has: sequence.tail (idx (i)).has (v) implies i <= Result and Result <= upper_ and then sequence [idx (Result)] = v
 			constraint: not sequence.interval (idx (i), idx (Result - 1)).has (v)
 			observers_restored: observers ~ old observers
-			is_wrapped: is_wrapped
 		end
 
 feature -- Iteration
@@ -179,25 +172,19 @@ feature -- Iteration
 			-- New iterator pointing to the first position.
 		note
 			status: impure, dynamic
-			explicit: contracts
 		do
 			Result := at (lower)
-			check inv_only ("upper_definition") end
 		end
 
 	at_last: like at
 			-- New iterator pointing to the last position.
 		note
 			status: impure, dynamic
-			explicit: contracts
 		require
-			is_wrapped: is_wrapped
 			modify_field (["observers", "closed"], Current)
 		do
 			Result := at (upper)
-			check inv_only ("upper_definition") end
 		ensure
-			is_wrapped: is_wrapped
 			result_fresh: Result.is_fresh
 			result_wrapped: Result.is_wrapped and Result.inv
 			result_in_observers: observers = old observers & Result
@@ -210,7 +197,6 @@ feature -- Iteration
 			-- If `i' is off scope, iterator is off.
 		note
 			status: impure
-			explicit: contracts
 		deferred
 		ensure then
 			index_definition_in_bounds: lower_ - 1 <= i and i <= upper_ + 1 implies Result.index_ = i - lower_ + 1
@@ -238,8 +224,9 @@ feature -- Specification
 	upper_: INTEGER
 			-- Upper bound of `map.domain'.
 		note
-			status: ghost
-		attribute
+			status: functional, ghost, dynamic
+		do
+			Result := lower_ + sequence.count - 1
 		end
 
 	idx (i: INTEGER): INTEGER
@@ -249,13 +236,45 @@ feature -- Specification
 			Result := i - lower_ + 1
 		end
 
+	map_from_sequence: MML_MAP [INTEGER, G]
+			-- Copy elements from `sequence' into `map'.
+		note
+			status: ghost, dynamic
+		require
+			reads_field (["sequence", "lower_"], Current)
+		local
+			i: INTEGER
+			b: MML_BAG [G]
+		do
+			from
+				i := 1
+				create Result
+			invariant
+				1 <= i and i <= sequence.count + 1
+				Result.domain ~ create {MML_INTERVAL}.from_range (lower_, lower_ + i - 2)
+				across 1 |..| (i - 1) as k all Result [k.item + lower_ - 1] = sequence [k.item] end
+				b ~ sequence.front (i - 1).to_bag
+				b ~ Result.to_bag
+			until
+				i > sequence.count
+			loop
+				Result := Result.updated (i + lower_ - 1, sequence [i])
+				check sequence.front (i - 1) & sequence [i] ~ sequence.front (i) end
+				b := b & sequence [i]
+				i := i + 1
+			end
+		ensure
+			domain_definition: Result.domain ~ create {MML_INTERVAL}.from_range (lower_, lower_ + sequence.count - 1)
+			definition: across 1 |..| sequence.count as k all
+					across lower_ |..| upper_ as j all
+						j.item = k.item + lower_ - 1 implies Result [j.item] = sequence [k.item]
+					end end
+			bag_constraint: Result.to_bag ~ sequence.to_bag
+		end
+
 invariant
-	upper_definition: sequence.count = upper_ - lower_ + 1
-	map_domain_definition: map.domain ~ create {MML_INTERVAL}.from_range (lower_, upper_)
-	map_definition: across 1 |..| sequence.count as i all
-			across lower_ |..| upper_ as j all
-				j.item = i.item + lower_ - 1 implies map [j.item] = sequence [i.item]
-			end end
+	lower_constraint: sequence.is_empty implies lower_ = 1
+	map_definition: map ~ map_from_sequence
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

@@ -48,8 +48,8 @@ feature -- Modification
 		note
 			explicit: wrapping -- Do not automatically unwrap/wrap `Current'
 		require
-			n_exists: n /= Void
 			n_singleton: n.left = n
+			right_wrapped: right.is_wrapped
 			modify (Current, right, n)
 		local
 			r: DLL_NODE
@@ -80,6 +80,8 @@ feature -- Modification
 		note
 			explicit: wrapping -- Do not automatically unwrap/wrap `Current'
 		require
+			right_wrapped: right.is_wrapped
+			left_wrapped: left.is_wrapped
 			modify (Current, left, right)
 		local
 			l, r: DLL_NODE

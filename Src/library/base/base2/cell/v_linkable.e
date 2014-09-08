@@ -11,7 +11,7 @@ inherit
 	V_CELL [G]
 
 create
-	make
+	put
 
 feature -- Access
 

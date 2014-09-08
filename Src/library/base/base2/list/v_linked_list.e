@@ -41,10 +41,8 @@ feature -- Initialization
 	copy_ (other: V_LIST [G])
 			-- Initialize by copying all the items of `other'.
 		note
-			explicit: wrapping, contracts
+			explicit: wrapping
 		require
-			is_wrapped: is_wrapped
-			other_wrapped: other.is_wrapped
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "owns"], Current)
 			modify_field (["observers", "closed"], other)
@@ -58,8 +56,6 @@ feature -- Initialization
 				other.forget_iterator (i)
 			end
 		ensure
-			is_wrapped: is_wrapped
-			other_wrapped: other.is_wrapped
 			observers_open: across observers as o all o.item.is_open end
 			sequence_effect: sequence ~ other.sequence
 			other_sequence_effect: other.sequence ~ old other.sequence
@@ -99,11 +95,11 @@ feature -- Iteration
 			-- New iterator pointing at position `i'.
 		note
 			status: impure
-			explicit: contracts, wrapping
+			explicit: wrapping
 		do
 			create Result.make (Current)
 			check Result.inv end
-			check inv_only ("lower_definition", "upper_definition") end
+			check inv_only ("lower_definition") end
 			if i < 1 then
 				Result.go_before
 			elseif i > count then
@@ -118,7 +114,7 @@ feature -- Replacement
 	put (v: G; i: INTEGER)
 			-- Associate `v' with index `i'.
 		note
-			explicit: contracts, wrapping
+			explicit: wrapping
 		do
 			check inv end
 			put_cell (v, cell_at (i), i)
@@ -126,8 +122,6 @@ feature -- Replacement
 
 	reverse
 			-- Reverse the order of elements.
-		note
-			explicit: contracts
 		local
 			rest, next: V_LINKABLE [G]
 			rest_cells: MML_SEQUENCE [V_LINKABLE [G]]
@@ -175,12 +169,10 @@ feature -- Extension
 
 	extend_front (v: G)
 			-- Insert `v' at the front.
-		note
-			explicit: contracts
 		local
 			cell: V_LINKABLE [G]
 		do
-			create cell.make (v)
+			create cell.put (v)
 			if first_cell = Void then
 				last_cell := cell
 			else
@@ -191,19 +183,16 @@ feature -- Extension
 
 			cells := cells.prepended (cell)
 			sequence := sequence.prepended (v)
-			upper_ := upper_ + 1
 		ensure then
 			cells_preserved: old cells ~ cells.but_first
 		end
 
 	extend_back (v: G)
 			-- Insert `v' at the back.
-		note
-			explicit: contracts
 		local
 			cell: V_LINKABLE [G]
 		do
-			create cell.make (v)
+			create cell.put (v)
 			if first_cell = Void then
 				first_cell := cell
 			else
@@ -214,7 +203,6 @@ feature -- Extension
 
 			cells := cells & cell
 			sequence := sequence & v
-			upper_ := upper_ + 1
 		ensure then
 			cells_preserved: old cells ~ cells.but_last
 		end
@@ -222,7 +210,7 @@ feature -- Extension
 	extend_at (v: G; i: INTEGER)
 			-- Insert `v' at position `i'.
 		note
-			explicit: contracts, wrapping
+			explicit: wrapping
 		do
 			check inv end
 			if i = 1 then
@@ -230,14 +218,14 @@ feature -- Extension
 			elseif i = count + 1 then
 				extend_back (v)
 			else
-				extend_after (create {V_LINKABLE [G]}.make (v), cell_at (i - 1), i - 1)
+				extend_after (create {V_LINKABLE [G]}.put (v), cell_at (i - 1), i - 1)
 			end
 		end
 
 	prepend (input: V_ITERATOR [G])
 			-- Prepend sequence of values, over which `input' iterates.
 		note
-			explicit: contracts, wrapping
+			explicit: wrapping
 		local
 			it: V_LINKED_LIST_ITERATOR [G]
 		do
@@ -280,7 +268,7 @@ feature -- Extension
 	insert_at (input: V_ITERATOR [G]; i: INTEGER)
 			-- Insert sequence of values, over which `input' iterates, starting at position `i'.
 		note
-			explicit: contracts, wrapping
+			explicit: wrapping
 		local
 			it: V_LINKED_LIST_ITERATOR [G]
 			s: like sequence
@@ -291,7 +279,7 @@ feature -- Extension
 				from
 					it := at (i - 1)
 					check input.inv_only ("subjects_definition", "index_constraint", "no_observers") end
-					check inv_only ("lower_definition", "upper_definition") end
+					check inv_only ("lower_definition") end
 				invariant
 					1 <= input.index_ and input.index_ <= input.sequence.count + 1
 					i - 1 <= it.index_
@@ -325,8 +313,6 @@ feature -- Removal
 
 	remove_front
 			-- Remove first element.
-		note
-			explicit: contracts
 		do
 			if count_ = 1 then
 				last_cell := Void
@@ -338,7 +324,6 @@ feature -- Removal
 
 			cells := cells.but_first
 			sequence := sequence.but_first
-			upper_ := upper_ - 1
 		ensure then
 			cells_preserved: cells ~ old cells.but_first
 		end
@@ -346,7 +331,7 @@ feature -- Removal
 	remove_back
 			-- Remove last element.
 		note
-			explicit: contracts, wrapping
+			explicit: wrapping
 		do
 			check inv end
 			if count = 1 then
@@ -362,7 +347,7 @@ feature -- Removal
 	remove_at  (i: INTEGER)
 			-- Remove element at position `i'.
 		note
-			explicit: contracts, wrapping
+			explicit: wrapping
 		do
 			check inv end
 			if i = 1 then
@@ -376,15 +361,12 @@ feature -- Removal
 
 	wipe_out
 			-- Remove all elements.
-		note
-			explicit: contracts
 		do
 			first_cell := Void
 			last_cell := Void
 			count_ := 0
 			create cells
 			create sequence
-			upper_ := 0
 		ensure then
 			old_cells_wrapped: across owns.old_ as c all c.item.is_wrapped end
 			cells_exist: (old cells).non_void
@@ -464,7 +446,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			lemma_cells_distinct
 			unwrap
 
---			check across 1 |..| count as i all owns [cells [i.item]] end end
 			check index_ < cells.count implies c.right = cells [index_ + 1] end
 
 			if c.right = Void then
@@ -477,31 +458,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 			cells := cells.extended_at (index_ + 1, new)
 			sequence := sequence.extended_at (index_ + 1, new.item)
-			upper_ := upper_ + 1
---			map := sequence.to_map
---			bag := sequence.to_bag
---			set_owns (cells.range)
-
---			check v1: count = sequence.count end
---			check v2: sequence.count = cells.count end
---			check v3: cells.is_empty = (first_cell = Void) end
---			check v4: cells.is_empty = (last_cell = Void) end
---			check v16: owns = cells.range end
---			check v5_1: cells.non_void end
---			check v5_3:  across 1 |..| count as i all sequence [i.item] = cells [i.item].item end end
---			check v5_4:  is_linked (cells) end
---			check v6: count > 0 implies first_cell = cells.first end
---			check v7: count > 0 implies last_cell = cells.last and then last_cell.right = Void end
---			check v10: lower_ = 1 end
---			check v_11: map = sequence.to_map end
---			check v_12: sequence.count = upper_ - lower_ + 1 end
---			check v_121: upper_ = count end
---			check v_13: map.domain ~ create {MML_INTERVAL}.from_range (lower_, upper_) end
---			check v_14: across lower_ |..| upper_ as i all map [i.item] = sequence [idx(i.item)] end end
---			check v_15: bag ~ sequence.to_bag end
---			check v_17: not observers [Current] end
---			check v_18: subjects = [] end
-
 			wrap
 		ensure
 			sequence ~ old sequence.extended_at (index_ + 1, new.item)
@@ -531,7 +487,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 			cells := cells.removed_at (index_ + 1)
 			sequence := sequence.removed_at (index_ + 1)
-			upper_ := upper_ - 1
 			wrap
 		ensure
 			sequence ~ old sequence.removed_at (index_ + 1)
@@ -585,7 +540,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 				count_ := count_ + other_count
 				cells := cells.front (index_) + other.cells.old_ + cells.tail (index_ + 1)
 				sequence := sequence.front (index_) + other.sequence.old_ + sequence.tail (index_ + 1)
-				upper_ := upper_ + other.sequence.count.old_
 				wrap
 			end
 		ensure

@@ -33,6 +33,9 @@ classes = [
   'V_DOUBLY_LINKABLE',
   'V_DOUBLY_LINKED_LIST',
   'V_DOUBLY_LINKED_LIST_ITERATOR',
+  'V_ARRAY',
+  'V_INDEX_ITERATOR',
+  'V_ARRAY_ITERATOR'
 ]
 
 outfile_name = 'base2.out'

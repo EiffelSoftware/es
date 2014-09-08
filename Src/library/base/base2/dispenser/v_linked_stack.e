@@ -71,7 +71,6 @@ feature -- Iteration
 			-- New iterator pointing to a position in the container, from which it can traverse all elements by going `forth'.
 		note
 			status: impure
-			explicit: contracts
 		local
 			list_cursor: V_LINKED_LIST_ITERATOR [G]
 		do
@@ -115,7 +114,6 @@ feature -- Specification
 			-- Remove `it' from `observers'.
 		note
 			status: ghost
-			explicit: contracts
 		do
 			it.unwrap
 			set_observers (observers / it)

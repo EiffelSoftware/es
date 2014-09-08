@@ -27,7 +27,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 		note
 			status: creator
 		require
-			list_wrapped: list.is_wrapped
 			modify (Current)
 			modify_field (["observers", "closed"], list)
 		do
@@ -266,7 +265,7 @@ feature -- Extension
 			-- Insert `v' to the right of current position. Do not move cursor.
 		do
 			check target.inv_only ("cells_domain") end
-			target.extend_after (create {V_DOUBLY_LINKABLE [G]}.make (v), active, index_)
+			target.extend_after (create {V_DOUBLY_LINKABLE [G]}.put (v), active, index_)
 			check target.inv_only ("bag_definition", "map_definition_list", "cells_domain",  "count_definition", "lower_definition") end
 			set_target_index_sequence
 		ensure then

@@ -7,21 +7,7 @@ class
 	V_CELL [G]
 
 create
-	make
-
-feature {NONE} -- Initialization
-
-	make (v: G)
-			-- Create a cell with `v' as `item'.
-		note
-			status: creator
-		require
-			modify_model (["item", "subjects", "observers"], Current)
-		do
-			item := v
-		ensure
-			item_effect: item = v
-		end
+	put
 
 feature -- Access
 
@@ -36,16 +22,12 @@ feature -- Replacement
 
 	put (v: G)
 			-- Replace `item' with `v'.
-		note
-			explicit: contracts
 		require
-			wrapped: is_wrapped
 			modify_model ("item", Current)
 		do
 			item := v
 		ensure
 			item_effect: item = v
-			wrapped: is_wrapped
 		end
 
 note

@@ -22,8 +22,8 @@ feature {NONE} -- Initialization
 	make (t: V_LINKED_STACK [G]; it: V_LINKED_LIST_ITERATOR [G])
 			-- Create a proxy for `it' with target `t'.
 		note
-			status: creator
 			explicit: contracts
+			status: creator
 		require
 			t_open: t.is_open
 			t.inv_only ("bag_definition", "sequence_definition")
@@ -39,7 +39,7 @@ feature {NONE} -- Initialization
 			iterator := it
 			check it.inv end
 		ensure
-			is_wrapped
+			wrapped: is_wrapped
 			target_effect: target = t
 			index_effect: index_ = it.index_
 			t_observers_effect: t.observers = old t.observers & Current

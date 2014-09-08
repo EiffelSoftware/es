@@ -15,13 +15,10 @@ feature -- Access
 			-- Fresh cursor associated with current structure
 		note
 			status: impure
-			explicit: contracts
 		require
-			is_wrapped: is_wrapped
 			modify_field (["observers", "closed"], Current)
 		deferred
 		ensure
-			is_wrapped: is_wrapped
 			result_fresh: Result.is_fresh
 			result_wrapped: Result.is_wrapped and Result.inv
 			result_in_observers: observers = old observers & Result

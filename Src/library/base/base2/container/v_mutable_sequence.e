@@ -27,7 +27,6 @@ feature -- Iteration
 			-- New iterator pointing at position `i'.
 		note
 			status: impure
-			explicit: contracts
 		deferred
 		end
 
@@ -35,16 +34,12 @@ feature -- Replacement
 
 	put (v: G; i: INTEGER)
 			-- Replace value at position `i' with `v'.
-		note
-			explicit: contracts
 		require
-			is_wrapped: is_wrapped
 			has_index: has_index (i)
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence"], Current)
 		deferred
 		ensure
-			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old sequence.replaced_at (idx (i), v)
 		end
 
@@ -52,9 +47,8 @@ feature -- Replacement
 			-- Swap values at positions `i1' and `i2'.
 		note
 			status: dynamic
-			explicit: contracts, wrapping
+			explicit: wrapping
 		require
-			is_wrapped: is_wrapped
 			has_index_one: has_index (i1)
 			has_index_two: has_index (i2)
 			observers_open: across observers as o all o.item.is_open end
@@ -64,10 +58,8 @@ feature -- Replacement
 		do
 			v := item (i1)
 			put (item (i2), i1)
-			check inv_only ("upper_definition") end
 			put (v, i2)
 		ensure
-			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old sequence.replaced_at (idx(i1), sequence [idx(i2)]).replaced_at (idx(i2), sequence [idx(i1)])
 		end
 
@@ -75,9 +67,8 @@ feature -- Replacement
 			-- Put `v' at positions [`l', `u'].
 		note
 			status: dynamic
-			explicit: contracts, wrapping
+			explicit: wrapping
 		require
-			is_wrapped: is_wrapped
 			l_not_too_small: l >= lower_
 			u_not_too_large: u <= upper_
 			l_not_too_large: l <= u + 1
@@ -92,7 +83,6 @@ feature -- Replacement
 				j := l
 			invariant
 				is_wrapped and it.is_wrapped
-				inv_only ("upper_definition")
 				it.inv_only ("sequence_definition")
 				it.index_ = idx(j)
 				l <= j and j <= u + 1
@@ -110,11 +100,10 @@ feature -- Replacement
 
 			forget_iterator (it)
 		ensure
-			is_wrapped: is_wrapped
 			sequence_domain_effect: sequence.count = old sequence.count
 			sequence_changed_effect: across idx (l) |..| idx (u) as i all sequence [i.item] = v end
-			sequence_unchanged_effect_1: across idx (lower_) |..| idx (l - 1) as i all sequence [i.item] = (old sequence) [i.item] end
-			sequence_unchanged_effect_2: across idx (u + 1) |..| idx (upper_) as i all sequence [i.item] = (old sequence) [i.item] end
+			sequence_front_unchanged: across 1 |..| idx (l - 1) as i all sequence [i.item] = (old sequence) [i.item] end
+			sequence_tail_unchanged: across idx (u + 1) |..| sequence.count as i all sequence [i.item] = (old sequence) [i.item] end
 			observers_restored: observers ~ old observers
 		end
 
@@ -124,7 +113,6 @@ feature -- Replacement
 			status: dynamic
 			explicit: wrapping
 		require
-			is_wrapped: is_wrapped
 			l_not_too_small: l >= lower
 			u_not_too_large: u <= upper
 			l_not_too_large: l <= u + 1
@@ -133,11 +121,10 @@ feature -- Replacement
 		do
 			fill (({G}).default, l, u)
 		ensure
-			is_wrapped: is_wrapped
 			sequence_domain_effect: sequence.count = old sequence.count
 			sequence_changed_effect: across idx (l) |..| idx (u) as i all sequence [i.item] = ({G}).default end
-			sequence_unchanged_effect_1: across idx (lower_) |..| idx (l - 1) as i all sequence [i.item] = (old sequence) [i.item] end
-			sequence_unchanged_effect_2: across idx (u + 1) |..| idx (upper_) as i all sequence [i.item] = (old sequence) [i.item] end
+			sequence_front_unchanged: across 1 |..| idx (l - 1) as i all sequence [i.item] = (old sequence) [i.item] end
+			sequence_tail_unchanged: across idx (u + 1) |..| sequence.count as i all sequence [i.item] = (old sequence) [i.item] end
 			observers_restored: observers ~ old observers
 		end
 
@@ -147,8 +134,6 @@ feature -- Replacement
 			status: dynamic
 			explicit: wrapping
 		require
-			is_wrapped: is_wrapped
-			other_wrapped: other.is_wrapped
 			other_not_current: other /= Current
 			other_first_not_too_small: other_first >= other.lower_
 			other_last_not_too_large: other_last <= other.upper_
@@ -171,8 +156,6 @@ feature -- Replacement
 			invariant
 				is_wrapped and other.is_wrapped
 				it.is_wrapped and other_it.is_wrapped
-				inv_only ("upper_definition")
-				other.inv_only ("upper_definition")
 				it.inv_only ("sequence_definition")
 				it.index_ = idx (index + j)
 				other_it.index_ = other.idx (other_first + j)
@@ -197,7 +180,6 @@ feature -- Replacement
 			other.forget_iterator (other_it)
 			forget_iterator (it)
 		ensure
-			is_wrapped: is_wrapped
 			sequence_domain_effect: sequence.count = old sequence.count
 			sequence_effect: across 1 |..| sequence.count as i all if idx (index) <= i.item and i.item < idx (index + other_last - other_first + 1)
 					then sequence [i.item] = other.sequence [i.item - idx (index) + other.idx (other_first)]
@@ -210,9 +192,8 @@ feature -- Replacement
 			-- Reverse the order of elements.
 		note
 			status: dynamic
-			explicit: contracts, wrapping
+			explicit: wrapping
 		require
-			is_wrapped: is_wrapped
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence"], Current)
 		local
@@ -222,7 +203,6 @@ feature -- Replacement
 				j := lower
 				k := upper
 			invariant
-				inv_only ("upper_definition")
 				upper_ = upper_.old_
 				lower_ <= j and j <= k + 1 and k <= upper_
 				k = lower_ + upper_ - j
@@ -239,7 +219,6 @@ feature -- Replacement
 				k := k - 1
 			end
 		ensure
-			is_wrapped: is_wrapped
 			sequence_domain_effect: sequence.count = old sequence.count
 			sequence_effect: across 1 |..| sequence.count as i all sequence [i.item] = (old sequence) [sequence.count - i.item + 1] end
 		end

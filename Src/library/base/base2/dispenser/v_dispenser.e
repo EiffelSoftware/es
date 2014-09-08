@@ -42,7 +42,6 @@ feature -- Iteration
 			-- New iterator pointing to the accessible element.
 			-- (Traversal in the order of accessibility.)
 		note
-			explicit: contracts
 			status: impure
 		deferred
 		ensure then

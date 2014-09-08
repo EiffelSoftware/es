@@ -29,6 +29,7 @@ feature -- Element change
 
 	update (new_val: INTEGER)
 		require
+			observer_wrapped: observer /= Void implies observer.is_wrapped
 			modify_field (["cache", "closed"], observer)
 			modify_field (["value", "closed"], Current)
 		do
@@ -42,6 +43,7 @@ feature -- Element change
 			end
 		ensure
 			value_set: value = new_val
+			observer_wrapped: observer /= Void implies observer.is_wrapped
 		end
 
 feature {F_OOO_OBSERVER} -- Element change

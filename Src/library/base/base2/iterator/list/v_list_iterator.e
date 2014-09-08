@@ -27,7 +27,7 @@ feature -- Extension
 		require
 			not_off: not off
 			target_wrapped: target.is_wrapped
-			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			modify_model (["index_", "sequence", "box", "target_index_sequence"], Current)
 			modify_model (["sequence", "owns"], target)
 		deferred
@@ -43,7 +43,7 @@ feature -- Extension
 		require
 			not_off: not off
 			target_wrapped: target.is_wrapped
-			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			modify_model (["sequence", "target_index_sequence"], Current)
 			modify_model (["sequence", "owns"], target)
 		deferred
@@ -102,7 +102,7 @@ feature -- Removal
 		require
 			not_off: not off
 			target_wrapped: target.is_wrapped
-			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			modify_model (["index_", "sequence", "target_index_sequence"], Current)
 			modify_model (["sequence", "owns"], target)
 		deferred
@@ -118,7 +118,7 @@ feature -- Removal
 			not_off: not off
 			not_first: not is_first
 			target_wrapped: target.is_wrapped
-			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			modify_model (["index_", "sequence", "target_index_sequence"], Current)
 			modify_model (["sequence", "owns"], target)
 		deferred
@@ -134,48 +134,13 @@ feature -- Removal
 			not_off: not off
 			not_last: not is_last
 			target_wrapped: target.is_wrapped
-			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			modify_model (["sequence", "target_index_sequence"], Current)
 			modify_model (["sequence", "owns"], target)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.removed_at (index_ + 1)
 			target_wrapped: target.is_wrapped
-		end
-
-feature {NONE} -- Specification
-
-	set_target_index_sequence
-			-- Set `target_index_sequence' to [1..target.count]
-		note
-			status: ghost, dynamic
-		require
-			target_wrapped: target.is_wrapped
-			no_observers: observers = []
-			modify_field ("target_index_sequence", Current)
-		local
-			j: INTEGER
-		do
-			check target.inv end
-			from
-				create target_index_sequence
-				j := 1
-			invariant
-				1 <= j and j <= target.sequence.count + 1
-				target_index_sequence.count = j - 1
-				across 1 |..| (j - 1) as i all target_index_sequence [i.item] = i.item end
-				target_index_sequence.range = create {MML_INTERVAL}.from_range (1, j - 1)
-			until
-				j > target.count
-			loop
-				check (target_index_sequence & j).range = target_index_sequence.range & j end
-				target_index_sequence := target_index_sequence & j
-				j := j + 1
-			end
-		ensure
-			domain_set: target_index_sequence.count = target.count_
-			values_set: across 1 |..| target.count_ as i all target_index_sequence [i.item] = i.item end
-			range_set: target_index_sequence.range = create {MML_INTERVAL}.from_range (1, target.sequence.count)
 		end
 
 note

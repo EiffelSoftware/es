@@ -379,4 +379,10 @@ feature -- Status report
 			Result := True
 		end
 
+	is_creator_name (a_name: STRING): BOOLEAN
+			-- Is Boogie procedure `a_name' a translation of a creator?
+		do
+			Result := a_name.starts_with ("create.")
+		end
+
 end

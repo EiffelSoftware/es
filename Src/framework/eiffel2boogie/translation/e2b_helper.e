@@ -590,6 +590,13 @@ feature -- Eiffel helpers
 			end
 		end
 
+	is_creator (a_feature: FEATURE_I; a_class: CLASS_C): BOOLEAN
+			-- Is `a_feature' a creator of `a_class'?
+		do
+			Result := a_class.has_creator_of_name_id (a_feature.feature_name_id) or
+				(a_class.creation_feature /= Void and then a_class.creation_feature.feature_id = a_feature.feature_id)
+		end
+
 	feature_for_call_access (a_node: CALL_ACCESS_B; a_target_type: TYPE_A): FEATURE_I
 			-- Feature represented by `a_node'.
 		do

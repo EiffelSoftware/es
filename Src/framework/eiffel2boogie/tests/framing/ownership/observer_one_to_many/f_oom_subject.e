@@ -34,6 +34,7 @@ feature -- State update
 	update (v: INTEGER)
 			-- Update state to `v'.
 		require
+			observers_wrapped: across observers as o all o.item.is_wrapped end
 			modify_field (["value", "closed"], Current)
 			modify_field (["cache", "closed"], subscribers.sequence)
 		local
@@ -56,6 +57,7 @@ feature -- State update
 
 			wrap_all (observers)
 		ensure
+			observers_wrapped: across observers as o all o.item.is_wrapped end
 			value_set: value = v
 		end
 

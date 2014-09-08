@@ -34,6 +34,7 @@ feature -- State update
 	update (v: INTEGER)
 			-- Update state to `v'.
 		require
+			observers_wrapped: across observers as o all o.item.is_wrapped end
 			modify_field (["value", "closed"], Current)
 			modify (subscribers.sequence.range)
 		local
@@ -62,6 +63,7 @@ feature -- State update
 			wrap_all (observers)
 		ensure
 			value_set: value = v
+			observers_wrapped: across observers as o all o.item.is_wrapped end
 		end
 
 feature {F_OI_OBSERVER} -- Internal communication

@@ -48,9 +48,7 @@ feature -- Search
 			-- (Uses reference equality.)
 		note
 			status: impure, dynamic
-			explicit: contracts
 		require
-			is_wrapped: is_wrapped
 			modify_model ("observers", Current)
 		local
 			it: V_ITERATOR [G]
@@ -62,7 +60,6 @@ feature -- Search
 		ensure
 			definition: Result = bag.domain [v]
 			observers_restored: observers = old observers
-			is_wrapped: is_wrapped
 		end
 
 	occurrences (v: G): INTEGER
@@ -70,9 +67,7 @@ feature -- Search
 			-- (Uses reference equality.)
 		note
 			status: impure, dynamic
-			explicit: contracts
 		require
-			is_wrapped: is_wrapped
 			modify_model ("observers", Current)
 		local
 			it: V_ITERATOR [G]
@@ -101,7 +96,6 @@ feature -- Search
 		ensure
 			definition: Result = bag [v]
 			observers_restored: observers ~ old observers
-			is_wrapped: is_wrapped
 		end
 
 feature -- Iteration
@@ -109,7 +103,6 @@ feature -- Iteration
 	new_cursor: V_ITERATOR [G]
 			-- New iterator pointing to a position in the container, from which it can traverse all elements by going `forth'.
 		note
-			explicit: contracts
 			status: impure
 		deferred
 		ensure then
@@ -141,8 +134,8 @@ feature -- Specification
 			it.unwrap
 			set_observers (observers / it)
 		ensure
-			is_wrapped
-			it.is_open
+			wrapped: is_wrapped
+			it_open: it.is_open
 			observers = old observers / it
 		end
 

@@ -85,11 +85,11 @@ feature -- Update
 		note
 			explicit: wrapping
 		require
-			c_exists: c /= Void
 			c_different: c /= Current
 			c_singleton_1: c.parent = Void
 			c_singleton_2: c.children.is_empty
 			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
+			observers_wrapped: across observers as o all o.item.is_wrapped end
 			modify (Current, c)
 			modify_field (["value", "max_child", "closed"], ancestors)
 		do
@@ -116,6 +116,7 @@ feature -- Update
 			c_children_unchanged: c.children_set = old c.children_set
 			ancestors_unchengd: ancestors = old ancestors
 			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
+			observers_wrapped: across observers as o all o.item.is_wrapped end
 		end
 
 feature {F_COM_COMPOSITE} -- Implementation
