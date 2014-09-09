@@ -117,6 +117,11 @@ feature -- Entities
 			Result := ref_entity ("Current")
 		end
 
+	universe: IV_ENTITY
+		once
+			create Result.make ("universe", types.set (types.ref))
+		end
+
 feature -- Boolean operators
 
 	or_ (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION

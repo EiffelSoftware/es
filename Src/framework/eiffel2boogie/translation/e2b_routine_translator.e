@@ -318,7 +318,7 @@ feature -- Translation: Signature
 		end
 
 	read_frame: LINKED_LIST [IV_CONTRACT]
-			-- Contracts expressiong the read frame of the current routine.
+			-- Contracts expressing the read frame of the current routine.
 		local
 			l_pre: IV_PRECONDITION
 			l_fcall: IV_FUNCTION_CALL
@@ -656,6 +656,8 @@ feature -- Translation: Functions
 			l_fcall: IV_FUNCTION_CALL
 			l_type: CL_TYPE_A
 			l_arg: IV_ENTITY
+			l_reads: LIST [IV_EXPRESSION]
+			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 		do
 			set_context (a_feature, a_type)
 			helper.set_up_byte_context (current_feature, current_type)
@@ -694,8 +696,13 @@ feature -- Translation: Functions
 				l_proc.add_contract (l_post)
 			end
 
-				-- Frame axiom
-			generate_frame_axiom (l_function)
+				-- Generate frame axiom, unless function reads universe
+			create l_translator.make
+			l_translator.set_context (current_feature, current_type)
+			l_reads := read_expressions_of (contracts_of (current_feature, current_type).reads, l_translator).full_objects
+			if not (across l_reads as e some e.item.same_expression (factory.universe) end) then
+				generate_frame_axiom (l_function)
+			end
 		end
 
 	translate_function_precondition_predicate (a_feature: FEATURE_I; a_type: CL_TYPE_A)

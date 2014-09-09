@@ -37,7 +37,8 @@ feature -- Access
 		require
 			closed: closed
 			not_empty: not is_empty
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		do
 			check inv end
 			Result := item (lower)
@@ -52,7 +53,8 @@ feature -- Access
 		require
 			closed: closed
 			not_empty: not is_empty
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		do
 			check inv end
 			Result := item (upper)
@@ -66,7 +68,8 @@ feature -- Measurement
 			-- Lower bound of index interval.
 		require
 			closed: closed
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = lower_
@@ -78,7 +81,8 @@ feature -- Measurement
 			status: dynamic
 		require
 			closed: closed
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		do
 			check inv end
 			Result := lower + count - 1

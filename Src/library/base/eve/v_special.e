@@ -272,10 +272,13 @@ feature -- Element change
 				sequence.interval (source_index + 1, source_index + n) +
 				sequence.tail (destination_index + n + 1)
 		ensure
-			sequence_effect: sequence ~ old (
-				sequence.front (destination_index) +
-				sequence.interval (source_index + 1, source_index + n) +
-				sequence.tail (destination_index + n + 1))
+			sequence_domain_effect: sequence.count = (old sequence.count).max (destination_index + n)
+			sequence_effect_data: across (destination_index + 1) |..| (destination_index + n) as i all
+				sequence [i.item] = (old sequence) [i.item - destination_index + source_index] end
+			sequence_effect_front: across 1 |..| destination_index as i all
+				sequence [i.item] = (old sequence) [i.item] end
+			sequence_effect_tail: across (destination_index + n + 1) |..| (old sequence.count) as i all
+				sequence [i.item] = (old sequence) [i.item] end
 		end
 
 feature -- Resizing

@@ -16,7 +16,8 @@ feature -- Access
 			not_off: not off
 			closed: closed
 			subjects_closed: subjects.any_item.closed
-			reads (ownership_domain, subjects.any_item.ownership_domain)
+--			reads (ownership_domain, subjects.any_item.ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = box.any_item
@@ -29,7 +30,8 @@ feature -- Status report
 		require
 			closed: closed
 			subjects_closed: subjects.any_item.closed
-			reads (ownership_domain, subjects.any_item.ownership_domain)
+--			reads (ownership_domain, subjects.any_item.ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = box.is_empty

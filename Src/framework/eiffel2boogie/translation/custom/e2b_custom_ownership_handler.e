@@ -177,6 +177,8 @@ feature -- Basic operations
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "trans_owns")
 				elseif l_name ~ "ownership_domain" then
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "domain")
+				elseif l_name ~ "universe" then
+					a_translator.set_last_expression (factory.entity ("universe", types.set (types.ref)))
 				elseif l_name ~ "is_fresh" then
 					a_translator.set_last_expression (factory.not_ (factory.heap_access (
 						factory.old_ (factory.global_heap),

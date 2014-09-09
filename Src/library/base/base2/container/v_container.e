@@ -20,7 +20,8 @@ feature -- Measurement
 			-- Number of elements.
 		require
 			closed: closed
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = bag.count
@@ -34,7 +35,8 @@ feature -- Status report
 			status: dynamic
 		require
 			closed: closed
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		do
 			Result := count = 0
 		ensure

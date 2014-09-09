@@ -114,6 +114,7 @@ feature -- Specification
 			-- Remove `it' from `observers'.
 		note
 			status: ghost
+			explicit: contracts
 		do
 			it.unwrap
 			set_observers (observers / it)

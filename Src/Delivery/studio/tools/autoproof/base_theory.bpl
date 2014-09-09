@@ -143,6 +143,8 @@ function in_trans_owns(h: HeapType, o: ref, o': ref): bool
 function trans_owns(h: HeapType, o: ref): Set ref
 { (lambda o': ref :: in_trans_owns(h, o, o')) }
 
+const universe: Set ref;
+axiom (forall o: ref :: { universe[o] } universe[o]);
 
 // ----------------------------------------------------------------------
 // Models

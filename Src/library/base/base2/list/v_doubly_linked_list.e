@@ -423,7 +423,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			valid_position: 1 <= i and i <= cells.count
 			inv_only ("cells_domain", "cells_exist", "cells_first", "cells_last", "cells_linked", "count_definition")
 			cells_closed: across 1 |..| cells.count as k all cells [k.item].closed end
-			reads (Current, cells.range)
+--			reads (Current, cells.range)
+			reads (universe)
 		local
 			j: INTEGER
 		do

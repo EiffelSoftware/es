@@ -47,6 +47,11 @@ feature -- Properties
 			-- Is the sequence empty?
 		do
 		end
+		
+	is_constant (c: G): BOOLEAN
+			-- Are all values equal to `c'?
+		do
+		end		
 
 --	is_sorted: BOOLEAN
 --			-- Is the sequence sorted?

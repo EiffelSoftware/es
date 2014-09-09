@@ -414,7 +414,8 @@ feature {V_LINKED_LIST_ITERATOR} -- Implementation
 			active_exists: active /= Void
 			closed: closed
 			target_closed: target.closed
-			reads (Current, target.ownership_domain)
+--			reads (Current, target.ownership_domain)
+			reads (universe)
 		local
 			c: V_LINKABLE [G]
 		do

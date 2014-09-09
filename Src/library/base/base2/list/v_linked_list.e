@@ -388,7 +388,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 		require
 			valid_position: 1 <= i and i <= cells.count
 			inv_only ("cells_domain", "cells_exist", "cells_first", "cells_linked")
-			reads (Current, cells.range)
+--			reads (Current, cells.range)
+			reads (universe)
 		local
 			j: INTEGER
 		do

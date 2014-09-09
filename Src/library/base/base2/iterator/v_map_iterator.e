@@ -24,7 +24,8 @@ feature -- Access
 			closed: closed
 			target_closed: target.closed
 			not_off: not off
-			reads (Current, subjects.any_item.ownership_domain)
+--			reads (Current, subjects.any_item.ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = key_sequence [index_]

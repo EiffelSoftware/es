@@ -46,7 +46,8 @@ feature -- Measurement
 		require
 			closed: closed
 			subjects_closed: subjects.any_item.closed
-			reads (ownership_domain, target.ownership_domain)
+--			reads (ownership_domain, target.ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = index_
@@ -69,7 +70,8 @@ feature -- Status report
 			-- Is current position before any position in `target'?
 		require
 			closed: closed
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = (index_ = 0)
@@ -80,7 +82,8 @@ feature -- Status report
 		require
 			closed
 			target.closed
-			reads (ownership_domain, target.ownership_domain)
+--			reads (ownership_domain, target.ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = (index_ = sequence.count + 1)
@@ -102,7 +105,8 @@ feature -- Status report
 		require
 			closed: closed
 			target_closed: target.closed
-			reads (ownership_domain, target.ownership_domain)
+--			reads (ownership_domain, target.ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = (not sequence.is_empty and index_ = 1)
@@ -113,7 +117,8 @@ feature -- Status report
 		require
 			closed: closed
 			target_closed: target.closed
-			reads (ownership_domain, target.ownership_domain)
+--			reads (ownership_domain, target.ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = (not sequence.is_empty and index_ = sequence.count)

@@ -86,6 +86,7 @@ feature -- Access (built-ins)
 				"is_fully_readable",
 				"transitive_owns",
 				"ownership_domain",
+				"universe",
 				"is_fresh"
 			>>
 			Result.compare_objects

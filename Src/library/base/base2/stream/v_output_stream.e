@@ -14,6 +14,7 @@ feature -- Status report
 			-- Is current position off scope?
 		require
 			closed: closed
+--			reads (universe)
 		deferred
 		ensure
 			defintion: Result = off_

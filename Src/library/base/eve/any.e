@@ -514,6 +514,13 @@ feature -- Verification: ownership queries
 		do
 		end
 
+	frozen universe: MML_SET [ANY]
+			-- Set of all objects.
+		note
+			status: ghost
+		do
+		end
+
 feature -- Verification: ownership fields
 
 	frozen closed: BOOLEAN

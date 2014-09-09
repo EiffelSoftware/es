@@ -165,7 +165,8 @@ feature -- Comparison
 		require
 			closed: closed
 			other_closed: other.closed
-			reads (ownership_domain, other.ownership_domain)
+--			reads (ownership_domain, other.ownership_domain)
+			reads (universe)
 		do
 			check inv end
 			check other.inv end
@@ -204,6 +205,8 @@ feature -- Resizing
 	resize (l, u: INTEGER)
 			-- Set index interval to [`l', `u']; keep values at old indexes; set to default at new indexes.
 			-- Reallocate memory unless count stays the same.
+		note
+			explicit: wrapping
 		require
 			valid_indexes: l <= u + 1
 			observers_open: across observers as o all o.item.is_open  end
@@ -213,13 +216,13 @@ feature -- Resizing
 		do
 			new_count := u - l + 1
 			if new_count = 0 then
-				create area.make_empty (0)
-				lower := 1
-				upper := 0
+				wipe_out
 			else
+				unwrap
 				if new_count > area.count then
 					area := area.aliased_resized_area_with_default (({G}).default, new_count)
 				end
+
 				x := lower.max (l)
 				y := upper.min (u)
 				if x > y then
@@ -237,11 +240,12 @@ feature -- Resizing
 				end
 				lower := l
 				upper := u
+				wrap
 			end
 		ensure
 			lower_effect: lower_ = if l <= u then l else 1 end
 			upper_effect: upper_ = if l <= u then u else 0 end
-			sequence_effect: across 1 |..| sequence.count as i all
+			sequence_effect_old: across 1 |..| sequence.count as i all
 				sequence [i.item] = if idx (old lower_) <= i.item and i.item <= idx (old upper_)
 					then (old sequence) [i.item + lower_ - old lower_]
 					else ({G}).default end end
@@ -296,15 +300,16 @@ feature -- Resizing
 
 	wipe_out
 			-- Remove all elements.
-		note
-			explicit: wrapping
 		require
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "lower_", "owns"], Current)
 		do
-			resize (1, 0)
+			create area.make_empty (0)
+			lower := 1
+			upper := 0
 		ensure
 			sequence_effect: sequence.is_empty
+			lower_effect: lower_ = 1
 		end
 
 feature {V_CONTAINER, V_ITERATOR} -- Implementation

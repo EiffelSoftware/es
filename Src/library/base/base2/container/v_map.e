@@ -23,7 +23,8 @@ feature -- Access
 		require
 			closed: closed
 			has_key: has_key (k)
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = map [k]
@@ -35,7 +36,8 @@ feature -- Search
 			-- Does `map' contain a key equivalent to `k' according to `key_equivalence'?
 		require
 			closed: closed
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = map.domain [k]

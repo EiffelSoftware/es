@@ -21,7 +21,8 @@ feature -- Access
 		require
 			not_empty: not is_empty
 			closed: closed
-			reads (ownership_domain)
+--			reads (ownership_domain)
+			reads (universe)
 		deferred
 		ensure
 			definition: Result = sequence.first
