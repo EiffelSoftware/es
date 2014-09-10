@@ -5291,6 +5291,7 @@ Src/web/eiffel-lang.org/library/cms/www/themes/smarty/theme.info -text
 Src/web/eiffel-lang.org/library/cms/www/themes/test/res/favicon.ico -text
 Src/web/eiffel-lang.org/library/cms/www/themes/test/res/logo.png -text
 Src/web/eiffel-lang.org/library/cms/www/themes/test/res/style.css -text
+Src/web/eiffel-lang.org/modules/wiki_docs/wiki_docs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/themes/demo/css/all.css -text
 Src/web/eiffel-lang.org/themes/demo/images/bg-header.jpg -text
 Src/web/eiffel-lang.org/themes/demo/images/logo.png -text
