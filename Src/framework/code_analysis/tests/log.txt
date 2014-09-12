@@ -1,1 +1,0 @@
-00:00:00  ---  Running test: 001_self_assignment
