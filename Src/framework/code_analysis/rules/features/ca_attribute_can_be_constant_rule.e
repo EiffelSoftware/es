@@ -118,12 +118,16 @@ feature {NONE} -- Feature Visitor for Violation Check
 			across attributes.current_keys as l_key loop
 				if not unassigned_attributes.has (l_key.item) then
 					l_debug := l_key.item
-					create_violation (current_context.checking_class.feature_with_name_32 (l_key.item), attributes.at (l_key.item).string_value_32)
+					create_violation (current_context.checking_class.feature_with_name_32 (l_key.item), l_key.item)
 				end
 			end
+
+			-- Reset the tables for the next class.
+			attributes.wipe_out
+			unassigned_attributes.wipe_out
 		end
 
-	create_violation (a_feature: attached E_FEATURE; a_value: STRING_32)
+	create_violation (a_feature: attached E_FEATURE; a_value: attached STRING_32)
 			-- Creates violation regarding `a_feature' never being called.
 		local
 			l_violation: CA_RULE_VIOLATION

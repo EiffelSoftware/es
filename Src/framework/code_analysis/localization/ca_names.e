@@ -18,6 +18,17 @@ feature -- General
 
 feature -- Rules
 
+	unreachable_code_title: STRING_32
+		do Result := translation_in_context ("Unreachable code", once "code_analyzer") end
+
+	unreachable_code_description: STRING_32
+		do Result := translation_in_context ("Code that will never be executed should be removed. It may be there%
+							% for debug purposes or due to a programmer's mistake. One example is a series of instructions%
+							% (in the same block) which follows an assertion that always evaluates to false.", once "code_analyzer") end
+
+	unreachable_code_fix: STRING_32
+		do Result := translation_in_context ("Remove unreachable code", once "code_analyzer") end
+
 	loop_invariant_comp_within_loop_title: STRING_32
 		do Result := translation_in_context ("Loop invariant computation within loop", once "code_analyzer") end
 
@@ -85,8 +96,8 @@ feature -- Rules
 							% an occurrence it should be checked whether the object creation can be moved outside%
 							% the loop.", once "code_analyzer") end
 
-	object_creation_within_loop_fix: STRING_32
-		do Result := translation_in_context ("Move object creation in front of loop", once "code_analyzer") end
+	move_instruction_within_loop_fix: STRING_32
+		do Result := translation_in_context ("Move instruction outside of the loop", once "code_analyzer") end
 
 	comment_not_well_phrased_title: STRING_32
 		do Result := translation_in_context ("Comment not well phrased", once "code_analyzer") end
@@ -158,6 +169,9 @@ feature -- Rules
 	inherit_from_any_description: STRING_32
 		do Result := translation_in_context ("Inheritance with no adaptations from the ANY class need not explicitely%
 						 	% be defined. This should be removed.", once "code_analyzer") end
+
+	inherit_from_any_fix: STRING_32
+		do Result := translation_in_context ("Remove unnecessary inheritance", once "code_analyzer") end
 
 	self_assignment_title: STRING_32
 		do Result := translation_in_context ("Self-assignment", once "code_analyzer") end

@@ -82,6 +82,8 @@ feature {NONE} -- Initialization
 			add_rule (create {CA_VOID_CHECK_USING_IS_EQUAL_RULE}.make)
 			add_rule (create {CA_COMPARISON_OF_OBJECT_REFS_RULE}.make)
 			add_rule (create {CA_ATTRIBUTE_CAN_BE_CONSTANT_RULE}.make)
+			add_rule (create {CA_LOOP_INVARIANT_COMPUTATION_RULE}.make)
+			add_rule (create {CA_UNREACHABLE_CODE_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

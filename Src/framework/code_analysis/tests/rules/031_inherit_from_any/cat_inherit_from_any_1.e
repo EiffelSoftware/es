@@ -1,15 +1,17 @@
 class
 	CAT_INHERIT_FROM_ANY_1
 
--- Violates the inherit from any rule.
 inherit
 	ANY
+		undefine
+			out
+		end
 
 feature {NONE} -- Test
 
-	dummy (a1: INTEGER) : INTEGER
+	out: STRING
 	do
-		Result := a1 + 50
+		Result := "42"
 	end
 
 end

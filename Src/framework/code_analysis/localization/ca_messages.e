@@ -99,11 +99,18 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	unreachable_code_violation_1: STRING_32
+		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
+
+	unreachable_code_violation_2: STRING_32
+		do Result := translation_in_context ("' contains unreachable code%Nthat should be considered to be removed. '", once "code_analyzer.violation") end
+
 	loop_invariant_comp_within_loop_violation_1: STRING_32
 		do Result := translation_in_context ("The instruction '", once "code_analyzer.violation") end
 
 	loop_invariant_comp_within_loop_violation_2: STRING_32
-		do Result := translation_in_context ("' is invariant in this loop and can be moved in front or after the loop to increase performance.", once "code_analyzer.violation") end
+		do Result := translation_in_context ("' is invariant in this loop and can be moved%Nin front or after%
+									% the loop to increase performance.", once "code_analyzer.violation") end
 
 	attribute_can_be_constant_violation_1: STRING_32
 		do Result := translation_in_context ("Attribute '", once "code_analyzer.violation") end
@@ -169,7 +176,7 @@ feature -- Rule Violations
 		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
 
 	inherit_from_any_violation_2: STRING_32
-		do Result := translation_in_context ("' contains an explicit inheritance with no adaptation from the ANY class%N%
+		do Result := translation_in_context ("' contains an explicit%Ninheritance with no adaptation from the ANY class%N%
 									% which doesn't need to be defined.", once "code_analyzer.violation") end
 
 	self_assignment_violation_1: STRING_32

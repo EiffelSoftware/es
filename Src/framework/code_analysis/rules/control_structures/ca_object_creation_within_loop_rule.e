@@ -61,7 +61,7 @@ feature {NONE} -- Rule Checking
 			-- Checks if `a_loop' contains an object creation.
 		local
 			l_violation: CA_RULE_VIOLATION
-			l_fix: CA_OBJECT_CREATION_WITHIN_LOOP_FIX
+			l_fix: CA_MOVE_INSTRUCTION_WITHIN_LOOP_FIX
 		do
 			if attached a_loop.compound as l_body then
 				across l_body as l_instruction loop
@@ -69,7 +69,7 @@ feature {NONE} -- Rule Checking
 						create l_violation.make_with_rule (Current)
 						l_violation.set_location (l_creation.start_location)
 
-						create l_fix.make_with_loop_and_instruction (current_context.checking_class, a_loop, l_creation)
+						create l_fix.make_with_loop_and_instruction (current_context.checking_class, a_loop, l_creation, True)
 						l_violation.fixes.extend (l_fix)
 
 						violations.extend (l_violation)

@@ -4,7 +4,7 @@ note
 	
 			For a boolean result there is no need for
 			an If/Else clause with Result := True and and Result := False,
-			respectively. One can directly assign the If condition (or its
+			respectively. One can directly assign the If condi tion (or its
 			negation) to the result.
 		]"
 	author: "Stefan Zurfluh"
