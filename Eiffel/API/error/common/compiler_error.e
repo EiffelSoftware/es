@@ -24,7 +24,7 @@ inherit
 			{NONE} all
 		end
 
-feature {NONE} -- Access
+feature {ERROR_JSON_TRACER} -- Access
 
 	help_text: attached LIST [STRING]
 			-- Full help text loaded from disk.
@@ -160,7 +160,7 @@ feature {NONE} -- Access
 			create Result.make (13)
 		end
 
-feature {ERROR_TRACER} -- Formatting
+feature {ERROR_VISITOR} -- Formatting
 
 	build_explain (a_text_formatter: TEXT_FORMATTER)
 			-- Build specific explanation image for current error
@@ -410,7 +410,7 @@ feature {NONE} -- Output
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

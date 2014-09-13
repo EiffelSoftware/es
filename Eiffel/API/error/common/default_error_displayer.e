@@ -32,6 +32,7 @@ feature -- Initialization
 			set: ow = output_window
 		end
 
+
 feature -- Property
 
 	output_window: OUTPUT_WINDOW
@@ -157,7 +158,7 @@ invariant
 	non_void_output_window: output_window /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

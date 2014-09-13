@@ -129,6 +129,7 @@ feature -- Initialization
 			compilation: EWB_COMP
 			ewb_loop: EWB_LOOP
 			e_displayer: DEFAULT_ERROR_DISPLAYER
+			json_displayer: JSON_ERROR_DISPLAYER
 			l_loader: EC_PROJECT_LOADER
 			l_generated_name: PATH
 			u: FILE_UTILITIES
@@ -153,8 +154,19 @@ feature -- Initialization
 						end
 
 							--| Initialization of the display
-						create e_displayer.make (Error_window);
-						Eiffel_project.set_error_displayer (e_displayer)
+						if json_option then
+							-- initialize json output window
+							create json_displayer.make_with_flag (Error_window, false)
+							Eiffel_project.set_error_displayer (json_displayer)
+						elseif json_and_normal_option then
+							-- initialize json output window and standard output is printed
+							create json_displayer.make_with_flag (Error_window, true)
+							Eiffel_project.set_error_displayer (json_displayer)
+						else
+							-- default window
+							create e_displayer.make (Error_window);
+							Eiffel_project.set_error_displayer (e_displayer)
+						end
 						if output_file_option then
 							create file_degree_output.make (output_file_name)
 							Eiffel_project.set_degree_output (file_degree_output)
@@ -288,6 +300,12 @@ feature -- Properties
 
 	output_file_option: BOOLEAN
 			-- Redirect output to `output_file_name'?
+
+	json_option: BOOLEAN
+			-- Make output in json format
+
+	json_and_normal_option: BOOLEAN
+			-- Make output in normal and json format
 
 	verbose_option: BOOLEAN
 			-- Make compiler output verbose (default: quiet)?
@@ -642,6 +660,10 @@ feature -- Update
 
 			if option.same_string_general ("-help") then
 				help_only := True
+			elseif option.same_string_general ("-json") then
+				json_option := True
+			elseif option.same_string_general ("-json+") then
+				json_and_normal_option := True
 			elseif option.same_string_general ("-loop") then
 				if command /= Void then
 					option_error := True
@@ -1440,7 +1462,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
