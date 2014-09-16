@@ -200,6 +200,28 @@ feature -- Replacement
 			area.fill_with_default (l - lower, u - lower)
 		end
 
+	copy_range_within (fst, lst, index: INTEGER)
+			-- Copy items within the same array, from the interval [`fst', `lst'] to position `index'.
+		require
+			first_not_too_small: fst >= lower_
+			last_not_too_large: lst <= upper_
+			first_not_too_large: fst <= lst + 1
+			index_not_too_small: index >= lower_
+			enough_space: upper_ - index >= lst - fst
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
+		do
+			if lst >= fst then
+				check area.inv end
+				area.move_data (fst - lower_, index - lower_, lst - fst + 1)
+			end
+		ensure
+			sequence_domain_effect: sequence.count = old sequence.count
+			sequence_effect: across 1 |..| sequence.count as i all if idx (index) <= i.item and i.item < idx (index + lst - fst + 1)
+					then sequence [i.item] = (old sequence) [i.item - index + fst]
+					else sequence [i.item] = (old sequence) [i.item] end end
+		end
+
 feature -- Resizing
 
 	resize (l, u: INTEGER)

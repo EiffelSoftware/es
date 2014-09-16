@@ -128,7 +128,7 @@ feature -- Extension
 	extend_at (v: G; i: INTEGER)
 			-- Insert `v' at position `i'.
 		require
-			valid_index: has_index (i) or i = sequence.count + 1
+			valid_index: 1 <= i and i <= sequence.count + 1
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "owns"], Current)
 		deferred
@@ -190,7 +190,7 @@ feature -- Extension
 	insert_at (input: V_ITERATOR [G]; i: INTEGER)
 			-- Insert starting at position `i' sequence of values produced by `input'.
 		require
-			valid_index: has_index (i) or i = sequence.count + 1
+			valid_index: 1 <= i and i <= sequence.count + 1
 			not_current: input /= Current
 			different_target: input.target /= Current
 			input_target_wrapped: input.target.is_wrapped
@@ -232,7 +232,7 @@ feature -- Removal
 	remove_at (i: INTEGER)
 			-- Remove element at position `i'.
 		require
-			has_index: has_index (i)
+			has_index: 1 <= i and i <= sequence.count
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "owns"], Current)
 		deferred

@@ -700,7 +700,7 @@ feature -- Translation: Functions
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
 			l_reads := read_expressions_of (contracts_of (current_feature, current_type).reads, l_translator).full_objects
-			if not (across l_reads as e some e.item.same_expression (factory.universe) end) then
+			if not (across l_reads as e some factory.universe.same_expression (e.item) end) then
 				generate_frame_axiom (l_function)
 			end
 		end

@@ -56,9 +56,8 @@ feature -- Initialization
 				other.forget_iterator (i)
 			end
 		ensure
+			sequence_effect: sequence ~ old other.sequence
 			observers_open: across observers as o all o.item.is_open end
-			sequence_effect: sequence ~ other.sequence
-			other_sequence_effect: other.sequence ~ old other.sequence
 			observers_preserved: other.observers ~ old other.observers
 		end
 

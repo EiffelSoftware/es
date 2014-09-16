@@ -141,6 +141,12 @@ feature -- Execution
 				options.set_timeout (option_argument ("-timeout", options.timeout))
 			end
 
+			if user_options.has ("-printtime") then
+				options.set_print_time (True)
+			elseif user_options.has ("-noprinttime") then
+				options.set_print_time (False)
+			end
+
 			if selection.is_empty then
 				load_universe
 			else
@@ -190,13 +196,20 @@ feature {NONE} -- Printing console
 
 	print_successful_verification (a_success: E2B_SUCCESSFUL_VERIFICATION)
 			-- Print successful verification information.
+		local
+			time_string: STRING
 		do
 			print_feature_information (a_success)
+			if options.is_print_time then
+				time_string := " (" + time_format.formatted (a_success.time) + "s)"
+			else
+				time_string := ""
+			end
 			if a_success.original_errors = Void or else a_success.original_errors.is_empty then
-				output_window.add ("Successfully verified.%N")
+				output_window.add ("Successfully verified" + time_string + ".%N")
 			else
 					-- Two-step verification result
-				output_window.add ("Successfully verified after inlining.%N")
+				output_window.add ("Successfully verified after inlining" + time_string + ".%N")
 				output_window.add ("Original errors:%N")
 				across a_success.original_errors as i loop
 					if i.cursor_index = 1 then
@@ -212,9 +225,16 @@ feature {NONE} -- Printing console
 
 	print_failed_verification (a_failure: E2B_FAILED_VERIFICATION)
 			-- Print failed verifcation information.
+		local
+			time_string: STRING
 		do
 			print_feature_information (a_failure)
-			output_window.add ("Verification failed.%N")
+			if options.is_print_time then
+				time_string := " (" + time_format.formatted (a_failure.time) + "s)"
+			else
+				time_string := ""
+			end
+			output_window.add ("Verification failed" + time_string + ".%N")
 			across a_failure.errors as i loop
 				if i.cursor_index = 1 then
 					output_window.add_new_line
@@ -375,6 +395,12 @@ feature {NONE} -- Implementation
 					a_cluster.sub_clusters.forth
 				end
 			end
+		end
+
+	time_format: FORMAT_DOUBLE
+			-- Format for verfication times.
+		once
+			create Result.make (4, 2)
 		end
 
 note

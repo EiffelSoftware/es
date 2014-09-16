@@ -317,6 +317,7 @@ feature -- Extension
 				s = other.sequence.old_.interval (other.index_.old_, other.index_ - 1)
 				target.sequence ~ (target.sequence.front (index_.old_).old_ +
 					s + target.sequence.tail (index_.old_ + 1).old_)
+				target.observers ~ target.observers.old_
 			until
 				other.after
 			loop

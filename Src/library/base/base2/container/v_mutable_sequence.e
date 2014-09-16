@@ -113,8 +113,8 @@ feature -- Replacement
 			status: dynamic
 			explicit: wrapping
 		require
-			l_not_too_small: l >= lower
-			u_not_too_large: u <= upper
+			l_not_too_small: l >= lower_
+			u_not_too_large: u <= upper_
 			l_not_too_large: l <= u + 1
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "observers"], Current)
@@ -129,7 +129,7 @@ feature -- Replacement
 		end
 
 	copy_range (other: V_SEQUENCE [G]; other_first, other_last, index: INTEGER)
-			-- Copy items of `other' within bounds [`other_first', `other_last'] to current sequence starting at index `index_'.
+			-- Copy items of `other' within bounds [`other_first', `other_last'] to current sequence starting at index `index'.
 		note
 			status: dynamic
 			explicit: wrapping
