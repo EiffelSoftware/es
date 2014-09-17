@@ -5,7 +5,7 @@ note
 	manual_inv: true
 	false_guards: true
 
-frozen class
+class
 	V_LINKED_STACK [G]
 
 inherit
@@ -126,7 +126,7 @@ invariant
 	list_exists: list /= Void
 	owns_definition: owns = [list]
 	sequence_definition: sequence ~ list.sequence
-	observers_correspond: observers.count = list.observers.count
+	observers_correspond: list.observers.count <= observers.count
 
 note
 	explicit: observers

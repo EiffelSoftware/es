@@ -37,9 +37,7 @@ feature {NONE} -- Initialization
 			modify_field (["observers", "closed"], list)
 		do
 			target := list
-			target.unwrap
-			target.set_observers (target.observers & Current)
-			target.wrap
+			target.add_iterator (Current)
 			if i < 1 then
 				index := 0
 			elseif i > list.count then
@@ -48,6 +46,7 @@ feature {NONE} -- Initialization
 				index := i
 			end
 			set_target_index_sequence
+			check target.inv end
 		ensure
 			target_effect: target = list
 			index_effect_has: 1 <= i and i <= list.sequence.count implies index = i
@@ -72,11 +71,10 @@ feature -- Initialization
 			check inv_only ("no_observers", "subjects_definition", "A2", "default_owns") end
 			target.forget_iterator (Current)
 			target := other.target
-			target.unwrap
-			target.set_observers (target.observers & Current)
-			target.wrap
+			target.add_iterator (Current)
 			index := other.index
 			set_target_index_sequence
+			check target.inv end
 			wrap
 		ensure then
 			target_effect: target = other.target

@@ -31,12 +31,11 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			modify_field (["observers", "closed"], list)
 		do
 			target := list
-			target.unwrap
-			target.set_observers (target.observers & Current)
-			target.wrap
+			target.add_iterator (Current)
 			active := Void
 			after_ := False
 			set_target_index_sequence
+			check target.inv_only ("bag_definition", "map_definition_list", "lower_definition") end
 		ensure
 			target_effect: target = list
 			index_effect: index_ = 0
@@ -60,15 +59,13 @@ feature -- Initialization
 				check inv_only ("no_observers", "subjects_definition", "A2") end
 				target.forget_iterator (Current)
 				target := other.target
-				target.unwrap
-				target.set_observers (target.observers & Current)
-				target.wrap
+				target.add_iterator (Current)
 				active := other.active
 				index_ := other.index_
 				after_ := other.after_
 				set_target_index_sequence
 				set_owns (other.owns)
-				check target.inv_only ("cells_domain") end
+				check target.inv_only ("cells_domain", "bag_definition", "map_definition_list", "lower_definition") end
 				wrap
 			end
 		ensure
@@ -300,6 +297,7 @@ feature -- Extension
 		note
 			explicit: wrapping
 		local
+			v: G
 			s: like sequence
 		do
 			from
@@ -318,12 +316,14 @@ feature -- Extension
 				target.sequence ~ (target.sequence.front (index_.old_).old_ +
 					s + target.sequence.tail (index_.old_ + 1).old_)
 				target.observers ~ target.observers.old_
+				other.sequence ~ other.sequence.old_
 			until
 				other.after
 			loop
 				check inv_only ("after_definition", "sequence_definition") end
-				extend_right (other.item)
-				s := s & other.item
+				v := other.item
+				extend_right (v)
+				s := s & v
 				check inv_only ("after_definition", "sequence_definition") end
 				forth
 				check other.inv_only ("no_observers") end

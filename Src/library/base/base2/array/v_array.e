@@ -9,7 +9,7 @@ note
 	manual_inv: true
 	false_guards: true
 
-frozen class
+class
 	V_ARRAY [G]
 
 inherit
@@ -267,10 +267,11 @@ feature -- Resizing
 		ensure
 			lower_effect: lower_ = if l <= u then l else 1 end
 			upper_effect: upper_ = if l <= u then u else 0 end
-			sequence_effect_old: across 1 |..| sequence.count as i all
-				sequence [i.item] = if idx (old lower_) <= i.item and i.item <= idx (old upper_)
-					then (old sequence) [i.item + lower_ - old lower_]
-					else ({G}).default end end
+			sequence_effect_old: across 1 |..| sequence.count as k all across 1 |..| sequence.count as j all
+				idx (old lower_) <= k.item and k.item <= idx (old upper_) and j.item = k.item + lower_ - old lower_ implies
+					sequence [k.item] = (old sequence) [j.item] end end
+			sequence_effect_new: across 1 |..| sequence.count as k all
+				k.item < idx (old lower_) or idx (old upper_) < k.item implies sequence [k.item] = ({G}).default end
 		end
 
 	include (i: INTEGER)
@@ -293,10 +294,11 @@ feature -- Resizing
 		ensure
 			lower_effect: lower_ = if old sequence.is_empty then i else i.min (old lower_) end
 			upper_effect: upper_ = if old sequence.is_empty then i else i.max (old upper_) end
-			sequence_effect: across 1 |..| sequence.count as k all
-				sequence [k.item] = if idx (old lower_) <= k.item and k.item <= idx (old upper_)
-					then (old sequence) [k.item + lower_ - old lower_]
-					else ({G}).default end end
+			sequence_effect_old: across 1 |..| sequence.count as k all across 1 |..| sequence.count as j all
+				idx (old lower_) <= k.item and k.item <= idx (old upper_) and j.item = k.item + lower_ - old lower_ implies
+					sequence [k.item] = (old sequence) [j.item] end end
+			sequence_effect_new: across 1 |..| sequence.count as k all
+				k.item < idx (old lower_) or idx (old upper_) < k.item implies sequence [k.item] = ({G}).default end
 		end
 
 	force (v: G; i: INTEGER)
@@ -314,10 +316,11 @@ feature -- Resizing
 			lower_effect: lower_ = if old sequence.is_empty then i else i.min (old lower_) end
 			upper_effect: upper_ = if old sequence.is_empty then i else i.max (old upper_) end
 			sequence_effect_i: sequence [idx (i)] = v
-			sequence_effect_rest: across 1 |..| sequence.count as k all k.item /= idx (i) implies
-				(sequence [k.item] = if idx (old lower_) <= k.item and k.item <= idx (old upper_)
-					then (old sequence) [k.item + lower_ - old lower_]
-					else ({G}).default end) end
+			sequence_effect_old: across 1 |..| sequence.count as k all across 1 |..| sequence.count as j all
+				k.item /= idx (i) and idx (old lower_) <= k.item and k.item <= idx (old upper_) and j.item = k.item + lower_ - old lower_ implies
+					sequence [k.item] = (old sequence) [j.item] end end
+			sequence_effect_new: across 1 |..| sequence.count as k all
+				k.item /= idx (i) and (k.item < idx (old lower_) or idx (old upper_) < k.item) implies sequence [k.item] = ({G}).default end
 		end
 
 	wipe_out

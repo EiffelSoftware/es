@@ -10,7 +10,7 @@ note
 	manual_inv: true
 	false_guards: true
 
-frozen class
+class
 	V_ARRAYED_LIST [G]
 
 inherit

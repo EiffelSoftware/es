@@ -274,11 +274,10 @@ feature -- Element change
 		ensure
 			sequence_domain_effect: sequence.count = (old sequence.count).max (destination_index + n)
 			sequence_effect_data: across (destination_index + 1) |..| (destination_index + n) as i all
-				sequence [i.item] = (old sequence) [i.item - destination_index + source_index] end
-			sequence_effect_front: across 1 |..| destination_index as i all
-				sequence [i.item] = (old sequence) [i.item] end
-			sequence_effect_tail: across (destination_index + n + 1) |..| (old sequence.count) as i all
-				sequence [i.item] = (old sequence) [i.item] end
+				across 1 |..| (old sequence.count) as j all
+					j.item = i.item - destination_index + source_index implies sequence [i.item] = (old sequence) [j.item] end end
+			sequence_effect_old: across 1 |..| (old sequence.count) as i all
+				i.item <= destination_index or destination_index + n < i.item implies sequence [i.item] = (old sequence) [i.item] end
 		end
 
 feature -- Resizing
