@@ -145,6 +145,7 @@ feature -- Replacement
 
 				cells.old_.tail (cells.count + 1) = rest_cells
 				across 1 |..| cells.count as i all cells [i.item] = cells.old_ [cells.count - i.item + 1] end
+				cells.range = cells.old_.front (cells.count).range
 
 				modify_field (["first_cell", "cells", "sequence"], Current)
 				modify_model ("right", cells.old_.range)
@@ -154,6 +155,7 @@ feature -- Replacement
 				next := rest.right
 				rest.put_right (first_cell)
 				first_cell := rest
+				check cells.prepended (first_cell).range = cells.range & first_cell end
 				cells := cells.prepended (first_cell)
 				sequence := sequence.prepended (first_cell.item)
 				rest := next
@@ -161,7 +163,6 @@ feature -- Replacement
 			variant
 				rest_cells.count
 			end
-			check across 1 |..| count_ as i all cells [count_ - i.item + 1] = cells.old_ [i.item] end end
 		end
 
 feature -- Extension

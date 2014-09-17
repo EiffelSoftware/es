@@ -59,9 +59,9 @@ def run_all(project_path):
     call([os.path.join(os.getenv("ISE_LIBRARY"), 'Eiffel', 'Ace', 'EIFGENs', 'bench', 'F_code', 'ec.exe')] + args, stdout=outfile, stderr=outfile)
     end = time.clock()
     
-  if 'Verification failed.' in open(outfile_name).read():
+  if 'Verification failed' in open(outfile_name).read():
     print Back.RED + Fore.RED + Style.BRIGHT + ': failed' + Style.RESET_ALL + ' (' +  '{0:0.2f}'.format(end - start) + ' sec)'
-  elif 'Successfully verified.' in open(outfile_name).read():
+  elif 'Successfully verified' in open(outfile_name).read():
     print Back.GREEN + Fore.GREEN + Style.BRIGHT + ': ok' + Style.RESET_ALL + ' (' +  '{0:0.2f}'.format(end - start) + ' sec)'
   else:
     print Back.RED + Fore.RED + Style.BRIGHT + ':OOPS' + Style.RESET_ALL + ' (' +  '{0:0.2f}'.format(end - start) + ' sec)'
@@ -84,10 +84,10 @@ def run_each(project_path):
       start = time.clock()
       call([os.path.join(os.getenv("ISE_LIBRARY"), 'Eiffel', 'Ace', 'EIFGENs', 'bench', 'F_code', 'ec.exe')] + args1, stdout=tempfile, stderr=tempfile)
       end = time.clock()      
-    
-    if 'Verification failed.' in open(tempfile_name).read():
+        
+    if 'Verification failed' in open(tempfile_name).read():
       print Back.RED + Fore.RED + Style.BRIGHT + ': failed' + Style.RESET_ALL + ' (' +  '{0:0.2f}'.format(end - start) + ' sec)'
-    elif 'Successfully verified.' in open(tempfile_name).read():
+    elif 'Successfully verified' in open(tempfile_name).read():
       print Back.GREEN + Fore.GREEN + Style.BRIGHT + ': ok' + Style.RESET_ALL + ' (' +  '{0:0.2f}'.format(end - start) + ' sec)'
     else:
       print Back.RED + Fore.RED + Style.BRIGHT + ':OOPS' + Style.RESET_ALL + ' (' +  '{0:0.2f}'.format(end - start) + ' sec)'

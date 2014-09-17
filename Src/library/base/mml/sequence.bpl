@@ -39,6 +39,9 @@ axiom (forall<T> s0: Seq T, s1: Seq T, x: T ::
 axiom (forall<T> s: Seq T, v: T, x: T ::
   { Seq#Has(Seq#Extended(s, v), x) }
     Seq#Has(Seq#Extended(s, v), x) <==> (v == x || Seq#Has(s, x)));
+axiom (forall<T> s: Seq T, v: T, x: T ::
+  { Seq#Has(Seq#Prepended(s, v), x) }
+    Seq#Has(Seq#Prepended(s, v), x) <==> (v == x || Seq#Has(s, x)));    
 axiom (forall<T> s: Seq T, n: int, x: T ::
   { Seq#Has(Seq#Take(s, n), x) }
   Seq#Has(Seq#Take(s, n), x) <==>
@@ -115,6 +118,9 @@ axiom (forall<T> s: Seq T, n: int :: { Seq#Length(Seq#Take(s,n)) }
 axiom (forall<T> s: Seq T, n: int, j: int :: { Seq#Item(Seq#Take(s,n), j) } {:weight 25}
   1 <= j && j <= n && j <= Seq#Length(s) ==>
     Seq#Item(Seq#Take(s,n), j) == Seq#Item(s, j));
+// axiom (forall<T> s: Seq T, n: int :: {Seq#Take(s,n)}
+  // (n < 0 ==> Seq#Take(s,n) == Seq#Empty() : Seq T) &&
+  // (n >= Seq#Length(s) ==> Seq#Take(s,n) == s));
 
 // Sequence without its prefix of length howMany    
 function Seq#Drop<T>(s: Seq T, howMany: int): Seq T;
@@ -126,9 +132,11 @@ axiom (forall<T> s: Seq T, n: int :: { Seq#Length(Seq#Drop(s,n)) }
     (n <= Seq#Length(s) ==> Seq#Length(Seq#Drop(s,n)) == Seq#Length(s) - n) &&
     (Seq#Length(s) < n ==> Seq#Length(Seq#Drop(s,n)) == 0));
 axiom (forall<T> s: Seq T, n: int, j: int :: { Seq#Item(Seq#Drop(s,n), j) } {:weight 25}
-  // 1 <= j && j <= Seq#Length(s)-n && j <= Seq#Length(s) ==>
-  0 <= n && 1 <= j && j <= Seq#Length(s)-n ==>  
+  0 <= n && 1 <= j && j <= Seq#Length(s)-n ==> 
     Seq#Item(Seq#Drop(s,n), j) == Seq#Item(s, j+n));
+// axiom (forall<T> s: Seq T, n: int :: {Seq#Drop(s,n)}
+  // (n < 0 ==> Seq#Drop(s,n) == s) &&
+  // (n >= Seq#Length(s) ==> Seq#Drop(s,n) == Seq#Empty() : Seq T));  
 
 // First element
 function {: inline } Seq#First<T>(q: Seq T): T
