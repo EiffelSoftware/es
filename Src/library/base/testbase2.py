@@ -37,7 +37,8 @@ classes = [
   'V_INDEX_ITERATOR',
   'V_ARRAY_ITERATOR',
   'V_ARRAYED_LIST',
-  'V_ARRAYED_LIST_ITERATOR'
+  'V_ARRAYED_LIST_ITERATOR',
+  'V_ARRAY2'
 ]
 
 outfile_name = 'base2.out'

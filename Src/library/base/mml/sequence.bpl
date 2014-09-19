@@ -18,6 +18,14 @@ axiom (forall<T> f: Field (Seq T) :: { Default(f) } Default(f) == Seq#Empty() : 
 function Seq#Singleton<T>(T): Seq T;
 axiom (forall<T> t: T :: { Seq#Length(Seq#Singleton(t)) } Seq#Length(Seq#Singleton(t)) == 1);
 
+// Constant sequence
+function Seq#Constant<T>(T, int): Seq T;
+axiom (forall<T> t: T, n: int :: { Seq#Length(Seq#Constant(t, n)) } 
+  n >= 0 ==> Seq#Length(Seq#Constant(t, n)) == n);
+axiom (forall<T> t: T, n: int, i: int :: { Seq#Item(Seq#Constant(t, n), i) } 
+  1 <= i && i <= n ==> Seq#Item(Seq#Constant(t, n), i) == t);
+  
+
 // Does a sequence contain a given element?
 function Seq#Has<T>(s: Seq T, x: T): bool;
 axiom (forall<T> s: Seq T, x: T :: { Seq#Has(s,x) }

@@ -136,7 +136,7 @@ feature -- Replacement
 			invariant
 				across 1 |..| count_ as i all cells.old_ [i.item].is_wrapped end
 				rest_cells.count = count_ - cells.count
-				inv_only ("cells_domain", "first_cell_empty", "cells_exist", "sequence_definition", "cells_linked", "cells_first", "cells_last")
+				inv_only ("cells_domain", "first_cell_empty", "cells_exist", "sequence_implementation", "cells_linked", "cells_first", "cells_last")
 
 				rest_cells.non_void
 				is_linked (rest_cells)
@@ -621,7 +621,7 @@ invariant
 	last_cell_empty: cells.is_empty = (last_cell = Void)
 	owns_definition: owns = cells.range
 	cells_exist: cells.non_void
-	sequence_definition: across 1 |..| cells.count as i all sequence [i.item] = cells [i.item].item end
+	sequence_implementation: across 1 |..| cells.count as i all sequence [i.item] = cells [i.item].item end
 	cells_linked: is_linked (cells)
 	cells_first: cells.count > 0 implies first_cell = cells.first
 	cells_last: cells.count > 0 implies last_cell = cells.last and then last_cell.right = Void

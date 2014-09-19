@@ -442,7 +442,7 @@ invariant
 	array_starts_from_zero: array.lower_ = 0
 	first_index_in_bounds: 0 <= first_index and first_index < array.sequence.count
 	sequence_count_constraint: sequence.count <= array.sequence.count
-	sequence_definition: across 1 |..| sequence.count as i all sequence [i.item] = array.sequence [array_seq_index (i.item)] end
+	sequence_implementation: across 1 |..| sequence.count as i all sequence [i.item] = array.sequence [array_seq_index (i.item)] end
 	array_no_observers: array.observers.is_empty
 
 note

@@ -48,7 +48,7 @@ feature {NONE} -- Initialization
 		ensure
 			sequence_domain_definition: sequence.count = u - l + 1
 			sequence_definition: across 1 |..| sequence.count as i all sequence [i.item] = ({G}).default end
-			lower_definition: l <= u implies lower_ =  l
+			lower_definition: lower_ = if l <= u then l else 1 end
 			no_observers: observers.is_empty
 		end
 
@@ -70,7 +70,7 @@ feature {NONE} -- Initialization
 		ensure
 			sequence_domain_definition: sequence.count = u - l + 1
 			sequence_definition: across 1 |..| sequence.count as i all sequence [i.item] = v end
-			lower_definition: l <= u implies lower_ =  l
+			lower_definition: lower_ = if l <= u then l else 1 end
 			no_observers: observers.is_empty
 		end
 
@@ -347,7 +347,7 @@ invariant
 	lower_definition: lower_ = lower
 	upper_definition: upper = lower_ + sequence.count - 1
 	owns_definition: owns = [ area ]
-	sequence_definition: sequence ~ area.sequence
+	sequence_implementation: sequence ~ area.sequence
 
 note
 	explicit: observers

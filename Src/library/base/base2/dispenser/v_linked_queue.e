@@ -125,7 +125,7 @@ feature -- Specification
 invariant
 	list_exists: list /= Void
 	owns_definition: owns = [list]
-	sequence_definition: sequence ~ list.sequence
+	sequence_implementation: sequence ~ list.sequence
 	observers_correspond: list.observers.count <= observers.count
 
 note

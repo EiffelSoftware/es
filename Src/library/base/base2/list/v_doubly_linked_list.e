@@ -140,7 +140,7 @@ feature -- Replacement
 				rest = Void or else (rest.is_open and rest.inv_without ("left_consistent"))
 
 				rest_cells.count = count_ - cells.count
-				inv_only ("cells_domain", "first_cell_empty", "cells_exist", "sequence_definition", "cells_linked", "cells_last")
+				inv_only ("cells_domain", "first_cell_empty", "cells_exist", "sequence_implementation", "cells_linked", "cells_last")
 				cells.count > 0 implies first_cell = cells.first
 
 				rest_cells.non_void
@@ -714,7 +714,7 @@ invariant
 	last_cell_empty: cells.is_empty = (last_cell = Void)
 	owns_definition: owns = cells.range
 	cells_exist: cells.non_void
-	sequence_definition: across 1 |..| cells.count as i all sequence [i.item] = cells [i.item].item end
+	sequence_implementation: across 1 |..| cells.count as i all sequence [i.item] = cells [i.item].item end
 	cells_linked: is_linked (cells)
 	cells_first: cells.count > 0 implies first_cell = cells.first and then first_cell.left = Void
 	cells_last: cells.count > 0 implies last_cell = cells.last and then last_cell.right = Void

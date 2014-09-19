@@ -17,7 +17,8 @@ inherit
 
 create
 	default_create,
-	singleton
+	singleton,
+	constant
 
 convert
 	singleton ({G})
@@ -35,6 +36,13 @@ feature {NONE} -- Initialization
 			-- Create a sequence with one element `x'.
 		do
 		end
+		
+	constant (x: G; n: INTEGER)
+			-- Create a sequence with n copies of `x'.
+		require
+			n_non_negative: n >= 0
+		do
+		end		
 
 feature -- Properties
 
