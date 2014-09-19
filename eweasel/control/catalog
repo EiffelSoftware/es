@@ -2134,7 +2134,7 @@ test	store-retrieve-bogus-version-mismatch	store035 tcf pass storable
 test	correct-mismatch-memory-corruption store036 tcf pass storable
 test	store-retrieve-non-void-safe	store037 tcf pass storable attached_types
 test	storable-performance-testing	store038 tcf pass storable performance
-test	storable-with-long-generics	store039 tcf pass storable
+test	storable-with-long-nested-generics	store039 tcf pass storable
 test	storable-with-qualified-anchors	store040 tcf fail storable
 
 -- Library class tests
@@ -2871,6 +2871,7 @@ test	scoop-lock-passing-same-target			scoop033 tcf pass scoop multithreaded exec
 test	scoop-corrupted-polymorphic-call		scoop034 tcf fail used_to_pass scoop multithreaded execution
 test	scoop-null-reference-call			scoop035 tcf pass scoop multithreaded execution
 test	scoop-nested-chain-uncontrolled-check		scoop036 tcf pass scoop multithreaded execution
+test	scoop-run-time-crash				scoop037 tcf pass scoop multithreaded execution
 
 test	deadlock-simple-symmetric-cycle			deadlock001 tcf manual scoop multithreaded deadlock
 test	deadlock-simple-asymmetric-cycle		deadlock002 tcf manual scoop multithreaded deadlock
