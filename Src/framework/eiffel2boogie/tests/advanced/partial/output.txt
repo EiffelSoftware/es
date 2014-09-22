@@ -2,7 +2,7 @@
 A_PARTIAL (invariant admissibility)
 Verification failed.
 
-Line: 124. Precondition may be violated on invocation of nasty.
+Line: 125. Precondition may be violated on invocation of nasty.
 ======================================
 ANY.default_create (creator, inherited by A_PARTIAL)
 Successfully verified.

@@ -12,9 +12,6 @@ feature -- Status report
 
 	off: BOOLEAN
 			-- Is current position off scope?
-		require
-			closed: closed
---			reads (universe)
 		deferred
 		ensure
 			defintion: Result = off_

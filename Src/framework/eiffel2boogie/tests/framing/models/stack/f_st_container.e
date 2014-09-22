@@ -8,9 +8,6 @@ feature	-- Access
 
 	count: INTEGER
 			-- Number of elements.
-		require
-			closed: closed
-			reads (ownership_domain)
 		deferred
 		ensure
 			Result = bag.count
@@ -18,9 +15,6 @@ feature	-- Access
 
 	is_empty: BOOLEAN
 			-- Is the container empty?
-		require
-			closed: closed
-			reads (ownership_domain)
 		do
 			Result := count = 0
 		ensure

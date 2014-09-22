@@ -26,7 +26,7 @@ feature {NONE} -- Initialization
 			status: creator
 		require
 			t_open: t.is_open
-			t.inv_only ("bag_definition", "sequence_definition")
+			t.inv_only ("bag_definition", "sequence_implementation")
 			it_wrapped: it.is_wrapped
 			connected: t.list = it.target
 			same_elements: t.bag ~ it.target.bag

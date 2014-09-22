@@ -49,10 +49,9 @@ feature -- Access
 			-- Collection element at current position.
 		require
 			not_off: not (before or after)
-			closed: closed
 			target_closed: target.closed
 			modify ([])
-			reads (Current, target.ownership_domain)
+			reads (universe)
 		do
 			Result := target.elements [index]
 		end

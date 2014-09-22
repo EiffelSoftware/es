@@ -18,10 +18,6 @@ feature -- Measurement
 
 	count: INTEGER
 			-- Number of elements.
-		require
-			closed: closed
---			reads (ownership_domain)
-			reads (universe)
 		deferred
 		ensure
 			definition: Result = bag.count
@@ -33,10 +29,6 @@ feature -- Status report
 			-- Is container empty?
 		note
 			status: dynamic
-		require
-			closed: closed
---			reads (ownership_domain)
-			reads (universe)
 		do
 			Result := count = 0
 		ensure

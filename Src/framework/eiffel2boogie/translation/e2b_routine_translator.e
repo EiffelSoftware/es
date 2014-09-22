@@ -354,52 +354,74 @@ feature -- Translation: Signature
 		do
 			create Result.make
 
-				-- Features with functional representation and features marked with "explicit: contracts" do not get any defaults
-			if not helper.is_explicit (current_feature, "contracts") and not helper.has_functional_representation (current_feature) then
-				if a_for_creator then
-					create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-					l_post.node_info.set_type ("post")
-					l_post.node_info.set_tag ("default_is_wrapped")
-					l_post.node_info.set_attribute ("default", "contracts")
-					Result.extend (l_post)
-				elseif helper.is_public (current_feature) then
-					create l_pre.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-					l_pre.node_info.set_type ("pre")
-					l_pre.node_info.set_tag ("default_is_wrapped")
-					l_pre.node_info.set_attribute ("default", "contracts")
-					Result.extend (l_pre)
-					create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-					l_post.node_info.set_type ("post")
-					l_post.node_info.set_tag ("default_is_wrapped")
-					l_post.node_info.set_attribute ("default", "contracts")
-					Result.extend (l_post)
-				elseif helper.is_private (current_feature) then
-					create l_pre.make (factory.function_call ("is_open", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-					l_pre.node_info.set_type ("pre")
-					l_pre.node_info.set_tag ("default_is_open")
-					l_pre.node_info.set_attribute ("default", "contracts")
-					Result.extend (l_pre)
+				-- Features marked with "explicit: contracts" do not get any defaults
+			if not helper.is_explicit (current_feature, "contracts") then
+				if helper.has_functional_representation (current_feature) then -- Pure functions						
+					if helper.is_public (current_feature) and not helper.is_functional (current_feature) then
+							-- Public features with functional representation (unless they are functional)
+						create l_pre.make (factory.function_call ("is_closed", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+						l_pre.node_info.set_type ("pre")
+						l_pre.node_info.set_tag ("default_is_closed")
+						l_pre.node_info.set_attribute ("default", "contracts")
+						Result.extend (l_pre)
 
-					create l_post.make (factory.function_call ("is_open", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-					l_post.node_info.set_type ("post")
-					l_post.node_info.set_tag ("default_is_open")
-					l_post.node_info.set_attribute ("default", "contracts")
-					Result.extend (l_post)
-				end
-				if a_for_creator or helper.is_public (current_feature) then
-					l_written_feature := current_feature.written_class.feature_of_rout_id_set (current_feature.rout_id_set)
-					across arguments_of_current_feature as i loop
-						if i.item.boogie_type ~ types.ref and not l_written_feature.arguments.i_th (i.target_index).is_formal then
-							create l_pre.make (factory.function_call ("is_wrapped", << a_mapping.heap, factory.entity (i.item.name, i.item.boogie_type) >>, types.bool))
-							l_pre.node_info.set_type ("pre")
-							l_pre.node_info.set_tag ("arg_" + i.item.name + "_is_wrapped")
-							l_pre.node_info.set_attribute ("default", "contracts")
-							Result.extend (l_pre)
-							create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, factory.entity (i.item.name, i.item.boogie_type) >>, types.bool))
-							l_post.node_info.set_type ("post")
-							l_post.node_info.set_tag ("arg_" + i.item.name + "_is_wrapped")
-							l_post.node_info.set_attribute ("default", "contracts")
-							Result.extend (l_post)
+						l_written_feature := current_feature.written_class.feature_of_rout_id_set (current_feature.rout_id_set)
+						across arguments_of_current_feature as i loop
+							if i.item.boogie_type ~ types.ref and not l_written_feature.arguments.i_th (i.target_index).is_formal then
+								create l_pre.make (factory.function_call ("is_closed", << a_mapping.heap, factory.entity (i.item.name, i.item.boogie_type) >>, types.bool))
+								l_pre.node_info.set_type ("pre")
+								l_pre.node_info.set_tag ("arg_" + i.item.name + "_is_closed")
+								l_pre.node_info.set_attribute ("default", "contracts")
+								Result.extend (l_pre)
+							end
+						end
+					end
+				else -- Procedures and impure function
+					if a_for_creator then
+						create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+						l_post.node_info.set_type ("post")
+						l_post.node_info.set_tag ("default_is_wrapped")
+						l_post.node_info.set_attribute ("default", "contracts")
+						Result.extend (l_post)
+					elseif helper.is_public (current_feature) then
+						create l_pre.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+						l_pre.node_info.set_type ("pre")
+						l_pre.node_info.set_tag ("default_is_wrapped")
+						l_pre.node_info.set_attribute ("default", "contracts")
+						Result.extend (l_pre)
+						create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+						l_post.node_info.set_type ("post")
+						l_post.node_info.set_tag ("default_is_wrapped")
+						l_post.node_info.set_attribute ("default", "contracts")
+						Result.extend (l_post)
+					elseif helper.is_private (current_feature) then
+						create l_pre.make (factory.function_call ("is_open", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+						l_pre.node_info.set_type ("pre")
+						l_pre.node_info.set_tag ("default_is_open")
+						l_pre.node_info.set_attribute ("default", "contracts")
+						Result.extend (l_pre)
+
+						create l_post.make (factory.function_call ("is_open", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+						l_post.node_info.set_type ("post")
+						l_post.node_info.set_tag ("default_is_open")
+						l_post.node_info.set_attribute ("default", "contracts")
+						Result.extend (l_post)
+					end
+					if a_for_creator or helper.is_public (current_feature) then
+						l_written_feature := current_feature.written_class.feature_of_rout_id_set (current_feature.rout_id_set)
+						across arguments_of_current_feature as i loop
+							if i.item.boogie_type ~ types.ref and not l_written_feature.arguments.i_th (i.target_index).is_formal then
+								create l_pre.make (factory.function_call ("is_wrapped", << a_mapping.heap, factory.entity (i.item.name, i.item.boogie_type) >>, types.bool))
+								l_pre.node_info.set_type ("pre")
+								l_pre.node_info.set_tag ("arg_" + i.item.name + "_is_wrapped")
+								l_pre.node_info.set_attribute ("default", "contracts")
+								Result.extend (l_pre)
+								create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, factory.entity (i.item.name, i.item.boogie_type) >>, types.bool))
+								l_post.node_info.set_type ("post")
+								l_post.node_info.set_tag ("arg_" + i.item.name + "_is_wrapped")
+								l_post.node_info.set_attribute ("default", "contracts")
+								Result.extend (l_post)
+							end
 						end
 					end
 				end
@@ -827,7 +849,7 @@ feature -- Translation: Functions
 					-- Defaults and validity
 				if l_exprs.full_objects.is_empty and l_exprs.partial_objects.is_empty and l_exprs.model_objects.is_empty then
 					-- Missing read clause: apply defaults
-					l_exprs.full_objects.extend (create {IV_ENTITY}.make ("current", types.ref))
+					l_exprs.full_objects.extend (factory.universe)
 				end
 			else
 				l_exprs := modify_expressions_of (contracts_of (current_feature, current_type).modifies, l_translator)

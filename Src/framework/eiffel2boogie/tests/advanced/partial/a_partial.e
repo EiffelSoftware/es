@@ -13,6 +13,7 @@ feature
 			status: functional
 		require
 			x >= 0
+			reads ([])
 		do
 			Result := x \\ 5 = 0
 		end

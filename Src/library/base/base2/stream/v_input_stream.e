@@ -14,10 +14,7 @@ feature -- Access
 			-- Item at current position.
 		require
 			not_off: not off
-			closed: closed
 			subjects_closed: subjects.any_item.closed
---			reads (ownership_domain, subjects.any_item.ownership_domain)
-			reads (universe)
 		deferred
 		ensure
 			definition: Result = box.any_item
@@ -28,10 +25,7 @@ feature -- Status report
 	off: BOOLEAN
 			-- Is current position off scope?
 		require
-			closed: closed
 			subjects_closed: subjects.any_item.closed
---			reads (ownership_domain, subjects.any_item.ownership_domain)
-			reads (universe)
 		deferred
 		ensure
 			definition: Result = box.is_empty

@@ -162,11 +162,6 @@ feature -- Comparison
 	is_equal_ (other: like Current): BOOLEAN
 			-- Is array made of the same items as `other'?
 			-- (Use reference comparison.)
-		require
-			closed: closed
-			other_closed: other.closed
---			reads (ownership_domain, other.ownership_domain)
-			reads (universe)
 		do
 			check inv end
 			check other.inv end

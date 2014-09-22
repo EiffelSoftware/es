@@ -92,10 +92,8 @@ feature -- Access
 	item alias "[]" (i, j: INTEGER): G assign put
 			-- Item at row `i' and column `j'.
 		require
-			closed: closed
 			valid_row: has_row (i)
 			valid_column: has_column (j)
-			reads (universe)
 		do
 			check inv end
 			Result := flat_item (flat_index (i, j))

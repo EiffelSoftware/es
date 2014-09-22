@@ -27,9 +27,7 @@ feature	-- Access
 	item: G
 			-- Top element.
 		require
-			closed: closed
 			not_empty: not is_empty
-			reads (ownership_domain)
 		do
 			Result := list.item (count)
 		ensure

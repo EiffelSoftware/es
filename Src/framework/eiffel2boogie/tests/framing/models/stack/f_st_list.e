@@ -22,8 +22,6 @@ feature -- Access
 
 	is_empty: BOOLEAN
 			-- Is the list empty?
-		require
-			closed: closed
 		do
 			Result := sequence.is_empty
 		ensure
@@ -32,8 +30,6 @@ feature -- Access
 
 	count: INTEGER
 			-- Number of elements in the list.
-		require
-			closed: closed
 		do
 			Result := sequence.count
 		ensure
@@ -43,7 +39,6 @@ feature -- Access
 	item alias "[]" (i: INTEGER): G
 			-- Element at index `i'.
 		require
-			closed: closed
 			in_bounds: 1 <= i and i <= count
 		do
 			Result := sequence [i]
@@ -53,8 +48,6 @@ feature -- Access
 
 	has (x: G) : BOOLEAN
 			-- Is `x' an element of the list?
-		require
-			closed: closed
 		do
 			Result := sequence.has (x)
 		ensure

@@ -35,10 +35,7 @@ feature -- Access
 		note
 			status: dynamic
 		require
-			closed: closed
 			not_empty: not is_empty
---			reads (ownership_domain)
-			reads (universe)
 		do
 			check inv end
 			Result := item (lower)
@@ -51,10 +48,7 @@ feature -- Access
 		note
 			status: dynamic
 		require
-			closed: closed
 			not_empty: not is_empty
---			reads (ownership_domain)
-			reads (universe)
 		do
 			check inv end
 			Result := item (upper)
@@ -66,10 +60,6 @@ feature -- Measurement
 
 	lower: INTEGER
 			-- Lower bound of index interval.
-		require
-			closed: closed
---			reads (ownership_domain)
-			reads (universe)
 		deferred
 		ensure
 			definition: Result = lower_
@@ -79,10 +69,6 @@ feature -- Measurement
 			-- Upper bound of index interval.
 		note
 			status: dynamic
-		require
-			closed: closed
---			reads (ownership_domain)
-			reads (universe)
 		do
 			check inv end
 			Result := lower + count - 1
@@ -244,6 +230,7 @@ feature -- Specification
 			-- Copy elements from `sequence' into `map'.
 		note
 			status: ghost, dynamic
+			explicit: contracts
 		require
 			reads_field (["sequence", "lower_"], Current)
 		local

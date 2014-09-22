@@ -29,6 +29,10 @@ feature -- Public access
 
 	is_synchronized (value: INTEGER): BOOLEAN
 			-- Is this observer synchronized with the state `value'?
+		note
+			explicit: contracts
+		require
+			reads (Current)
 		deferred
 		end
 

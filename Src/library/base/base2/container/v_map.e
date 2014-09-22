@@ -21,10 +21,7 @@ feature -- Access
 	item alias "[]" (k: K): V
 			-- Value associated with `k'.
 		require
-			closed: closed
 			has_key: has_key (k)
---			reads (ownership_domain)
-			reads (universe)
 		deferred
 		ensure
 			definition: Result = map [k]
@@ -34,10 +31,6 @@ feature -- Search
 
 	has_key (k: K): BOOLEAN
 			-- Does `map' contain a key equivalent to `k' according to `key_equivalence'?
-		require
-			closed: closed
---			reads (ownership_domain)
-			reads (universe)
 		deferred
 		ensure
 			definition: Result = map.domain [k]
@@ -78,7 +71,6 @@ feature -- Specification
 			replaces: bag
 		attribute
 		end
-
 
 invariant
 	bag_definition: bag ~ map.to_bag
