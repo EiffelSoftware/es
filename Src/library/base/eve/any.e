@@ -66,8 +66,12 @@ feature -- Comparison
 			-- equal to current object?
 		require
 			other_not_void: other /= Void
+			subjects_closed: across subjects as s all s.item.closed end
+			other_subjects_closed: across other.subjects as s all s.item.closed end
 		external
 			"built_in"
+		ensure
+			definition: Result = is_model_equal (other)
 		end
 
 	frozen standard_is_equal (other: like Current): BOOLEAN
@@ -579,6 +583,17 @@ feature -- Verification: ownership fields
 		end
 
 feature -- Verification: auxiliary
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is the abstract state of `Current' equal to that of `other'?
+		note
+			status: ghost
+			explicit: contracts
+		require
+			other_exists: other /= Void
+		do
+			Result := True
+		end
 
 	frozen old_: like Current
 			-- Old expression outside of postconditions.

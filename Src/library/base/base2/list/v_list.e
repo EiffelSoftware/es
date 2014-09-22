@@ -15,7 +15,8 @@ inherit
 	V_MUTABLE_SEQUENCE [G]
 		redefine
 			item,
-			at
+			at,
+			is_model_equal
 		end
 
 feature -- Access
@@ -57,50 +58,6 @@ feature -- Iteration
 		deferred
 		ensure then
 			index_definition_in_bounds: 0 <= i and i <= sequence.count + 1 implies Result.index_ = i
-		end
-
-feature -- Comparison
-
-	is_equal_ (other: like Current): BOOLEAN
-			-- Is list made of the same values in the same order as `other'?
-			-- (Use reference comparison.)
-		note
-			status: impure, dynamic
-		require
-			modify_model ("observers", [Current, other])
-		local
-			i, j: V_LIST_ITERATOR [G]
-		do
-			if other = Current then
-				Result := True
-			elseif count = other.count then
-				from
-					Result := True
-					i := new_cursor
-					j := other.new_cursor
-				invariant
-					1 <= i.index_ and i.index_ <= sequence.count + 1
-					i.index_ = j.index_
-					if Result
-						then across 1 |..| (i.index_ - 1) as k all sequence [k.item] = other.sequence [k.item] end
-						else sequence [i.index_ - 1] /= other.sequence [i.index_ - 1] end
-					i.is_wrapped and j.is_wrapped
-					modify_model ("index_", [i, j])
-				until
-					i.after or not Result
-				loop
-					Result := i.item = j.item
-					i.forth
-					j.forth
-				variant
-					sequence.count - i.index_
-				end
-				forget_iterator (i)
-				other.forget_iterator (j)
-			end
-		ensure
-			definition: Result = (sequence ~ other.sequence)
-			observers_restored: observers ~ old observers
 		end
 
 feature -- Extension
@@ -322,6 +279,16 @@ feature {V_LIST, V_LIST_ITERATOR} -- Implementation
 
 	count_: INTEGER
 			-- Number of elements.		
+
+feature -- Specification
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is the abstract state of `Current' equal to that of `other'?
+		note
+			status: ghost, functional
+		do
+			Result := sequence ~ other.sequence
+		end
 
 invariant
 	lower_definition: lower_ = 1

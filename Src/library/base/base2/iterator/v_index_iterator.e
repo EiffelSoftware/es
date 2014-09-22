@@ -11,6 +11,7 @@ deferred class
 inherit
 	V_SEQUENCE_ITERATOR [G]
 		redefine
+			is_equal,
 			go_to
 		end
 
@@ -66,6 +67,17 @@ feature -- Status report
 		do
 			check inv end
 			Result := not target.is_empty and index = target.count
+		end
+
+feature -- Comparison
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is iterator traversing the same container and is at the same position at `other'?
+		note
+			status: dynamic
+		do
+			check inv; other.inv end
+			Result := target = other.target and index = other.index
 		end
 
 feature -- Cursor movement

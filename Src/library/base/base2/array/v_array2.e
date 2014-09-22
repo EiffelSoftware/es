@@ -19,7 +19,9 @@ inherit
 			at as flat_at
 		redefine
 			upper,
-			flat_put
+			is_equal,
+			flat_put,
+			is_model_equal
 		end
 
 create
@@ -196,23 +198,16 @@ feature -- Iteration
 
 feature -- Comparison
 
-	is_equal_ (other: like Current): BOOLEAN
+	is_equal (other: like Current): BOOLEAN
 			-- Is array made of the same items as `other'?
 			-- (Use reference comparison.)
-		require
-			closed: closed
-			other_closed: other.closed
-			reads (universe)
 		do
 			if other = Current then
 				Result := True
 			else
-				check inv end
-				check other.inv end
-				Result := column_count = other.column_count and array.is_equal_ (other.array)
+				check inv; other.inv; array.inv; other.array.inv end
+				Result := column_count = other.column_count and array.is_equal (other.array)
 			end
-		ensure
-			definition: Result = (sequence ~ other.sequence and column_count = other.column_count)
 		end
 
 feature -- Replacement
@@ -244,6 +239,16 @@ feature {V_CONTAINER, V_ITERATOR} -- Implemantation
 
 	array: V_ARRAY [G]
 			-- Flat representation.
+
+feature -- Specification
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is the abstract state of `Current' equal to that of `other'?
+		note
+			status: ghost, functional
+		do
+			Result := sequence ~ other.sequence and column_count = other.column_count
+		end
 
 invariant
 	array_exists: array /= Void

@@ -10,10 +10,10 @@ class
 
 inherit
 	V_LIST_ITERATOR [G]
-		undefine
-			off
 		redefine
-			target
+			target,
+			off,
+			is_equal
 		end
 
 create {V_CONTAINER, V_ITERATOR}
@@ -144,6 +144,16 @@ feature -- Status report
 			check target.inv end
 			Result := active /= Void and then active = target.last_cell
 			target.lemma_cells_distinct
+		end
+
+feature -- Comparison
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is iterator traversing the same container and is at the same position at `other'?		
+		do
+			check inv; other.inv end
+			target.lemma_cells_distinct
+			Result := target = other.target and active = other.active and after_ = other.after_
 		end
 
 feature -- Cursor movement

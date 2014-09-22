@@ -12,6 +12,7 @@ inherit
 	V_STACK [G]
 		redefine
 			default_create,
+			is_equal,
 			forget_iterator
 		end
 
@@ -78,6 +79,18 @@ feature -- Iteration
 			list_cursor := list.new_cursor
 			create Result.make (Current, list_cursor)
 			wrap
+		end
+
+feature -- Comparison
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is stack made of the same values in the same order as `other'?
+			-- (Use reference comparison.)
+		note
+			status: inv_unfriendly
+		do
+			check inv; other.inv; list.inv; other.list.inv end
+			Result := list.is_equal (other.list)
 		end
 
 feature -- Extension

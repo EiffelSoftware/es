@@ -11,7 +11,8 @@ class
 inherit
 	V_ITERATOR [G]
 		redefine
-			target
+			target,
+			is_equal
 		end
 
 create {V_CONTAINER}
@@ -106,6 +107,15 @@ feature -- Status report
 			check iterator.inv end
 			check target.inv end
 			Result := iterator.is_last
+		end
+
+feature -- Comparison
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is iterator traversing the same container and is at the same position at `other'?
+		do
+			check inv; other.inv; iterator.inv; other.iterator.inv; target.inv; other.target.inv end
+			Result := iterator.is_equal (other.iterator)
 		end
 
 feature -- Cursor movement

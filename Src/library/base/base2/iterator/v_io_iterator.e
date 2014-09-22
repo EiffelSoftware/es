@@ -16,7 +16,7 @@ inherit
 
 	V_OUTPUT_STREAM [G]
 		undefine
-			is_equal
+			is_model_equal
 		end
 
 feature -- Measurement

@@ -15,12 +15,14 @@ class
 inherit
 	V_MUTABLE_SEQUENCE [G]
 		redefine
+			is_equal,
 			lower,
 			upper,
 			item,
 			put,
 			fill,
-			clear
+			clear,
+			is_model_equal
 		end
 
 create
@@ -159,7 +161,7 @@ feature -- Iteration
 
 feature -- Comparison
 
-	is_equal_ (other: like Current): BOOLEAN
+	is_equal (other: like Current): BOOLEAN
 			-- Is array made of the same items as `other'?
 			-- (Use reference comparison.)
 		do
@@ -170,8 +172,6 @@ feature -- Comparison
 			elseif lower = other.lower and upper = other.upper then
 				Result := area.same_items (other.area, 0, 0, count)
 			end
-		ensure
-			definition: Result = (sequence ~ other.sequence and lower_ = other.lower_)
 		end
 
 feature -- Replacement
@@ -336,6 +336,16 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 	area: V_SPECIAL [G]
 			-- Memory area where elements are stored.
+
+feature -- Specification
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is the abstract state of `Current' equal to that of `other'?
+		note
+			status: ghost, functional
+		do
+			Result := sequence ~ other.sequence and lower_ = other.lower_
+		end
 
 invariant
 	area_exists: area /= Void
