@@ -62,6 +62,7 @@ feature -- Interface
 			l_dir: DIRECTORY
 			l_io: BOOLEAN
 			l_level: NATURAL
+			l_level_suffix: STRING
 		do
 			if not l_io then
 				l_io := True
@@ -93,12 +94,16 @@ feature -- Interface
 								l_dir.recursive_create_dir
 							end
 							l_io := False
+
+							l_level_suffix := ""
 						else
 							l_dir := options.output_directory
+							-- l_level_suffix := ""
+							l_level_suffix := "_" + l_level.out
 						end
 
 						l_io := True
-						create l_out_file.make_create_read_write (l_dir.path.extended (ic.item.name.as_lower + ".e").out)
+						create l_out_file.make_create_read_write (l_dir.path.extended (ic.item.name.as_lower + l_level_suffix + ".e").out)
 						l_io := False
 
 						print_message (at_strings.processing_class (ic.item.name))

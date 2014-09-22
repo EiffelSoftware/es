@@ -3,7 +3,7 @@ note
 					RULE #65: Local variable naming convention violated
 		
 					Local variable names should respect the Eiffel naming convention for local variables
-					(all lowercase begin with 'l_', no trailing or two consecutive underscores).
+					(all lowercase, begin with 'l_', no trailing or two consecutive underscores).
 	]"
 	author: "Paolo Antonucci"
 	date: "$Date$"

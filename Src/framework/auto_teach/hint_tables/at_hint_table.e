@@ -31,7 +31,7 @@ feature -- Access
 			-- then the highest defined value (or the lowest in case `a_hint_level' is below the lower
 			-- bound of the row) is returned.
 		require
-			complex_block_type: enum_block_type.is_complex_block_type (a_block_type)
+			complex_block_type: a_block_type.is_complex
 		local
 			l_table_row: ARRAY [AT_TRILEAN]
 			l_hint_level: INTEGER
@@ -113,7 +113,7 @@ feature {AT_HINT_TABLE} -- Implementation
 		end
 
 invariant
-	content_table_has_only_complex_blocks: across content_table.current_keys as ic all enum_block_type.is_complex_block_type (ic.item) end
+	content_table_has_only_complex_blocks: across content_table.current_keys as ic all ic.item.is_complex end
 	both_tables_all_rows_non_empty: (across table as ic all ic.item.count > 0 end) and (across content_table as ic all ic.item.count > 0 end)
 
 end

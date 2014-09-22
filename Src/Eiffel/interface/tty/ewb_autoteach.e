@@ -75,15 +75,18 @@ feature {NONE} -- Implementation
 	process_arguments
 			-- Initialization for `Current'.
 		local
-			l_errors, l_warnings: ARRAYED_LIST [STRING]
+			l_errors, l_warnings, l_notices: ARRAYED_LIST [STRING]
 			l_output_dir: DIRECTORY
 			l_min_max: TUPLE [min, max: NATURAL]
+			l_output_dir_specified, l_level_specified: BOOLEAN
 			l_mode: AT_MODE
+			l_current_path: PATH
 		do
 			can_run := True
 			create autoteach_options.make_with_defaults
 			create l_errors.make (16)
 			create l_warnings.make (16)
+			create l_notices.make (16)
 			l_mode := enum_mode.M_auto
 
 				-- TODO: One more false positive of CA024 here.
@@ -101,6 +104,9 @@ feature {NONE} -- Implementation
 						class_name_list := autoteach_arguments.item.split (' ')
 					end
 				elseif autoteach_arguments.item.same_string (at_strings.at_hint_level) then
+						-- Register that we encountered the switch, even if the parsing should later fail.
+					l_level_specified := True
+
 					autoteach_arguments.forth
 
 					if not autoteach_arguments.after then
@@ -137,6 +143,7 @@ feature {NONE} -- Implementation
 						autoteach_options.must_insert_code_placeholder := autoteach_arguments.item.to_boolean
 					end
 				elseif autoteach_arguments.item.same_string (at_strings.at_output_path) then
+					l_output_dir_specified := True
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
 						l_errors.force (at_strings.init_output_dir_expected)
@@ -178,8 +185,19 @@ feature {NONE} -- Implementation
 				autoteach_arguments.forth
 			end
 
+			if not l_output_dir_specified then
+				create l_current_path.make_current
+				autoteach_options.output_directory := (create {DIRECTORY}.make_with_path (l_current_path))
+				l_notices.force (at_strings.init_no_output_directory_option (l_current_path.absolute_path.out))
+			end
+
+			if not l_level_specified then
+				autoteach_options.set_hint_level_range (0, 0)
+				l_notices.force (at_strings.init_no_level_specified)
+			end
+
 			if autoteach_options.min_hint_level /= autoteach_options.max_hint_level and not autoteach_options.must_create_level_subfolders then
-				l_warnings.force (at_strings.init_no_level_subfolders_option)
+				l_notices.force (at_strings.init_no_level_subfolders_option)
 			end
 
 			if l_mode = enum_mode.M_custom and not attached hint_tables.custom_hint_table then
@@ -200,6 +218,12 @@ feature {NONE} -- Implementation
 				l_warnings as ic
 			loop
 				print_line (at_strings.warning + ": " + ic.item)
+			end
+
+			across
+				l_notices as ic
+			loop
+				print_line (at_strings.notice + ": " + ic.item)
 			end
 
 			print_line ("")

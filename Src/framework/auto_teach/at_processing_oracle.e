@@ -300,7 +300,6 @@ feature -- Meta-command processing interface
 			l_command: AT_COMMAND
 			l_block_type_strings: LIST [STRING]
 			l_errors: ARRAYED_LIST [STRING]
-			l_is_complex_block: BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 			l_mode: AT_MODE
 		do
@@ -367,7 +366,6 @@ feature -- Meta-command processing interface
 									l_errors.extend (at_strings.proc_invalid_block_type (ic.item) + a_line)
 								else
 									l_block_type := enum_block_type.value (ic.item)
-									l_is_complex_block := enum_block_type.is_complex_block_type (l_block_type)
 
 										-- Commands applicable to all blocks:
 									if l_command.command_word.same_string (at_strings.show_all_command) then
@@ -380,7 +378,7 @@ feature -- Meta-command processing interface
 										set_block_local_visibility_override (l_block_type, Tri_true)
 									elseif l_command.command_word.same_string (at_strings.hide_next_command) then
 										set_block_local_visibility_override (l_block_type, Tri_false)
-									elseif l_is_complex_block then
+									elseif l_block_type.is_complex then
 
 											-- Commands applicable only to complex blocks:
 										if l_command.command_word.same_string (at_strings.show_all_content_command) then
@@ -450,7 +448,7 @@ feature {NONE} -- Implementation: meta-command processing
 	set_block_content_global_visibility_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRILEAN)
 			-- Sets the global content visibility override flag for block type `a_block_type' to `a_value'.
 		require
-			complex_block: enum_block_type.is_complex_block_type (a_block_type)
+			complex_block: a_block_type.is_complex
 		local
 			l_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
@@ -466,7 +464,7 @@ feature {NONE} -- Implementation: meta-command processing
 	set_block_content_local_visibility_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRILEAN)
 			-- Sets the local content visibility override flag for block type `a_block_type' to `a_value'.
 		require
-			complex_block: enum_block_type.is_complex_block_type (a_block_type)
+			complex_block: a_block_type.is_complex
 		local
 			l_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
@@ -483,7 +481,7 @@ feature {NONE} -- Implementation: meta-command processing
 			-- Sets the (global) policy for treating blocks of type `a_block_type' as complex
 			-- (as opposed to treating them as atomic blocks) to `a_value'.
 		require
-			complex_block: enum_block_type.is_complex_block_type (a_block_type)
+			complex_block: a_block_type.is_complex
 		local
 			l_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
@@ -500,7 +498,7 @@ feature {NONE} -- Implementation: meta-command processing
 			-- Sets the local override flag for treating blocks of type `a_block_type' as complex
 			-- (as opposed to treating them as atomic blocks) to `a_value'.
 		require
-			complex_block: enum_block_type.is_complex_block_type (a_block_type)
+			complex_block: a_block_type.is_complex
 		local
 			l_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
@@ -582,7 +580,7 @@ feature {NONE} -- Implementation: miscellaneous
 				enum_block_type.values as ic
 			loop
 				l_block_type := ic.item
-				if enum_block_type.is_complex_block_type (l_block_type) then
+				if l_block_type.is_complex then
 					create {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block.make_with_two_agents (l_block_type, agent block_default_visibility, agent block_content_default_visibility)
 				else
 					create l_block.make_with_visibility_agent (l_block_type, agent block_default_visibility)
@@ -638,7 +636,7 @@ feature {NONE} -- Consistency
 
 						-- The block visibility descriptor is an instance of `AT_COMPLEX_BLOCK_VISIBILITY'
 						-- if and only if this is a complex block type.
-					Result := Result and (enum_block_type.is_complex_block_type (ic.item) = (attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block_visibility))
+					Result := Result and (ic.item.is_complex = (attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block_visibility))
 
 				else
 					Result := False

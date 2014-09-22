@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 			-- Initialize `Current', setting the block type and the agents for retrieving
 			-- the block default visibility and default content visibility respectively.
 		require
-			complex_block: a_block_type.enum_type.is_complex_block_type (a_block_type)
+			complex_block: a_block_type.is_complex
 		do
 			make_with_visibility_agent (a_block_type, a_default_visibility_agent)
 			default_content_visibility_agent := a_default_content_visibility_agent
@@ -141,6 +141,6 @@ feature {NONE} -- Implementation
 			-- Agent for retrieving the default content visibility for this block type.
 
 invariant
-	is_complex_block: block_type.enum_type.is_complex_block_type (block_type)
+	is_complex_block: block_type.is_complex
 
 end

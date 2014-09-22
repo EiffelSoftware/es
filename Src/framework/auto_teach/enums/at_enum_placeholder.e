@@ -42,12 +42,6 @@ feature {AT_ENUM} -- Value list
 							[3, "if_condition_placeholder"]		>>
 		end
 
-	inline_placeholders: ARRAY [AT_PLACEHOLDER]
-			-- List of placeholders that must be inserted inline.
-		once ("PROCESS")
-			Result := <<Ph_none, Ph_if_condition>>
-		end
-
 feature -- Values
 
 	Ph_none: AT_PLACEHOLDER
@@ -102,6 +96,12 @@ feature -- Properties
 		end
 
 feature {NONE} -- Implementation
+
+	inline_placeholders: ARRAY [AT_PLACEHOLDER]
+			-- List of placeholders that must be inserted inline.
+		once ("PROCESS")
+			Result := <<Ph_none, Ph_if_condition>>
+		end
 
 	at_strings: AT_STRINGS
 			-- Strings

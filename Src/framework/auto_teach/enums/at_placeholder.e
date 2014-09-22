@@ -25,7 +25,7 @@ feature -- Enum type
 			create Result
 		end
 
-feature -- Placeholder text
+feature -- Placeholder properties
 
 	text: STRING
 			-- Placeholder text

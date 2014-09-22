@@ -3,7 +3,7 @@ note
 					RULE #66: Argument naming convention violated
 		
 					Argument names should respect the Eiffel naming convention for arguments
-					(all lowercase begin with 'a_', no trailing or two consecutive underscores).
+					(all lowercase, begin with 'a_', no trailing or two consecutive underscores).
 	]"
 	author: "Paolo Antonucci"
 	date: "$Date$"

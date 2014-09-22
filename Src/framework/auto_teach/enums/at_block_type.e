@@ -25,4 +25,18 @@ feature -- Enum type
 			create Result
 		end
 
+feature -- Block classification
+
+	is_atomic: BOOLEAN
+			-- Is `Current' an atomic block type?
+		do
+			Result := enum_type.is_atomic_block_type (Current)
+		end
+
+	is_complex: BOOLEAN
+			-- Is `Current' a complex block type?
+		do
+			Result := enum_type.is_complex_block_type (Current)
+		end
+
 end

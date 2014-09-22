@@ -219,6 +219,9 @@ feature -- Operations
 			end
 		end
 
+		-- Even though `imposed_on' can be passed a BOOLEAN directly,
+		-- the following operation has the advantage of directly
+		-- returning a BOOLEAN instead of a TRILEAN.
 	imposed_on_bool (other: BOOLEAN): BOOLEAN
 			-- If current is defined, the value of Current. Otherwise `other'.
 		do

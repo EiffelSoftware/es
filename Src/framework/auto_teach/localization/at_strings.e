@@ -28,6 +28,11 @@ feature -- General
 			Result := locale.translation ("Warning")
 		end
 
+	notice: STRING
+		do
+			Result := locale.translation ("Notice")
+		end
+
 	meta_command: STRING
 		do
 			Result := locale.translation ("meta-command")
@@ -173,9 +178,19 @@ feature -- Initialization errors and warnings (init)
 			Result := locale.translation ("The specified output directory is not writable or it does not exist and could not be created.")
 		end
 
+	init_no_output_directory_option (a_fallback_output_directory: STRING_32): STRING_32
+		do
+			Result := locale.formatted_string ("No output folder specified, the output will be placed into the current working directory ($1).", a_fallback_output_directory)
+		end
+
 	init_no_level_subfolders_option: STRING_32
 		do
-			Result := locale.formatted_string ("A hint level range was specified without also supplying the `$1' command line switch. This will lead to the same output file(s) being overwritten on every run. The final result will be the output of the last run, the result of the other runs will be lost. Unless you are doing this for testing, you might want to supply the `$1' switch as well.", at_level_subfolders)
+			Result := locale.formatted_string ("The `$1' command line switch was not supplied, the hint level number will be appended to the names of the generated class files.", at_level_subfolders)
+		end
+
+	init_no_level_specified: STRING_32
+		do
+			Result := locale.translation ("No hint level range specified. Running at level 0.")
 		end
 
 feature -- Errors with custom hint table (cht)

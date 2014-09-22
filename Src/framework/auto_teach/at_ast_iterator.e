@@ -30,6 +30,7 @@ inherit
 				-- Routine bodies
 			process_do_as,
 			process_once_as,
+			process_deferred_as,
 
 				-- Locals
 			process_local_dec_list_as,
@@ -534,7 +535,6 @@ feature {AST_EIFFEL} -- Visitors
 			process_require_as (a_as)
 		end
 
-
 	process_body_as (a_as: BODY_AS)
 			-- Process `a_as'.
 		do
@@ -572,6 +572,17 @@ feature {AST_EIFFEL} -- Visitors
 			-- Process `a_as'.
 		do
 			process_do_once_as (a_as)
+		end
+
+	process_deferred_as (a_as: DEFERRED_AS)
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.Bt_routine_body)
+
+			Precursor (a_as)
+
+			process_next_break (a_as)
+			oracle.end_process_block (enum_block_type.Bt_routine_body)
 		end
 
 	process_ensure_then_as (a_as: ENSURE_THEN_AS)

@@ -214,7 +214,7 @@
 		<library name="auto_fix" location="$EIFFEL_SRC\framework\auto_fix\auto_fix.ecf" readonly="false"/>
 		<library name="auto_teach" location="$EIFFEL_SRC\framework\auto_teach\auto_teach.ecf" readonly="false">
 			<option>
-				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
+				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 			</option>
 		</library>
 		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>

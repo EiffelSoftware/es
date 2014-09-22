@@ -74,7 +74,7 @@ feature {NONE} -- Initialization
 					if l_words.is_empty then
 						create l_exception
 						l_exception.set_description (at_strings.cht_empty_row (file_line_number))
-					elseif l_content and then not enum_block_type.is_complex_block_type (l_block_type) then
+					elseif l_content and then not l_block_type.is_complex then
 						create l_exception
 						l_exception.set_description (at_strings.cht_atomic_block_in_content_visibility_table (file_line_number, l_block_type.value_name))
 					else
