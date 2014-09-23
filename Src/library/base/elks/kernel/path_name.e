@@ -15,7 +15,7 @@ inherit
 			make_empty as make,
 			extend as string_extend
 		export
-			{PATH_NAME} all
+--			{PATH_NAME} all
 			{ANY} is_empty, empty, to_c, wipe_out, out, string, twin, prunable, as_attached, make, make_from_string
 		undefine
 			new_string
@@ -197,7 +197,7 @@ feature {NONE} -- Externals
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
