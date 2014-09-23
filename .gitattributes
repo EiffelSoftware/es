@@ -4083,7 +4083,6 @@ Src/tools/ecf_redirection/licence.lic -text
 Src/tools/ecf_tool/README.md -text
 Src/tools/ecf_tool/ecf_tool.ecf svneol=native#text/xml
 Src/tools/ecf_tool/license.lic -text
-Src/tools/ecf_tool/src/commands/resave/resave_cfg.ecf svneol=native#text/xml
 Src/tools/ecf_tool/src/licence.lic -text
 Src/tools/eiffel_echo/eiffel_echo.lic -text
 Src/tools/eiffel_image_embedder/eimgemb.lic -text
