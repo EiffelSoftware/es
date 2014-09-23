@@ -4080,6 +4080,11 @@ Src/tools/doc_builder/resources/xml/all_libs.lic -text
 Src/tools/dotnet_reference_builder/dotnet_reference_builder.lic -text
 Src/tools/ecf_redirection/README.txt -text
 Src/tools/ecf_redirection/licence.lic -text
+Src/tools/ecf_tool/README.md -text
+Src/tools/ecf_tool/ecf_tool.ecf svneol=native#text/xml
+Src/tools/ecf_tool/license.lic -text
+Src/tools/ecf_tool/src/commands/resave/resave_cfg.ecf svneol=native#text/xml
+Src/tools/ecf_tool/src/licence.lic -text
 Src/tools/eiffel_echo/eiffel_echo.lic -text
 Src/tools/eiffel_image_embedder/eimgemb.lic -text
 Src/tools/eiffel_make/emake.lic -text
