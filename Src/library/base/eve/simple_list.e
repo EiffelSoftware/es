@@ -2,7 +2,7 @@ note
 	description: "List with specifications usable in AutoProof."
 	skip: true
 
-class
+frozen class
 	SIMPLE_LIST [G]
 
 inherit

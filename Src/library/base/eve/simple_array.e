@@ -2,7 +2,7 @@ note
 	description: "New version of an array, for use in verification."
 	skip: true
 
-class
+frozen class
 	SIMPLE_ARRAY [G]
 
 inherit
@@ -53,7 +53,8 @@ feature -- Access
 	item alias "[]" (i: INTEGER): G assign put
 			-- Item at position `i'.
 		require
-			valid_index (i)
+			in_bounds: 1 <= i and i <= count
+			valid_index: valid_index (i)
 		do
 		ensure
 			definition: Result = sequence [i]
@@ -103,21 +104,15 @@ feature -- Modification
 	put (v: G; i: INTEGER)
 			-- Update value at position `i' with `v'.
 		require
-			valid_index (i)
+			in_bounds: 1 <= i and i <= count
+			valid_index: valid_index (i)
 		do
 		ensure
 			same_count: count = old count
 			sequence_effect: sequence = old sequence.replaced_at (i, v)
 		end
 
-note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
-	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
-		]"
+invariant
+	count_definition: count >= 0 and count = sequence.count
+
 end
