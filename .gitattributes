@@ -5354,7 +5354,6 @@ Src/web/eiffel_download/site/config/downloads_configuration.json -text
 Src/web/eiffel_download/site/config/downloads_configuration.xml svneol=native#text/xml
 Src/web/eiffel_download/site/www/static/css/download.css -text
 Src/web/eiffel_download/site/www/static/css/responsive_select.css -text
-Src/web/eiffel_download/site/www/template/html/post_download.html svneol=native#text/xml
 Src/web/support/api/IIRF.ini -text
 Src/web/support/api/ecf-target-any_connector -text
 Src/web/support/api/ecf-target-connector -text
