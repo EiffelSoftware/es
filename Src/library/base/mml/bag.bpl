@@ -44,9 +44,9 @@ function {: inline } Bag#Has<T>(b: Bag T, x: T): bool
 function {: inline } Bag#IsEmpty<T>(b: Bag T): bool
 { Bag#Equal(b, Bag#Empty()) }
 
-// Does b only contain c?
-function Bag#IsConstant<T>(b: Bag T, c: T): bool
-{ b[c] > 0 && (forall o: T :: o != c ==> b[o] == 0 )}
+// Does b contain each element c times?
+function Bag#IsConstant<T>(b: Bag T, c: int): bool
+{ (forall o: T :: b[o] != 0 ==> b[o] == c )}
 
 // Set of values contained in the bag
 function Bag#Domain<T>(Bag T): Set T;

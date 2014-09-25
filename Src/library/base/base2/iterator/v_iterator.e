@@ -299,12 +299,12 @@ feature -- Specification
 		attribute
 		end
 
-	is_model_equal (other: like Current): BOOLEAN
+	is_model_equal (other: ANY): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
 			status: ghost, functional
 		do
-			Result := target = other.target and sequence ~ other.sequence and index_ = other.index_
+			Result := attached {V_ITERATOR [G]} other as i and then (target = i.target and sequence ~ i.sequence and index_ = i.index_)
 		end
 
 invariant

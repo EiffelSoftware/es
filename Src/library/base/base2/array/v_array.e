@@ -15,7 +15,7 @@ class
 inherit
 	V_MUTABLE_SEQUENCE [G]
 		redefine
-			is_equal,
+			is_equal_,
 			lower,
 			upper,
 			item,
@@ -161,16 +161,17 @@ feature -- Iteration
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN
+	is_equal_ (other: ANY): BOOLEAN
 			-- Is array made of the same items as `other'?
 			-- (Use reference comparison.)
 		do
-			check inv end
-			check other.inv end
 			if other = Current then
 				Result := True
-			elseif lower = other.lower and upper = other.upper then
-				Result := area.same_items (other.area, 0, 0, count)
+			elseif attached {V_ARRAY [G]} other as a then
+				check inv; a.inv end
+				if lower = a.lower and upper = a.upper then
+					Result := area.same_items (a.area, 0, 0, count)
+				end
 			end
 		end
 
@@ -339,12 +340,12 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 feature -- Specification
 
-	is_model_equal (other: like Current): BOOLEAN
+	is_model_equal (other: ANY): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
 			status: ghost, functional
 		do
-			Result := sequence ~ other.sequence and lower_ = other.lower_
+			Result := attached {V_ARRAY [G]} other as a and then (sequence ~ a.sequence and lower_ = a.lower_)
 		end
 
 invariant

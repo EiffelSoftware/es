@@ -12,7 +12,7 @@ inherit
 	V_ITERATOR [G]
 		redefine
 			target,
-			is_equal
+			is_equal_
 		end
 
 create {V_CONTAINER}
@@ -111,11 +111,11 @@ feature -- Status report
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is iterator traversing the same container and is at the same position at `other'?
 		do
 			check inv; other.inv; iterator.inv; other.iterator.inv; target.inv; other.target.inv end
-			Result := iterator.is_equal (other.iterator)
+			Result := iterator.is_equal_ (other.iterator)
 		end
 
 feature -- Cursor movement

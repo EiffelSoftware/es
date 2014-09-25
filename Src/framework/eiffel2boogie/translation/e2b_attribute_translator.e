@@ -62,7 +62,8 @@ feature -- Basic operations
 			end
 
 				-- Add type properties
-			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access, helper.is_type_exact (current_feature.type, l_class_type, Void))
+			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access, helper.is_type_exact (current_feature.type, l_class_type, Void),
+				current_feature.type.is_attached)
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (
 						factory.is_heap (l_heap),
@@ -176,7 +177,7 @@ feature -- Basic operations
 			l_heap := factory.heap_entity ("heap")
 			l_o := factory.ref_entity ("o")
 			l_heap_access := factory.heap_access (l_heap, l_o, l_attribute_name, l_boogie_type)
-			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access, helper.is_type_exact (l_type, l_class_type, Void))
+			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access, helper.is_type_exact (l_type, l_class_type, Void), l_type.is_attached)
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (
 						factory.is_heap (l_heap),

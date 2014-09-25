@@ -177,9 +177,9 @@ feature -- Type translation
 			end
 		end
 
-	type_property (a_type: CL_TYPE_A; a_heap, a_expr: IV_EXPRESSION; a_exact_type: BOOLEAN): IV_EXPRESSION
+	type_property (a_type: CL_TYPE_A; a_heap, a_expr: IV_EXPRESSION; a_is_exact, a_is_attached: BOOLEAN): IV_EXPRESSION
 			-- For an expression `a_expr' originally of Eiffel type `a_type', an expression that states its precise Eiffel type in `a_heap';
-			-- if `a_exact_type', then the dynamic type of the expression is known (for example, because it's Current).
+			-- if `a_is_exact', then the dynamic type of the expression is known (for example, because it's Current).
 		local
 			l_boogie_type: IV_TYPE
 			l_content_type: CL_TYPE_A
@@ -191,17 +191,23 @@ feature -- Type translation
 			l_boogie_type := for_class_type (a_type)
 			if l_boogie_type ~ ref then
 				l_content_type := a_type
-				if a_exact_type then
-					if l_content_type.is_attached then
+				if a_is_exact then
+					if a_is_attached then
 						l_fname := "attached_exact"
 					else
 						l_fname := "detachable_exact"
 					end
 				elseif not helper.is_class_any (l_content_type.base_class) then
-					if l_content_type.is_attached then
+					if a_is_attached then
 						l_fname := "attached"
 					else
 						l_fname := "detachable"
+					end
+				else -- type is ANY
+					if a_is_attached then
+						Result := factory.and_ (factory.not_equal (a_expr, factory.void_), factory.heap_access (a_heap, a_expr, "allocated", bool))
+					else
+						Result := factory.heap_access (a_heap, a_expr, "allocated", bool)
 					end
 				end
 				if l_fname /= Void then

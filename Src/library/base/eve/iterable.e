@@ -19,6 +19,7 @@ feature -- Access
 			modify_field (["observers", "closed"], Current)
 		deferred
 		ensure
+			closed: closed
 			result_fresh: Result.is_fresh
 			result_wrapped: Result.is_wrapped and Result.inv
 			result_in_observers: observers = old observers & Result

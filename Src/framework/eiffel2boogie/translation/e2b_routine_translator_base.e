@@ -77,7 +77,8 @@ feature -- Helper functions: arguments and result
 		do
 			current_boogie_procedure.add_argument (create {IV_ENTITY}.make (a_name, a_boogie_type))
 			create l_pre.make (types.type_property (a_type, factory.global_heap, factory.entity (a_name, a_boogie_type),
-				helper.is_type_exact (a_orig_type, a_type, current_feature)))
+				helper.is_type_exact (a_orig_type, a_type, current_feature),
+				a_orig_type.is_attached))
 			l_pre.set_free
 			l_pre.node_info.set_attribute ("info", "type property for argument " + a_name)
 			current_boogie_procedure.add_contract (l_pre)
@@ -98,7 +99,8 @@ feature -- Helper functions: arguments and result
 					"Result",
 					l_iv_type,
 					types.type_property (l_type, factory.global_heap, factory.entity ("Result", l_iv_type),
-						helper.is_type_exact (current_feature.type, l_type, current_feature)))
+						helper.is_type_exact (current_feature.type, l_type, current_feature),
+						current_feature.type.is_attached))
 			end
 		end
 

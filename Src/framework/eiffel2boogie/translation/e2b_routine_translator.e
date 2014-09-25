@@ -627,7 +627,7 @@ feature -- Translation: Implementation
 								translation_pool.add_type (l_type)
 								l_loc := l_translator.entity_mapping.local_ (i.cursor_index)
 								l_implementation.add_local_with_property (l_loc.name, l_loc.type,
-									types.type_property (l_type, factory.global_heap, l_loc, helper.is_type_exact (i.item, l_type, current_feature)))
+									types.type_property (l_type, factory.global_heap, l_loc, helper.is_type_exact (i.item, l_type, current_feature), i.item.is_attached))
 							end
 						end
 					end
@@ -768,7 +768,7 @@ feature -- Translation: Functions
 				l_mapping.set_current (l_entity)
 				if not l_is_logical then
 					l_free_body := factory.and_clean (l_free_body, types.type_property (current_type, l_mapping.heap, l_entity,
-						helper.is_type_exact (create {LIKE_CURRENT}.make (current_type), current_type, current_feature)))
+						helper.is_type_exact (create {LIKE_CURRENT}.make (current_type), current_type, current_feature), True))
 				end
 			end
 			across arguments_of_current_feature as i loop
@@ -780,7 +780,9 @@ feature -- Translation: Functions
 				if not l_is_logical then
 					l_free_body := factory.and_clean (
 						l_free_body,
-						types.type_property (i.item.type, l_mapping.heap, l_entity, helper.is_type_exact (i.item.orig_type, i.item.type, current_feature)))
+						types.type_property (i.item.type, l_mapping.heap, l_entity,
+							helper.is_type_exact (i.item.orig_type, i.item.type, current_feature),
+							i.item.orig_type.is_attached))
 				end
 			end
 
@@ -981,7 +983,8 @@ feature {NONE} -- Translation: Functions
 					-- Add type property
 				l_post := factory.and_clean (l_post,
 					types.type_property (l_type, l_expr_translator.entity_mapping.heap, l_fcall,
-						helper.is_type_exact (current_feature.type, l_type, current_feature)))
+						helper.is_type_exact (current_feature.type, l_type, current_feature),
+						current_feature.type.is_attached))
 			end
 
 			if helper.is_feature_status (current_feature, "opaque") then

@@ -52,9 +52,9 @@ feature -- Basic operations
 					a_translator.side_effect.extend (create {IV_ASSERT}.make_assume (l_trig))
 				end
 			elseif l_name ~ "transitive_owns" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "trans_owns")
+				a_translator.process_builtin_function_call (a_feature, a_parameters, "trans_owns")
 			elseif l_name ~ "ownership_domain" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "domain")
+				a_translator.process_builtin_function_call (a_feature, a_parameters, "domain")
 			elseif translation_mapping.builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_function_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.builtin_any_procedures.has (l_name) then

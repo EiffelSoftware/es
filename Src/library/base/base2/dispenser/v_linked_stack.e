@@ -12,7 +12,7 @@ inherit
 	V_STACK [G]
 		redefine
 			default_create,
-			is_equal,
+			is_equal_,
 			forget_iterator
 		end
 
@@ -83,14 +83,12 @@ feature -- Iteration
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is stack made of the same values in the same order as `other'?
 			-- (Use reference comparison.)
-		note
-			status: inv_unfriendly
 		do
 			check inv; other.inv; list.inv; other.list.inv end
-			Result := list.is_equal (other.list)
+			Result := list.is_equal_ (other.list)
 		end
 
 feature -- Extension

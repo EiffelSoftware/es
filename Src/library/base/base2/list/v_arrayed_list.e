@@ -18,7 +18,7 @@ inherit
 		redefine
 			item,
 			default_create,
-			is_equal,
+			is_equal_,
 			put,
 			prepend
 		end
@@ -81,7 +81,7 @@ feature -- Iteration
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is list made of the same values in the same order as `other'?
 			-- (Use reference comparison.)
 		local

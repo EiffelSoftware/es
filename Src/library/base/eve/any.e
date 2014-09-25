@@ -66,13 +66,25 @@ feature -- Comparison
 			-- equal to current object?
 		require
 			other_not_void: other /= Void
-			subjects_closed: across subjects as s all s.item.closed end
-			other_subjects_closed: across other.subjects as s all s.item.closed end
 		external
 			"built_in"
+		end
+
+	is_equal_ (other: ANY): BOOLEAN
+			-- Is the abstract state of Current equal to that of `other'?
+		note
+			explicit: contracts
+		require
+			closed: closed
+			other_void_or_closed: attached other implies other.closed
+			subjects_closed: across subjects as s all s.item.closed end
+			other_subjects_closed: attached other implies across other.subjects as s all s.item.closed end
+		do
+			Result := True
 		ensure
 			definition: Result = is_model_equal (other)
 		end
+
 
 	frozen standard_is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object of the same type
@@ -93,6 +105,24 @@ feature -- Comparison
 				Result := b /= Void and then
 							a.is_equal (b)
 			end
+		end
+
+	frozen equal_ (x, y: ANY): BOOLEAN
+		note
+			explicit: contracts
+		require
+			x_void_or_closed: attached x implies x.closed
+			y_void_or_closed: attached y implies y.closed
+			x_subjects_closed: attached x implies across x.subjects as s all s.item.closed end
+			y_subjects_closed: attached y implies across y.subjects as s all s.item.closed end
+		do
+			if x = Void then
+				Result := y = Void
+			else
+				Result := x.is_equal_ (y)
+			end
+		ensure
+			Result = model_equals (x, y)
 		end
 
 	frozen standard_equal (a: detachable ANY; b: like a): BOOLEAN
@@ -584,15 +614,26 @@ feature -- Verification: ownership fields
 
 feature -- Verification: auxiliary
 
-	is_model_equal (other: like Current): BOOLEAN
+	is_model_equal (other: ANY): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
 			status: ghost
 			explicit: contracts
 		require
-			other_exists: other /= Void
+			reads (Current, other)
 		do
 			Result := True
+		ensure
+			reflexive: other = Current implies Result
+		end
+
+	frozen model_equals (x, y: ANY): BOOLEAN
+		note
+			status: ghost, functional
+		require
+			reads (x, y)
+		do
+			Result := (x = Void and y = Void) or else (x /= Void and then x.is_model_equal (y))
 		end
 
 	frozen old_: like Current

@@ -11,7 +11,7 @@ deferred class
 inherit
 	V_SEQUENCE_ITERATOR [G]
 		redefine
-			is_equal,
+			is_equal_,
 			go_to
 		end
 
@@ -71,7 +71,7 @@ feature -- Status report
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is iterator traversing the same container and is at the same position at `other'?
 		note
 			status: dynamic

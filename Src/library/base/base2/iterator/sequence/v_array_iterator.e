@@ -17,7 +17,7 @@ inherit
 
 	V_MUTABLE_SEQUENCE_ITERATOR [G]
 		undefine
-			is_equal,
+			is_equal_,
 			go_to
 		redefine
 			target,

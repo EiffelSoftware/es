@@ -19,7 +19,7 @@ inherit
 			default_create,
 			first,
 			last,
-			is_equal,
+			is_equal_,
 			put,
 			prepend,
 			reverse
@@ -108,7 +108,7 @@ feature -- Iteration
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is list made of the same values in the same order as `other'?
 			-- (Use reference comparison.)
 		local

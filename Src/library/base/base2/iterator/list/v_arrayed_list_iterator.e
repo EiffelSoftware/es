@@ -11,7 +11,7 @@ class
 inherit
 	V_LIST_ITERATOR [G]
 		undefine
-			is_equal,
+			is_equal_,
 			go_to
 		redefine
 			target,
