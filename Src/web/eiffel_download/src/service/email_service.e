@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 	admin_email: IMMUTABLE_STRING_8
 			-- Administrator email.
 		once
-			Result := "noreplies@eiffel.com"
+			Result := "Eiffel Software Evaluation <noreplies@eiffel.com>"
 		end
 
 	smtp_protocol: SMTP_PROTOCOL
@@ -45,7 +45,6 @@ feature -- Basic Operations
 			attached_host: a_host /= Void
 		local
 			l_content: STRING
-			l_url: URL_ENCODER
  			l_path: PATH
 			l_email: EMAIL
 		do
@@ -56,6 +55,8 @@ feature -- Basic Operations
 			create l_email.make_with_entry (admin_email, a_to)
 			l_email.set_message (l_content)
 			l_email.add_header_entry ({EMAIL_CONSTANTS}.H_subject, "Eiffel Site: EiffelStudio Download")
+			l_email.add_header_entry ("MIME-Version:", "1.0")
+			l_email.add_header_entry ("Content-Type", "text/html; charset=ISO-8859-1")
 			send_email (l_email)
 		end
 

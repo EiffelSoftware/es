@@ -27,6 +27,10 @@ inherit
 
 	REFACTORING_HELPER
 
+	ARGUMENTS
+
+	SHARED_LOGGER
+
 create
 	make_and_launch
 
@@ -36,7 +40,7 @@ feature {NONE} -- Initialization
 			-- Initialize current service.
 		do
 			Precursor
-			service_options := create {WSF_SERVICE_LAUNCHER_OPTIONS_FROM_INI}.make_from_file ("download.ini")
+			create {WSF_SERVICE_LAUNCHER_OPTIONS_FROM_INI} service_options.make_from_file ("download.ini")
 			setup_config
 			initialize_router
 		end
@@ -50,8 +54,8 @@ feature {NONE} -- Initialization
 
 				-- HTML uri/uri templates.
 			map_uri_agent_with_request_methods ("/", agent handle_home, router.methods_get)
+			map_uri_agent_with_request_methods ("", agent handle_home, router.methods_get)
 			map_uri_agent_with_request_methods ("/download", agent handle_download, router.methods_post)
-			map_uri_agent_with_request_methods ("/post_download", agent handle_post_download, router.methods_get)
 			map_uri_agent_with_request_methods ("/confirm_download", agent handle_confirm_download, router.methods_get)
 			create doc.make (router)
 
@@ -73,12 +77,6 @@ feature -- Handle HTML pages
 		do
 			process_workflow (req, res)
 		end
-
-	handle_post_download (req: WSF_REQUEST; res: WSF_RESPONSE)
-		do
-			post_download (req, res, "")
-		end
-
 
 	handle_home (req: WSF_REQUEST; res: WSF_RESPONSE)
 		local
@@ -125,7 +123,7 @@ feature -- Workflow
 						l_service.initialize_download (l_form.email, l_token, l_form.platform )
 				end
 				send_email (req, l_form, l_token, req.absolute_script_url (""))
-				compute_response_redirect (req, res, "/post_download")
+				compute_response_redirect (req, res, "https://www.eiffel.com/forms/thank_you")
 			else
 				if attached read_file ("500.html") as l_output then
 					compute_response_500 (req, res, l_output)
@@ -150,29 +148,37 @@ feature -- Workflow
 					attached {WSF_STRING} req.query_parameter ("link") as l_link
 				then
 					if l_service.is_membership (l_email.value) then
+						log.write_debug (generator + "process_workflow:" + l_email.value +  " Membership")
 						if 	l_service.is_download_active (l_email.value, l_token.value) then
+							log.write_debug (generator + "process_workflow:" + l_email.value +  " Download active")
 							l_service.add_download_interaction_membership (l_email.value, "EiffelStudio", l_platform.value, "", l_token.value)
 							enterprise_download_options (req, res, l_link.value)
 						else
+							log.write_debug (generator + "process_workflow:" + l_email.value +  " Download not active using token:" + l_token.value )
 							bad_request (req, res, "")
 						end
 					elseif l_service.is_contact (l_email.value) then
+						log.write_debug (generator + "process_workflow:" + l_email.value +  " Contact")
 						if 	l_service.is_download_active (l_email.value, l_token.value) then
+							log.write_debug (generator + "process_workflow:" + l_email.value +  " Download active")
 							l_service.add_download_interaction_contact (l_email.value, "EiffelStudio", l_platform.value, "", l_token.value)
 							enterprise_download_options (req, res, l_link.value)
 						else
+							log.write_debug (generator + "process_workflow:" + l_email.value +  " Download not active using token:" + l_token.value )
 							bad_request (req, res, "")
 						end
 					else
 						check
 							l_service.is_new_contact (l_email.value)
 						end
-
+						log.write_debug (generator + "process_workflow:" + l_email.value +  " New Contact")
 						if 	l_service.is_download_active (l_email.value, l_token.value ) then
+							log.write_debug (generator + "process_workflow:" + l_email.value +  " Download active")
 							l_service.validate_contact (l_email.value) --(add a new contact, remove temporary contact)
 							l_service.add_download_interaction_contact (l_email.value, "EiffelStudio", l_platform.value, "", l_token.value)
 							enterprise_download_options (req, res, l_link.value)
 						else
+							log.write_debug (generator + "process_workflow:" + l_email.value +  " Download not active using token:" + l_token.value )
 							bad_request (req, res, "")
 						end
 					end
@@ -187,23 +193,10 @@ feature -- Workflow
 feature -- Response
 
 	enterprise_download_options (req: WSF_REQUEST; res: WSF_RESPONSE; a_link: STRING)
-		local
-			l_hp: HTML_DOWNLOAD_OPTIONS
 		do
 			compute_download (req, res, a_link)
 		end
 
-	post_download (req: WSF_REQUEST; res: WSF_RESPONSE; a_description: STRING)
-		local
-			l_hp: HTML_POST_DOWNLOAD
-		do
-			if attached req.http_host as l_host then
-				create l_hp.make (layout.html_template_path, req.absolute_script_url (""))
-				if attached l_hp.representation as l_html_post_download then
-					compute_response_get (req, res, l_html_post_download)
-				end
-			end
-		end
 
 	bad_request (req: WSF_REQUEST; res: WSF_RESPONSE; a_description: STRING)
 		local
@@ -233,7 +226,6 @@ feature -- Response
 		local
 			h: HTTP_HEADER
 			l_msg: STRING
-			hdate: HTTP_DATE
 		do
 			create h.make
 			create l_msg.make_from_string (output)
@@ -249,7 +241,6 @@ feature -- Response
 		local
 			h: HTTP_HEADER
 			l_msg: STRING
-			hdate: HTTP_DATE
 		do
 			create h.make
 			create l_msg.make_from_string (output)
@@ -266,7 +257,6 @@ feature -- Response
 		local
 			h: HTTP_HEADER
 			l_msg: STRING
-			hdate: HTTP_DATE
 		do
 			create h.make
 			create l_msg.make_from_string (output)
@@ -352,9 +342,8 @@ feature -- Configuration
 			l_path: PATH
 			l_database: DATABASE_CONNECTION
 		do
-			if attached Execution_environment.item ({CONSTANTS}.Directory_variable_name) as s then
-				create l_path.make_from_string (s)
-				create layout.make_with_path (l_path)
+			if attached separate_character_option_value ('d') as l_dir then
+				create layout.make_with_path (create {PATH}.make_from_string (l_dir))
 			else
 				create layout.make_default
 			end
