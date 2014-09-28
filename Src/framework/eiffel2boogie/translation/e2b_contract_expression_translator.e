@@ -150,20 +150,22 @@ feature -- Translation
 				last_expression := dummy_node (a_feature.type)
 			else
 				create l_call.make (l_name, types.for_class_type (feature_class_type (a_feature)))
-				l_call.add_argument (entity_mapping.heap)
-				l_call.add_argument (current_target)
+					-- Once functions are translated as constants; they have neither arguments nor preconditions
+				if not a_feature.is_once then
+					l_call.add_argument (entity_mapping.heap)
+					l_call.add_argument (current_target)
 
-				process_parameters (a_parameters)
-				l_call.arguments.append (last_parameters)
+					process_parameters (a_parameters)
+					l_call.arguments.append (last_parameters)
 
-					-- Add read frame check
-				add_read_frame_check (a_feature)
-					-- Add precondition check
-				add_function_precondition_check (a_feature, l_call)
-				-- This would check that a recursive definitional axiom for a non-functional function is well-defined;
-				-- I believe this is not needed, because we have to prove anyway that this postcondition is satisfied by a terminating implementation.
-	--			add_termination_check (a_feature, last_parameters)
-
+						-- Add read frame check
+					add_read_frame_check (a_feature)
+						-- Add precondition check
+					add_function_precondition_check (a_feature, l_call)
+					-- This would check that a recursive definitional axiom for a non-functional function is well-defined;
+					-- I believe this is not needed, because we have to prove anyway that this postcondition is satisfied by a terminating implementation.
+		--			add_termination_check (a_feature, last_parameters)					
+				end
 				last_expression := l_call
 			end
 		end

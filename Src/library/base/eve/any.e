@@ -70,21 +70,21 @@ feature -- Comparison
 			"built_in"
 		end
 
-	is_equal_ (other: ANY): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is the abstract state of Current equal to that of `other'?
 		note
 			explicit: contracts
 		require
+--			same_type: generating_type = other.generating_type
 			closed: closed
-			other_void_or_closed: attached other implies other.closed
+			other_closed: other.closed
 			subjects_closed: across subjects as s all s.item.closed end
-			other_subjects_closed: attached other implies across other.subjects as s all s.item.closed end
+			other_subjects_closed: across other.subjects as s all s.item.closed end
 		do
 			Result := True
 		ensure
 			definition: Result = is_model_equal (other)
 		end
-
 
 	frozen standard_is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object of the same type
@@ -118,7 +118,7 @@ feature -- Comparison
 		do
 			if x = Void then
 				Result := y = Void
-			else
+			elseif x.generating_type = y.generating_type then
 				Result := x.is_equal_ (y)
 			end
 		ensure
@@ -614,12 +614,14 @@ feature -- Verification: ownership fields
 
 feature -- Verification: auxiliary
 
-	is_model_equal (other: ANY): BOOLEAN
+	is_model_equal (other: like Current): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
 			status: ghost
 			explicit: contracts
 		require
+			other /= Void
+--			generating_type = other.generating_type
 			reads (Current, other)
 		do
 			Result := True
@@ -633,7 +635,7 @@ feature -- Verification: auxiliary
 		require
 			reads (x, y)
 		do
-			Result := (x = Void and y = Void) or else (x /= Void and then x.is_model_equal (y))
+			Result := (x = Void and y = Void) or ((x /= Void and x.generating_type = y.generating_type) and then x.is_model_equal (y))
 		end
 
 	frozen old_: like Current

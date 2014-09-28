@@ -282,12 +282,12 @@ feature {V_LIST, V_LIST_ITERATOR} -- Implementation
 
 feature -- Specification
 
-	is_model_equal (other: ANY): BOOLEAN
+	is_model_equal (other: like Current): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
 			status: ghost, functional
 		do
-			Result := attached {V_LIST [G]} other as l and then sequence ~ l.sequence
+			Result := sequence ~ other.sequence
 		end
 
 invariant

@@ -1317,7 +1317,7 @@ feature {NONE} -- Implementation
 			l_translator.set_context (current_feature, current_type)
 			l_translator.copy_entity_mapping (entity_mapping)
 			l_translator.locals_map.merge (locals_map)
-			last_frame := l_routine_translator.frame_definition (l_routine_translator.modify_expressions_of (a_modifies, l_translator), a_lhs)
+			last_frame := l_routine_translator.frame_definition (l_routine_translator.modify_expressions_of (a_modifies, l_translator), a_lhs, <<>>)
 			last_safety_checks := l_translator.side_effect
 			locals_map.merge (l_translator.locals_map)
 		end

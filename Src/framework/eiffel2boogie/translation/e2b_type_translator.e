@@ -68,14 +68,14 @@ feature -- Basic operations
 				boogie_universe.add_dependency (l_dep)
 			end
 
---				-- Add actual generic parameters
---			if a_type.has_generics then
---				across a_type.generics as params loop
---					check attached {CL_TYPE_A} params.item as t then
---						translation_pool.add_type (t)
---					end
---				end
---			end
+				-- Add actual generic parameters
+			if a_type.has_generics then
+				across a_type.generics as params loop
+					check attached {CL_TYPE_A} params.item as t then
+						translation_pool.add_parent_type (t)
+					end
+				end
+			end
 
 			if not helper.is_class_logical (l_class) then
 					-- Type definition

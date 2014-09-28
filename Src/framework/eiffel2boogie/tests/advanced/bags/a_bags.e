@@ -24,7 +24,7 @@ feature
 			create b1.multiple (6, 3)
 			check b1 [6] = 3 end
 			check not b1.has (3) end
-			check b1.is_constant (6) end
+			check b1.is_constant (3) end
 			check b1.count = 3 end
 			check b1.is_disjoint (b2) end
 

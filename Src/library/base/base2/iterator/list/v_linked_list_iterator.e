@@ -5,7 +5,7 @@ note
 	manual_inv: true
 	false_guards: true
 
-class
+frozen class
 	V_LINKED_LIST_ITERATOR [G]
 
 inherit

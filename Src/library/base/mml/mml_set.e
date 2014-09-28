@@ -163,5 +163,11 @@ feature -- Convenience
 				return NULL;
 			]"
 		end
+		
+	non_void: BOOLEAN
+		note
+			maps_to: "Set#NonNull"
+		do
+		end		
 
 end

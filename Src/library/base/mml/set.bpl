@@ -134,6 +134,9 @@ function Set#Max<T>(Set T): T;
 axiom (forall s: Set int :: { Set#Max(s) } 
   !Set#IsEmpty(s) ==> s[Set#Max(s)] && (forall x: int :: s[x] ==> x <= Set#Max(s)));
   
+function Set#NonNull(s: Set ref): bool
+{ (forall x: ref :: { s[x] } s[x] ==> x != Void) }
+  
 // Type property
 function {: inline } Set#ItemsType(heap: HeapType, s: Set ref, t: Type): bool 
 { (forall o: ref :: { s[o] } s[o] ==> detachable(heap, o, t)) }

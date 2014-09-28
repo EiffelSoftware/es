@@ -20,6 +20,7 @@
 				<cluster name="composite" location=".\framing\ownership\composite" recursive="true"/>
 				<cluster name="pip" location=".\framing\ownership\pip" recursive="true"/>
 				<cluster name="observer_inheritance" location=".\framing\ownership\observer_inheritance" recursive="true"/>
+				<!--cluster name="hash_set" location=".\framing\ownership\hash_set" recursive="true"/-->
 				<cluster name="stack" location=".\framing\models\stack" recursive="true"/>
 			</cluster>
 			<cluster name="language" location=".\language" recursive="true"/>

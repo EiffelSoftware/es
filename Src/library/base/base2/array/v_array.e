@@ -9,7 +9,7 @@ note
 	manual_inv: true
 	false_guards: true
 
-class
+frozen class
 	V_ARRAY [G]
 
 inherit
@@ -161,17 +161,15 @@ feature -- Iteration
 
 feature -- Comparison
 
-	is_equal_ (other: ANY): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is array made of the same items as `other'?
 			-- (Use reference comparison.)
 		do
+			check inv; other.inv end
 			if other = Current then
 				Result := True
-			elseif attached {V_ARRAY [G]} other as a then
-				check inv; a.inv end
-				if lower = a.lower and upper = a.upper then
-					Result := area.same_items (a.area, 0, 0, count)
-				end
+			elseif lower = other.lower and upper = other.upper then
+				Result := area.same_items (other.area, 0, 0, count)
 			end
 		end
 
@@ -340,12 +338,12 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 feature -- Specification
 
-	is_model_equal (other: ANY): BOOLEAN
+	is_model_equal (other: like Current): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
 			status: ghost, functional
 		do
-			Result := attached {V_ARRAY [G]} other as a and then (sequence ~ a.sequence and lower_ = a.lower_)
+			Result := sequence ~ other.sequence and lower_ = other.lower_
 		end
 
 invariant

@@ -47,7 +47,7 @@ axiom (forall h: HeapType, k: HeapType :: { HeapSucc(h,k) }
 
 type Type; // Type definition for Eiffel types
 const unique ANY: Type; // Type for ANY
-// const unique NONE: Type; // Type for NONE
+const unique NONE: Type; // Type for NONE
 
 // Type function for objects.
 function type_of(o: ref): Type;
@@ -59,7 +59,7 @@ axiom (forall t: Type :: { ANY <: t } ANY <: t <==> t == ANY);
 // axiom (forall t: Type :: NONE <: t); // NONE inherits from all types.
 // axiom (forall h: HeapType :: IsHeap(h) ==> h[Void, allocated]); // Void is always allocated.
 axiom (forall h: HeapType, f: Field ref, o: ref :: IsHeap(h) && h[o, allocated] ==> h[h[o, f], allocated]); // All reference fields are allocated.
-// axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
+axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
 // axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects that have different dynamic type cannot be aliased.
 // axiom (forall t: Type :: is_frozen(t) ==> (forall t2: Type :: t2 <: t ==> t2 == t || t2 == NONE)); // Only NONE inherits from frozen types.
 axiom (forall t: Type, r: ref :: { is_frozen(t), type_of(r) } (r != Void && type_of(r) <: t && is_frozen(t)) ==> (type_of(r) == t)); // Non-void references of a frozen type are exact.
@@ -243,7 +243,7 @@ function {:inline true} inv(h: HeapType, o: ref): bool {
 function {:inline true} global(h: HeapType): bool
 {
   h[Void, allocated] && is_open(h, Void) &&
-  (forall o: ref :: h[o, allocated] && is_open(h, o) ==> is_free(h, o)) &&
+  // (forall o: ref :: h[o, allocated] && is_open(h, o) ==> is_free(h, o)) &&
   // (forall o: ref :: { h[o, owner], is_open(h, o) } h[o, allocated] && is_open(h, o) ==> is_free(h, o)) &&
   (forall o: ref, o': ref :: { h[o, owns][o'] } h[o, allocated] && h[o', allocated] && h[o, closed] && h[o, owns][o'] ==> (h[o', closed] && h[o', owner] == o)) && // G2
   (forall o: ref :: { user_inv(h, o) } h[o, allocated] ==> inv(h, o)) // G1
@@ -378,35 +378,35 @@ function detachable(heap: HeapType, o: ref, t: Type) returns (bool) {
 
 // Integer boxing
 
-// const unique INTEGER: Type;
+const unique INTEGER: Type;
 
-// function boxed_int(i: int) returns (ref);
-// function unboxed_int(r: ref) returns (int);
+function boxed_int(i: int) returns (ref);
+function unboxed_int(r: ref) returns (int);
 
-// axiom (forall i: int :: unboxed_int(boxed_int(i)) == i);
-// axiom (forall i1, i2: int :: (i1 == i2) ==> (boxed_int(i1) == boxed_int(i2)));
-// axiom (forall i: int :: boxed_int(i) != Void && type_of(boxed_int(i)) == INTEGER);
-// axiom (forall heap: HeapType, i: int :: IsHeap(heap) ==> heap[boxed_int(i), allocated]);
+axiom (forall i: int :: unboxed_int(boxed_int(i)) == i);
+axiom (forall i1, i2: int :: (i1 == i2) ==> (boxed_int(i1) == boxed_int(i2)));
+axiom (forall i: int :: boxed_int(i) != Void && type_of(boxed_int(i)) == INTEGER);
+axiom (forall heap: HeapType, i: int :: IsHeap(heap) ==> heap[boxed_int(i), allocated]);
 
 
 // Boolean boxing
 
-// const unique BOOLEAN: Type;
-// const unique boxed_true: ref;
-// const unique boxed_false: ref;
+const unique BOOLEAN: Type;
+const unique boxed_true: ref;
+const unique boxed_false: ref;
 
-// function boxed_bool(b: bool) returns (ref);
-// function unboxed_bool(r: ref) returns (bool);
+function boxed_bool(b: bool) returns (ref);
+function unboxed_bool(r: ref) returns (bool);
 
-// axiom (boxed_bool(true) == boxed_true);
-// axiom (boxed_bool(false) == boxed_false);
-// axiom (unboxed_bool(boxed_true) == true);
-// axiom (unboxed_bool(boxed_false) == false);
-// axiom (boxed_true != boxed_false);
-// axiom (boxed_true != Void && type_of(boxed_true) == BOOLEAN);
-// axiom (boxed_false != Void && type_of(boxed_false) == BOOLEAN);
-// axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_true, allocated]);
-// axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_false, allocated]);
+axiom (boxed_bool(true) == boxed_true);
+axiom (boxed_bool(false) == boxed_false);
+axiom (unboxed_bool(boxed_true) == true);
+axiom (unboxed_bool(boxed_false) == false);
+axiom (boxed_true != boxed_false);
+axiom (boxed_true != Void && type_of(boxed_true) == BOOLEAN);
+axiom (boxed_false != Void && type_of(boxed_false) == BOOLEAN);
+axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_true, allocated]);
+axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_false, allocated]);
 
 // Bounded integers
 
