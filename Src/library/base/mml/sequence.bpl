@@ -60,6 +60,11 @@ axiom (forall<T> s: Seq T, n: int, x: T ::
   Seq#Has(Seq#Drop(s, n), x) <==>
     (exists i: int :: { Seq#Item(s, i) }
       0 <= n && n + 1 <= i && i <= Seq#Length(s) && Seq#Item(s, i) == x));
+axiom (forall<T> s: Seq T, n: int, x: T ::
+  { Seq#Has(Seq#RemovedAt(s, n), x) }
+  Seq#Has(Seq#RemovedAt(s, n), x) <==>
+    (exists i: int :: { Seq#Item(s, i) }
+      1 <= n && n <= Seq#Length(s) && n != i && Seq#Item(s, i) == x));
       
 // Is a sequence empty?
 function {: inline } Seq#IsEmpty<T>(a: Seq T): bool

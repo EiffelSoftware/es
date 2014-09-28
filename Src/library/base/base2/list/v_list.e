@@ -34,7 +34,7 @@ feature -- Measurement
 			-- Lower bound of index interval.
 		note
 			status: dynamic
-		once
+		do
 			check inv_only ("lower_definition") end
 			Result := 1
 		end
