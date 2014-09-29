@@ -37,7 +37,7 @@ feature -- Access
 	is_empty: BOOLEAN
 			-- Is the list empty?
 		require
-			closed: closed
+			reads (Current)
 		do
 		ensure
 			definition: Result = sequence.is_empty
@@ -46,7 +46,7 @@ feature -- Access
 	count: INTEGER
 			-- Number of elements in the list.
 		require
-			closed: closed
+			reads (Current)
 		do
 		ensure
 			definition: Result = sequence.count
@@ -55,8 +55,8 @@ feature -- Access
 	item alias "[]" (i: INTEGER): G
 			-- Element at index `i'.
 		require
-			closed: closed
 			in_bounds: 1 <= i and i <= count
+			reads (Current)
 		do
 		ensure
 			definition: Result = sequence [i]
@@ -65,7 +65,7 @@ feature -- Access
 	has (x: G) : BOOLEAN
 			-- Is `x' an element of the list?
 		require
-			closed: closed
+			reads (Current)
 		do
 		ensure
 			definition: Result = sequence.has (x)

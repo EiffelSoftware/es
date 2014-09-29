@@ -45,6 +45,8 @@ feature -- Access
 
 	count: INTEGER
 			-- Number of elements.
+		require
+			reads (Current)
 		do
 		ensure
 			definition: Result = sequence.count
@@ -55,6 +57,7 @@ feature -- Access
 		require
 			in_bounds: 1 <= i and i <= count
 			valid_index: valid_index (i)
+			reads (Current)			
 		do
 		ensure
 			definition: Result = sequence [i]

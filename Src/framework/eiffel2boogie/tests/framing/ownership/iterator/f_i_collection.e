@@ -42,10 +42,7 @@ feature -- Element change
 
 	add (v: INTEGER)
 			-- Add `v' to the collection.
-		note
-			explicit: contracts
 		require
-			wrapped: is_wrapped
 			observers_wrapped: across observers as o all o.item.is_wrapped end
 			not_full: count < capacity
 			modify (Current)
@@ -61,15 +58,11 @@ feature -- Element change
 			old_observers_open: across old observers as o all o.item.is_open end
 			elements_unchanged: elements = old elements
 			capacity_unchanged: capacity = old capacity
-			wrapped: is_wrapped
 		end
 
 	remove_last
 			-- Remove the last added elements from the collection.
-		note
-			explicit: contracts
 		require
-			wrapped: is_wrapped
 			observers_wrapped: across observers as o all o.item.is_wrapped end
 			not_empty: count > 0
 			modify (Current)
@@ -84,7 +77,6 @@ feature -- Element change
 			old_observers_open: across old observers as o all o.item.is_open end
 			elements_unchanged: elements = old elements
 			capacity_unchanged: capacity = old capacity
-			wrapped: is_wrapped
 		end
 
 feature {F_I_ITERATOR} -- Implementation

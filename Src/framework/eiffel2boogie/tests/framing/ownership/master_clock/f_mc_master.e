@@ -42,10 +42,7 @@ feature -- Update
 
 	reset
 			-- Reset time to zero.
-		note
-			explicit: contracts
 		require
-			wrapped: is_wrapped
 			observers_open: across observers as o all o.item.is_open end
 			modify_field (["time", "closed"], Current)
 		do
@@ -53,7 +50,6 @@ feature -- Update
 			-- so the method requires that the observers be open:
 			time := 0
 		ensure
-			wrapped: is_wrapped
 			time_reset: time = 0
 		end
 
