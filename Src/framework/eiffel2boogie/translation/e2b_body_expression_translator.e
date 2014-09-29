@@ -543,7 +543,7 @@ feature -- Translation
 					l_callee_variants.extend (l_callee_variant)
 
 					create l_caller_variant.make (l_decreases_fun.name, l_decreases_fun.type)
-					l_caller_variant.add_argument (entity_mapping.heap)
+					l_caller_variant.add_argument (factory.old_ (entity_mapping.heap))
 					l_caller_variant.add_argument (entity_mapping.current_expression)
 					from
 						j := 1
