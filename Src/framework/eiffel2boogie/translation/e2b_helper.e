@@ -36,6 +36,8 @@ feature -- Cache control
 			map_access_feature_cache.wipe_out
 			flat_model_cache.wipe_out
 			internal_counter.put (0)
+				-- Reset invariant checks
+			(create {E2B_TYPE_TRANSLATOR}).invariant_check_cache.wipe_out;
 				-- Reset type varibale counter
 			(create {IV_VAR_TYPE}.reset).do_nothing
 		end
