@@ -11,6 +11,8 @@ note
 class
 	CA_INHERIT_FROM_ANY_RULE
 
+	-- TODO Improvements: Things like export are ignored. (Class CONSOLE getting a false violation)
+
 inherit
 	CA_STANDARD_RULE
 
@@ -22,6 +24,7 @@ feature {NONE} -- Initialization
 	make
 		do
 			make_with_defaults
+			create renames.make (10)
 		end
 
 feature {NONE} -- Activation
@@ -51,11 +54,13 @@ feature {NONE} -- Rule checking
 		-- Does `a_class' have any adaptations to ANY?
 		do
 			if attached a_class.parents as l_parents then
-				if not a_class.is_equivalent (current_context.checking_class.ast) and then
-					attached a_class.parent_with_name ("ANY") as l_any and then
-					(not attached l_any.renaming and
-					 not attached l_any.undefining and
-					 not attached l_any.redefining) then
+				if
+					not a_class.is_equivalent (current_context.checking_class.ast)
+					and then attached a_class.parent_with_name ("ANY") as l_any
+					and then not (attached l_any.renaming
+						or attached l_any.undefining
+						or attached l_any.redefining)
+				then
 					-- This means that there is a plain inheritance to ANY which "resets" the adaptations all the parents of this class had,
 					-- hence we return False.
 					-- We cannot account for this case in the checking_class because otherwise we violate the rule every time we tried to reset
@@ -67,17 +72,19 @@ feature {NONE} -- Rule checking
 					until
 						Result or l_parents.after
 					loop
+						-- Set parameters for checking the changes to parents
 						current_class := current_context.system.find_class (l_parents.item.type.class_name.name_32)
-						Result := (attached l_parents.item.renaming and then l_parents.item.renaming.there_exists (agent is_rename_written_by_any)) or
-								  (attached l_parents.item.undefining and then l_parents.item.undefining.there_exists (agent is_feature_written_by_any)) or
-								  (attached l_parents.item.redefining and then l_parents.item.redefining.there_exists (agent is_feature_written_by_any)) or
-								  has_adaptations_to_any (current_context.system.find_class (l_parents.item.type.class_name.name_32).ast)
+						set_renamed_features (l_parents.item)
+
+						Result := (attached l_parents.item.renaming and then l_parents.item.renaming.there_exists (agent is_rename_written_by_any))
+							or (attached l_parents.item.undefining and then l_parents.item.undefining.there_exists (agent is_feature_written_by_any))
+							or (attached l_parents.item.redefining and then l_parents.item.redefining.there_exists (agent is_feature_written_by_any))
+							or has_adaptations_to_any (current_context.system.find_class (l_parents.item.type.class_name.name_32).ast)
 						l_parents.forth
 					end
 				end
 			end
 		end
-
 
 	is_rename_written_by_any (a_rename: RENAME_AS): BOOLEAN
 		do
@@ -85,8 +92,17 @@ feature {NONE} -- Rule checking
 		end
 
 	is_feature_written_by_any (a_feature: FEATURE_NAME): BOOLEAN
+		local
+			l_feature: FEATURE_NAME
 		do
-			Result := current_class.feature_named_32 (a_feature.visual_name_32).written_class.name_in_upper.is_equal ("ANY")
+			-- For renames we need to check the old name.
+			if renames.has (a_feature.visual_name_32) then
+				l_feature := renames.at (a_feature.visual_name_32)
+			else
+				l_feature := a_feature
+			end
+
+			Result := current_class.feature_named_32 (l_feature.visual_name_32).written_class.name_in_upper.is_equal ("ANY")
 		end
 
 	create_violation (a_parent: PARENT_AS)
@@ -103,6 +119,18 @@ feature {NONE} -- Rule checking
 
 			violations.extend (l_violation)
 		end
+
+	set_renamed_features (a_parent: PARENT_AS)
+		do
+			renames.wipe_out
+			if attached a_parent.renaming as l_renamings then
+				across l_renamings as l_rename loop
+					renames.extend (l_rename.item.old_name, l_rename.item.new_name.visual_name_32)
+				end
+			end
+		end
+
+	renames: HASH_TABLE [FEATURE_NAME, STRING]
 
 feature -- Properties
 

@@ -13,21 +13,6 @@ class
 inherit
 
 	AST_ITERATOR
-		export {NONE}
-			process_none_id_as,
-			process_typed_char_as,
-			process_agent_routine_creation_as,
-			process_inline_agent_creation_as,
-			process_create_creation_as,
-			process_bang_creation_as,
-			process_create_creation_expr_as,
-			process_bang_creation_expr_as,
-			process_keyword_as,
-			process_symbol_as,
-			process_break_as,
-			process_leaf_stub_as,
-			process_symbol_stub_as,
-			process_keyword_stub_as
 		redefine
 			process_access_id_as,
 			process_assign_as,
@@ -51,6 +36,7 @@ inherit
 			process_feature_clause_as,
 			process_id_as,
 			process_if_as,
+			process_inline_agent_creation_as,
 			process_inspect_as,
 			process_instr_call_as,
 			process_loop_as,
@@ -746,6 +732,14 @@ feature {NONE} -- Processing
 			if_pre_actions.call ([a_if])
 			Precursor (a_if)
 			if_post_actions.call ([a_if])
+		end
+
+	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
+		do
+			-- TODO: 2014-09-22 Processing of inline agent body fails due to feature pre and post processing not being
+			-- called. We simply ignore bodies of inline agents for now and do not process them.
+			--safe_process (l_as.body)
+			safe_process (l_as.operands)
 		end
 
 	process_inspect_as (a_inspect: INSPECT_AS)

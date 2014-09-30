@@ -112,13 +112,10 @@ feature {NONE} -- Feature Visitor for Violation Check
 	check_attributes (a_class: CLASS_AS)
 			-- Checks the attributes table. Any attributes that were not removed by check_assign
 			-- will always have been assigned the same values in every assignment and can be made constant.
-		local
-			l_debug: STRING
 		do
-			across attributes.current_keys as l_key loop
-				if not unassigned_attributes.has (l_key.item) then
-					l_debug := l_key.item
-					create_violation (current_context.checking_class.feature_with_name_32 (l_key.item), l_key.item)
+			across attributes as l_key loop
+				if not unassigned_attributes.has (l_key.key) then
+					create_violation (current_context.checking_class.feature_with_name_32 (l_key.key), l_key.key)
 				end
 			end
 

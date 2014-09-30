@@ -182,18 +182,31 @@ feature {NONE} -- Visitor redefines
 
 	process_assign_as (a_assign: ASSIGN_AS)
 		do
-			if is_checking_assigns then
-				if
-					attached {ACCESS_ID_AS} a_assign.target as l_access
-					and then locals_assign.has (l_access.access_name_8)
-					and then is_constant(a_assign.source)
-				then
-					locals_assign.force (locals_assign.at (l_access.access_name_8) + 1, l_access.access_name_8)
+			if
+				is_checking_assigns
+				and then attached {ACCESS_ID_AS} a_assign.target as l_access
+				and then locals_assign.has (l_access.access_name_8)
+			then
+				if loop_body.has (a_assign) then
+					if  is_constant(a_assign.source) then
+						locals_assign.force (locals_assign.at (l_access.access_name_8) + 1, l_access.access_name_8)
 
-					-- Caution: if duplicates assignments are in the loop body, this will only get the index of the first
-					-- assignment, but since we do not handle the case with 2 or more assignments this does not matter.
-					assign_instr.force (loop_body.index_of(a_assign, 1), l_access.access_name_8)
+						-- Caution: if duplicates assignments are in the loop body, this will only get the index of the first
+						-- assignment, but since we do not handle the case with 2 or more assignments this does not matter.
+						assign_instr.force (loop_body.index_of(a_assign, 1), l_access.access_name_8)
+					else
+						-- If there is a non constant assignment to the local variable we cannot move it outside of the loop,
+						-- hence we put the value 2 to make sure the local variable won't be considered. (We cannot remove it
+						-- from the table because we need the same table for all the loops in the current feature).
+						locals_assign.force (2, l_access.access_name_8)
+					end
+				else
+					-- The assign is nested in the loop, hence we cannot know whether it is executed or not (e.g. in an if-block),
+					-- therefore we put the value 2 to make sure the local variable won't be considered. (We cannot remove it
+					-- from the table because we need the same table for all the loops in the current feature).
+					locals_assign.force (2, l_access.access_name_8)
 				end
+
 			end
 
 			Precursor (a_assign)
