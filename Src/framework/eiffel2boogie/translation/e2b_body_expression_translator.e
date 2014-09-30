@@ -287,6 +287,10 @@ feature -- Translation
 				add_recursion_termination_check (a_feature)
 
 				last_expression := l_fcall
+			elseif helper.has_functional_representation (a_feature) and a_feature.is_once then
+					-- Once function: translate as a constant
+				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_class_type (feature_class_type (a_feature)))
+				last_expression := l_fcall
 			else
 				if a_for_creator or
 						(name_translator.is_creator_name (context_implementation.procedure.name) and helper.is_creator (a_feature, current_target_type.base_class)) then

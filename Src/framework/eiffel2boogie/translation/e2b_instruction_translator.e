@@ -211,7 +211,13 @@ feature -- Processing
 			end
 
 				-- Create source node
-			process_expression (a_node.source)
+			if helper.is_functional (current_feature) then
+					-- Process as contract expression if it is the body of functional
+					-- (otherwise hard to deal with preconditions)
+				process_contract_expression (a_node.source, False)
+			else
+				process_expression (a_node.source)
+			end
 			l_source := last_expression
 
 				-- Check for possible boxing of basic types

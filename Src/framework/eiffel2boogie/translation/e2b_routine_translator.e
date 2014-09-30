@@ -996,6 +996,7 @@ feature {NONE} -- Translation: Functions
 				check attached {IV_ENTITY} l_expr_translator.entity_mapping.heap as ent then
 					l_forall.add_bound_variable (ent)
 				end
+				l_forall.add_trigger (factory.function_call ("IsHeap", <<l_expr_translator.entity_mapping.heap>>, types.bool))
 			elseif helper.is_feature_status (current_feature, "opaque") then
 				create l_forall.make (factory.implies_ (factory.and_ (l_pre_call, l_trigger_call), l_post))
 				l_forall.add_trigger (l_trigger_call)
