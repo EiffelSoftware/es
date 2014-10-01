@@ -99,6 +99,18 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	object_test_failing_violation_1: STRING_32
+		do Result := translation_in_context ("The object test for the variable '", once "code_analyzer.violation") end
+
+	object_test_failing_violation_2: STRING_32
+		do Result := translation_in_context ("' will always fail, therefore%Nthe corresponding block of code can be safely removed.", once "code_analyzer.violation") end
+
+	useless_contract_violation_1: STRING_32
+		do Result := translation_in_context ("Feature '", once "code_analyzer.violation") end
+
+	useless_contract_violation_2: STRING_32
+		do Result := translation_in_context ("' contains a precondition which is not needed and can be removed.", once "code_analyzer.violation") end
+
 	unreachable_code_violation_1: STRING_32
 		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
 
