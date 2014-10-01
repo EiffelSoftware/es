@@ -452,6 +452,7 @@ Src/framework/code_analysis/tests/*.log
 Src/framework/code_analysis/tests/EIFGENs
 Src/framework/code_analysis/tests/log.txt
 Src/framework/code_analysis/tests/test_output.txt
+Src/framework/code_analysis/tests/tests.ecf
 Src/framework/configuration/*.wb
 Src/framework/configuration/EIFGENs
 Src/framework/eiffel2boogie/tests/EIFGENs

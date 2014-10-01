@@ -1,17 +1,16 @@
 note
 	description: "[
-			RULE #7: Object test always failing
+			RULE #45: Comparison of {REAL}.nan
 	
-			An object test will always fail if the type that the variable is tested
-			for does not conform to any type that conforms to the static type of the
-			tested variable. The whole if block will therefore never be executed and
-			it is redundant.
+			To check whether a REAL object is "NaN" (not a number) a comparison
+			using the '=' symbol does not yield the intended result. Instead one
+			must use the query {REAL}.is_nan.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CA_OBJECT_TEST_FAILING_RULE
+	CA_REAL_NAN_COMPARISON_RULE
 
 inherit
 	CA_STANDARD_RULE
@@ -30,41 +29,28 @@ feature -- Access
 
 	title: STRING_32
 		do
-			Result := ca_names.object_test_failing_title
+			Result := ca_names.real_nan_comparison_title
 		end
 
-	id: STRING_32 = "CA007"
+	id: STRING_32 = "CA045"
 			-- <Precursor>
 
 	description: STRING_32
 		do
-			Result := ca_names.object_test_failing_description
+			Result := ca_names.real_nan_comparison_description
 		end
 
 feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
-			a_checker.add_if_pre_action (agent process_if)
-			a_checker.add_feature_pre_action (agent process_feature)
+			a_checker.add_bin_eq_pre_action (agent process_bin_eq)
 		end
 
-	process_feature (a_feature: attached FEATURE_AS)
-			-- Sets the current feature.
+	process_bin_eq (a_bin: attached BIN_EQ_AS)
 		do
-			current_feature := current_context.checking_class.feature_named_32 (a_feature.feature_names.first.visual_name_32)
+			do_nothing
 		end
-
-	process_if (a_if: attached IF_AS)
-		do
-			if attached {OBJECT_TEST_AS} a_if.condition as l_ot then
-				 if (current_context.node_type (l_ot.expression, current_feature).conforms_to(l_ot.type)) then
-					create_violation (l_ot)
-				 end
-			end
-		end
-
-	current_feature: FEATURE_I
 
 	create_violation (a_ot: attached OBJECT_TEST_AS)
 		local

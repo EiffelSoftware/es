@@ -10,6 +10,9 @@ feature {NONE} -- Test
 			check_void: a_string2 /= Void
 		do
 			do_nothing
+			if True = False then
+				
+			end
 		end
 
 end
