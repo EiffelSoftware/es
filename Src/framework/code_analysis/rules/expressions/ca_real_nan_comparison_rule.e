@@ -56,33 +56,67 @@ feature {NONE} -- Implementation
 
 	process_bin_eq (a_bin: attached BIN_EQ_AS)
 		do
+--			-- TODO Refactor.
+--			if attached {CONVERTED_EXPR_AS} a_bin.left as l_converted_expr then
+--				if is_nan_comparison (l_converted_expr.expr, a_bin.right) then
+--					create_violation (a_bin)
+--				end
+--			elseif attached {CONVERTED_EXPR_AS} a_bin.right as l_converted_expr then
+--				if is_nan_comparison (l_converted_expr.expr, a_bin.left) then
+--					create_violation (a_bin)
+--				end
+--			elseif
+--				attached {CONVERTED_EXPR_AS} a_bin.right as l_converted_expr_right
+--				and then attached {CONVERTED_EXPR_AS} a_bin.left as l_converted_expr_left
+--			then
+--				if
+--					is_nan_comparison (l_converted_expr_right.expr, l_converted_expr_left.expr)
+--					or else is_nan_comparison (l_converted_expr_left.expr, l_converted_expr_right.expr)
+--				then
+--					create_violation (a_bin)
+--				end
+--			elseif
 			if
-				attached {EXPR_CALL_AS} a_bin.left as l_left_expr_call
-				and then attached {ACCESS_ID_AS} l_left_expr_call.call as l_access
-				and then attached {STRING_8} current_context.node_type (l_access, current_feature).name as l_type
-				and then (l_type.is_equal ("REAL") or l_type.is_equal ("REAL_32"))
-				and then attached {EXPR_CALL_AS} a_bin.right as l_right_expr_call
-				and then attached {STATIC_ACCESS_AS} l_right_expr_call.call as l_static_access
-				and then l_static_access.feature_name.name_32.is_equal ("nan")
+				is_nan_comparison (get_expression(a_bin.left), get_expression(a_bin.right))
+				or else is_nan_comparison (get_expression(a_bin.right), get_expression(a_bin.left))
 			then
-				-- Todo also check with left and right swapped.
+				create_violation (a_bin)
 			end
+		end
+
+	get_expression (a_expr: EXPR_AS): EXPR_AS
+		do
+			if attached {CONVERTED_EXPR_AS} a_expr as l_converted then
+				Result := l_converted.expr
+			else
+				Result := a_expr
+			end
+		end
+
+	is_nan_comparison (a_one, a_other: EXPR_AS): BOOLEAN
+		do
+			Result := attached {EXPR_CALL_AS} a_one as l_one_expr_call
+				and then attached {ACCESS_ID_AS} l_one_expr_call.call as l_access
+				and then attached {STRING_8} current_context.node_type (l_access, current_feature).name as l_type
+				and then (l_type.is_equal ("REAL_32")
+						 or else l_type.is_equal ("REAL_64")
+						 or else l_type.is_equal ("REAL_32_REF")
+						 or else l_type.is_equal ("REAL_64_REF"))
+				and then attached {EXPR_CALL_AS} a_other as l_other_expr_call
+				and then attached {STATIC_ACCESS_AS} l_other_expr_call.call as l_static_access
+				and then l_static_access.feature_name.name_32.is_equal ("nan")
 		end
 
 	current_feature: FEATURE_I
 
-	create_violation (a_ot: attached OBJECT_TEST_AS)
+	create_violation (a_bin: attached BIN_EQ_AS)
 		local
 			l_violation: CA_RULE_VIOLATION
---			l_fix: CA_OBJECT_TEST_FAILING_FIX TODO Implement.
+--			l_fix: CA_REAL_NAN_COMPARISON_FIX TODO Implement.
 		do
 			create l_violation.make_with_rule (Current)
 
-			l_violation.set_location (a_ot.start_location)
-
-			if attached {ACCESS_ID_AS} a_ot.expression as l_expr then
-				l_violation.long_description_info.extend (l_expr.access_name_32)
-			end
+			l_violation.set_location (a_bin.start_location)
 
 --			create l_fix.make
 --			l_violation.fixes.extend (l_fix)
@@ -93,12 +127,5 @@ feature {NONE} -- Implementation
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.object_test_failing_violation_1)
-
-			if attached {STRING_32} a_violation.long_description_info.first as l_feature_name then
-				a_formatter.add (l_feature_name)
-			end
-
-			a_formatter.add (ca_messages.object_test_failing_violation_2)
 		end
-
 end
