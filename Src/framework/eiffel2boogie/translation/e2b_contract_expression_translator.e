@@ -162,9 +162,8 @@ feature -- Translation
 					add_read_frame_check (a_feature)
 						-- Add precondition check
 					add_function_precondition_check (a_feature, l_call)
-					-- This would check that a recursive definitional axiom for a non-functional function is well-defined;
-					-- I believe this is not needed, because we have to prove anyway that this postcondition is satisfied by a terminating implementation.
-		--			add_termination_check (a_feature, last_parameters)					
+						-- Add termination check (for recursive functionals)
+					add_recursion_termination_check (a_feature)
 				end
 				last_expression := l_call
 			end

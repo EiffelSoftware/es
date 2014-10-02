@@ -215,6 +215,9 @@ feature -- Processing
 					-- Process as contract expression if it is the body of functional
 					-- (otherwise hard to deal with preconditions)
 				process_contract_expression (a_node.source, False)
+				across last_safety_checks as i loop
+					add_statement (i.item)
+				end
 			else
 				process_expression (a_node.source)
 			end
@@ -1364,8 +1367,8 @@ feature {NONE} -- Implementation
 			across
 				l_translator.side_effect as stmts
 			loop
-				if stmts.is_first and attached current_origin_information as coi then
-					stmts.item.set_origin_information (coi)
+				if stmts.is_first and attached current_origin_information as c then
+					stmts.item.set_origin_information (c)
 					current_origin_information := Void
 				end
 				current_block.add_statement (stmts.item)

@@ -346,8 +346,12 @@ feature -- Statements
 	singleton_block (a_statement: IV_STATEMENT): IV_BLOCK
 			-- Block that consists of `a_statement'.
 		do
-			create Result.make
-			Result.add_statement (a_statement)
+			if attached {IV_BLOCK} a_statement as b then
+				Result := b
+			else
+				create Result.make
+				Result.add_statement (a_statement)
+			end
 		end
 
 	return: IV_RETURN

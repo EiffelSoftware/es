@@ -29,6 +29,35 @@ feature
 			check nasty (x) end -- Bad: pre doesn't hold
 		end
 
+	nasty1 (x: INTEGER): BOOLEAN
+		require
+			x >= 0
+			reads ([])
+		do
+			Result := x \\ 5 = 0
+		ensure
+			Result = (x \\ 5 = 0)
+		end
+
+	client4 (x: INTEGER): BOOLEAN
+		do
+			Result := x = 5 implies nasty1 (x) -- OK: semistrict
+			check Result end
+
+			Result := x < 0 or else nasty1 (x) -- OK: semistrict
+
+			Result := x < 0 or nasty1 (x) -- Bad: strict
+		end
+
+	client5 (x: INTEGER): BOOLEAN
+		note
+			status: functional
+		do
+			Result := x = 5 implies nasty1 (x) -- OK: semistrict
+		ensure
+			Result
+		end
+
 	client2
 		local
 			x: INTEGER

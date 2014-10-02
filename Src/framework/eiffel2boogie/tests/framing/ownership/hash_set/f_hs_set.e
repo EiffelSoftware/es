@@ -242,6 +242,7 @@ feature -- Specification
 			status: ghost, functional
 		require
 			v_exists: v /= Void
+			set_non_void: set.non_void
 			reads (Current, set, v)
 		do
 			Result := across set as x some v.is_model_equal (x.item) end
@@ -264,7 +265,8 @@ feature -- Specification
 		note
 			status: functional
 		do
-			Result := buckets.count > 0 and then
+			Result := lock /= Void and then
+				buckets.count > 0 and then
 				new_set.non_void and then
 				no_duplicates (new_set) and then
 				across new_set as x all

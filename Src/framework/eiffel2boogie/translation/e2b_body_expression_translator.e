@@ -55,6 +55,7 @@ feature -- Visitors
 			l_pcall: IV_PROCEDURE_CALL
 			l_assign: IV_ASSIGNMENT
 			l_content_type: IV_TYPE
+			l_block: IV_BLOCK
 		do
 			l_type := class_type_in_current_context (a_node.type)
 			translation_pool.add_type (l_type)
@@ -67,18 +68,19 @@ feature -- Visitors
 
 			create_local (a_node.type)
 			l_target := last_local
+			create l_block.make
 
 				-- Create array
 			create l_pcall.make ("allocate")
 			l_pcall.add_argument (factory.type_value (a_node.type))
 			l_pcall.set_target (l_target)
-			side_effect.extend (l_pcall)
+			l_block.add_statement (l_pcall)
 
 			create l_pcall.make ("ARRAY.make")
 			l_pcall.add_argument (l_target)
 			l_pcall.add_argument (factory.int_value (1))
 			l_pcall.add_argument (factory.int_value (n))
-			side_effect.extend (l_pcall)
+			l_block.add_statement (l_pcall)
 
 				-- Put all elements into array
 			check attached {CL_TYPE_A} l_type.generics.first as t then
@@ -94,11 +96,12 @@ feature -- Visitors
 				create l_assign.make (
 					factory.array_access (entity_mapping.heap, l_target, factory.int_value (i), l_content_type),
 					process_argument_expression (l_expr))
-				side_effect.extend (l_assign)
+				l_block.add_statement (l_assign)
 
 				i := i + 1
 			end
 			last_expression := l_target
+			side_effect.extend (if_safety_expression (l_block))
 		end
 
 	process_creation_expr_b (a_node: CREATION_EXPR_B)
@@ -137,7 +140,7 @@ feature -- Visitors
 				l_proc_call.node_info.set_line (a_node.call.line_number)
 				l_proc_call.add_argument (factory.type_value (l_type))
 				l_proc_call.set_target (l_local)
-				side_effect.extend (l_proc_call)
+				side_effect.extend (if_safety_expression (l_proc_call))
 
 					-- Call to creation procedure
 				l_target := current_target
@@ -191,10 +194,12 @@ feature -- Visitors
 			l_type: CL_TYPE_A
 			l_local: IV_ENTITY
 			l_proc_call: IV_PROCEDURE_CALL
+			l_block: IV_BLOCK
 		do
 			l_type := class_type_in_current_context (a_node.type)
 			create_local (l_type)
 			l_local := last_local
+			create l_block.make
 
 			current_target := l_local
 			current_target_type := l_type
@@ -204,7 +209,7 @@ feature -- Visitors
 			l_proc_call.node_info.set_line (a_node.line_number)
 			l_proc_call.add_argument (factory.type_value (l_type))
 			l_proc_call.set_target (l_local)
-			side_effect.extend (l_proc_call)
+			l_block.add_statement (l_proc_call)
 
 				-- Call to creation procedure
 			create l_proc_call.make (name_translator.boogie_procedure_for_tuple_creation (l_type))
@@ -212,9 +217,10 @@ feature -- Visitors
 			across a_node.expressions as i loop
 				l_proc_call.add_argument (process_argument_expression (i.item))
 			end
-			side_effect.extend (l_proc_call)
+			l_block.add_statement (l_proc_call)
 
 			last_expression := l_local
+			side_effect.extend (if_safety_expression (l_block))
 		end
 
 feature -- Translation
@@ -336,7 +342,7 @@ feature -- Translation
 						-- No expression generated, this has to be a call statement
 					last_expression := Void
 				end
-				side_effect.extend (l_pcall)
+				side_effect.extend (if_safety_expression (l_pcall))
 			end
 		end
 
@@ -363,7 +369,7 @@ feature -- Translation
 			l_call.node_info.set_line (context_line_number)
 			l_call.node_info.set_attribute ("cid", a_feature.written_in.out)
 			l_call.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
-			side_effect.extend (l_call)
+			side_effect.extend (if_safety_expression (l_call))
 		end
 
 	process_builtin_function_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_builtin_name: STRING)
@@ -456,7 +462,7 @@ feature -- Translation
 			l_translator.process_feature_of_type (a_feature, current_target_type)
 			helper.set_up_byte_context (context_feature, context_type)
 
-			side_effect.extend (l_block)
+			side_effect.extend (if_safety_expression (l_block))
 
 			if a_feature.has_return_value then
 				last_expression := l_entity_mapping.result_expression
@@ -465,111 +471,6 @@ feature -- Translation
 			end
 
 			inlined_routines.force (inlined_routines.item (a_feature.body_index) - 1, a_feature.body_index)
-		end
-
-	add_termination_check (l_old_variants, l_new_variants: LIST [IV_EXPRESSION])
-			-- Given expressions for old and new values of variants, add a safety check that the new variants are strinctly less and the order is well-founded.
-		require
-			l_old_variants_exists: l_old_variants /= Void
-			l_new_variants_exists: l_new_variants /= Void
-			same_count: l_old_variants.count = l_new_variants.count
-		local
-			l_type: IV_TYPE
-			l_eq_less: TUPLE [eq: IV_EXPRESSION; less: IV_EXPRESSION]
-			l_check_list: ARRAYED_LIST [TUPLE [eq: IV_EXPRESSION; less: IV_EXPRESSION]]
-			l_check, l_bounds_check_guard, e1, e2: IV_EXPRESSION
-			i: INTEGER
-		do
-			from
-				i := 1
-				create l_check_list.make (3)
-				l_bounds_check_guard := factory.false_
-			until
-				i > l_old_variants.count
-			loop
-				l_type := l_new_variants [i].type
-				e1 := l_new_variants [i]
-				e2 := l_old_variants [i]
-				l_eq_less := [factory.and_ (l_type.rank_leq (e1, e2), l_type.rank_leq (e2, e1)),
-					factory.and_ (l_type.rank_leq (e1, e2), factory.not_ (l_type.rank_leq (e2, e1)))]
-				l_check_list.extend (l_eq_less)
-				if l_new_variants [i].type.is_integer then
-					-- Add bounds check, since integers are not already bounded from below;
-					-- more precisely, for variant k check:
-        					-- new[1] < old[1] || ... || new[k-1] < old[k-1] || new[k] == old[k] || 0 <= old[k]
-					add_safety_check (factory.or_clean (l_bounds_check_guard,
-													factory.or_ (l_eq_less.eq, factory.less_equal (factory.int_value (0), l_old_variants [i]))),
-						"termination", "bounded", context_line_number)
-					last_safety_check.node_info.set_attribute ("varid", i.out)
-				end
-				l_bounds_check_guard := factory.or_clean (l_bounds_check_guard, l_eq_less.less)
-
-				i := i + 1
-			end
-
-			if not l_check_list.is_empty then
-				-- Go backward through the list and generate "less1 || (eq1 && (less2 || ... eq<n-1> && less<n>))"
-				l_check := l_check_list.last.less
-				from
-					i := l_check_list.count - 1
-				until
-					i < 1
-				loop
-					l_check := factory.and_ (l_check_list [i].eq, l_check)
-					l_check := factory.or_ (l_check_list [i].less, l_check)
-					i := i - 1
-				end
-				add_safety_check (l_check, "termination", "variant_decreases", context_line_number)
-			else
-				-- Explicitly marked as possibly non-terminating: do not generate any checks
-			end
-		end
-
-
-	add_recursion_termination_check (a_feature: FEATURE_I)
-			-- Add termination check for a call to routine `a_feature' with actual arguments `a_parameters' in the current context.
-		local
-			l_caller_variant, l_callee_variant: IV_FUNCTION_CALL
-			l_caller_variants, l_callee_variants: ARRAYED_LIST [IV_EXPRESSION]
-			l_decreases_fun: IV_FUNCTION
-			i, j: INTEGER
-		do
-			-- If we are inside a routine and calling the same routine (recursive call)
-			if context_feature /= Void and then context_feature.written_in = a_feature.written_in and
-												context_feature.feature_id = a_feature.feature_id then
-				from
-					i := 1
-					create l_caller_variants.make (3)
-					create l_callee_variants.make (3)
-					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_function_for_variant (i, a_feature, current_target_type))
-				until
-					l_decreases_fun = Void
-				loop
-					check checked_when_creating: l_decreases_fun.type.has_rank end
-					create l_callee_variant.make (l_decreases_fun.name, l_decreases_fun.type)
-					l_callee_variant.add_argument (entity_mapping.heap)
-					l_callee_variant.add_argument (current_target)
-					l_callee_variant.arguments.append (last_parameters)
-					l_callee_variants.extend (l_callee_variant)
-
-					create l_caller_variant.make (l_decreases_fun.name, l_decreases_fun.type)
-					l_caller_variant.add_argument (factory.old_ (entity_mapping.heap))
-					l_caller_variant.add_argument (entity_mapping.current_expression)
-					from
-						j := 1
-					until
-						j > context_feature.argument_count
-					loop
-						l_caller_variant.add_argument (entity_mapping.argument (context_feature, context_type, j))
-						j := j + 1
-					end
-					l_caller_variants.extend (l_caller_variant)
-
-					i := i + 1
-					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_function_for_variant (i, a_feature, current_target_type))
-				end
-				add_termination_check (l_caller_variants, l_callee_variants)
-			end
 		end
 
 	add_loop_frame_check (a_feature: FEATURE_I)
