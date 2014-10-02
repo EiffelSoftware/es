@@ -56,31 +56,10 @@ feature {NONE} -- Implementation
 
 	process_bin_eq (a_bin: attached BIN_EQ_AS)
 		do
---			-- TODO Refactor.
---			if attached {CONVERTED_EXPR_AS} a_bin.left as l_converted_expr then
---				if is_nan_comparison (l_converted_expr.expr, a_bin.right) then
---					create_violation (a_bin)
---				end
---			elseif attached {CONVERTED_EXPR_AS} a_bin.right as l_converted_expr then
---				if is_nan_comparison (l_converted_expr.expr, a_bin.left) then
---					create_violation (a_bin)
---				end
---			elseif
---				attached {CONVERTED_EXPR_AS} a_bin.right as l_converted_expr_right
---				and then attached {CONVERTED_EXPR_AS} a_bin.left as l_converted_expr_left
---			then
---				if
---					is_nan_comparison (l_converted_expr_right.expr, l_converted_expr_left.expr)
---					or else is_nan_comparison (l_converted_expr_left.expr, l_converted_expr_right.expr)
---				then
---					create_violation (a_bin)
---				end
---			elseif
-			if
-				is_nan_comparison (get_expression(a_bin.left), get_expression(a_bin.right))
-				or else is_nan_comparison (get_expression(a_bin.right), get_expression(a_bin.left))
-			then
-				create_violation (a_bin)
+			if is_nan_comparison (get_expression(a_bin.left), get_expression(a_bin.right)) then
+				create_violation (a_bin, True)
+			elseif is_nan_comparison (get_expression(a_bin.right), get_expression(a_bin.left)) then
+				create_violation (a_bin, False)
 			end
 		end
 
@@ -93,7 +72,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	is_nan_comparison (a_one, a_other: EXPR_AS): BOOLEAN
+	is_nan_comparison (a_one, a_other: attached EXPR_AS): BOOLEAN
 		do
 			Result := attached {EXPR_CALL_AS} a_one as l_one_expr_call
 				and then attached {ACCESS_ID_AS} l_one_expr_call.call as l_access
@@ -109,23 +88,23 @@ feature {NONE} -- Implementation
 
 	current_feature: FEATURE_I
 
-	create_violation (a_bin: attached BIN_EQ_AS)
+	create_violation (a_bin: attached BIN_EQ_AS; a_is_right: BOOLEAN)
 		local
 			l_violation: CA_RULE_VIOLATION
---			l_fix: CA_REAL_NAN_COMPARISON_FIX TODO Implement.
+			l_fix: CA_REAL_NAN_COMPARISON_FIX
 		do
 			create l_violation.make_with_rule (Current)
 
 			l_violation.set_location (a_bin.start_location)
 
---			create l_fix.make
---			l_violation.fixes.extend (l_fix)
+			create l_fix.make_with_bin_eq (current_context.checking_class, a_bin, a_is_right)
+			l_violation.fixes.extend (l_fix)
 
 			violations.extend (l_violation)
 		end
 
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
-			a_formatter.add (ca_messages.object_test_failing_violation_1)
+			a_formatter.add (ca_messages.real_nan_comparison_violation_1)
 		end
 end

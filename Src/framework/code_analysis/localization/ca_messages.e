@@ -99,6 +99,10 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	real_nan_comparison_violation_1: STRING_32
+		do Result := translation_in_context ("Comparing of a real variable with {REAL}.nan usually does not yield%Nthe intended result.%
+									% You should use the query %".is_nan%"", once "code_analyzer.violation") end
+
 	object_test_failing_violation_1: STRING_32
 		do Result := translation_in_context ("The object test for the variable '", once "code_analyzer.violation") end
 

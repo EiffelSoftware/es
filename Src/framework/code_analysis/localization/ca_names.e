@@ -25,6 +25,9 @@ feature -- Rules
 		do Result := translation_in_context ("To check whether a REAL object is %"NaN%" (not a number) a comparison using%
 							% the '=' symbol does not yield the intended result. Instead one must use the query {REAL}.is_nan.", once "code_analyzer") end
 
+	real_nan_comparison_fix: STRING_32
+		do Result := translation_in_context ("Change to comparison with {REAL}.is_nan", once "code_analyzer") end
+
 	useless_contract_title: STRING_32
 		do Result := translation_in_context ("Object test fails", once "code_analyzer") end
 

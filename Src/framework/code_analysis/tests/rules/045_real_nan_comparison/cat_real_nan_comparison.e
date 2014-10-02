@@ -33,7 +33,7 @@ feature {NONE} -- Test
 			if {REAL_64}.nan = l_r2 then
 				do_nothing
 			end
-			
+
 			if {REAL_REF}.nan = l_r3 then
 				do_nothing
 			end
