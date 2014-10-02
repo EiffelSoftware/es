@@ -292,21 +292,21 @@ feature -- Translation
 				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_class_type (feature_class_type (a_feature)))
 				last_expression := l_fcall
 			else
-				if helper.is_feature_status (context_feature, "setter") and
-					not a_feature.has_return_value  and not helper.is_feature_status (a_feature, "setter") then
+				if helper.is_setter (context_feature) and
+					not a_feature.has_return_value  and not helper.is_setter (a_feature) then
 						-- Setter calling a non-setter procedure: unsound framing
 					helper.add_semantic_error (context_feature, messages.nonsetter_call_from_setter (a_feature.feature_name), context_line_number)
 				end
 
 				if a_for_creator or
-						(name_translator.is_creator_name (context_implementation.procedure.name) and helper.is_creator (a_feature, current_target_type.base_class)) then
+						(name_translator.is_creator_name (context_implementation.procedure.name) and helper.is_creator_of_class (a_feature, current_target_type.base_class)) then
 						-- Either we are translating a creation expression (`a_for_creator'),
 						-- or we are inside a creation procedure and calling another creation procedure,
 						-- so the creation semantics will be used
 					create l_pcall.make (name_translator.boogie_procedure_for_creator (a_feature, current_target_type))
 				else
 					create l_pcall.make (name_translator.boogie_procedure_for_feature (a_feature, current_target_type))
-					if helper.is_feature_status (a_feature, "creator") then
+					if helper.is_creator (a_feature) then
 						-- A feature specified to be creator-only, but called as a regular procedure
 						helper.add_semantic_error (context_feature, messages.creator_call_as_procedure (a_feature.feature_name), context_line_number)
 					end

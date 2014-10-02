@@ -242,7 +242,7 @@ feature -- Void-call
 
 	void_call_in_pre_helper (a: B_MESSAGES)
 		note
-			skip: True
+			status: skip
 		require
 			a.any_attribute = Void
 		do
@@ -299,7 +299,7 @@ feature {NONE} -- Overflow
 
 	overflow_in_pre_helper (a, b, c, d: INTEGER)
 		note
-			skip: True
+			status: skip
 		require
 			tag1: a + b > 0
 			c + d > 0

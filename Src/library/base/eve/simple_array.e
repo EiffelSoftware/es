@@ -1,6 +1,6 @@
 note
 	description: "New version of an array, for use in verification."
-	skip: true
+	status: skip
 
 frozen class
 	SIMPLE_ARRAY [G]
@@ -57,7 +57,7 @@ feature -- Access
 		require
 			in_bounds: 1 <= i and i <= count
 			valid_index: valid_index (i)
-			reads (Current)			
+			reads (Current)
 		do
 		ensure
 			definition: Result = sequence [i]

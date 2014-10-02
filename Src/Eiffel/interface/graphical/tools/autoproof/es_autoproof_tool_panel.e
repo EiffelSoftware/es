@@ -63,7 +63,7 @@ feature {NONE} -- Initialization
 			stone_director.bind (grid_events, Current)
 
 				-- Hook up events for session data
-			if session_manager.is_service_available then
+			if session_manager.service /= Void then
 				session_data.session_connection.connect_events (Current)
 			end
 
@@ -206,6 +206,17 @@ feature {NONE} -- Initialization
 			end
 			Result.extend (l_item)
 
+			create l_item.make_with_text_and_action ("Generate postcondition predicates",
+				agent do
+					options.set_postcondition_predicate_enabled (not options.is_postcondition_predicate_enabled)
+				end)
+			if options.is_postcondition_predicate_enabled then
+				l_item.toggle
+			end
+			Result.extend (l_item)
+
+			Result.extend (create {EV_MENU_SEPARATOR})
+
 			create l_item.make_with_text_and_action ("Check integer overflow",
 				agent do
 					options.set_checking_overflow (not options.is_checking_overflow)
@@ -223,7 +234,6 @@ feature {NONE} -- Initialization
 				l_item.toggle
 			end
 			Result.extend (l_item)
-
 
 			create l_item.make_with_text_and_action ("Use arithmetic operations in triggers",
 				agent do
@@ -243,28 +253,18 @@ feature {NONE} -- Initialization
 			end
 			Result.extend (l_item)
 
-
 			Result.extend (create {EV_MENU_SEPARATOR})
 
-			create l_item.make_with_text_and_action ("Check frame condition",
-				agent do
-					options.set_checking_frame (not options.is_checking_frame)
-				end)
-			if options.is_checking_frame then
-				l_item.toggle
-			end
-			Result.extend (l_item)
+--			create l_item.make_with_text_and_action ("Enable ownership",
+--				agent do
+--					options.set_ownership_enabled (not options.is_ownership_enabled)
+--				end)
+--			if options.is_ownership_enabled then
+--				l_item.toggle
+--			end
+--			Result.extend (l_item)
 
-			create l_item.make_with_text_and_action ("Enable ownership",
-				agent do
-					options.set_ownership_enabled (not options.is_ownership_enabled)
-				end)
-			if options.is_ownership_enabled then
-				l_item.toggle
-			end
-			Result.extend (l_item)
-
-			create l_item.make_with_text_and_action ("- use defaults",
+			create l_item.make_with_text_and_action ("Use ownership defaults",
 				agent do
 					options.set_ownership_defaults_enabled (not options.is_ownership_defaults_enabled)
 				end)
@@ -273,41 +273,43 @@ feature {NONE} -- Initialization
 			end
 			Result.extend (l_item)
 
-			create l_item.make_with_text_and_action ("Enable postcondition mutation",
-				agent do
-					options.set_postcondition_mutation_enabled (not options.is_postcondition_mutation_enabled)
-				end)
-			if options.is_postcondition_mutation_enabled then
-				l_item.toggle
-			end
-			Result.extend (l_item)
+--			Result.extend (create {EV_MENU_SEPARATOR})
 
-			create l_item.make_with_text_and_action ("- with coupled mutations",
-				agent do
-					options.set_coupled_mutations_enabled (not options.is_coupled_mutations_enabled)
-				end)
-			if options.is_coupled_mutations_enabled then
-				l_item.toggle
-			end
-			Result.extend (l_item)
+--			create l_item.make_with_text_and_action ("Enable postcondition mutation",
+--				agent do
+--					options.set_postcondition_mutation_enabled (not options.is_postcondition_mutation_enabled)
+--				end)
+--			if options.is_postcondition_mutation_enabled then
+--				l_item.toggle
+--			end
+--			Result.extend (l_item)
 
-			create l_item.make_with_text_and_action ("- with uncoupled mutations",
-				agent do
-					options.set_uncoupled_mutations_enabled (not options.is_uncoupled_mutations_enabled)
-				end)
-			if options.is_uncoupled_mutations_enabled then
-				l_item.toggle
-			end
-			Result.extend (l_item)
+--			create l_item.make_with_text_and_action ("- with coupled mutations",
+--				agent do
+--					options.set_coupled_mutations_enabled (not options.is_coupled_mutations_enabled)
+--				end)
+--			if options.is_coupled_mutations_enabled then
+--				l_item.toggle
+--			end
+--			Result.extend (l_item)
 
-			create l_item.make_with_text_and_action ("- with aging",
-				agent do
-					options.set_aging_enabled (not options.is_aging_enabled)
-				end)
-			if options.is_aging_enabled then
-				l_item.toggle
-			end
-			Result.extend (l_item)
+--			create l_item.make_with_text_and_action ("- with uncoupled mutations",
+--				agent do
+--					options.set_uncoupled_mutations_enabled (not options.is_uncoupled_mutations_enabled)
+--				end)
+--			if options.is_uncoupled_mutations_enabled then
+--				l_item.toggle
+--			end
+--			Result.extend (l_item)
+
+--			create l_item.make_with_text_and_action ("- with aging",
+--				agent do
+--					options.set_aging_enabled (not options.is_aging_enabled)
+--				end)
+--			if options.is_aging_enabled then
+--				l_item.toggle
+--			end
+--			Result.extend (l_item)
 
 			Result.extend (create {EV_MENU_SEPARATOR})
 
@@ -820,7 +822,7 @@ feature {NONE} -- Clean up
 			-- <Precursor>
 		do
 			if is_initialized then
-				if session_manager.is_service_available then
+				if session_manager.service /= Void then
 					if session_data.session_connection.is_connected (Current) then
 						session_data.session_connection.disconnect_events (Current)
 					end
@@ -865,7 +867,7 @@ feature {NONE} -- Constants
 	partial_color: EV_COLOR
 			-- Background color for partial success
 		once
-			create Result.make_with_rgb (1.0, 0.9, 0.4)
+			create Result.make_with_rgb (0.8, 0.9, 1.0)
 		end
 
 	error_color: EV_COLOR

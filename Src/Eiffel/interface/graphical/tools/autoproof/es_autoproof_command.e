@@ -469,7 +469,7 @@ feature {NONE} -- Implementation
 	frozen event_list: EVENT_LIST_S
 			-- Access to an event list service.
 		do
-			check service_consumer.is_service_available end
+			check service_consumer.service /= Void end
 			Result := service_consumer.service
 		end
 
@@ -477,10 +477,10 @@ feature {NONE} -- Implementation
 			-- Set up menu items of proof button
 		do
 			last_execution := agent execute_proof_current_item
-			create proof_current_item_item.make_with_text_and_action ("Prove current item", agent execute_proof_current_item)
+			create proof_current_item_item.make_with_text_and_action ("Verify current item", agent execute_proof_current_item)
 			proof_current_item_item.toggle
-			create proof_parent_item_item.make_with_text_and_action ("Prove parent cluster of current item", agent execute_proof_parent_cluster)
-			create proof_system_item.make_with_text_and_action ("Prove system", agent execute_proof_system)
+			create proof_parent_item_item.make_with_text_and_action ("Verify parent cluster of current item", agent execute_proof_parent_cluster)
+			create proof_system_item.make_with_text_and_action ("Verify system", agent execute_proof_system)
 		end
 
 	drop_down_menu: EV_MENU is
@@ -509,25 +509,25 @@ feature {NONE} -- Implementation
 	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).
 		do
-			Result := "Prove"
+			Result := "Verify"
 		end
 
 	tooltip: STRING_GENERAL
 			-- Tooltip for the toolbar button.
 		do
-			Result := "Prove class or cluster"
+			Result := "Verify class or cluster"
 		end
 
 	tooltext: STRING_GENERAL
 			-- Text for the toolbar button.
 		do
-			Result := "Prove"
+			Result := "Verify"
 		end
 
 	description: STRING_GENERAL
 			-- Description for this command.
 		do
-			Result := "Prove class or cluster"
+			Result := "Verify class or cluster"
 		end
 
 	name: STRING_GENERAL

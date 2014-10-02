@@ -1,5 +1,6 @@
 note
 	description: "Minimal array interface (non-generic)."
+	status: skip
 
 class F_I_ARRAY
 

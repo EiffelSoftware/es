@@ -23,7 +23,6 @@ feature {NONE} -- Initialization
 			is_sound_loop_unrolling_enabled := True
 			is_postcondition_predicate_enabled := False
 			is_checking_overflow := False
-			is_checking_frame := False
 
 			is_generating_triggers := False
 			is_triggering_on_arithmetic := False
@@ -221,15 +220,6 @@ feature -- Quantifiers
 		end
 
 feature -- Framing
-
-	is_checking_frame: BOOLEAN
-			-- Is frame checked?
-
-	set_checking_frame (a_value: BOOLEAN)
-			-- Set `is_checking_frame' to `a_value'.
-		do
-			is_checking_frame := a_value
-		end
 
 	is_ownership_enabled: BOOLEAN
 			-- Is ownership enabled?

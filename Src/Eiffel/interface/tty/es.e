@@ -1306,7 +1306,7 @@ feature -- Update
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
 				create {EWB_DYNAMIC_PROGRAM_ANALYSIS} command.make_with_arguments (l_at_args)
-			elseif option.is_equal ("-boogie") then
+			elseif option.is_equal ("-boogie") or option.is_equal ("-autoproof") then
 				create l_at_args.make
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1

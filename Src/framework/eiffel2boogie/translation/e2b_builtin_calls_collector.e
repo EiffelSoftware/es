@@ -82,7 +82,7 @@ feature -- Processing
 			elseif l_name ~ "owns" then
 				has_owns := True
 			elseif l_name ~ "closed" or l_name ~ "is_open" or l_name ~ "is_wrapped" or l_name ~ "owner" or l_name ~ "is_free" or
-				(attached l_feature and then helper.is_feature_status (l_feature, "inv_unfriendly")) then
+				(attached l_feature and then helper.is_invariant_unfriendly (l_feature)) then
 				is_inv_unfriendly := True
 			end
 		end

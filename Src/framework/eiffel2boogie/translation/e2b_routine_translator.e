@@ -139,17 +139,8 @@ feature -- Translation: Signature
 			if options.is_ownership_enabled then
 				add_ownership_contracts (a_for_creator, not helper.is_lemma (current_feature))
 			else
-				if helper.feature_note_values (current_feature, "framing").has ("False") then
-						-- No frame condition
-				elseif helper.feature_note_values (current_feature, "pure").has ("True") then
-						-- Pure feature
-					add_pure_frame_condition
-				elseif helper.feature_note_values (current_feature, "pure_fresh").has ("True") then
-					add_pure_fresh_frame_condition
-				else
-						-- Normal frame condition
-					process_fields_list (l_fields)
-				end
+					-- No choice anymore!
+				check False end
 			end
 
 			if options.is_postcondition_predicate_enabled and not a_for_creator then
@@ -348,7 +339,7 @@ feature -- Translation: Signature
 			Result.extend (l_pre)
 
 				-- Free precondition: Everything in the domains of writable objects is writable
-			if not helper.is_feature_status (current_feature, "setter") then
+			if not helper.is_setter (current_feature) then
 				create l_pre.make (factory.function_call ("closed_under_domains", <<factory.global_writable, factory.global_heap>>, types.bool))
 				l_pre.set_free
 				Result.extend (l_pre)
@@ -619,7 +610,7 @@ feature -- Translation: Implementation
 			l_translator.set_context (l_implementation, current_feature, current_type)
 			if helper.has_functional_representation (a_feature) then
 				l_translator.set_context_readable (factory.global_readable)
-				if not helper.is_feature_status (current_feature, "inv_unfriendly") then
+				if not helper.is_invariant_unfriendly (current_feature) then
 					create l_builtin_collector
 					l_builtin_collector.set_any_target
 				end
@@ -856,7 +847,7 @@ feature -- Translation: Functions
 --			if not l_is_logical then
 --				boogie_universe.add_declaration (l_free_pre_function)
 --			end
-			if helper.is_feature_status (a_feature, "opaque") then
+			if helper.is_opaque (a_feature) then
 				boogie_universe.add_declaration (l_trigger_function)
 			end
 		end
@@ -914,7 +905,7 @@ feature -- Translation: Functions
 					if not a_feature.has_return_value then
 						l_exprs.full_objects.extend (create {IV_ENTITY}.make ("current", types.ref))
 					end
-				elseif a_feature.has_return_value and not helper.is_feature_status (a_feature, "impure") and not is_pure (l_exprs) then
+				elseif a_feature.has_return_value and not helper.is_impure (a_feature) and not is_pure (l_exprs) then
 					-- Only impure functions are allowed to have modify clauses
 					helper.add_semantic_error (a_feature, messages.pure_function_has_mods, -1)
 				end
@@ -926,7 +917,7 @@ feature -- Translation: Functions
 			across l_function.arguments as a loop
 				l_fcall.add_argument (a.item.entity)
 			end
-			if a_read and not helper.is_feature_status (a_feature, "inv_unfriendly") then
+			if a_read and not helper.is_invariant_unfriendly (a_feature) then
 				create l_forall.make (factory.implies_ (
 					factory.is_heap (l_translator.entity_mapping.heap),
 					frame_definition (l_exprs, l_fcall, << factory.entity ("closed", types.field (types.bool)), factory.entity ("owner", types.field (types.ref)) >>)))
@@ -935,8 +926,7 @@ feature -- Translation: Functions
 					factory.is_heap (l_translator.entity_mapping.heap),
 					frame_definition (l_exprs, l_fcall, <<>>)))
 			end
-			across l_function.arguments as a
-			loop
+			across l_function.arguments as a loop
 				l_forall.add_bound_variable (a.item.entity)
 			end
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
@@ -1047,7 +1037,7 @@ feature {NONE} -- Translation: Functions
 					l_forall.add_bound_variable (ent)
 				end
 				l_forall.add_trigger (factory.function_call ("IsHeap", <<l_expr_translator.entity_mapping.heap>>, types.bool))
-			elseif helper.is_feature_status (current_feature, "opaque") then
+			elseif helper.is_opaque (current_feature) then
 				create l_forall.make (factory.implies_ (factory.and_ (l_pre_call, l_trigger_call), l_post))
 				l_forall.add_trigger (l_trigger_call)
 			else
@@ -1331,45 +1321,6 @@ feature {NONE} -- Implementation
 			helper.set_up_byte_context (current_feature, current_type)
 		end
 
-	process_fields_list (a_fields: LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]])
-			-- Process fields list.
-		local
-			l_type_var: IV_VAR_TYPE
-			l_postcondition: IV_POSTCONDITION
-			l_forall: IV_FORALL
-			l_or: IV_BINARY_OPERATION
-			l_expr: IV_EXPRESSION
-			l_fcall: IV_FUNCTION_CALL
-			o, f: IV_ENTITY
-		do
-			create l_type_var.make_fresh
-			create o.make ("$o", types.ref)
-			create f.make ("$f", types.field (l_type_var))
-			across a_fields as i loop
-				l_or := factory.or_ (factory.not_equal (o, i.item.o), factory.not_equal (f, i.item.f))
-				if l_expr = Void then
-					l_expr := l_or
-				else
-					l_expr := factory.and_ (l_expr, l_or)
-				end
-			end
-			if l_expr = Void then
-				l_expr := factory.true_
-			end
-			create l_forall.make (factory.implies_ (l_expr,
-				factory.equal (factory.heap_access (factory.global_heap, o, f.name, l_type_var), factory.heap_access (factory.old_ (factory.global_heap), o, f.name, l_type_var))))
-			l_forall.add_type_variable (l_type_var.name)
-			l_forall.add_bound_variable (o)
-			l_forall.add_bound_variable (f)
-			create l_postcondition.make (l_forall)
-			l_postcondition.node_info.set_type ("frame")
-			if not options.is_checking_frame then
-				l_postcondition.set_free
-			end
-
-			current_boogie_procedure.add_contract (l_postcondition)
-		end
-
 	add_postcondition_predicate
 			-- Add postcondition predicate to current feature.
 		local
@@ -1390,47 +1341,6 @@ feature {NONE} -- Implementation
 			create l_post.make (l_call)
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
-		end
-
-	add_pure_frame_condition
-			-- Add pure frame condition to current feature.
-		local
-			l_postcondition: IV_POSTCONDITION
-			l_equal: IV_BINARY_OPERATION
-		do
-			create l_equal.make (factory.global_heap, "==", factory.old_heap, types.bool)
-			create l_postcondition.make (l_equal)
-			l_postcondition.node_info.set_type ("frame")
-			current_boogie_procedure.add_contract (l_postcondition)
-		end
-
-	add_pure_fresh_frame_condition
-			-- Add pure frame condition to current feature.
-		local
-			l_type_var: IV_VAR_TYPE
-			l_postcondition: IV_POSTCONDITION
-			l_forall: IV_FORALL
-			l_or: IV_BINARY_OPERATION
-			l_expr: IV_EXPRESSION
-			l_fcall: IV_FUNCTION_CALL
-			l_access, l_old_access, l_old_allocated: IV_MAP_ACCESS
-			o: IV_ENTITY
-		do
-			create l_type_var.make_fresh
-			create o.make ("$o", types.ref)
-			l_access := factory.heap_access (factory.global_heap, o, "$f", l_type_var)
-			l_old_access := factory.heap_access (factory.old_ (factory.global_heap), o, "$f", l_type_var)
-			l_old_allocated := factory.heap_access (factory.old_ (factory.global_heap), o, "allocated", types.bool)
-			create l_forall.make (factory.implies_ (l_old_allocated, factory.equal (l_access, l_old_access)))
-			l_forall.add_type_variable (l_type_var.name)
-			l_forall.add_bound_variable (o)
-			l_forall.add_bound_variable (factory.entity ("$f", types.field (l_type_var)))
-			create l_postcondition.make (l_forall)
-			l_postcondition.node_info.set_type ("frame")
-			if not options.is_checking_frame then
-				l_postcondition.set_free
-			end
-			current_boogie_procedure.add_contract (l_postcondition)
 		end
 
 	has_functional_versions: BOOLEAN

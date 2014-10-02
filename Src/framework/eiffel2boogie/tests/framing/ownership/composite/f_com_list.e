@@ -1,5 +1,6 @@
 note
 	description: "Minimal list interface."
+	status: skip
 
 class F_COM_LIST [G]
 
