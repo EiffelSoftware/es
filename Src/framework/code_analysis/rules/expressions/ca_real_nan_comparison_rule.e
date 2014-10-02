@@ -60,7 +60,7 @@ feature {NONE} -- Implementation
 				attached {EXPR_CALL_AS} a_bin.left as l_left_expr_call
 				and then attached {ACCESS_ID_AS} l_left_expr_call.call as l_access
 				and then attached {STRING_8} current_context.node_type (l_access, current_feature).name as l_type
-				and then l_type.is_equal ("REAL") or l_type.is_equal ("REAL_32")
+				and then (l_type.is_equal ("REAL") or l_type.is_equal ("REAL_32"))
 				and then attached {EXPR_CALL_AS} a_bin.right as l_right_expr_call
 				and then attached {STATIC_ACCESS_AS} l_right_expr_call.call as l_static_access
 				and then l_static_access.feature_name.name_32.is_equal ("nan")
