@@ -58,6 +58,3 @@ Successfully verified.
 ======================================
 F_COM_COMPOSITE_D.lemma_ancestors_have_children
 Successfully verified.
-======================================
-F_COM_LIST (invariant admissibility)
-Successfully verified.

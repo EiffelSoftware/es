@@ -11,9 +11,6 @@ Successfully verified.
 F_OOM_CLIENT.test_d
 Successfully verified.
 ======================================
-F_OOM_LIST (invariant admissibility)
-Successfully verified.
-======================================
 F_OOM_OBSERVER (invariant admissibility)
 Successfully verified.
 ======================================

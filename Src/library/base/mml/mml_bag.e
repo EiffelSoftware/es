@@ -168,11 +168,13 @@ feature -- Iterable implementation
 		note
 			maps_to: "Bag#Domain"
 		do
-		end		
+		end
 
 feature -- Convenience
 
 	empty_bag: MML_BAG [G]
+			-- Empty bag.
+			-- Can be used as `{MML_BAG [G]}.empty_bag'.
 		note
 			maps_to: "Bag#Empty"
 		external "C inline"
@@ -196,7 +198,7 @@ feature -- Lemmas
 		ensure
 			removed_multiple (v, n).removed (v) = removed_multiple (v, n + 1)
 		end
-		
+
 	lemma_remove_all (v: G)
 			-- Removing `Current [v]' occurrences of `v' from `b' is the same as removing all occurrences.
 		note

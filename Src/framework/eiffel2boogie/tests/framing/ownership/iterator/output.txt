@@ -1,7 +1,4 @@
 ======================================
-F_I_ARRAY (invariant admissibility)
-Successfully verified.
-======================================
 F_I_CLIENT (invariant admissibility)
 Successfully verified.
 ======================================

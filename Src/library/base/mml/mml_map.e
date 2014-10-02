@@ -144,7 +144,7 @@ feature -- Modification
 	inverse: MML_RELATION [V, K]
 			-- Relation consisting of inverted pairs from `Current'.
 		do
-		end				
+		end
 
 feature -- Iterable implementation
 
@@ -158,6 +158,8 @@ feature -- Iterable implementation
 feature -- Convenience
 
 	empty_map: MML_MAP [K, V]
+			-- Empty map.
+			-- Can be used as `{MML_MAP [K, V]}.empty_map'.
 		note
 			maps_to: "Map#Empty"
 		external "C inline"
@@ -166,5 +168,5 @@ feature -- Convenience
 				return NULL;
 			]"
 		end
-		
+
 end

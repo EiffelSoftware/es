@@ -36,13 +36,13 @@ feature {NONE} -- Initialization
 			-- Create a sequence with one element `x'.
 		do
 		end
-		
+
 	constant (x: G; n: INTEGER)
 			-- Create a sequence with n copies of `x'.
 		require
 			n_non_negative: n >= 0
 		do
-		end		
+		end
 
 feature -- Properties
 
@@ -55,11 +55,11 @@ feature -- Properties
 			-- Is the sequence empty?
 		do
 		end
-		
+
 	is_constant (c: G): BOOLEAN
 			-- Are all values equal to `c'?
 		do
-		end		
+		end
 
 --	is_sorted: BOOLEAN
 --			-- Is the sequence sorted?
@@ -235,6 +235,8 @@ feature -- Iterable implementation
 feature -- Convenience
 
 	empty_sequence: MML_SEQUENCE [G]
+			-- Empty sequence.
+			-- Can be used as `{MML_SEQUENCE [G]}.empty_sequence'.
 		note
 			maps_to: "Seq#Empty"
 		external "C inline"
@@ -245,10 +247,11 @@ feature -- Convenience
 		end
 
 	non_void: BOOLEAN
+			-- Does this sequence contain only non-Void elements?
 		note
 			maps_to: "Seq#NonNull"
 		do
 		end
-		
+
 end
 

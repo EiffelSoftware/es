@@ -17,7 +17,7 @@ inherit
 
 create
 	default_create,
-	singleton	
+	singleton
 
 feature {NONE} -- Initialization
 
@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 			-- Create a set that contains only `x'.
 		do
 		end
-		
+
 feature -- Properties
 
 	has alias "[]" (x: G): BOOLEAN
@@ -46,7 +46,7 @@ feature -- Properties
 			-- Is the set empty?
 		do
 		end
-		
+
 
 feature -- Elements
 
@@ -55,7 +55,7 @@ feature -- Elements
 		require
 			not_empty: not is_empty
 		do
-		end		
+		end
 
 	min: G
 			-- Least element.
@@ -63,14 +63,14 @@ feature -- Elements
 			not_empty: not is_empty
 		do
 		end
-		
+
 	max: G
 			-- Greatest element.
 		require
 			not_empty: not is_empty
 		do
-		end		
-				
+		end
+
 feature -- Measurement
 
 	count alias "#": INTEGER
@@ -78,7 +78,7 @@ feature -- Measurement
 		note
 			maps_to: "Set#Card"
 		do
-		end		
+		end
 
 feature -- Comparison
 
@@ -92,21 +92,21 @@ feature -- Comparison
 	is_subset_of alias "<=" (a_other: MML_SET [ANY]): BOOLEAN
 			-- Does `a_other' have all elements of `Current'?
 		note
-			maps_to: "Set#Subset"		
+			maps_to: "Set#Subset"
 		do
 		end
 
 	is_superset_of alias ">=" (a_other: MML_SET [G]): BOOLEAN
 			-- Does `Current' have all elements of `a_other'?
 		note
-			maps_to: "Set#Superset"		
+			maps_to: "Set#Superset"
 		do
 		end
 
 	is_disjoint (a_other: MML_SET [G]): BOOLEAN
 			-- Do no elements of `a_other' occur in `Current'?
 		note
-			maps_to: "Set#Disjoint"		
+			maps_to: "Set#Disjoint"
 		do
 		end
 
@@ -142,7 +142,7 @@ feature -- Modification
 			-- Set of values contained in either `Current' or `other', but not in both.
 		do
 		end
-		
+
 feature -- Iterable implementation
 
 	new_cursor: ITERATION_CURSOR [G]
@@ -151,10 +151,12 @@ feature -- Iterable implementation
 			maps_to: ""
 		do
 		end
-		
+
 feature -- Convenience
 
 	empty_set: MML_SET [G]
+			-- Empty set.
+			-- Can be used as `{MML_SET [G]}.empty_set'.
 		note
 			maps_to: "Set#Empty"
 		external "C inline"
@@ -163,11 +165,12 @@ feature -- Convenience
 				return NULL;
 			]"
 		end
-		
+
 	non_void: BOOLEAN
+			-- Are all elements non-Void?
 		note
 			maps_to: "Set#NonNull"
 		do
-		end		
+		end
 
 end

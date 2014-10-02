@@ -141,6 +141,8 @@ feature -- Iterable implementation
 feature -- Convenience
 
 	empty_relation: MML_RELATION [G, H]
+			-- Empty relation.
+			-- Can be used as `{MML_RELATION [G]}.empty_relation'.
 		note
 			maps_to: "Rel#Empty"
 		external "C inline"
@@ -149,5 +151,5 @@ feature -- Convenience
 				return NULL;
 			]"
 		end
-		
+
 end
