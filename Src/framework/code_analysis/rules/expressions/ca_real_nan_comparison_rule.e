@@ -44,13 +44,32 @@ feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
+			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_bin_eq_pre_action (agent process_bin_eq)
+		end
+
+	process_feature (a_feature: attached FEATURE_AS)
+			-- Sets the current feature.
+		do
+			current_feature := current_context.checking_class.feature_named_32 (a_feature.feature_names.first.visual_name_32)
 		end
 
 	process_bin_eq (a_bin: attached BIN_EQ_AS)
 		do
-			do_nothing
+			if
+				attached {EXPR_CALL_AS} a_bin.left as l_left_expr_call
+				and then attached {ACCESS_ID_AS} l_left_expr_call.call as l_access
+				and then attached {STRING_8} current_context.node_type (l_access, current_feature).name as l_type
+				and then l_type.is_equal ("REAL") or l_type.is_equal ("REAL_32")
+				and then attached {EXPR_CALL_AS} a_bin.right as l_right_expr_call
+				and then attached {STATIC_ACCESS_AS} l_right_expr_call.call as l_static_access
+				and then l_static_access.feature_name.name_32.is_equal ("nan")
+			then
+				-- Todo also check with left and right swapped.
+			end
 		end
+
+	current_feature: FEATURE_I
 
 	create_violation (a_ot: attached OBJECT_TEST_AS)
 		local
