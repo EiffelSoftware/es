@@ -71,6 +71,8 @@ feature -- Implementation
 				l_fname := "min"
 			elseif l_name.same_string ("max") then
 				l_fname := "max"
+			elseif l_name.same_string ("abs") then
+				l_fname := "abs"
 			else
 				l_fname := Void
 			end

@@ -254,6 +254,7 @@ feature -- Specification
 				b := b & sequence [i]
 				i := i + 1
 			end
+			check sequence.front (i - 1) = sequence end
 		ensure
 			domain_definition: Result.domain ~ create {MML_INTERVAL}.from_range (lower_, lower_ + sequence.count - 1)
 			definition: across 1 |..| sequence.count as k all

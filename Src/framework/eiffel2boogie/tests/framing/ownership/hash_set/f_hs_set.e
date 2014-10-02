@@ -1,5 +1,5 @@
 note
-	description: "Simple hash set."
+	description: "Simple hash set (with constant number of buckets). Uses a helper lock object to prevent unwwanted modification of set elements."
 	manual_inv: true
 	false_guards: true
 	model: set, lock
@@ -12,7 +12,8 @@ create
 
 feature {NONE} -- Initialization
 
-	make (l: F_HS_LOCK)
+	make (l: F_HS_LOCK [G])
+			-- Create an empty set that will use the lock `l'.
 		note
 			status: creator
 		do
@@ -27,6 +28,7 @@ feature {NONE} -- Initialization
 feature -- Status report
 
 	has (v: G): BOOLEAN
+			-- Does the set contain an element equal to `v'?
 		require
 			v_closed: v.closed
 			lock_wrapped: lock.is_wrapped
@@ -34,9 +36,9 @@ feature -- Status report
 		local
 			b: MML_SEQUENCE [G]
 		do
-			check inv; v.inv; lock.inv_only ("owns_items", "valid_buckets") end
-			b := buckets [v.hash_code]
-			Result := b.domain [bucket_index (b, v)]
+			check inv; lock.inv_only ("owns_items", "valid_buckets") end
+			b := buckets [bucket_index (v.hash_code, buckets.count)]
+			Result := b.domain [index_of (b, v)]
 		ensure
 			definition: Result = set_has (v)
 		end
@@ -44,18 +46,21 @@ feature -- Status report
 feature -- Modification
 
 	extend (v: G)
+			-- Add `v' to the set if not already present.
 		require
 			v_locked: lock.owns [v]
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
 			modify_model ("set", Current)
 		local
+			idx: INTEGER
 			b: MML_SEQUENCE [G]
 		do
-			check v.inv; lock.inv_only ("owns_items", "valid_buckets") end
-			b := buckets [v.hash_code]
-			if not b.domain [bucket_index (b, v)] then
-				buckets := buckets.replaced_at (v.hash_code, b & v)
+			check lock.inv_only ("owns_items", "valid_buckets") end
+			idx := bucket_index (v.hash_code, buckets.count)
+			b := buckets [idx]
+			if not b.domain [index_of (b, v)] then
+				buckets := buckets.replaced_at (idx, b & v)
 				set := set & v
 				check set [v] end
 			end
@@ -67,6 +72,8 @@ feature -- Modification
 		end
 
 	join (other: F_HS_SET [G])
+			-- Add all elements of `other' that are not already present.
+			-- (The sets must share the same lock).
 		note
 			explicit: wrapping
 		require
@@ -124,6 +131,7 @@ feature -- Modification
 		end
 
 	remove (v: G)
+			-- Remove an element equal to `v' if present.
 		require
 			v_locked: lock.owns [v]
 			lock_wrapped: lock.is_wrapped
@@ -131,16 +139,17 @@ feature -- Modification
 			modify_model ("set", Current)
 		local
 			b: MML_SEQUENCE [G]
-			i: INTEGER
+			idx, i: INTEGER
 			x: G
 		do
-			check v.inv; lock.inv_only ("owns_items", "valid_buckets", "no_duplicates") end
-			b := buckets [v.hash_code]
-			i := bucket_index (b, v)
+			check lock.inv_only ("owns_items", "valid_buckets", "no_duplicates") end
+			idx := bucket_index (v.hash_code, buckets.count)
+			b := buckets [idx]
+			i := index_of (b, v)
 			if b.domain [i] then
 				x := b [i]
 				set := set / x
-				buckets := buckets.replaced_at (v.hash_code, b.removed_at (i))
+				buckets := buckets.replaced_at (idx, b.removed_at (i))
 				x.lemma_transitive (v, set)
 			end
 		ensure
@@ -150,13 +159,41 @@ feature -- Modification
 				across old set as y some (set = old set / y.item) and v.is_model_equal (y.item) end
 		end
 
-feature {F_HS_SET} -- Implementation
+	wipe_out
+			-- Remove all elements.
+		require
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
+			modify_model ("set", Current)
+		do
+			create set
+			create buckets.constant ({MML_SEQUENCE [G]}.empty_sequence, buckets.count)
+		ensure
+			set_empty: set.is_empty
+		end
 
-	bucket_index (b: MML_SEQUENCE [G]; v: G): INTEGER
-			-- Index in `b' of an element that is model-equal to `v'.
+feature {F_HS_SET, F_HS_LOCK} -- Implementation
+
+	bucket_index (hc, n: INTEGER): INTEGER
+			-- The bucket an item with hash code `hc' belongs,
+			-- if there are `n' buckets in total.
+		note
+			explicit: contracts
+		require
+			reads ([])
+			n_positive: n > 0
+			hc_non_negative: 0 <= hc
+		do
+			Result := (hc \\ n) + 1
+		ensure
+			in_bounds: 1 <= Result and Result <= n
+		end
+
+	index_of (b: MML_SEQUENCE [G]; v: G): INTEGER
+			-- Index in `b' of an element that is equal to `v'.
 		require
 			v_closed: v.closed
-			items_clsoed: across 1 |..| b.count as j all b [j.item].closed end
+			items_closed: across 1 |..| b.count as j all b [j.item].closed end
 		do
 			from
 				Result := 1
@@ -171,8 +208,8 @@ feature {F_HS_SET} -- Implementation
 				b.count - Result
 			end
 		ensure
-			b.domain [Result] implies v.is_model_equal (b [Result])
-			not b.domain [Result] implies across 1 |..| b.count as j all not v.is_model_equal (b [j.item]) end
+			definition_found: b.domain [Result] implies v.is_model_equal (b [Result])
+			definition_not_found: not b.domain [Result] implies across 1 |..| b.count as j all not v.is_model_equal (b [j.item]) end
 		end
 
 feature -- Specification
@@ -186,13 +223,13 @@ feature -- Specification
 		end
 
 	buckets: MML_SEQUENCE [MML_SEQUENCE [G]]
-			-- Buckets.
+			-- Storage.
 		note
 			guard: not_in_set
 		attribute
 		end
 
-	lock: F_HS_LOCK
+	lock: F_HS_LOCK [G]
 			-- Helper object for keeping items consistent.
 		note
 			status: ghost
@@ -204,29 +241,41 @@ feature -- Specification
 		note
 			status: ghost, functional
 		require
-			v /= Void
+			v_exists: v /= Void
 			reads (Current, set, v)
 		do
 			Result := across set as x some v.is_model_equal (x.item) end
 		end
 
+	no_duplicates (s: like set): BOOLEAN
+			-- Are all objects in `s' unique by value?
+		note
+			status: ghost, functional
+		require
+			non_void: s.non_void
+			reads (s)
+		do
+			Result := across s as x all across s as y all x.item /= y.item implies not x.item.is_model_equal (y.item) end end
+		end
+
 	new_locked_and_in_buckets (new_set: like set; o: ANY): BOOLEAN
-			-- Are any elements of `new_set' that are not already in `set'
-			-- locked and contained in appropriate buckets?
+			-- Are all elements of `new_set' locked and contained in appropriate buckets?
+			-- (This guard allows updating `set' without notifying the lock).
 		note
 			status: functional
 		do
-			Result := across new_set - set as x all
-					x.item /= Void and then
-					lock.owns [x.item] and then
-					buckets.domain [x.item.hash_code_] and then
-					buckets [x.item.hash_code_].has (x.item)
+			Result := buckets.count > 0 and then
+				new_set.non_void and then
+				no_duplicates (new_set) and then
+				across new_set as x all
+					lock.owns [x.item] and
+					buckets [bucket_index (x.item.hash_code_, buckets.count)].has (x.item)
 				end
 		end
 
 	not_in_set (new_buckets: like buckets; o: ANY): BOOLEAN
-			-- Are any elements of `buckets' that are not in `new_buckets'
-			-- also not is `set'?
+			-- Are any elements of `buckets' that are not in `new_buckets' also not is `set'?
+			-- (This guard allows updating `buckets' without notifying the lock).
 		note
 			status: functional
 		do
@@ -236,7 +285,7 @@ feature -- Specification
 		end
 
 invariant
-	buckets_count: buckets.count = 10
+	buckets_non_empty: not buckets.is_empty
 	observers_definition: observers = [lock]
 	set_non_void: set.non_void
 	set_not_too_small: across 1 |..| buckets.count as i all

@@ -389,7 +389,11 @@ feature -- Framing
 			across a_boogie_procedure.arguments as i loop
 				l_fcall.add_argument (i.item.entity)
 			end
-			Result := function_call ("same_outside", <<l_old_heap, global_heap, l_fcall>>, types.bool)
+			if helper.is_feature_status (a_feature, "setter") then
+				Result := function_call ("flat_same_outside", <<l_old_heap, global_heap, l_fcall>>, types.bool)
+			else
+				Result := function_call ("same_outside", <<l_old_heap, global_heap, l_fcall>>, types.bool)
+			end
 				-- TODO: fix inlining
 			if not a_boogie_procedure.name.has_substring (a_feature.feature_name_32.out) then
 				Result := true_

@@ -6,8 +6,9 @@ deferred class
 
 inherit
 	ANY
-		redefine
-			is_model_equal
+		undefine
+			is_model_equal,
+			lemma_transitive
 		end
 
 feature -- Access
@@ -28,10 +29,15 @@ feature -- Access
 feature -- Specification
 
 	hash_code_: INTEGER
-			-- Hash code.
+			-- Hash code in terms of abstract state.
 		note
+			explicit: contracts
 			status: ghost
-		attribute
+		require
+			reads (Current)
+		deferred
+		ensure
+			non_negative: 0 <= Result
 		end
 
 	is_model_equal (other: like Current): BOOLEAN
@@ -39,26 +45,8 @@ feature -- Specification
 		note
 			status: ghost
 			explicit: contracts
-		do
-			Result := hash_code_ = other.hash_code_
+		deferred
 		ensure then
 			agrees_with_hash: Result implies hash_code_ = other.hash_code_
-			symmetric: Result = (other.is_model_equal (Current))
 		end
-
-	lemma_transitive (x: like Current; ys: MML_SET [like Current])
-			-- Property that follows from transitivity of `is_model_equal'.
-		note
-			status: lemma
-		require
-			equal_x: is_model_equal (x)
-			not_in_ys: across ys as y all not is_model_equal (y.item) end
-		deferred
-		ensure
-			x_not_in_ys: across ys as y all not x.is_model_equal (y.item) end
-		end
-
-invariant
-	hash_code_bounds: 1 <= hash_code_ and hash_code_ <= 10
-
 end

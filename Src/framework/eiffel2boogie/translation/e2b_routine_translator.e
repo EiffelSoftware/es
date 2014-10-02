@@ -129,6 +129,10 @@ feature -- Translation: Signature
 				-- Creator: add default field initialization
 			if a_for_creator then
 				add_field_initialization
+					-- If it is `default_create' from any, add special post
+				if current_feature.written_in = system.any_id and current_feature.rout_id_set.first = system.default_create_rout_id then
+					add_default_create_postcondition
+				end
 			end
 
 				-- Framing
@@ -237,6 +241,50 @@ feature -- Translation: Signature
 			current_boogie_procedure.add_contract (l_pre)
 		end
 
+	add_default_create_postcondition
+			-- Add postcondition to `current_boogie_procedure' that all attributes except "allocated" and "closed" are initialized to default values.
+		local
+			l_mapping: E2B_ENTITY_MAPPING
+			l_t: IV_VAR_TYPE
+			l_f, l_m: IV_ENTITY
+			l_forall: IV_FORALL
+			l_post: IV_POSTCONDITION
+			l_cond: IV_EXPRESSION
+			l_excluded: ARRAYED_LIST [IV_ENTITY]
+		do
+			create l_mapping.make
+			create l_t.make_fresh
+			create l_f.make ("$f", types.field (l_t))
+
+				-- Excluded fields: allocated, closed, and model fields with static initializaers
+			create l_excluded.make (5)
+			l_excluded.extend (factory.entity ("allocated", types.field (types.bool)))
+			l_excluded.extend (factory.entity ("closed", types.field (types.bool)))
+			across
+				helper.flat_model_queries (current_type.base_class) as m
+			loop
+				l_m := helper.field_from_attribute (m.item, current_type)
+				if attached boogie_universe.function_named (name_translator.boogie_function_for_ghost_definition (current_type, l_m.name)) then
+					l_excluded.extend (l_m)
+				end
+			end
+
+			l_cond := factory.true_
+			across l_excluded as e loop
+				l_cond := factory.and_clean (l_cond, factory.not_equal (l_f, e.item))
+			end
+
+			create l_forall.make (factory.implies_ (l_cond,
+				factory.equal (
+					factory.heap_current_access (l_mapping, l_f.name, l_t),
+					factory.function_call ("Default", << l_f >>, l_t))
+				))
+			l_forall.add_type_variable (l_t.name)
+			l_forall.add_bound_variable (l_f)
+			create l_post.make (l_forall)
+			current_boogie_procedure.add_contract (l_post)
+		end
+
 	add_ownership_contracts (a_for_creator: BOOLEAN; a_modifies_heap: BOOLEAN)
 			-- Add ownership contracts to current feature.
 		local
@@ -300,9 +348,11 @@ feature -- Translation: Signature
 			Result.extend (l_pre)
 
 				-- Free precondition: Everything in the domains of writable objects is writable
-			create l_pre.make (factory.function_call ("closed_under_domains", <<factory.global_writable, factory.global_heap>>, types.bool))
-			l_pre.set_free
-			Result.extend (l_pre)
+			if not helper.is_feature_status (current_feature, "setter") then
+				create l_pre.make (factory.function_call ("closed_under_domains", <<factory.global_writable, factory.global_heap>>, types.bool))
+				l_pre.set_free
+				Result.extend (l_pre)
+			end
 
 				-- Free postcondition: Only writes set has changed
 			create l_post.make (factory.writes_routine_frame (current_feature, current_type, current_boogie_procedure))

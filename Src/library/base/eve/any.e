@@ -627,6 +627,20 @@ feature -- Verification: auxiliary
 			Result := True
 		ensure
 			reflexive: other = Current implies Result
+			symmetric: Result = other.is_model_equal (Current)
+		end
+
+	lemma_transitive (x: like Current; ys: MML_SET [like Current])
+			-- Property that follows from transitivity of `is_model_equal'.
+			-- ToDo: reformulate once we have call_forall.
+		note
+			status: lemma
+		require
+			equal_x: is_model_equal (x)
+			not_in_ys: across ys as y all not is_model_equal (y.item) end
+		do
+		ensure
+			x_not_in_ys: across ys as y all not x.is_model_equal (y.item) end
 		end
 
 	frozen model_equals (x, y: ANY): BOOLEAN

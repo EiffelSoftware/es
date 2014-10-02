@@ -188,6 +188,11 @@ function {: inline } same_outside(h: HeapType, h': HeapType, frame: Frame): bool
   )
 }
 
+// Objects outside of frame did not change, unless they were newly allocated
+function {: inline } flat_same_outside(h: HeapType, h': HeapType, frame: Frame): bool { 
+	(forall <T> o: ref, f: Field T :: { h'[o, f] } o != Void && h[o, allocated] ==> h'[o, f] == h[o, f] || frame[o, f])
+}
+
 // Objects inside the frame did not change
 function same_inside(h: HeapType, h': HeapType, frame: Frame): bool { 
 	(forall <T> o: ref, f: Field T :: o != Void && h[o, allocated] && h'[o, allocated] && frame [o, f] ==> h'[o, f] == h[o, f])
@@ -489,8 +494,10 @@ function subtract(a, b: int): int { a - b }
 function multiply(a, b: int): int { a * b }
 function modulo(a, b: int): int { a mod b }
 function divide(a, b: int): int { a div b }
+
 function min(a, b: int): int { if a <= b then a else b }
 function max(a, b: int): int { if a >= b then a else b }
+function abs(a: int): int { if a >= 0 then a else -a }
 
 // Expanded types
 

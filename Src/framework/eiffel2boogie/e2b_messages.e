@@ -36,6 +36,9 @@ feature -- Validity error messages
 	creator_call_as_procedure (a_pname: STRING): STRING_32
 		do Result := locale.formatted_string ("Feature '$1' is a creator but is called as a regular procedure.", a_pname) end
 
+	nonsetter_call_from_setter (a_pname: STRING): STRING_32
+		do Result := locale.formatted_string ("A non-setter procedure '$1' is called from a setter procedure.", a_pname) end
+
 	first_argument_string: STRING_32
 		do Result := "First argument has to be a manifest string." end
 

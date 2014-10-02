@@ -292,6 +292,12 @@ feature -- Translation
 				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_class_type (feature_class_type (a_feature)))
 				last_expression := l_fcall
 			else
+				if helper.is_feature_status (context_feature, "setter") and
+					not a_feature.has_return_value  and not helper.is_feature_status (a_feature, "setter") then
+						-- Setter calling a non-setter procedure: unsound framing
+					helper.add_semantic_error (context_feature, messages.nonsetter_call_from_setter (a_feature.feature_name), context_line_number)
+				end
+
 				if a_for_creator or
 						(name_translator.is_creator_name (context_implementation.procedure.name) and helper.is_creator (a_feature, current_target_type.base_class)) then
 						-- Either we are translating a creation expression (`a_for_creator'),
