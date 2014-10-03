@@ -554,6 +554,7 @@ Src/framework/web/xebra/www/xebrahome/EIFGENs
 Src/framework/web/xebra/www/xmlrpc_demo/*.log
 Src/framework/web/xebra/www/xmlrpc_demo/EIFGENs
 Src/framework/xml/gobo/removed
+Src/library/base/EIFGENs
 Src/library/cURL/spec/linux-x86
 Src/library/cURL/spec/linux-x86-64
 Src/library/cURL/spec/macosx-x86-64

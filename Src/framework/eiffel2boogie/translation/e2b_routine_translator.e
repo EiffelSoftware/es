@@ -288,7 +288,7 @@ feature -- Translation: Signature
 			current_boogie_procedure.add_contract (l_pre)
 
 				-- Unless class or feature are marked with "manual_inv", bring in the invariants of all wrapped objects
-			if not helper.boolean_feature_note_value (current_feature, "manual_inv") and not helper.boolean_class_note_value (current_type.base_class, "manual_inv") then
+			if not helper.is_manual_inv (current_feature) and not helper.is_manual_inv_class (current_type.base_class) then
 				create l_pre.make (factory.function_call ("global_permissive", << >>, types.bool))
 				l_pre.set_free
 				current_boogie_procedure.add_contract (l_pre)

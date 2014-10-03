@@ -45,7 +45,8 @@ convert
 	to_special: {SPECIAL [G]},
 	make_from_cil ({NATIVE_ARRAY [G]}),
 	to_mml_set: {MML_SET [G]},
-	to_mml_sequence: {MML_SEQUENCE [G]}	
+	to_mml_sequence: {MML_SEQUENCE [G]},
+	to_simple_array: {SIMPLE_ARRAY [G]}
 
 feature -- Initialization
 
@@ -875,10 +876,14 @@ feature -- Specification
 	to_mml_set: MML_SET [G]
 		do
 		end
-		
+
 	to_mml_sequence: MML_SEQUENCE [G]
 		do
-		end		
+		end
+
+	to_simple_array: SIMPLE_ARRAY [G]
+		do
+		end
 
 invariant
 
@@ -891,7 +896,7 @@ invariant
 --				(index_set.upper = lower + count - 1))
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

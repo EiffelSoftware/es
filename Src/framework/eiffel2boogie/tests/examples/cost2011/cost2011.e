@@ -5,8 +5,6 @@ feature -- COST 2011: Maximum in an array
 
 	max_in_array (a: ARRAY [INTEGER]): INTEGER
 			-- Index of maximum element of `a'.
-		note
-			pure: True
 		require
 			a_not_empty: a.count > 0
 		local

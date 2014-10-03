@@ -8,5 +8,11 @@ Successfully verified.
 VSTTE2008.add
 Successfully verified.
 ======================================
+VSTTE2008.add_recursive
+Successfully verified.
+======================================
 VSTTE2008.multiply
+Successfully verified.
+======================================
+VSTTE2008.multiply_recursive
 Successfully verified.

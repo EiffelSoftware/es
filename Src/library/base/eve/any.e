@@ -431,7 +431,7 @@ feature -- Verification: contract clauses
 			Result := True
 		end
 
-	frozen reads_model (a_field: ANY; a_object: TUPLE): BOOLEAN
+	frozen reads_model (a_models: ANY; a_object: TUPLE): BOOLEAN
 			-- Does this function read model queries `a_models' of objects in `a_objects'?
 		do
 			Result := True

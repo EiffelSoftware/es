@@ -253,7 +253,7 @@ feature -- Translation
 		local
 			l_inlining_depth: INTEGER
 		do
-			if options.inlining_depth > 0 and not helper.boolean_feature_note_value (a_feature, "skip") then
+			if options.inlining_depth > 0 and not helper.is_skipped (a_feature) then
 				l_inlining_depth := options.inlining_depth
 				options.set_inlining_depth (options.inlining_depth - 1)
 				process_inlined_routine_call (a_feature, a_parameters)

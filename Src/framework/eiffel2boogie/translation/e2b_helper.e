@@ -181,6 +181,12 @@ feature -- Class status helpers
 			Result := is_class_status (a_class, "skip")
 		end
 
+	is_manual_inv_class (a_class: CLASS_C): BOOLEAN
+			-- Does `a_class' have the manual inv trigger?
+		do
+			Result := boolean_class_note_value (a_class, "manual_inv")
+		end
+
 feature -- Feature status helpers
 
 	is_feature_status (a_feature: FEATURE_I; a_value: STRING): BOOLEAN
@@ -224,6 +230,12 @@ feature -- Feature status helpers
 			Result := is_feature_status (a_feature, "impure")
 		end
 
+	is_inline_in_caller (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' inlined in caller?
+		do
+			Result := is_feature_status (a_feature, "inline_in_caller")
+		end
+
 	is_invariant_unfriendly (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' invariant unfriendly?
 		do
@@ -234,6 +246,12 @@ feature -- Feature status helpers
 			-- Is `a_feature' a ghost feature?
 		do
 			Result := is_feature_status (a_feature, "lemma")
+		end
+
+	is_manual_inv (a_feature: FEATURE_I): BOOLEAN
+			-- Does `a_feature' have the manual inv trigger?
+		do
+			Result := boolean_feature_note_value (a_feature, "manual_inv")
 		end
 
 	is_opaque (a_feature: FEATURE_I): BOOLEAN
@@ -825,7 +843,7 @@ feature -- Other
 			l_contract_extractor: EPA_CONTRACT_EXTRACTOR
 		do
 			Result := options.is_inlining_enabled and then
-				boolean_feature_note_value (a_routine, "inline_in_caller")
+				is_inline_in_caller (a_routine)
 			if not Result and options.is_automatic_inlining_enabled then
 				create l_contract_extractor
 				Result := l_contract_extractor.all_postconditions (a_routine).is_empty

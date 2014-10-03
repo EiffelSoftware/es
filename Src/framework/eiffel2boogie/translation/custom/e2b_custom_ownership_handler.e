@@ -339,8 +339,8 @@ feature -- Basic operations
 						<< a_translator.entity_mapping.heap, a_translator.current_target >>,
 						types.bool))
 					a_translator.side_effect.extend (l_assume)
-					if not helper.boolean_feature_note_value (a_translator.context_feature, "manual_inv")
-						and not helper.boolean_class_note_value (a_translator.context_type.base_class, "manual_inv") then
+					if not helper.is_manual_inv (a_translator.context_feature)
+						and not helper.is_manual_inv_class (a_translator.context_type.base_class) then
 						create l_assume.make_assume (factory.function_call ("inv_frame_trigger", << a_translator.current_target >>, types.bool))
 						a_translator.side_effect.extend (l_assume)
 					end
