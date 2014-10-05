@@ -630,7 +630,7 @@ feature -- Verification: auxiliary
 			symmetric: Result = other.is_model_equal (Current)
 		end
 
-	lemma_transitive (x: like Current; ys: MML_SET [like Current])
+	lemma_transitive (x: like Current; ys: MML_SET [ANY])
 			-- Property that follows from transitivity of `is_model_equal'.
 			-- ToDo: reformulate once we have call_forall.
 		note
