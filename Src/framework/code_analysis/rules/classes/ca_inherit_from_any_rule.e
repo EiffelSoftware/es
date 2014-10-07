@@ -38,8 +38,6 @@ feature {NONE} -- Rule checking
 
 	check_inheritance (a_class: attached CLASS_AS)
 		-- Checks whether `a_class' inherits explicitly from ANY or not.
-		local
-			l_violation: CA_RULE_VIOLATION
 		do
 			if attached a_class.parent_with_name ("ANY") as l_any then
 				-- Explicit inheritance from ANY found

@@ -35,6 +35,13 @@ feature {NONE} -- Implementation
 			Result := Match_list_server.item (class_to_change.class_id)
 		end
 
+feature -- Basic Operations
+
+	execute (a_class: attached CLASS_AS)
+		do
+			process_ast_node (a_class)
+		end
+
 feature -- Setting properties
 
 	set_applied

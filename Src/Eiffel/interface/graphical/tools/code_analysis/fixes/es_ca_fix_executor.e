@@ -97,7 +97,7 @@ feature -- Fixing
 			compute_ast
 			if not is_parse_error then
 				fix.setup (ast, match_list, process_leading, true)
-				fix.process_ast_node (ast)
+				fix.execute (ast)
 				if not process_leading then
 					fix.process_all_break_as
 				end

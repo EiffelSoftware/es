@@ -15,16 +15,12 @@ class
 
 inherit
 	CA_STANDARD_RULE
+		rename
+			make_with_defaults as make
+		end
 
 create
 	make
-
-feature {NONE} -- Initialization
-
-	make
-		do
-			make_with_defaults
-		end
 
 feature -- Access
 
@@ -56,11 +52,26 @@ feature {NONE} -- Implementation
 		end
 
 	process_if (a_if: attached IF_AS)
+		local
+			l_type_1, l_type_2: TYPE_A
 		do
 			if attached {OBJECT_TEST_AS} a_if.condition as l_ot then
-				 if (current_context.node_type (l_ot.expression, current_feature).conforms_to(l_ot.type)) then
-					create_violation (l_ot)
+				 l_type_1 := current_context.node_type (l_ot.expression, current_feature)
+				 l_type_2 := current_context.node_type (l_ot.type, current_feature)
+
+				 if not has_common_child (l_type_1, l_type_2) then
+				 	create_violation (l_ot)
 				 end
+			end
+		end
+
+	has_common_child (a_t1, a_t2: attached TYPE_A): BOOLEAN
+			-- Is there a class that conforms to both `a_t1' and `a_t2'?
+		do
+			across system.classes as l_class loop
+--				if l_class.item.actual_type.conform_to (a_context_class: CLASS_C, other: TYPE_A) then
+--					-- TODO Implement. Awaiting answers from Tschannen.
+--				end
 			end
 		end
 

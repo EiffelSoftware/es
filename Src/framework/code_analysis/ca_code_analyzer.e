@@ -87,6 +87,8 @@ feature {NONE} -- Initialization
 			add_rule (create {CA_OBJECT_TEST_FAILING_RULE}.make)
 			add_rule (create {CA_USELESS_CONTRACT_RULE}.make)
 			add_rule (create {CA_REAL_NAN_COMPARISON_RULE}.make)
+			add_rule (create {CA_LOCAL_USED_FOR_RESULT_RULE}.make)
+			add_rule (create {CA_MERGEABLE_CONDITIONALS_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

@@ -18,6 +18,19 @@ feature -- General
 
 feature -- Rules
 
+	mergeable_conditionals_title: STRING_32
+		do Result := translation_in_context ("Mergeable conditionals", once "code_analyzer") end
+
+	mergeable_conditionals_description: STRING_32
+		do Result := translation_in_context ("Successive conditional instructions with the same condition can be merged.", once "code_analyzer") end
+
+	local_used_for_result_title: STRING_32
+		do Result := translation_in_context ("Local variable only used for Result", once "code_analyzer") end
+
+	local_used_for_result_description: STRING_32
+		do Result := translation_in_context ("In a function, a local variable that is never read and that is not assigned%
+							% to any variable but the Result can be omitted. Instead the Result can be directly used.", once "code_analyzer") end
+
 	real_nan_comparison_title: STRING_32
 		do Result := translation_in_context ("{REAL}.nan comparison", once "code_analyzer") end
 
