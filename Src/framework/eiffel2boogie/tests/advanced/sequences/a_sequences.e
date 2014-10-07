@@ -9,7 +9,6 @@ feature
 			not s.is_empty
 		local
 			s1, s2: MML_SEQUENCE[INTEGER]
-			x: INTEGER
 		do
 			check s1.is_empty end
 			s1 := s & 1 & 2

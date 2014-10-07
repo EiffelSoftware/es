@@ -218,14 +218,14 @@ feature -- Specification
 			-- Set of elements.
 		note
 			status: ghost
-			guard: new_locked_and_in_buckets
+			guard: inv
 		attribute
 		end
 
 	buckets: MML_SEQUENCE [MML_SEQUENCE [G]]
 			-- Storage.
 		note
-			guard: not_in_set
+			guard: inv
 		attribute
 		end
 
@@ -257,33 +257,6 @@ feature -- Specification
 			reads (s)
 		do
 			Result := across s as x all across s as y all x.item /= y.item implies not x.item.is_model_equal (y.item) end end
-		end
-
-	new_locked_and_in_buckets (new_set: like set; o: ANY): BOOLEAN
-			-- Are all elements of `new_set' locked and contained in appropriate buckets?
-			-- (This guard allows updating `set' without notifying the lock).
-		note
-			status: functional
-		do
-			Result := lock /= Void and then
-				buckets.count > 0 and then
-				new_set.non_void and then
-				no_duplicates (new_set) and then
-				across new_set as x all
-					lock.owns [x.item] and
-					buckets [bucket_index (x.item.hash_code_, buckets.count)].has (x.item)
-				end
-		end
-
-	not_in_set (new_buckets: like buckets; o: ANY): BOOLEAN
-			-- Are any elements of `buckets' that are not in `new_buckets' also not is `set'?
-			-- (This guard allows updating `buckets' without notifying the lock).
-		note
-			status: functional
-		do
-			Result := new_buckets.count = buckets.count and then
-				across 1 |..| buckets.count as i all
-					(buckets [i.item].range - new_buckets [i.item].range).is_disjoint (set) end
 		end
 
 invariant

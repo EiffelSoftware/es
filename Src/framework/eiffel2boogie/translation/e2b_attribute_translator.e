@@ -111,6 +111,10 @@ feature -- Basic operations
 			elseif l_guard.as_lower ~ "false" then
 					-- The guard is trivially false
 				create l_forall.make (factory.not_ (l_fcall))
+			elseif l_guard.as_lower ~ "inv" then
+					-- The guard it the invariant of observers in the post-state
+				create l_forall.make (factory.equiv (l_fcall,
+					factory.function_call ("user_inv", << factory.map_update (l_h, << l_cur, l_f >>, l_v), l_o >>, types.bool)))
 			else
 				l_guard_feature := current_type.base_class.feature_named_32 (l_guard)
 				if not l_guard.is_empty and is_valid_guard_feature (l_guard, l_guard_feature, a_type) then
