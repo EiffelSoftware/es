@@ -637,10 +637,10 @@ feature -- Verification: auxiliary
 			status: lemma
 		require
 			equal_x: is_model_equal (x)
-			not_in_ys: across ys as y all not is_model_equal (y.item) end
 		do
 		ensure
-			x_not_in_ys: across ys as y all not x.is_model_equal (y.item) end
+			x_in_ys_iff_current_in_ys: across ys as y some is_model_equal (y.item) end =
+				across ys as y some x.is_model_equal (y.item) end
 		end
 
 	frozen model_equals (x, y: ANY): BOOLEAN

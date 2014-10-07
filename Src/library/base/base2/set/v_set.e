@@ -1,6 +1,6 @@
 note
 	description: "[
-		Container where all elements are unique with respect to some equivalence relation. 
+		Container where all elements are unique with respect to object equality. 
 		Elements can be added and removed.
 		]"
 	author: "Nadia Polikarpova"
@@ -16,9 +16,33 @@ inherit
 		rename
 			has as has_exactly
 		redefine
+			count,
+			is_empty,
 --			has_exactly,
 			occurrences
 --			is_equal
+		end
+
+feature -- Measurement
+
+	count: INTEGER
+			-- Number of elements.
+		deferred
+		ensure then
+			definition_set: Result = set.count
+		end
+
+feature -- Status report
+
+	is_empty: BOOLEAN
+			-- Is container empty?
+		note
+			status: dynamic
+		do
+			check inv end
+			Result := count = 0
+		ensure then
+			definition_set: Result = set.is_empty
 		end
 
 feature -- Search
@@ -27,7 +51,7 @@ feature -- Search
 			-- Is `v' contained?
 			-- (Uses object equality.)
 		require
-			non_void: v /= Void
+			v_closed: v.closed
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
 		deferred
@@ -38,7 +62,10 @@ feature -- Search
 	item (v: G): G
 			-- Element of `set' equivalent to `v' according to object equality.
 		require
+			v_closed: v.closed
 			has: set_has (v)
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
 		deferred
 		ensure
 			definition: Result = set_item (v)
@@ -82,7 +109,6 @@ feature -- Iteration
 			-- New iterator pointing to a position in the set, from which it can traverse all elements by going `forth'.
 		note
 			status: impure
-			explicit: contracts
 		deferred
 		end
 
@@ -91,6 +117,8 @@ feature -- Iteration
 		note
 			status: impure
 		require
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
 			modify_field (["observers", "closed"], Current)
 		deferred
 		ensure
@@ -106,33 +134,113 @@ feature -- Comparison
 
 	is_subset_of (other: V_SET [G]): BOOLEAN
 			-- Does `other' have all elements of `Current'?
-			-- (Uses `other.equivalence'.)
-		deferred
---			Result := for_all (agent other.has)
+			-- (Uses object equality.)
+		note
+			status: impure, dynamic
+		require
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
+			other_registered: lock.sets [other]
+			modify_model ("observers", [Current, other])
+		local
+			it: V_SET_ITERATOR [G]
+		do
+			check inv_only ("set_non_void") end
+			Result := True
+			if other /= Current then
+				from
+					it := new_cursor
+				invariant
+					is_wrapped
+					other.is_wrapped
+					it.is_wrapped
+					inv_only ("lock_non_current")
+					lock.inv_only ("subjects_lock", "owns_items")
+					1 <= it.index_ and it.index_ <= it.sequence.count + 1
+					Result implies across 1 |..| (it.index_ - 1) as i all other.set_has (it.sequence [i.item]) end
+					not Result implies not other.set_has (it.sequence [it.index_ - 1])
+					modify_model ("index_", it)
+				until
+					it.after or not Result
+				loop
+					Result := other.has (it.item)
+					it.forth
+				variant
+					it.sequence.count - it.index_
+				end
+				forget_iterator (it)
+				check inv_only ("set_non_void") end
+			end
 		ensure
 			definition: Result = across set as x all other.set_has (x.item) end
+			observers_restored: observers ~ old observers
+			other_observers_restored: other.observers ~ old other.observers
 		end
 
 	is_superset_of (other: V_SET [G]): BOOLEAN
 			-- Does `Current' have all elements of `other'?
-			-- (Uses `equivalence'.)
+			-- (Uses object equality..)
 		note
-			status: dynamic
+			status: impure, dynamic
+		require
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
+			other_registered: lock.sets [other]
+			modify_model ("observers", [Current, other])
 		do
+			check lock.inv_only ("subjects_lock") end
 			Result := other.is_subset_of (Current)
 		ensure
 			definition: Result = across other.set as x all set_has (x.item) end
+			observers_restored: observers ~ old observers
+			other_observers_restored: other.observers ~ old other.observers
 		end
 
 	disjoint (other: V_SET [G]): BOOLEAN
 			-- Do no elements of `other' occur in `Current'?
-			-- (Uses `equivalence'.)
+			-- (Uses object equality.)
+		note
+			status: impure, dynamic
 		require
-			other_exists: other /= Void
-		deferred
---			Result := not other.exists (agent has)
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
+			other_registered: lock.sets [other]
+			modify_model ("observers", [Current, other])
+		local
+			it: V_SET_ITERATOR [G]
+		do
+			check inv_only ("set_non_void") end
+			if other.is_empty then
+				Result := True
+			elseif other /= Current then
+				from
+					it := new_cursor
+					Result := True
+				invariant
+					is_wrapped
+					other.is_wrapped
+					it.is_wrapped
+					inv_only ("lock_non_current")
+					lock.inv_only ("subjects_lock", "owns_items")
+					1 <= it.index_ and it.index_ <= it.sequence.count + 1
+					Result implies across 1 |..| (it.index_ - 1) as i all not other.set_has (it.sequence [i.item]) end
+					not Result implies other.set_has (it.sequence [it.index_ - 1])
+					modify_model ("index_", it)
+				until
+					it.after or not Result
+				loop
+					Result := not other.has (it.item)
+					it.forth
+				variant
+					it.sequence.count - it.index_
+				end
+				forget_iterator (it)
+				check inv_only ("set_non_void") end
+			end
 		ensure
-			definition: Result = across other.set as x all not set_has (x.item) end
+			definition: Result = across set as x all not other.set_has (x.item) end
+			observers_restored: observers ~ old observers
+			other_observers_restored: other.observers ~ old other.observers
 		end
 
 --	is_equal (other: like Current): BOOLEAN
@@ -191,7 +299,7 @@ feature -- Extension
 			other_registered: lock.sets [other]
 			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
 			modify_model ("set", Current)
-			modify_model ("observers", other)
+			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
 		do
@@ -226,6 +334,7 @@ feature -- Extension
 			has_old: old set <= set
 			has_other: across old other.set as y all y.item /= Void and then set_has (y.item) end
 			no_extra: across set as x all set_has (x.item).old_ or other.set_has (x.item).old_ end
+			observers_restored: observers ~ old observers
 			other_observers_restored: other.observers ~ old other.observers
 		end
 
@@ -273,7 +382,8 @@ feature -- Removal
 			set_registered: lock.sets [Current]
 			other_registered: lock.sets [other]
 			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
-			modify_model (["set", "observers"], Current)
+			modify_model ("set", Current)
+			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
 		do
@@ -311,6 +421,7 @@ feature -- Removal
 			only_old: set <= old set
 			not_too_few: across old set as y all other.set_has (y.item).old_ = set_has (y.item) end
 			observers_restored: observers ~ old observers
+			other_observers_restored: other.observers ~ old other.observers
 		end
 
 	subtract (other: V_SET [G])
@@ -323,8 +434,8 @@ feature -- Removal
 			set_registered: lock.sets [Current]
 			other_registered: lock.sets [other]
 			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
-			modify_model (["set", "observers"], Current)
-			modify_model ("observers", other)
+			modify_model ("set", Current)
+			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
 		do
@@ -361,7 +472,7 @@ feature -- Removal
 		ensure
 			only_old: set <= old set
 			not_too_few: across old set as y all other.set_has (y.item).old_ /= set_has (y.item) end
-			observers_restores: observers ~ old observers
+			observers_restored: observers ~ old observers
 			other_observers_restored: other.observers ~ old other.observers
 		end
 
@@ -375,8 +486,8 @@ feature -- Removal
 			set_registered: lock.sets [Current]
 			other_registered: lock.sets [other]
 			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
-			modify_model (["set", "observers"], Current)
-			modify_model ("observers", other)
+			modify_model ("set", Current)
+			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
 			s: MML_SEQUENCE [G]
@@ -421,6 +532,8 @@ feature -- Removal
 			set_effect_old: across old set as x all other.set_has (x.item).old_ or set_has (x.item)  end
 			set_effect_other: across other.set.old_ as x all set_has (x.item).old_ or set_has (x.item) end
 			set_effect_new: across set as x all set_has (x.item).old_ or other.set_has (x.item).old_ end
+			observers_restored: observers ~ old observers
+			other_observers_restored: other.observers ~ old other.observers
 		end
 
 	wipe_out
@@ -428,6 +541,7 @@ feature -- Removal
 		require
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
+			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
 			modify_model ("set", Current)
 		deferred
 		ensure
@@ -505,6 +619,27 @@ feature -- Specification
 			reads (s)
 		do
 			Result := across s as x all across s as y all x.item /= y.item implies not x.item.is_model_equal (y.item) end end
+		end
+
+	lemma_count (b: MML_BAG [G])
+			-- Defines number of elements in a constant bag.
+		note
+			status: lemma
+		require
+			bag_constant: b.is_constant (1)
+		local
+			x: G
+			b1: like b
+		do
+			if not b.is_empty then
+				x := b.domain.any_item
+				b1 := b / x
+				check across b.domain as y all y.item /= x implies b1 [y.item] = 1 end end
+				lemma_count (b1)
+				check b.domain = b1.domain & x end
+			end
+		ensure
+			same_count: b.count = b.domain.count
 		end
 
 invariant

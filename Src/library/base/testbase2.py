@@ -38,7 +38,13 @@ classes = [
   'V_ARRAY_ITERATOR',
   'V_ARRAYED_LIST',
   'V_ARRAYED_LIST_ITERATOR',
-  'V_ARRAY2'
+  'V_ARRAY2',
+  'V_LOCK',
+  'V_SET',
+  'V_SET_ITERATOR',
+  'V_HASHABLE',
+  'V_HASH_LOCK',
+  'V_HASH_SET'
 ]
 
 outfile_name = 'base2.out'

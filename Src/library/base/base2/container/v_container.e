@@ -110,6 +110,7 @@ feature -- Specification
 			-- Bag of elements.
 		note
 			status: ghost
+			guard: inv
 		attribute
 		end
 
