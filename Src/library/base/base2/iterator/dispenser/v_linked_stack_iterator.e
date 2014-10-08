@@ -36,7 +36,7 @@ feature {NONE} -- Initialization
 			modify (Current)
 		do
 			target := t
-			t.set_observers (t.observers & Current)
+			t.observers := t.observers & Current
 			iterator := it
 			check it.inv end
 		ensure

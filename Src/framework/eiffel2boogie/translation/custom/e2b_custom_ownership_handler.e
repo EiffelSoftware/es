@@ -19,11 +19,10 @@ feature -- Status report
 	is_handling_call (a_target_type: TYPE_A; a_feature: FEATURE_I): BOOLEAN
 			-- <Precursor>
 		do
-			Result := (a_feature.written_in = system.any_id and
-				(translation_mapping.builtin_any_functions.has (a_feature.feature_name) or
+			Result := (translation_mapping.builtin_any_functions.has (a_feature.feature_name) or
 				translation_mapping.builtin_any_procedures.has (a_feature.feature_name) or
 				translation_mapping.ghost_access.has (a_feature.feature_name) or
-				translation_mapping.ghost_setter.has (a_feature.feature_name)))
+				translation_mapping.ghost_setter.has (a_feature.feature_name))
 		end
 
 feature -- Basic operations

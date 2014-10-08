@@ -62,7 +62,7 @@ feature -- Translation: Signature
 			end
 
 				-- Add precondition
-			if helper.has_flat_precondition (current_feature, current_type) then
+			if helper.has_flat_precondition (current_feature) then
 				translation_pool.add_function_precondition_predicate (current_feature, current_type)
 			end
 		end

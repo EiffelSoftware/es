@@ -141,6 +141,17 @@ feature -- Basic operations
 
 			if not helper.is_class_logical (l_class) and not helper.is_class_array (l_class) then
 				translate_invariant_function
+
+				-- Add guards for built-in attributes (ANY versions)
+				-- (required to know the lower bound on guards of unknown types)
+				translation_pool.add_referenced_feature (system.any_type.base_class.feature_named_32 ("owns"), system.any_type)
+				translation_pool.add_referenced_feature (system.any_type.base_class.feature_named_32 ("subjects"), system.any_type)
+				translation_pool.add_referenced_feature (system.any_type.base_class.feature_named_32 ("observers"), system.any_type)
+
+				-- Add guards for built-in attributes
+				translation_pool.add_referenced_feature (l_class.feature_named_32 ("owns"), type)
+				translation_pool.add_referenced_feature (l_class.feature_named_32 ("subjects"), type)
+				translation_pool.add_referenced_feature (l_class.feature_named_32 ("observers"), type)
 			end
 		end
 
@@ -463,7 +474,7 @@ feature {NONE} -- Implementation
 		end
 
 	generate_invariant_axiom (a_generic_function, a_special_function: STRING)
-			-- Generate axioms that connect `a_generic_function' with `a_special_function' for `a_type'.
+			-- Generate axioms that connect `a_generic_function' with `a_special_function'.
 		local
 			l_forall: IV_FORALL
 			l_heap, l_current: IV_ENTITY
@@ -474,36 +485,10 @@ feature {NONE} -- Implementation
 			l_generic_call := factory.function_call (a_generic_function, << l_heap, l_current >>, types.bool)
 			l_special_call := factory.function_call (a_special_function, << l_heap, l_current >>, types.bool)
 
-				-- type_of(current) == type  ==>  generic_function(heap, current) == special_function(heap, current)
---			create l_forall.make (factory.implies_ (
---					factory.equal (
---						factory.type_of (l_current),
---						factory.type_value (type)),
---					factory.equal (l_generic_call, l_special_call)))
-			create l_forall.make (factory.implies_ (
-				factory.function_call ("attached_exact", << l_heap, l_current, factory.type_value (type) >>, types.bool),
-				factory.equal (l_generic_call, l_special_call)))
-			l_forall.add_bound_variable (l_heap)
-			l_forall.add_bound_variable (l_current)
-			l_forall.add_trigger (l_generic_call)
-
-			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
-
-				-- Inheritance axiom:
-				-- type_of(current) <: type  ==>  generic_function(heap, current) ==> special_function(heap, current)
---			create l_forall.make (factory.implies_ (
---					factory.sub_type (
---						factory.type_of (l_current),
---						factory.type_value (type)),
---					factory.implies_ (l_generic_call, l_special_call)))
-			create l_forall.make (factory.implies_ (
-					factory.function_call ("attached", << l_heap, l_current, factory.type_value (type) >>, types.bool),
-					factory.implies_ (l_generic_call, l_special_call)))
-			l_forall.add_bound_variable (l_heap)
-			l_forall.add_bound_variable (l_current)
-			l_forall.add_trigger (l_generic_call)
-
-			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
+			factory.add_dynamic_predicate_definition (
+				factory.function_call (a_generic_function, << l_heap, l_current >>, types.bool),
+				factory.function_call (a_special_function, << l_heap, l_current >>, types.bool),
+				type, l_heap, l_current, <<>>)
 		end
 
 	generate_model_query_definition (a_expr: IV_EXPRESSION; a_attr: FEATURE_I): BOOLEAN
@@ -555,11 +540,10 @@ feature {NONE} -- Implementation
 					fcall.arguments [1].same_expression (factory.heap_access (a_heap, a_current, l_field.name, types.field_content_type (l_field.type))) then
 					Result := fcall.arguments [2]
 				end
-			else
-				if attached {IV_BINARY_OPERATION} a_expr as binop and then
+			elseif attached {IV_BINARY_OPERATION} a_expr as binop and then
+					binop.operator ~ "==" and then
 					binop.left.same_expression (factory.heap_access (a_heap, a_current, l_field.name, types.field_content_type (l_field.type))) then
 					Result := binop.right
-				end
 			end
 		end
 

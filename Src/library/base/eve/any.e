@@ -576,10 +576,11 @@ feature -- Verification: ownership fields
 		do
 		end
 
-	frozen owns: MML_SET [ANY] assign set_owns
+	owns: MML_SET [ANY] assign set_owns
 			-- Owns set of this object.
 		note
 			status: ghost
+			guard: True
 		do
 		end
 
@@ -588,10 +589,11 @@ feature -- Verification: ownership fields
 		do
 		end
 
-	frozen subjects: MML_SET [ANY] assign set_subjects
+	subjects: MML_SET [ANY] assign set_subjects
 			-- Subjects set of this object.
 		note
 			status: ghost
+			guard: True
 		do
 		end
 
@@ -600,16 +602,25 @@ feature -- Verification: ownership fields
 		do
 		end
 
-	frozen observers: MML_SET [ANY] assign set_observers
+	observers: MML_SET [ANY] assign set_observers
 			-- Observers set of this object.
 		note
 			status: ghost
+			guard: in_observers
 		do
 		end
 
 	frozen set_observers (a: MML_SET [ANY])
 			-- Set observers set of this object.
 		do
+		end
+
+	in_observers (new_observers: like observers; o: ANY): BOOLEAN
+			-- Is `o' in `new_observers'? (Guard for `observers')
+		note
+			status: functional, ghost
+		do
+			Result := new_observers [o]
 		end
 
 feature -- Verification: auxiliary
@@ -637,6 +648,7 @@ feature -- Verification: auxiliary
 			status: lemma
 		require
 			equal_x: is_model_equal (x)
+			ys_exist: ys.non_void
 		do
 		ensure
 			x_in_ys_iff_current_in_ys: across ys as y some is_model_equal (y.item) end =

@@ -28,7 +28,8 @@ feature {NONE} -- Initialization
 		note
 			status: creator
 		do
-			create buckets.constant ({MML_SEQUENCE [G]}.empty_sequence, 10)
+			buckets := empty_buckets (default_capacity)
+			create buckets_.constant ({MML_SEQUENCE [G]}.empty_sequence, default_capacity)
 			lock := l
 			set_observers ([lock])
 		ensure
@@ -58,7 +59,7 @@ feature -- Search
 			b: MML_SEQUENCE [G]
 		do
 			check inv; lock.inv_only ("owns_items", "valid_buckets") end
-			b := buckets [index (v)]
+			b := buckets_ [index (v)]
 			Result := b.domain [index_of (b, v)]
 		end
 
@@ -69,7 +70,7 @@ feature -- Search
 			r: G
 		do
 			check inv; lock.inv_only ("owns_items", "valid_buckets", "no_duplicates") end
-			b := buckets [index (v)]
+			b := buckets_ [index (v)]
 			Result := b [index_of (b, v)]
 			v.lemma_transitive (Result, [set_item (v)])
 		end
@@ -105,9 +106,9 @@ feature -- Extension
 		do
 			check lock.inv_only ("owns_items", "valid_buckets") end
 			idx := index (v)
-			b := buckets [idx]
+			b := buckets_ [idx]
 			if not b.domain [index_of (b, v)] then
-				buckets := buckets.replaced_at (idx, b & v)
+				buckets_ := buckets_.replaced_at (idx, b & v)
 				set := set & v
 				count_ := count_ + 1
 				bag := bag & v
@@ -120,24 +121,29 @@ feature -- Extension
 			-- Remove all elements.
 		do
 			create set
-			create buckets.constant ({MML_SEQUENCE [G]}.empty_sequence, buckets.count)
+			create buckets_.constant ({MML_SEQUENCE [G]}.empty_sequence, buckets_.count)
 			create bag
 			count_ := 0
 		end
 
+feature {NONE} -- Performance parameters
+
+	default_capacity: INTEGER = 16
+			-- Default size of `buckets'.		
+
 feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 
-	buckets: MML_SEQUENCE [MML_SEQUENCE [G]]
-			-- Element storage.
+	buckets: V_ARRAY [V_LINKED_LIST [G]]
+		-- Element storage.
 		note
-			guard: inv
+			guard: is_lock_ref
 		attribute
 		end
 
 	count_: INTEGER
 			-- Number of elements.
 		note
-			guard: is_lock
+			guard: is_lock_int
 		attribute
 		end
 
@@ -146,6 +152,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 		note
 			status: functional
 		require
+			buckets_exist: buckets /= Void
 			reads (Current)
 		do
 			Result := buckets.count
@@ -202,7 +209,55 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			definition_not_found: not b.domain [Result] implies across 1 |..| b.count as j all not v.is_model_equal (b [j.item]) end
 		end
 
+	empty_buckets (n: INTEGER): V_ARRAY [V_LINKED_LIST [G]]
+			-- Array of `n' empty buckets.
+		note
+			status: impure
+		require
+			n_non_negative: n >= 0
+			modify ([])
+		local
+			i: INTEGER
+		do
+			create Result.make (1, n)
+			from
+				i := 1
+			invariant
+				1 <= i and i <= n + 1
+				Result.is_wrapped
+				Result.sequence.count = n
+				across 1 |..| (i - 1) as j all
+					Result.sequence [j.item].is_wrapped and then
+					Result.sequence [j.item].is_fresh and then
+					Result.sequence [j.item].sequence.is_empty
+				end
+				modify_model ("sequence", Result)
+			until
+				i > n
+			loop
+				Result [i] := create {V_LINKED_LIST [G]}
+				i := i + 1
+			end
+		ensure
+			wrapped: Result.is_wrapped
+			fresh: Result.is_fresh
+			lower: Result.lower_ = 1
+			count: Result.sequence.count = n
+			content: across 1 |..| Result.sequence.count as j all
+					Result.sequence [j.item].is_wrapped and then
+					Result.sequence [j.item].is_fresh and then
+					Result.sequence [j.item].sequence.is_empty
+				end
+		end
+
 feature -- Specification
+
+	buckets_: MML_SEQUENCE [MML_SEQUENCE [G]]
+			-- Abstract element storage.
+		note
+			guard: inv
+		attribute
+		end
 
 	lock: V_HASH_LOCK [G]
 			-- Helper object for keeping items consistent.
@@ -211,7 +266,14 @@ feature -- Specification
 		attribute
 		end
 
-	is_lock (new_count: INTEGER; o: ANY): BOOLEAN
+	is_lock_int (new: INTEGER; o: ANY): BOOLEAN
+		note
+			status: functional
+		do
+			Result := o = lock
+		end
+
+	is_lock_ref (new: ANY; o: ANY): BOOLEAN
 		note
 			status: functional
 		do
@@ -219,15 +281,24 @@ feature -- Specification
 		end
 
 invariant
+		-- Abstract state:
+	buckets_non_empty: not buckets_.is_empty
+	set_not_too_small: across 1 |..| buckets_.count as i all
+		across 1 |..| buckets_ [i.item].count as j all set [(buckets_ [i.item])[j.item]] end end
+	no_precise_duplicates: across 1 |..| buckets_.count as i all
+		across 1 |..| buckets_.count as j all
+			across 1 |..| buckets_ [i.item].count as k all
+				across 1 |..| buckets_ [j.item].count as l all
+					i.item /= j.item or k.item /= l.item implies (buckets_ [i.item])[k.item] /= (buckets_ [j.item])[l.item] end end end end
+		-- Concrete state:
 	count_definition: count_ = set.count
-	buckets_non_empty: not buckets.is_empty
-	set_not_too_small: across 1 |..| buckets.count as i all
-		across 1 |..| buckets [i.item].count as j all set [(buckets [i.item])[j.item]] end end
-	no_precise_duplicates: across 1 |..| buckets.count as i all
-		across 1 |..| buckets.count as j all
-			across 1 |..| buckets [i.item].count as k all
-				across 1 |..| buckets [j.item].count as l all
-					i.item /= j.item or k.item /= l.item implies (buckets [i.item])[k.item] /= (buckets [j.item])[l.item] end end end end
+	buckets_exist: buckets /= Void
+	buckets_owned: owns [buckets]
+	buckets_lower: buckets.lower_ = 1
+	all_buckets_exist: buckets.sequence.non_void
+	owns_definition: owns = create {MML_SET [ANY]}.singleton (buckets) + buckets.sequence.range
+	buckets_count: buckets_.count = buckets.sequence.count
+	buckets_content: across 1 |..| buckets_.count as i all buckets_ [i.item] = buckets.sequence [i.item].sequence end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

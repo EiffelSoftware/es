@@ -464,10 +464,37 @@ feature -- Ownership helpers
 			end
 		end
 
-	guard_for_attribute (a_feature: FEATURE_I): STRING_32
+	guards_for_attribute (a_feature: FEATURE_I): LINKED_LIST [TUPLE [str: STRING; origin: CLASS_C]]
 			-- Update guard for attribute `a_feature'.
+		local
+			g: STRING
+			c: CLASS_C
 		do
-			Result := string_feature_note_value (a_feature, "guard")
+			create Result.make
+			Result.compare_objects
+			across all_versions (a_feature) as ver loop
+				g := string_feature_note_value (ver.item, "guard")
+				c := ver.item.written_class
+				if g.is_empty then
+						-- No guard defined
+					if ver.item.assert_id_set = Void then
+							-- This is the original version: apply default
+						if boolean_class_note_value (c, "false_guards") then
+							Result.extend (["false", c])
+						else
+							Result.extend (["inv", c])
+						end
+					else
+							-- This is a redefinition: skip (equivalent to adding true)
+					end
+				else
+						-- Explicit guard: add to list
+					Result.extend (g, c)
+				end
+			end
+		ensure
+			non_empty: not Result.is_empty
+			each_non_empty: across Result as s all not s.item.str.is_empty end
 		end
 
 	attribute_from_string (a_name: STRING; a_type: CL_TYPE_A; a_origin_class: CLASS_C; a_context_feature: FEATURE_I; a_context_line_number: INTEGER): FEATURE_I
@@ -502,6 +529,14 @@ feature -- Ownership helpers
 					types.field (types.for_class_type (l_type)))
 				translation_pool.add_referenced_feature (a_feature, a_context_type)
 			end
+		end
+
+	is_built_in_attribute (a_feature: FEATURE_I): BOOLEAN
+			-- Does `a_feature' represent on the of the built-in attributes?
+			-- (Which means that it is not actually an attribute, but should be).
+		do
+			-- ToDo: take possible renaming into account?
+			Result := translation_mapping.ghost_access.has (a_feature.feature_name_32)
 		end
 
 feature -- Model helpers
@@ -761,7 +796,7 @@ feature -- Eiffel helpers
 
 feature -- Contract helpers
 
-	has_flat_precondition (a_feature: FEATURE_I; a_type: CL_TYPE_A): BOOLEAN
+	has_flat_precondition (a_feature: FEATURE_I): BOOLEAN
 			-- Could `a_feature' have a precondition (immediate or inherited)?
 		do
 			Result := a_feature.has_precondition or a_feature.assert_id_set /= Void

@@ -288,10 +288,15 @@ feature -- Visitors
 			-- <Precursor>
 		local
 			l_feature: FEATURE_I
+			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
 			l_feature := helper.feature_for_call_access (a_node, current_target_type)
-
-			process_attribute_call (l_feature)
+			l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
+			if l_handler /= Void then
+				process_special_feature_call (l_handler, l_feature, a_node.parameters)
+			else
+				process_attribute_call (l_feature)
+			end
 		end
 
 	process_binary (a_node: BINARY_B; a_operator: STRING)
@@ -617,7 +622,7 @@ feature -- Visitors
 			check feature_valid: l_feature /= Void end
 			l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
 			if l_handler /= Void then
-				process_special_routine_call (l_handler, l_feature, a_node.parameters)
+				process_special_feature_call (l_handler, l_feature, a_node.parameters)
 			else
 				process_routine_call (l_feature, a_node.parameters, False)
 			end
@@ -635,22 +640,22 @@ feature -- Visitors
 			l_feature := helper.feature_for_call_access (a_node, current_target_type)
 			check feature_valid: l_feature /= Void end
 
-			if l_feature.is_attribute then
-				process_attribute_call (l_feature)
-			elseif l_feature.is_constant then
-				l_constant ?= l_feature
-				check l_constant /= Void end
-				process_constant_call (l_constant)
-			elseif l_feature.is_routine then
-				l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
-				if l_handler /= Void then
-					process_special_routine_call (l_handler, l_feature, a_node.parameters)
-				else
-					process_routine_call (l_feature, a_node.parameters, False)
-				end
+			l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
+			if l_handler /= Void then
+				process_special_feature_call (l_handler, l_feature, a_node.parameters)
 			else
-					-- TODO: what else is there?
-				check False end
+				if l_feature.is_attribute then
+					process_attribute_call (l_feature)
+				elseif l_feature.is_constant then
+					l_constant ?= l_feature
+					check l_constant /= Void end
+					process_constant_call (l_constant)
+				elseif l_feature.is_routine then
+					process_routine_call (l_feature, a_node.parameters, False)
+				else
+						-- TODO: what else is there?
+					check False end
+				end
 			end
 		end
 
@@ -1074,7 +1079,7 @@ feature -- Translation
 		deferred
 		end
 
-	process_special_routine_call (a_handler: E2B_CUSTOM_CALL_HANDLER; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
+	process_special_feature_call (a_handler: E2B_CUSTOM_CALL_HANDLER; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
 			-- Process feature call with custom handler.
 		require
 			not_attribute: a_feature.is_routine
@@ -1228,7 +1233,7 @@ feature -- Translation
 			l_fname := name_translator.boogie_function_for_feature (a_feature, current_target_type)
 				-- Add check
 				-- Note: here we assume that there is no default precondition!
-			if helper.has_flat_precondition (a_feature, current_target_type) then
+			if helper.has_flat_precondition (a_feature) then
 				create l_pre_call.make (name_translator.boogie_function_precondition (l_fname), types.bool)
 				across a_fcall.arguments as args loop
 					l_pre_call.add_argument (args.item)

@@ -213,7 +213,7 @@ feature {NONE} -- Implementation
 			-- Add signature and implementation of feature `a_feature' of `a_context_type'.
 			-- If `a_referenced' is true, then only the signature will be created.
 		do
-			if a_feature.is_attribute then
+			if a_feature.is_attribute or helper.is_built_in_attribute (a_feature) then
 				add_attribute (a_feature, a_context_type)
 			elseif a_feature.is_routine then
 				if helper.is_feature_logical (a_feature) then

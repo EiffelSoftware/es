@@ -21,7 +21,7 @@ feature {NONE} -- Initialization
 			-- Initialize translator.
 		do
 			translation_pool.reset
-				-- Add types used by every system
+				-- Add types and features used by every system
 			translation_pool.add_type (helper.set_any_type)
 		end
 

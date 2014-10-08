@@ -75,9 +75,6 @@ feature -- Validity error messages
 	logical_no_across_conversion: STRING_32
 		do Result := "The logical class is used in quantification but does not map its new_cursor feature to a set." end
 
-	guard_feature_not_functional: STRING_32
-		do Result := "Update guard has to be functional." end
-
 	guard_feature_not_predicate: STRING_32
 		do Result := "Update guard has to be of type BOOLEAN." end
 

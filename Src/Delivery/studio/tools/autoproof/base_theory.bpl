@@ -55,7 +55,7 @@ function is_frozen(t: Type): bool;
 
 // Typing axioms
 axiom (forall t: Type :: { ANY <: t } ANY <: t <==> t == ANY);
-// axiom (forall t: Type :: t <: ANY); // All types inherit from ANY.
+axiom (forall t: Type :: t <: ANY); // All types inherit from ANY.
 // axiom (forall t: Type :: NONE <: t); // NONE inherits from all types.
 // axiom (forall h: HeapType :: IsHeap(h) ==> h[Void, allocated]); // Void is always allocated.
 axiom (forall h: HeapType, f: Field ref, o: ref :: IsHeap(h) && h[o, allocated] ==> h[h[o, f], allocated]); // All reference fields are allocated.
@@ -79,16 +79,6 @@ axiom (forall heap: HeapType, o: ref :: { heap[o, owner] } IsHeap(heap) && o != 
 axiom (forall heap: HeapType, o, o': ref :: { heap[o, owns][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, owns][o'] ==> heap[o', allocated]);
 axiom (forall heap: HeapType, o, o': ref :: { heap[o, subjects][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, subjects][o'] ==> heap[o', allocated]);
 axiom (forall heap: HeapType, o, o': ref :: { heap[o, observers][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, observers][o'] ==> heap[o', allocated]);
-
-// Guards for built-in attributes
-axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, owns, v, o) } 
-  !guard(heap, current, owns, v, o)); // updating owns requires open observers
-// axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, owns, v, o) } 
-	// guard(heap, current, owns, v, o) <==> user_inv(heap[current, owns := v], o)); // default guard for owns	
-axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, subjects, v, o) } 
-  guard(heap, current, subjects, v, o)); // no dependence on subjects
-axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, observers, v, o) } 
-  guard(heap, current, observers, v, o) <==> v[o]); // o's invariant cannot be violated as long as it is still in its subject's observers
 
 // Is o open in h? (not closed and free)
 function is_open(h: HeapType, o: ref): bool {
@@ -265,14 +255,14 @@ function guard<T>(heap: HeapType, current: ref, f: Field T, v: T, o: ref): bool;
 // All subjects know current for an observer
 function {: inline } admissibility2 (heap: HeapType, current: ref): bool
 { 
-  (forall s: ref :: heap[current, subjects][s] ==> heap[s, observers][current]) 
+  (forall s: ref :: heap[current, subjects][s] && s != Void ==> heap[s, observers][current]) 
 }
 
 // Invariant cannot be invalidated by an update that conform to its guard
 function {: inline } admissibility3 (heap: HeapType, current: ref): bool
 {
   (forall<T> s: ref, f: Field T, v: T ::
-    heap[current, subjects][s] && s != current && IsHeap(heap[s, f := v]) && guard(heap, s, f, v, current) ==>
+    heap[current, subjects][s] && s != current && s != Void && IsHeap(heap[s, f := v]) && guard(heap, s, f, v, current) ==>
       user_inv(heap[s, f := v], current))
 }
 

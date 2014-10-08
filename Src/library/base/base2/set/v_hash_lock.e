@@ -26,8 +26,8 @@ feature -- Access
 invariant
 	valid_buckets: across sets as s all
 		across s.item.set as x all
-			s.item.buckets.count > 0 and then
-			s.item.buckets [s.item.bucket_index (x.item.hash_code_, s.item.buckets.count)].has (x.item)
+			s.item.buckets_.count > 0 and then
+			s.item.buckets_ [s.item.bucket_index (x.item.hash_code_, s.item.buckets_.count)].has (x.item)
 			end end
 
 note

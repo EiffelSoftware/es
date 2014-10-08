@@ -404,6 +404,45 @@ feature -- Framing
 			end
 		end
 
+feature -- Axioms
+
+	add_dynamic_predicate_definition (a_call, a_body: IV_EXPRESSION; a_type: CL_TYPE_A; a_heap, a_current: IV_ENTITY; a_extra_vars: ARRAY [IV_ENTITY])
+			-- Add axioms that define predicate `a_call' as `a_body' if the dynamic type of `a_current' is `a_type',
+			-- and state that this definition can only be strengthened in descendants.
+		local
+			l_forall: IV_FORALL
+		do
+				-- type_of(current) == type  ==> call(heap, current) == body
+			create l_forall.make (implies_ (
+				function_call ("attached_exact", << a_heap, a_current, type_value (a_type) >>, types.bool),
+				equiv (a_call, a_body)))
+			l_forall.add_bound_variable (a_heap)
+			l_forall.add_bound_variable (a_current)
+			across a_extra_vars as v loop
+				l_forall.add_bound_variable (v.item)
+			end
+			l_forall.add_trigger (a_call)
+
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
+
+				-- If the definition is trivially true, no point stating that it is only strengthened.
+			if not a_body.is_true then
+					-- Inheritance axiom:
+					-- type_of(current) <: type  ==> call(heap, current) ==> body
+				create l_forall.make (implies_ (
+						function_call ("attached", << a_heap, a_current, type_value (a_type) >>, types.bool),
+						implies_ (a_call, a_body)))
+				l_forall.add_bound_variable (a_heap)
+				l_forall.add_bound_variable (a_current)
+				across a_extra_vars as v loop
+					l_forall.add_bound_variable (v.item)
+				end
+				l_forall.add_trigger (a_call)
+
+				boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
+			end
+		end
+
 feature -- Miscellaneous
 
 	trace (a_text: STRING): IV_STATEMENT
