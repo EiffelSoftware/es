@@ -17,8 +17,8 @@ inherit
 
 feature
 
-	print_verification_result (r: E2B_RESULT)
-			-- Print `r' in HTML format.
+	print_header
+			-- Print header of output.
 		do
 			open_style ("table", table_style)
 
@@ -35,8 +35,19 @@ feature
 			close ("th")
 			close ("tr")
 			close ("thead")
-
 			open ("tbody")
+		end
+
+	print_footer
+			-- Print footer of output.
+		do
+			close ("tbody")
+			close ("table")
+		end
+
+	print_verification_result (r: E2B_RESULT)
+			-- Print `r' in HTML format.
+		do
 			across r.verification_results as i loop
 				if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
 					if l_success.original_errors /= Void and then not l_success.original_errors.is_empty then
@@ -59,9 +70,6 @@ feature
 				end
 				close ("tr")
 			end
-			close ("tbody")
-
-			close ("table")
 		end
 
 	print_successful_verification (a_success: E2B_SUCCESSFUL_VERIFICATION)

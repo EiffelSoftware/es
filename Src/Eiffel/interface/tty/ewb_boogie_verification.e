@@ -86,6 +86,9 @@ feature -- Execution
 			-- <Precursor>
 		local
 			html_writer: E2B_HTML_OUTPUT
+			l_html: BOOLEAN
+			l_measure: BOOLEAN
+			l_start, l_duration: NATURAL_64
 		do
 			create autoproof.make
 				-- Load options
@@ -147,18 +150,60 @@ feature -- Execution
 				options.set_print_time (False)
 			end
 
+			if user_options.has ("-bulk") then
+				options.set_bulk_verification_enabled (True)
+			elseif user_options.has ("-forked") then
+				options.set_bulk_verification_enabled (False)
+			end
+
+
 			if selection.is_empty then
 				load_universe
 			else
 				load_selection
 			end
-			if user_options.has ("-html") then
+
+			l_measure := user_options.has ("-measure")
+
+			l_html := user_options.has ("-html")
+			if l_html then
 				create html_writer
+				html_writer.print_header
 				autoproof.add_notification (agent html_writer.print_verification_result (?))
 			else
 				autoproof.add_notification (agent print_result (?))
 			end
-			autoproof.verify
+			if options.is_bulk_verification_enabled or l_measure then
+				l_start := current_time_millis
+				autoproof.verify
+				l_duration := current_time_millis - l_start
+			else
+				autoproof.verify_forked
+			end
+			if l_measure then
+			end
+			if l_html then
+				html_writer.print_footer
+			end
+
+			if l_measure then
+				if l_html then
+					output_window.add ("<p>Bulk time: " + l_duration.out + "</p>")
+				else
+					output_window.add ("Bulk time: " + l_duration.out + "%N")
+				end
+
+				autoproof.clear_notifications
+				l_start := current_time_millis
+				autoproof.verify_forked
+				l_duration := current_time_millis - l_start
+				if l_html then
+					output_window.add ("<p>Forked time: " + l_duration.out + "</p>")
+				else
+					output_window.add ("Forked time: " + l_duration.out + "%N")
+				end
+			end
+
 		end
 
 	option_argument (a_option: STRING; a_default: INTEGER): INTEGER
@@ -401,6 +446,17 @@ feature {NONE} -- Implementation
 			-- Format for verfication times.
 		once
 			create Result.make (4, 2)
+		end
+
+	current_time_millis: NATURAL_64
+		external
+			"C inline use <time.h>, <sys/timeb.h>"
+		alias
+			"[
+				struct timeb t;
+				ftime(&t);
+				return (unsigned long long int)time(NULL) * 1000 + t.millitm;
+			]"
 		end
 
 note

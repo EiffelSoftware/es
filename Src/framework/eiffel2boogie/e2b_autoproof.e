@@ -67,6 +67,12 @@ feature -- Element change
 			notification_agents.extend (a_agent)
 		end
 
+	clear_notifications
+			-- Remove all notification agents.
+		do
+			notification_agents.wipe_out
+		end
+
 feature -- Basic operations
 
 	reset
