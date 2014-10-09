@@ -5345,6 +5345,7 @@ Src/web/eiffel-lang.org/themes/eiffel-lang/res/scss/base/base-reset.scss -text
 Src/web/eiffel-lang.org/themes/eiffel-lang/res/scss/markup-mixins.scss -text
 Src/web/eiffel-lang.org/themes/eiffel-lang/res/scss/variables.scss -text
 Src/web/eiffel-lang.org/themes/eiffel-lang/theme.info -text
+Src/web/eiffel_download/IIRF.ini -text
 Src/web/eiffel_download/download_tables.sql -text
 Src/web/eiffel_download/ewf_download.ecf svneol=native#text/xml
 Src/web/eiffel_download/site/config/downloads_configuration.xml svneol=native#text/xml
