@@ -204,6 +204,11 @@ feature {NONE} -- Initialization
 			l_col.set_title (ca_names.description_column)
 			l_col.set_width (500)
 
+			l_col := a_widget.column (5)  	-- Fix column. Replace with constant INTEGER called 'fix_column' and receive a
+											--complimentary segmentation fault! Also tried changing its name, no luck.
+			l_col.set_title (ca_names.fixes_column)
+			l_col.set_width (50)
+
 			l_col := a_widget.column (class_column)
 			l_col.set_title (ca_names.class_column)
 			l_col.set_width (120)
@@ -232,7 +237,9 @@ feature {NONE} -- Initialization
 					a_widget.column (class_column),
 					a_widget.column (location_column),
 					a_widget.column (description_column),
-					a_widget.column (rule_id_column)
+					a_widget.column (rule_id_column),
+					a_widget.column (5) 	-- Fix column. Replace with constant INTEGER called 'fix_column' and receive a
+											--complimentary segmentation fault! Also tried changing its name, no luck.
 				>>)
 		end
 
@@ -574,9 +581,17 @@ feature {NONE} -- Basic operations
 				create l_message_gen.make
 				l_message_gen.add (l_viol.title)
 				l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
-				l_editor_item.pointer_button_release_actions.extend (agent show_fixes_context_menu (l_viol.data.fixes, a_row, ?, ?, ?, ?, ?, ?, ?, ?))
 				a_row.set_height (l_editor_item.required_height_for_text_and_component)
 				a_row.set_item (description_column, l_editor_item)
+
+					-- Fix
+				if not l_viol.data.fixes.is_empty then
+					create l_label.make_with_text ("Fix me!")
+					l_label.align_text_center
+					l_label.pointer_button_release_actions.extend (agent show_fixes_context_menu (l_viol.data.fixes, a_row, ?, ?, ?, ?, ?, ?, ?, ?))
+					a_row.set_item(5, l_label) 	-- Fix column. Replace with constant INTEGER called 'fix_column' and receive a
+											   	--complimentary segmentation fault! Also tried changing its name, no luck.
+				end
 
 				create l_label.make_with_text (l_viol.rule_id)
 				a_row.set_item (rule_id_column, l_label)
@@ -618,15 +633,15 @@ feature {NONE} -- Basic operations
 
 	show_fixes_context_menu (a_fixes: attached LINKED_LIST [CA_FIX]; a_row: EV_GRID_ROW; x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER)
 			-- Show a context menu for data row `a_row' where the user can choose from fixes in `a_fixes'.
-			-- If `button' is not set to `3' (right mouse button) then no context menu will be shown. All
+			-- If `button' is not set to `1' (left mouse button) then no context menu will be shown. All
 			-- the other arguments are required by the mouse button event and are ignored.
 		local
 			l_menu: EV_MENU
 			l_item: EV_MENU_ITEM
 			l_fix_executor: ES_CA_FIX_EXECUTOR
 		do
-				-- Only process right clicks (`button = 3').
-			if button = 3 and then not a_fixes.is_empty then
+				-- Only process left clicks (`button = 1').
+			if button = 1 then
 				create l_menu
 
 				across a_fixes as l_fixes loop
@@ -884,9 +899,10 @@ feature {NONE} -- Constants
 	class_column: INTEGER = 2
 	location_column: INTEGER = 3
 	description_column: INTEGER = 4
-	rule_id_column: INTEGER = 5
-	severity_score_column: INTEGER = 6
-	last_column: INTEGER = 6
+	fix_column: INTEGER = 5
+	rule_id_column: INTEGER = 6
+	severity_score_column: INTEGER = 7
+	last_column: INTEGER = 7
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

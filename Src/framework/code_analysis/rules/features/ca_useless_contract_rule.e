@@ -27,9 +27,10 @@ create
 feature {NONE} -- Initialization
 
 	make
+		local
+			l_conf: CONF_OPTION
 		do
 			make_with_defaults
-			project_setting_void_safety := "Complete" -- TODO: Find the actual setting and load it here or later.
 			create void_checked_arguments.make
 		end
 
@@ -64,7 +65,7 @@ feature {NONE} -- Implementation
 
 	pre_process_feature (a_feature: attached FEATURE_AS)
 		do
-			if project_setting_void_safety.is_equal ("Complete") then
+			if not is_project_setting_void_safety_complete then
 				if
 					attached {ROUTINE_AS} a_feature.body.content as l_routine
 					and then attached {REQUIRE_AS} l_routine.precondition as l_precondition
@@ -95,9 +96,16 @@ feature {NONE} -- Implementation
 					attached {VOID_AS} l_bin.right
 					and then attached {EXPR_CALL_AS} l_bin.left as l_expr_call
 					and then attached {ACCESS_ASSERT_AS} l_expr_call.call as l_access_assert
-					and then attached {ID_AS} l_access_assert.feature_name as l_id
+					and then attached {ID_AS} l_access_assert.feature_name as l_id_left
 				then
-					void_checked_arguments.extend(l_id.index)
+					void_checked_arguments.extend(l_id_left.index)
+				elseif
+					attached {VOID_AS} l_bin.left
+					and then attached {EXPR_CALL_AS} l_bin.right as l_expr_call
+					and then attached {ACCESS_ASSERT_AS} l_expr_call.call as l_access_assert
+					and then attached {ID_AS} l_access_assert.feature_name as l_id_right
+				then
+					void_checked_arguments.extend(l_id_right.index)
 				end
 			end
 
@@ -140,6 +148,13 @@ feature {NONE} -- Implementation
 
 	void_checked_arguments: LINKED_LIST[INTEGER]
 
-	project_setting_void_safety: STRING -- TODO: Find the actual setting.
+	is_project_setting_void_safety_complete: BOOLEAN
+			-- Is the project's setting for void safety set to "Complete"?
+		local
+			l_conf: CONF_OPTION
+		once
+			l_conf := current_context.universe.target.options
+			Result := l_conf.void_safety = l_conf.void_safety_index_all
+		end
 
 end

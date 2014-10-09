@@ -14,10 +14,6 @@ note
 class
 	CA_COMMENT_NOT_WELL_PHRASED_RULE
 
-	-- Solution:
-	-- For feature clause comments: Go through LEAF_AS list and find FEATURE_CLAUSE_AS + 1 check
-	-- if BREAK_AS and you have a comment in there then check that comment.
-
 inherit
 	CA_STANDARD_RULE
 

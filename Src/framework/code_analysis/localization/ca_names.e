@@ -779,6 +779,9 @@ feature -- GUI
 	rule_id_column: STRING_32
 		do Result := translation_in_context ("Rule ID", once "code_analyzer.column") end
 
+	fixes_column: STRING_32
+		do Result := translation_in_context ("Fix", once "code_analyzer.column") end
+
 	severity_score_column: STRING_32
 		do Result := translation_in_context ("Severity Score", once "code_analyzer.column") end
 
