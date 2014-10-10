@@ -1073,6 +1073,7 @@ test 	create-generic-remove-generic-inheritance incr427 tcf fail incrementality 
 test	config-remove-library-indirectly	incr428 tcf fail incrementality config
 test	ececil-undefined-symbol-4	incr429	tcf fail incrementality
 test	qat-vwce-sneak			incr430	tcf fail incrementality anchored_type conditional expression
+test	unique-recompile-crash	incr431	tcf fail incrementality
 
 
 -- Melting
@@ -1175,6 +1176,7 @@ test	melted-special-creation-crash-2	melt102  tcf pass melting execution special
 test	melted-on-character-32	melt103  tcf fail used_to_pass melting execution
 test	melted-address-expression	melt104  tcf pass melting execution
 test	melted-address-current	melt105  tcf pass melting execution
+test	object-test-on-expanded-crash melt106  tcf fail melting execution object_test expanded
 
 -- Freezing
 
@@ -2819,6 +2821,7 @@ test	qualified-anchor-expansion-7	anchor083 tcf pass anchored_type
 test	qualified-anchor-expansion-8	anchor084 tcf pass anchored_type
 test	qualified-anchor-expansion-9	anchor085 tcf pass anchored_type
 test	qat-inference-crash		anchor086 tcf pass anchored_type inference
+test	qat-cycle-in-generic		anchor087 tcf manual anchored_type formal generic validity
 
 -- Type inference
 test	inference-single-lower-bound	inference001 tcf pass used_to_pass inference

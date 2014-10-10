@@ -6112,15 +6112,11 @@ Src/web/eiffel-lang.org/themes/eiffel-lang/res/scss/base/base-reset.scss -text
 Src/web/eiffel-lang.org/themes/eiffel-lang/res/scss/markup-mixins.scss -text
 Src/web/eiffel-lang.org/themes/eiffel-lang/res/scss/variables.scss -text
 Src/web/eiffel-lang.org/themes/eiffel-lang/theme.info -text
-Src/web/eiffel_download/New[!!-~]SQL.text -text
-Src/web/eiffel_download/Readme.md -text
-Src/web/eiffel_download/download.ini -text
+Src/web/eiffel_download/IIRF.ini -text
+Src/web/eiffel_download/download_tables.sql -text
 Src/web/eiffel_download/ewf_download.ecf svneol=native#text/xml
-Src/web/eiffel_download/site/config/application_configuration.json -text
-Src/web/eiffel_download/site/config/downloads_configuration.json -text
 Src/web/eiffel_download/site/config/downloads_configuration.xml svneol=native#text/xml
-Src/web/eiffel_download/site/www/static/css/download.css -text
-Src/web/eiffel_download/site/www/static/css/responsive_select.css -text
+Src/web/eiffel_download/sp_download_script.sql -text
 Src/web/support/api/IIRF.ini -text
 Src/web/support/api/ecf-target-any_connector -text
 Src/web/support/api/ecf-target-connector -text
@@ -7011,6 +7007,7 @@ eweasel/tests/incr379/Ace_rev2 -text
 eweasel/tests/incr380/Ace_rev2 -text
 eweasel/tests/incr381/Ace_rev2 -text
 eweasel/tests/incr428/Ace_rev2 -text
+eweasel/tests/incr431/Ace svneol=native#text/xml
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text
@@ -7113,6 +7110,7 @@ eweasel/tests/melt072/notes -text
 eweasel/tests/melt073/notes -text
 eweasel/tests/melt103/Ace svneol=native#text/xml
 eweasel/tests/melt104/Ace svneol=native#text/xml
+eweasel/tests/melt106/Ace svneol=native#text/xml
 eweasel/tests/once001/Ace -text
 eweasel/tests/once004/Ace -text
 eweasel/tests/once005/Ace -text

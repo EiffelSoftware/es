@@ -191,7 +191,7 @@ doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>None since initialized here in `main.c' and updated once in `update' from `update.c'.</synchronization>
 doc:	</attribute>
 */
-rt_public struct cnode *esystem;			/* Eiffel system */
+rt_public const struct cnode *esystem;			/* Eiffel system */
 
 /*
 doc:	<attribute name="eif_environ" return_type="EIF_NATIVE_CHAR **" export="public">
@@ -699,8 +699,9 @@ rt_public void eif_alloc_init(void)
 			gs_limit = GS_LIMIT;	/* RT default setting. */
 		}
 	}
+	eif_gs_limit = gs_limit;
 		/* Reasonable gs_limit. */
-	eif_gs_limit = (gs_limit > GS_FLOATMARK ? GS_FLOATMARK : gs_limit);	
+	eif_gs_limit = (eif_gs_limit > GS_FLOATMARK ? GS_FLOATMARK : eif_gs_limit);	
 
 #endif /* ISE GC */
 

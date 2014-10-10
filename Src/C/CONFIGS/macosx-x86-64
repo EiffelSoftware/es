@@ -197,7 +197,7 @@ mtcppflags="$cppflags -DEIF_THREADS -DEIF_POSIX_THREADS"
 optimize="-O3"
 voidflags='15'
 #Check value for next 1
-warning_level='-Wall -Wparentheses-equality'
+warning_level='-Wall -Wextra -Wno-unused-parameter -pedantic -std=c99'
 wkoptimize="-O0"
 
 #Makefiles
@@ -229,7 +229,7 @@ mtlibs="$libs -lpthread"
 mt_prefix='mt'
 mv='/bin/mv'
 prefix='lib'
-ranlib='ar ts'
+ranlib=':'
 shared_prefix='lib'
 shared_suffix='.dylib'
 shared_rt_suffix='.dylib'

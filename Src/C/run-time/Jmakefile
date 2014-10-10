@@ -17,9 +17,6 @@ LIB_MTIPC_ARCH = $(LIB_SHARED)/$(LIB_MTIPCNAME)
 EWB_PROTO_OBJ = $(TOP)/ipc/ewb/wewb_proto.o
 MTEWB_PROTO_OBJ = $(TOP)/ipc/ewb/MTwewb_proto.o
 
-SHAREDLINK=g++
-LDSHAREDFLAGS=-shared -o
-
 IDRS_OBJ = $(TOP)/idrs/idrs.o
 MTIDRS_OBJ = $(TOP)/idrs/MTidrs.o
 NETWORK_OBJ = $(TOP)/ipc/app/network.o
@@ -199,13 +196,13 @@ ShellScriptLongTarget(eif_size_h,eif_size.h)
 AddSource($(LSRC) $(WADD) $(MTADD))
 
 CustomLibraryTarget(mtfinalized,$(MT_LOBJ))
-CustomLibraryTarget(mtqsfinalized,$(MT_QS_LOBJ))
+/* Uncomment when new SCOOP run-time compiles with old C++: CustomLibraryTarget(mtqsfinalized,$(MT_QS_LOBJ)) */
 CustomLibraryTarget(mtwkbench,$(MT_WOBJ))
 CustomLibraryTarget(finalized,$(LOBJ))
 CustomLibraryTarget(wkbench,$(WOBJ))
 
 CustomMTSharedLibraryTarget(mtfinalized,$(MT_LOBJ))
-CustomMTSharedLibraryTarget(mtqsfinalized,$(MT_QS_WOBJ))
+/* Uncomment when new SCOOP run-time compiles with old C++: CustomMTSharedLibraryTarget(mtqsfinalized,$(MT_QS_WOBJ)) */
 CustomMTSharedLibraryTarget(mtwkbench,$(MT_WOBJ))
 CustomSharedLibraryTarget(finalized,$(LOBJ))
 CustomSharedLibraryTarget(wkbench,$(WOBJ))

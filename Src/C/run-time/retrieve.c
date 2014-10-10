@@ -781,7 +781,7 @@ rt_private void set_mismatch_information (
 	EIF_TYPE_INDEX new_dtype = Dtype (object);
 	EIF_TYPE_INDEX new_dftype = Dftype (object);
 	type_descriptor *conv = type_description_for_new (conversions, new_dtype);
-	char *l_new_version = NULL, *l_old_version = NULL;
+	const char *l_new_version = NULL, *l_old_version = NULL;
 	uint32 i;
 
 	REQUIRE ("Values in special", HEADER (values)->ov_flags & EO_SPEC);
@@ -1185,6 +1185,7 @@ rt_shared EIF_REFERENCE ise_compiler_retrieve (EIF_INTEGER f_desc, EIF_INTEGER a
 	EIF_REFERENCE retrieved = (EIF_REFERENCE) 0;
 	char rt_type = (char) 0;
 	char l_store_properties = (char) 0;
+	int l_bytes_read;
 
 	rt_kind = BASIC_STORE;
 	r_fides = f_desc;
@@ -1206,11 +1207,13 @@ rt_shared EIF_REFERENCE ise_compiler_retrieve (EIF_INTEGER f_desc, EIF_INTEGER a
 	nb_recorded = 0;
 
 	/* Read the kind of stored hierachy */
-	if (char_read(&rt_type, sizeof (char)) < sizeof (char)) {
+	l_bytes_read = char_read(&rt_type, sizeof (char));
+	if ((l_bytes_read < 0) || ((size_t) l_bytes_read != sizeof(char))) {
 		eise_io("Retrieve: unable to read type of storable.");
 	}
 	CHECK ("Valid basic storable type", rt_type == BASIC_STORE_6_6);
-	if (char_read(&l_store_properties, sizeof (char)) < (int) sizeof (char)) {
+	l_bytes_read = char_read(&l_store_properties, sizeof (char));
+	if ((l_bytes_read < 0) || ((size_t) l_bytes_read != sizeof (char))) {
 		eise_io("Retrieve: unable to read properties of storable.");
 	}
 	rt_kind_properties = l_store_properties;
@@ -1439,7 +1442,7 @@ rt_private uint32 special_generic_type (EIF_TYPE_INDEX dtype)
 	EIF_TYPE_INDEX *dynamic_types;
 	uint32 *patterns;
 	int nb_gen;
-	char *vis_name = System (dtype).cn_generator;
+	const char *vis_name = System (dtype).cn_generator;
 	struct cecil_info *info;
 
 		/* Special cannot be expanded, thus we only look in `egc_ce_type'. */
@@ -2448,7 +2451,8 @@ rt_private void read_header(void)
 	uint32 nb_gen, l_length;
 	size_t bsize = 1024;
 	char vis_name[512];
-	char *l_storable_version, *l_new_storable_version;
+	char *l_storable_version;
+   	const char *l_new_storable_version;
 	char * temp_buf;
 	jmp_buf exenv;
 	RTYD;
@@ -2854,13 +2858,13 @@ rt_shared void print_object_summary (
 /*
 doc:	<routine name="old_attribute_type_matched" export="private">
 doc:		<summary>Find out if `gtype' and `atype' corresponds to the same type. This is similar to `attribute_type_matched' except this one takes care of storable versions that are strictly less than INDEPENDENT_STORE_5_5.</summary>
-doc:		<param name="gtype" type="EIF_TYPE_INDEX **">Type array for attribute defined in retrieving system.</param>
-doc:		<param name="atype" type="EIF_TYPE_INDEX **">Type array for attribute defined in storing system (here it uses the encoding for storable versions that are strictly less than INDEPENDENT_STORE_5_5.</param>
+doc:		<param name="gtype" type="const EIF_TYPE_INDEX **">Type array for attribute defined in retrieving system.</param>
+doc:		<param name="atype" type="const EIF_TYPE_INDEX **">Type array for attribute defined in storing system (here it uses the encoding for storable versions that are strictly less than INDEPENDENT_STORE_5_5.</param>
 doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>GC mutex</synchronization>
 doc:	</routine>
 */
-rt_private int old_attribute_type_matched (EIF_TYPE_INDEX **gtype, EIF_TYPE_INDEX **atype)
+rt_private int old_attribute_type_matched (const EIF_TYPE_INDEX **gtype, const EIF_TYPE_INDEX **atype)
 {
 #ifdef EIF_ASSERTIONS
 	RT_GET_CONTEXT
@@ -2933,7 +2937,7 @@ rt_private int old_attribute_type_matched (EIF_TYPE_INDEX **gtype, EIF_TYPE_INDE
 	return result;
 }
 
-rt_private int attribute_type_matched (type_descriptor *context_type, rt_uint_ptr att_index, EIF_TYPE_INDEX **gtype, EIF_TYPE_INDEX **atype, int level)
+rt_private int attribute_type_matched (type_descriptor *context_type, rt_uint_ptr att_index, const EIF_TYPE_INDEX **gtype, const EIF_TYPE_INDEX **atype, int level)
 {
 	RT_GET_CONTEXT
 	int result = 1;
@@ -3057,7 +3061,7 @@ rt_private int attribute_type_matched (type_descriptor *context_type, rt_uint_pt
 	return result;
 }
 
-rt_private int attribute_types_matched (type_descriptor *context_type, rt_uint_ptr att_index, EIF_TYPE_INDEX *gtypes, EIF_TYPE_INDEX *atypes)
+rt_private int attribute_types_matched (type_descriptor *context_type, rt_uint_ptr att_index, const EIF_TYPE_INDEX *gtypes, const EIF_TYPE_INDEX *atypes)
 {
 	RT_GET_CONTEXT
 	int result;
@@ -3488,7 +3492,8 @@ rt_private int map_type (type_descriptor *conv, int *unresolved)
 {
 	RT_GET_CONTEXT
 	int result = 0;
-	char *l_storable_version, *l_new_storable_version;
+	char *l_storable_version;
+	const char *l_new_storable_version;
 	char *name = class_translation_lookup (conv->name);
 	struct cecil_info *ginfo = cecil_info (conv, name);
 	if (ginfo != NULL && ginfo->nb_param == conv->generic_count) {
@@ -3592,7 +3597,7 @@ rt_private void map_types (void)
 
 rt_private void check_mismatch (type_descriptor *t)
 {
-	rt_uint_ptr i, count;
+	long i, count;
 		/* Generate mismatch error when retrieving an old TUPLE specification
 		 * which has attributes in a system with the new TUPLE specification with
 		 * no attributes */
@@ -4512,7 +4517,7 @@ rt_private EIF_REFERENCE object_rread_special_expanded (EIF_REFERENCE object, EI
 	uint32 store_flags;
 	uint16 hflags;
 	EIF_TYPE_INDEX old_hdtype, hdtype, hdftype;
-	rt_uint_ptr i;
+	EIF_INTEGER i;
 #ifndef WORKBENCH
 	int l_has_references;
 #endif
@@ -4884,7 +4889,7 @@ rt_private EIF_TYPE_INDEX rt_id_read_cid (EIF_TYPE_INDEX odtype)
 	EIF_TYPE_INDEX dftype;
 	int16 old_dftype;
 	EIF_TYPE_INDEX *l_cid;
-	int i, j;
+	uint32 i, j;
 
 	ridr_norm_int (&count);
 
