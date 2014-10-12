@@ -419,6 +419,12 @@ feature -- Verification: contract clauses
 			Result := True
 		end
 
+	frozen modify_agent (a_agent: ANY; a_args: TUPLE): BOOLEAN
+			-- Does this routine modify whatever agent `a_agent' with arguments `a_args' modifies?
+		do
+			Result := True
+		end
+
 	frozen reads (a_objects: TUPLE): BOOLEAN
 			-- Does this function read `a_objects'?
 		do

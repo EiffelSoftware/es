@@ -183,6 +183,18 @@ feature -- Convenience
 
 feature -- Element change
 
+	set_current_target (a_expression: IV_EXPRESSION)
+			-- Set `current_target' to `a_expression'.
+		do
+			current_target := a_expression
+		end
+
+	set_current_target_type (a_type: CL_TYPE_A)
+			-- Set `current_target_type' to `a_type'.
+		do
+			current_target_type := a_type
+		end
+
 	set_last_expression (a_expression: IV_EXPRESSION)
 			-- Set `last_expression' to `a_expression'.
 		do
@@ -268,7 +280,7 @@ feature -- Visitors
 	process_agent_call_b (a_node: AGENT_CALL_B)
 			-- <Precursor>
 		do
-			last_expression := dummy_node (a_node.type)
+			process_feature_b (a_node)
 		end
 
 	process_argument_b (a_node: ARGUMENT_B)
@@ -977,6 +989,7 @@ feature -- Visitors
 	process_routine_creation_b (a_node: ROUTINE_CREATION_B)
 			-- <Precursor>
 		do
+			helper.add_unsupported_error (Void, context_feature, "Agents in contract not supported.")
 			last_expression := dummy_node (a_node.type)
 		end
 
@@ -1081,8 +1094,6 @@ feature -- Translation
 
 	process_special_feature_call (a_handler: E2B_CUSTOM_CALL_HANDLER; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
 			-- Process feature call with custom handler.
-		require
-			not_attribute: a_feature.is_routine
 		deferred
 		end
 

@@ -138,6 +138,7 @@ feature -- Translation: Signature
 				-- Framing
 			if options.is_ownership_enabled then
 				add_ownership_contracts (a_for_creator, not helper.is_lemma (current_feature))
+				add_agent_modifies
 			else
 					-- No choice anymore!
 				check False end
@@ -553,6 +554,42 @@ feature -- Translation: Signature
 					end
 
 					l_parents.forth
+				end
+			end
+		end
+
+	add_agent_modifies
+			-- Add frame condition if `agent_modify' is used in precondition.
+		local
+			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
+			l_item: E2B_ASSERT_ORIGIN
+			l_name: STRING
+			l_fcall: IV_FUNCTION_CALL
+			l_pre: IV_PRECONDITION
+		do
+			across contracts_of (current_feature, current_type).modifies as l_modifies loop
+				if attached {FEATURE_B} l_modifies.item.clause.expr as l_call then
+					l_name := names_heap.item_32 (l_call.feature_name_id)
+					if l_name ~ "modify_agent" then
+						if attached {TUPLE_CONST_B} l_call.parameters.i_th (2).expression as l_tuple then
+							create l_translator.make
+							l_translator.set_context (current_feature, current_type)
+
+							create l_fcall.make ("routine.modify_" + l_tuple.expressions.count.out, types.frame)
+							l_fcall.add_argument (factory.heap_entity ("Heap"))
+							l_call.parameters.i_th (1).expression.process (l_translator)
+							l_fcall.add_argument (l_translator.last_expression)
+							across l_tuple.expressions as exprs loop
+								exprs.item.process (l_translator)
+								l_fcall.add_argument (l_translator.last_expression)
+							end
+
+							create l_pre.make (factory.function_call ("Frame#Subset", <<l_fcall, factory.entity ("writable", types.frame)>>, types.bool))
+							l_pre.node_info.set_type ("pre")
+							l_pre.node_info.set_tag ("agent_modifies_writable")
+							current_boogie_procedure.add_contract (l_pre)
+						end
+					end
 				end
 			end
 		end
@@ -1183,6 +1220,7 @@ feature -- Translation: agents
 			l_fcall, l_typeof: IV_FUNCTION_CALL
 			l_type_value: IV_VALUE
 			l_binop1, l_binop2, l_binop3: IV_BINARY_OPERATION
+			l_post: IV_EXPRESSION
 		do
 			translation_pool.add_type (a_postcondition_type)
 			create l_mapping.make
@@ -1214,7 +1252,13 @@ feature -- Translation: agents
 			l_typeof.add_argument (l_current)
 			create l_type_value.make (name_translator.boogie_name_for_type (a_postcondition_type), types.type)
 			create l_binop1.make (l_typeof, "<:", l_type_value, types.bool)
-			create l_binop2.make (l_fcall, "==>", l_contracts.post, types.bool)
+
+			l_post := l_contracts.post
+			across ownership_default (False, l_mapping) as defs loop
+				l_post := factory.and_clean (l_post, defs.item.expression)
+			end
+
+			create l_binop2.make (l_fcall, "==>", l_post, types.bool)
 			create l_binop3.make (l_binop1, "==>", l_binop2, types.bool)
 
 			create l_forall.make (l_binop3)

@@ -430,7 +430,7 @@ feature -- Ownership helpers
 	is_clause_modify (a_clause: ASSERT_B): BOOLEAN
 			-- Is contract clause `a_clause' a modify clause?
 		do
-			Result := attached {FEATURE_B} a_clause.expr as l_call and then (l_call.feature_name ~ "modify" or l_call.feature_name ~ "modify_field" or l_call.feature_name ~ "modify_model")
+			Result := attached {FEATURE_B} a_clause.expr as l_call and then (l_call.feature_name ~ "modify" or l_call.feature_name ~ "modify_field" or l_call.feature_name ~ "modify_model" or l_call.feature_name ~ "modify_agent")
 		end
 
 	is_clause_decreases (a_clause: ASSERT_B): BOOLEAN
@@ -681,6 +681,15 @@ feature -- Eiffel helpers
 			-- Is `c' the ARRAY class?
 		do
 			Result := c /= Void and then c.class_id = system.array_id
+		end
+
+	is_agent_type (t: CL_TYPE_A): BOOLEAN
+			-- Is `t' an agent type?
+		do
+			Result :=
+				t.base_class.name_in_upper ~ "ROUTINE" or
+				t.base_class.name_in_upper ~ "PROCEDURE" or
+				t.base_class.name_in_upper ~ "FUNCTION"
 		end
 
 	is_conforming_or_non_conforming_parent_class (a_child, a_parent: CLASS_C): BOOLEAN

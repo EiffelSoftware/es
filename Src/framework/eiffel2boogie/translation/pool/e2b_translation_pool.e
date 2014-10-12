@@ -88,7 +88,7 @@ feature -- Adding independent units
 			not_like_type: not a_type.is_like
 			no_formals: not a_type.has_formal_generic
 		do
-			if not a_type.is_basic and not helper.is_class_any (a_type.base_class) then
+			if not a_type.is_basic and not helper.is_class_any (a_type.base_class) and not helper.is_agent_type (a_type) then
 				add_translation_unit (create {E2B_TU_TYPE}.make (a_type))
 				add_translation_unit (create {E2B_TU_INVARIANT}.make (a_type))
 			end

@@ -290,8 +290,12 @@ feature -- Access
 		local
 			i: INTEGER
 			l_type_name: STRING
+			l_helper: E2B_HELPER
 		do
-			if attached {GEN_TYPE_A} a_type as l_gen_type then
+			create l_helper
+			if l_helper.is_agent_type (a_type) then
+				Result := a_type.base_class.name_in_upper
+			elseif attached {GEN_TYPE_A} a_type as l_gen_type then
 				Result := l_gen_type.associated_class.name_in_upper.twin
 				Result.append ("^")
 				from
@@ -310,7 +314,7 @@ feature -- Access
 				end
 				Result.append ("^")
 			else
-				Result := a_type.associated_class.name_in_upper.twin
+				Result := a_type.base_class.name_in_upper.twin
 			end
 		ensure
 			result_attached: attached Result

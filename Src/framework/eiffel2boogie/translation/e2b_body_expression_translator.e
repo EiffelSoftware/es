@@ -15,6 +15,7 @@ inherit
 			reset,
 			process_array_const_b,
 			process_creation_expr_b,
+			process_routine_creation_b,
 			process_tuple_access_b,
 			process_tuple_const_b
 		end
@@ -166,6 +167,17 @@ feature -- Visitors
 				l_handler.handle_routine_call_in_body (Current, l_feature, a_node.parameters)
 			end
 
+		end
+
+	process_routine_creation_b (a_node: ROUTINE_CREATION_B)
+			-- <Precursor>
+		do
+			if a_node.is_inline_agent then
+				helper.add_unsupported_error (Void, context_feature, "Inline agents are not supported")
+				last_expression := dummy_node (a_node.type)
+			else
+				(create {E2B_CUSTOM_AGENT_CALL_HANDLER}).handle_agent_creation (Current, a_node)
+			end
 		end
 
 	process_tuple_access_b (a_node: TUPLE_ACCESS_B)
@@ -499,7 +511,7 @@ feature -- Translation
 			side_effect.extend (l_if)
 		end
 
-feature {NONE} -- Implementation
+feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER} -- Implementation
 
 	create_local (a_type: CL_TYPE_A)
 			-- Create new local.
