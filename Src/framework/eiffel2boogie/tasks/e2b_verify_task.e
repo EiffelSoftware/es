@@ -13,6 +13,8 @@ inherit
 			{ANY} cancel
 		end
 
+	E2B_SHARED_CONTEXT
+
 feature -- Status report
 
 	is_interface_usable: BOOLEAN = True
@@ -24,6 +26,22 @@ feature -- Access
 			-- List of notification agents.
 
 feature -- Element change
+
+	reset_global_state
+			-- Reset state for one run of AutoProof.
+		do
+			result_handlers.wipe_out
+			autoproof_errors.wipe_out
+			options.routines_to_inline.wipe_out
+		end
+
+	reset_local_state
+			-- Reset state for one translation.
+		do
+			boogie_universe_cell.put (create {IV_UNIVERSE}.make)
+			helper.reset
+			translation_pool.reset
+		end
 
 	add_notification_agents (a_agents: LINKED_LIST [PROCEDURE [ANY, TUPLE [E2B_RESULT]]])
 			-- Set `notification_agents' to `a_agents'.

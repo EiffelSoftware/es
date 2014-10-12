@@ -95,4 +95,20 @@ procedure function.item_2<T1, T2, R> (Current: ref, arg1: T1, arg2: T2) returns 
   free ensures same_outside(old(Heap), Heap, routine.modify_2(old(Heap), Current, arg1, arg2));
   free ensures HeapSucc(old(Heap), Heap);
 
+procedure create.routine(Current: ref);
+  free requires attached(Heap, Current, ROUTINE); // info:type property for argument Current
+  modifies Heap;
+  requires (forall <T3> $f: Field T3 :: (($f) != (allocated)) ==> ((Heap[Current, $f]) == (Default($f))));
+  free requires global(Heap);
+  free requires global_permissive();
+  free ensures global(Heap);
+  requires Frame#Subset(modify.create.routine(Heap, Current), writable); // type:pre tag:frame_writable
+  free requires closed_under_domains(writable, Heap);
+  free ensures same_outside(old(Heap), Heap, modify.create.routine(old(Heap), Current));
+  free ensures HeapSucc(old(Heap), Heap);
+  ensures is_wrapped(Heap, Current); // type:post tag:default_is_wrapped default:contracts
+
+function modify.create.routine(heap: HeapType, current: ref) returns (Frame);
+axiom (forall heap: HeapType, current: ref :: (IsHeap(heap)) ==> ((forall <T6> $o: ref, $f: Field T6 :: { modify.create.routine(heap, current)[$o, $f] } (modify.create.routine(heap, current)[$o, $f]) <==> (($o) == (current)))));
+
 

@@ -83,8 +83,6 @@ feature -- Basic operations
 			create input.make
 			create notification_agents.make
 			verify_task := Void
-			create l_context
-			l_context.options.routines_to_inline.wipe_out
 		ensure
 			not_running: not is_running
 			no_notifiers: notification_agents.is_empty
@@ -98,13 +96,8 @@ feature -- Basic operations
 			l_notify_task: E2B_NOTIFY_TASK
 			l_context: E2B_SHARED_CONTEXT
 		do
-			if attached rota as l_rota then
-				create {E2B_BULK_VERIFICATION_TASK} verify_task.make (input, True)
-				verify_task.add_notification_agents (notification_agents)
-				if not rota.has_task (verify_task) then
-					rota.run_task (verify_task)
-				end
-			end
+			create {E2B_BULK_VERIFICATION_TASK} verify_task.make (input)
+			start_verify_task
 		ensure
 			running_or_finished: is_running or is_finished
 		end
@@ -116,13 +109,8 @@ feature -- Basic operations
 		local
 			l_notify_task: E2B_NOTIFY_TASK
 		do
-			if attached rota as l_rota then
-				create {E2B_FORK_VERIFICATION_TASK} verify_task.make (input)
-				verify_task.add_notification_agents (notification_agents)
-				if not rota.has_task (verify_task) then
-					rota.run_task (verify_task)
-				end
-			end
+			create {E2B_FORK_VERIFICATION_TASK} verify_task.make (input)
+			start_verify_task
 		ensure
 			running_or_finished: is_running or is_finished
 		end
@@ -139,6 +127,20 @@ feature {NONE} -- Implementation
 
 	verify_task: detachable E2B_VERIFY_TASK
 			-- Verify task.
+
+	start_verify_task
+			-- Start Verification task.
+		require
+			verify_task_not_void: verify_task /= Void
+		do
+			if attached rota as l_rota then
+				verify_task.reset_global_state
+				verify_task.add_notification_agents (notification_agents)
+				if not rota.has_task (verify_task) then
+					rota.run_task (verify_task)
+				end
+			end
+		end
 
 	notification_agents: LINKED_LIST [PROCEDURE [ANY, TUPLE [E2B_RESULT]]]
 			-- List of notification agents.

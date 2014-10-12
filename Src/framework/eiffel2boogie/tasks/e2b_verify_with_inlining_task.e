@@ -8,7 +8,7 @@ class
 
 inherit
 
-	ROTA_TASK_I
+	E2B_VERIFY_TASK
 
 	E2B_SHARED_CONTEXT
 
@@ -30,7 +30,7 @@ feature -- Status report
 	has_next_step: BOOLEAN
 			-- <Precursor>
 
-	is_interface_usable: BOOLEAN = True
+	sleep_time: NATURAL = 0
 			-- <Precursor>
 
 feature {ROTA_S, ROTA_TASK_I} -- Basic operations
@@ -57,17 +57,19 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 					end
 				end
 
+--				reset_global_state
+--				reset_local_state
 				create l_boogie_universe.make
 				boogie_universe_cell.put (l_boogie_universe)
 				helper.reset
 				translation_pool.reset
 				autoproof_errors.wipe_out
---				result_handlers.wipe_out
+				result_handlers.wipe_out
 
 				create inlining_verifier.make
 				create result_generator.make
 				remaining_tasks.start
-				remaining_tasks.forth
+				remaining_tasks.forth -- Skip current taks in queue
 				remaining_tasks.put_left (create {E2B_TRANSLATE_CHUNK_TASK}.make (l_translator_input, l_boogie_universe))
 				remaining_tasks.put_left (create {E2B_GENERATE_BOOGIE_TASK}.make (l_boogie_universe, inlining_verifier))
 				remaining_tasks.put_left (create {E2B_EXECUTE_BOOGIE_TASK}.make (inlining_verifier))

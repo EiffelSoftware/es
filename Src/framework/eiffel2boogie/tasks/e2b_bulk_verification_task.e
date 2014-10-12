@@ -15,26 +15,15 @@ inherit
 			remove_task
 		end
 
-	E2B_SHARED_CONTEXT
-
 create
 	make
 
 feature {NONE} -- Implementation
 
-	make (a_translator_input: E2B_TRANSLATOR_INPUT; a_wipe_out_global_state: BOOLEAN)
+	make (a_translator_input: E2B_TRANSLATOR_INPUT)
 			-- Initialize task.
 		do
-				-- Initialize global state
-				-- TODO: decide where to initalize global state
-			create universe.make
-			boogie_universe_cell.put (universe)
-			helper.reset
-			translation_pool.reset
-			if a_wipe_out_global_state then
-				result_handlers.wipe_out
-				autoproof_errors.wipe_out
-			end
+			reset_local_state
 
 			create verifier.make
 			create result_generator.make
@@ -47,9 +36,6 @@ feature {NONE} -- Implementation
 			if options.is_two_step_verification_enabled then
 				remaining_tasks.extend (create {E2B_VERIFY_WITH_INLINING_TASK}.make (result_generator, remaining_tasks))
 			end
---			if options.is_postcondition_mutation_enabled then
---				remaining_tasks.extend (create {E2B_POSTCONDITION_MUTATION_TASK}.make (verifier))
---			end
 		end
 
 feature -- Access
@@ -93,6 +79,12 @@ feature -- Element change
 			verifier.input.set_context (a_string)
 		end
 
+	store_global_state
+			-- Store AutoProof errors for result generation.
+		do
+			result_generator.store_global_state
+		end
+
 feature {NONE} -- Implementation
 
 	remove_task (a_task: attached like sub_task; a_cancel: BOOLEAN)
@@ -118,8 +110,5 @@ feature {NONE} -- Implementation
 
 	result_generator: E2B_RESULT_GENERATOR
 			-- Result generator.
-
-	universe: IV_UNIVERSE
-			-- Boogie universe.
 
 end

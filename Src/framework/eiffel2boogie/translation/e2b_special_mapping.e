@@ -29,6 +29,7 @@ feature {NONE} -- Initialization
 			create {LINKED_LIST [E2B_CUSTOM_NESTED_HANDLER]} nested_handlers.make
 			nested_handlers.extend (create {E2B_CUSTOM_LOGICAL_HANDLER})
 			nested_handlers.extend (create {E2B_CUSTOM_ANY_CALL_HANDLER})
+			nested_handlers.extend (create {E2B_CUSTOM_AGENT_CALL_HANDLER})
 		end
 
 feature -- Access

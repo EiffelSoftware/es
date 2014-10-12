@@ -13,8 +13,6 @@ inherit
 
 	SHARED_WORKBENCH
 
-	E2B_SHARED_CONTEXT
-
 create
 	make
 
@@ -25,9 +23,6 @@ feature {NONE} -- Initialization
 		local
 			l_part_input: E2B_TRANSLATOR_INPUT
 		do
-			result_handlers.wipe_out
-			autoproof_errors.wipe_out
-
 			create remaining_inputs.make
 			create verification_tasks.make
 			across a_translator_input.feature_list as l_cursor loop
@@ -160,13 +155,15 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Basic operation
 
 			if translation_task = Void and not remaining_inputs.is_empty then
 				remaining_inputs.start
-				create translation_task.make (remaining_inputs.item, False)
+				create translation_task.make (remaining_inputs.item)
 				translation_task.set_context (context_from_input (remaining_inputs.item))
 				remaining_inputs.remove
 			end
 			if translation_task /= Void then
 				translation_task.step
 				if attached {E2B_EXECUTE_BOOGIE_TASK} translation_task.sub_task then
+					translation_task.store_global_state
+					reset_global_state
 					verification_tasks.extend (translation_task)
 					translation_task := Void
 				end

@@ -12,7 +12,11 @@ inherit
 
 	E2B_CUSTOM_CALL_HANDLER
 
+	E2B_CUSTOM_NESTED_HANDLER
+
 	SHARED_WORKBENCH
+
+	SHARED_NAMES_HEAP
 
 feature -- Status report
 
@@ -23,6 +27,15 @@ feature -- Status report
 					a_target_type.base_class.name_in_upper ~ "PROCEDURE" or
 					a_target_type.base_class.name_in_upper ~ "ROUTINE" or
 					a_target_type.base_class.name_in_upper ~ "FUNCTION"
+		end
+
+
+	is_handling_nested (a_nested: NESTED_B): BOOLEAN
+			-- <Precursor>
+		do
+			if attached {ACCESS_EXPR_B} a_nested.target as l_access and then attached {ROUTINE_CREATION_B} l_access.expr then
+				Result := True
+			end
 		end
 
 feature -- Basic operations
@@ -115,7 +128,11 @@ feature -- Basic operations
 			l_agent_local := a_translator.last_local
 
 				-- Set up functions and axioms
-			l_arg_str := a_node.omap.count.out
+			if a_node.omap /= Void then
+				l_arg_str := a_node.omap.count.out
+			else
+				l_arg_str := "0"
+			end
 			create l_pre_acall.make ("routine.precondition_" + l_arg_str, types.bool)
 			l_pre_acall.add_argument (factory.heap_entity ("h"))
 			l_pre_acall.add_argument (l_agent_local)
@@ -204,6 +221,10 @@ feature -- Basic operations
 			l_proc_call.set_target (l_agent_local)
 			a_translator.side_effect.extend (a_translator.if_safety_expression (l_proc_call))
 
+			create l_proc_call.make ("create.routine")
+			l_proc_call.add_argument (l_agent_local)
+			a_translator.side_effect.extend (a_translator.if_safety_expression (l_proc_call))
+
 				-- Add assumptions
 			create l_assume.make_assume (l_pre_forall)
 			a_translator.side_effect.extend (l_assume)
@@ -213,6 +234,58 @@ feature -- Basic operations
 			a_translator.side_effect.extend (l_assume)
 
 			a_translator.set_last_expression (l_agent_local)
+		end
+
+	handle_nested_in_body (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_nested: NESTED_B)
+			-- <Precursor>
+		do
+			handle_nested (a_translator, a_nested)
+		end
+
+	handle_nested_in_contract (a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR; a_nested: NESTED_B)
+			-- <Precursor>
+		do
+			handle_nested (a_translator, a_nested)
+		end
+
+	handle_nested (a_translator: E2B_EXPRESSION_TRANSLATOR; a_nested: NESTED_B)
+			-- Handle nested in either contract or body.
+		local
+			l_name: STRING
+			l_access: ACCESS_EXPR_B
+			l_agent: ROUTINE_CREATION_B
+			l_expr: EXPR_B
+
+			l_agent_class: CLASS_C
+			l_agent_feature: FEATURE_I
+			l_agent_type: CL_TYPE_A
+
+			l_fcall: IV_FUNCTION_CALL
+		do
+			if attached {FEATURE_B} a_nested.message as l_call then
+				l_name := names_heap.item (l_call.feature_name_id)
+				if l_name ~ "postcondition" then
+					l_access ?= a_nested.target
+					l_agent ?= l_access.expr
+
+					l_agent_class := system.class_of_id (l_agent.origin_class_id)
+					l_agent_feature := l_agent_class.feature_of_feature_id (l_agent.feature_id)
+						-- TODO: take actual type of open/closed target of agent creation
+					l_agent_type := l_agent_feature.written_class.actual_type
+
+					translation_pool.add_referenced_feature (l_agent_feature, l_agent_type)
+					translation_pool.add_postcondition_predicate (l_agent_feature, l_agent_type)
+					create l_fcall.make (name_translator.postcondition_predicate_name (l_agent_feature, l_agent_type), types.bool)
+					l_fcall.add_argument (a_translator.entity_mapping.heap)
+					l_fcall.add_argument (a_translator.entity_mapping.old_heap)
+
+						-- TODO: go though expressions
+					l_expr := l_agent.arguments.expressions.first
+					l_fcall.add_argument (a_translator.process_argument_expression (l_expr))
+
+					a_translator.set_last_expression (l_fcall)
+				end
+			end
 		end
 
 feature -- Implementation

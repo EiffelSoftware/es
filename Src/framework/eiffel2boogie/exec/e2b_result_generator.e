@@ -20,13 +20,27 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize.
 		do
-
 		end
 
 feature -- Access
 
 	last_result: detachable E2B_RESULT
 			-- Last generated result.
+
+	local_autoproof_errors: like autoproof_errors
+			-- Local list of AutoProof errors (in case global list needs to be wiped).
+
+	local_result_handlers: like result_handlers
+			-- Local list of Result handlers (in case global list needs to be wiped).
+
+feature -- Element change
+
+	store_global_state
+			-- Store global state of AutoProof for processing with this result generator.
+		do
+			local_autoproof_errors := autoproof_errors.twin
+			local_result_handlers := result_handlers.twin
+		end
 
 feature -- Basic operations
 
@@ -36,11 +50,16 @@ feature -- Basic operations
 			l_ap_error: E2B_AUTOPROOF_ERROR
 		do
 			create last_result.make
+				-- Use global list if local one is empty
+			if local_autoproof_errors = Void then
+				local_autoproof_errors := autoproof_errors
+			end
+
 				-- Add AutoProof errors
-			last_result.verification_results.append (autoproof_errors)
+			last_result.verification_results.append (local_autoproof_errors)
 
 				-- Add Boogie errors (if there were no validity errors)			
-			if across autoproof_errors as i all i.item.is_warning end then
+			if across local_autoproof_errors as i all i.item.is_warning end then
 				across a_boogie_result.boogie_errors as i loop
 					create l_ap_error
 					l_ap_error.set_type ("Boogie")
@@ -96,8 +115,12 @@ feature {NONE} -- Implementation
 		local
 			l_agent: PROCEDURE [ANY, TUPLE [E2B_BOOGIE_PROCEDURE_RESULT, E2B_RESULT_GENERATOR]]
 		do
-			if result_handlers.has_key (a_item.name) then
-				l_agent := result_handlers[a_item.name]
+				-- Use global list if local one is empty
+			if local_result_handlers = Void then
+				local_result_handlers := result_handlers
+			end
+			if local_result_handlers.has_key (a_item.name) then
+				l_agent := local_result_handlers[a_item.name]
 				l_agent.call ([a_item, Current])
 			else
 				process_default_result (a_item)
