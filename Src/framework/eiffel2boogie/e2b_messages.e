@@ -24,8 +24,8 @@ feature -- Validity error messages
 	pure_function_has_mods: STRING_32
 		do Result := "Function with a non-empty modify clause has to be declared impure." end
 
-	impure_function_in_contract: STRING_32
-		do Result := "Impure function cannot be used in specifications." end
+	impure_function_in_contract (a_fname: STRING): STRING_32
+		do Result := locale.formatted_string ("Impure function '$1' cannot be used in specifications.", a_fname) end
 
 	invalid_call_in_invariant: STRING_32
 		do Result := "Class invariant must not access built-in attributes closed or owner, or functions marked inv_unfriendly." end

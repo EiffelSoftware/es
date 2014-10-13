@@ -146,7 +146,7 @@ feature -- Translation
 			l_name := name_translator.boogie_function_for_feature (a_feature, current_target_type)
 			if helper.is_impure (a_feature) then
 					-- This is not a pure function
-				helper.add_semantic_error (a_feature, messages.impure_function_in_contract, context_line_number)
+				helper.add_semantic_error (context_feature, messages.impure_function_in_contract (a_feature.feature_name), context_line_number)
 				last_expression := dummy_node (a_feature.type)
 			else
 				create l_call.make (l_name, types.for_class_type (feature_class_type (a_feature)))

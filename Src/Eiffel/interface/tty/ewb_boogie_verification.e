@@ -97,6 +97,11 @@ feature -- Execution
 			elseif user_options.has ("-notwostep") then
 				options.set_two_step_verification_enabled (False)
 			end
+			if user_options.has ("-postpredicate") then
+				options.set_postcondition_predicate_enabled (True)
+			elseif user_options.has ("-nopostpredicate") then
+				options.set_postcondition_predicate_enabled (False)
+			end
 			if user_options.has ("-overflow") then
 				options.set_checking_overflow (True)
 			elseif user_options.has ("-nooverflow") then
@@ -138,34 +143,34 @@ feature -- Execution
 			elseif user_options.has ("-noownership") then
 				options.set_ownership_enabled (False)
 			end
-
+			if user_options.has ("-scdefaults") then
+				options.set_ownership_defaults_enabled (True)
+			elseif user_options.has ("-noscdefaults") then
+				options.set_ownership_defaults_enabled (False)
+			end
 			if user_options.has ("-timeout") then
 				options.set_is_enforcing_timeout (True)
 				options.set_timeout (option_argument ("-timeout", options.timeout))
 			end
-
 			if user_options.has ("-printtime") then
 				options.set_print_time (True)
 			elseif user_options.has ("-noprinttime") then
 				options.set_print_time (False)
 			end
-
 			if user_options.has ("-bulk") then
 				options.set_bulk_verification_enabled (True)
 			elseif user_options.has ("-forked") then
 				options.set_bulk_verification_enabled (False)
 			end
-
-
+			l_measure := user_options.has ("-measure")
+			l_html := user_options.has ("-html")
+				-- Load input
 			if selection.is_empty then
 				load_universe
 			else
 				load_selection
 			end
 
-			l_measure := user_options.has ("-measure")
-
-			l_html := user_options.has ("-html")
 			if l_html then
 				create html_writer
 				html_writer.print_header
@@ -173,37 +178,26 @@ feature -- Execution
 			else
 				autoproof.add_notification (agent print_result (?))
 			end
-			if options.is_bulk_verification_enabled or l_measure then
-				l_start := current_time_millis
+
+			l_start := current_time_millis
+			if options.is_bulk_verification_enabled then
 				autoproof.verify
-				l_duration := current_time_millis - l_start
 			else
 				autoproof.verify_forked
 			end
-			if l_measure then
-			end
+			l_duration := current_time_millis - l_start
+
 			if l_html then
 				html_writer.print_footer
 			end
 
 			if l_measure then
 				if l_html then
-					output_window.add ("<p>Bulk time: " + l_duration.out + "</p>")
+					output_window.add ("<p>Total time: " + l_duration.out + "</p>")
 				else
-					output_window.add ("Bulk time: " + l_duration.out + "%N")
-				end
-
-				autoproof.clear_notifications
-				l_start := current_time_millis
-				autoproof.verify_forked
-				l_duration := current_time_millis - l_start
-				if l_html then
-					output_window.add ("<p>Forked time: " + l_duration.out + "</p>")
-				else
-					output_window.add ("Forked time: " + l_duration.out + "%N")
+					output_window.add ("Total time: " + l_duration.out + "%N")
 				end
 			end
-
 		end
 
 	option_argument (a_option: STRING; a_default: INTEGER): INTEGER
