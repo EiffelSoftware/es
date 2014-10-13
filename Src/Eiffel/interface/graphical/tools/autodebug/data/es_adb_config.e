@@ -864,7 +864,7 @@ feature -- Constant
 	group_member_type_value_separator: CHARACTER = ':'
 
 	default_testing_session_type: INTEGER = 2
-	default_start_fixing_type: INTEGER = 1
+	default_start_fixing_type: INTEGER = 2
 	default_max_session_length_for_testing: INTEGER = 10
 	default_should_use_fixed_seed_in_testing: BOOLEAN = False
 	default_fixed_seed: INTEGER = 0

@@ -342,7 +342,7 @@ feature{NONE} -- Implementation
 				until
 					l_cursor.after
 				loop
-					if l_cursor.item.ranking >= {AFX_CONTRACT_FIX_TO_FAULT}.Ranking_weight_for_failing or l_index > session.config.max_valid_fix_number.to_integer_32 then
+					if l_cursor.item.ranking >= {AFX_CONTRACT_FIX_TO_FAULT}.Ranking_weight_for_failing or l_index >= session.config.max_valid_fix_number.to_integer_32 then
 						a_contract_fixes.remove_at_cursor (l_cursor)
 					else
 						l_cursor.forth
