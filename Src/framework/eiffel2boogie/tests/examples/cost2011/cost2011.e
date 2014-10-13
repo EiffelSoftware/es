@@ -3,7 +3,7 @@ class
 
 feature -- COST 2011: Maximum in an array
 
-	max_in_array (a: ARRAY [INTEGER]): INTEGER
+	max_in_array (a: SIMPLE_ARRAY [INTEGER]): INTEGER
 			-- Index of maximum element of `a'.
 		require
 			a_not_empty: a.count > 0
@@ -16,8 +16,8 @@ feature -- COST 2011: Maximum in an array
 			invariant
 				1 <= x and y <= a.count
 				y >= x
-				across 1 |..| x as i all a[i.item] <= a[x] or a[i.item] <= a[y] end
-				across y |..| a.count as i all a[i.item] <= a[x] or a[i.item] <= a[y] end
+				across 1 |..| x as i all a.sequence[i.item] <= a.sequence[x] or a.sequence[i.item] <= a.sequence[y] end
+				across y |..| a.count as i all a.sequence[i.item] <= a[x] or a.sequence[i.item] <= a.sequence[y] end
 			until
 				x = y
 			loop

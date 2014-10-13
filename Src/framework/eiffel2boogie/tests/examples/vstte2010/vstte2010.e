@@ -3,7 +3,7 @@ class
 
 feature -- VSTTE 2010: Sum & max
 
-	sum_and_max (a: ARRAY [INTEGER]): TUPLE [sum, max: INTEGER]
+	sum_and_max (a: SIMPLE_ARRAY [INTEGER]): TUPLE [sum, max: INTEGER]
 			-- Calculate sum and maximum of array `a'.
 		note
 			framing: False

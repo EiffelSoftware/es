@@ -8,8 +8,11 @@ note
 class
 	E2B_SPECIAL_MAPPING
 
-inherit {NONE}
+inherit
+
 	IV_SHARED_TYPES
+
+	E2B_SHARED_CONTEXT
 
 create
 	make
@@ -19,14 +22,14 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize special mappings.
 		do
-			create {LINKED_LIST [E2B_CUSTOM_CALL_HANDLER]} call_handlers.make
+			create call_handlers.make
 			call_handlers.extend (create {E2B_CUSTOM_OWNERSHIP_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_LOGICAL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_ARRAY_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_INTEGER_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_ANY_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_AGENT_CALL_HANDLER})
-			create {LINKED_LIST [E2B_CUSTOM_NESTED_HANDLER]} nested_handlers.make
+			create nested_handlers.make
 			nested_handlers.extend (create {E2B_CUSTOM_LOGICAL_HANDLER})
 			nested_handlers.extend (create {E2B_CUSTOM_ANY_CALL_HANDLER})
 			nested_handlers.extend (create {E2B_CUSTOM_AGENT_CALL_HANDLER})
@@ -34,7 +37,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	call_handlers: LIST [E2B_CUSTOM_CALL_HANDLER]
+	call_handlers: LINKED_LIST [E2B_CUSTOM_CALL_HANDLER]
 			-- List of custom call handlers.
 
 	handler_for_call (a_target_type: TYPE_A; a_feature: FEATURE_I): detachable E2B_CUSTOM_CALL_HANDLER
@@ -52,7 +55,7 @@ feature -- Access
 			end
 		end
 
-	nested_handlers: LIST [E2B_CUSTOM_NESTED_HANDLER]
+	nested_handlers: LINKED_LIST [E2B_CUSTOM_NESTED_HANDLER]
 			-- List of custom nested handlers.
 
 	handler_for_nested (a_nested: NESTED_B): detachable E2B_CUSTOM_NESTED_HANDLER
@@ -67,6 +70,41 @@ feature -- Access
 					Result := nested_handlers.item
 				end
 				nested_handlers.forth
+			end
+		end
+
+	handler_for_across (a_across: LOOP_EXPR_B; a_translator: E2B_EXPRESSION_TRANSLATOR): detachable E2B_ACROSS_HANDLER
+			-- Custom handler for `a_across' (if any).
+		local
+			l_assign: ASSIGN_B
+			l_object_test_local: OBJECT_TEST_LOCAL_B
+			l_nested: NESTED_B
+			l_access: ACCESS_EXPR_B
+			l_bin_free: BIN_FREE_B
+			l_class: CLASS_C
+		do
+			l_assign ?= a_across.iteration_code.first
+			check l_assign /= Void end
+			l_object_test_local ?= l_assign.target
+			check l_object_test_local /= Void end
+			l_nested ?= l_assign.source
+			check l_nested /= Void end
+			l_class := l_nested.target.type.associated_class
+
+			if helper.is_class_logical (l_class) then
+				create {E2B_SET_ACROSS_HANDLER} Result.make (a_translator, l_object_test_local, l_nested.target, a_across)
+			elseif l_class.name_in_upper ~ "INTEGER_INTERVAL" then
+				l_access ?= l_nested.target
+				check l_access /= Void end
+				l_bin_free ?= l_access.expr
+				check l_bin_free /= Void end
+				create {E2B_INTERVAL_ACROSS_HANDLER} Result.make (a_translator, l_object_test_local, l_bin_free, a_across)
+			elseif l_class.name_in_upper ~ "SIMPLE_ARRAY" then
+				create {E2B_SIMPLE_ARRAY_ACROSS_HANDLER} Result.make (a_translator, l_object_test_local, l_nested.target, a_across)
+			elseif l_class.name_in_upper ~ "SIMPLE_LIST" then
+				create {E2B_SIMPLE_LIST_ACROSS_HANDLER} Result.make (a_translator, l_object_test_local, l_nested.target, a_across)
+			elseif l_class.name_in_upper ~ "ARRAY" then
+--				create {E2B_ARRAY_ACROSS_HANDLER} l_across_handler.make (a_translator, l_object_test_local, l_nested.target, a_node)
 			end
 		end
 

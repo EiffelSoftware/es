@@ -735,21 +735,9 @@ feature -- Visitors
 			check l_object_test_local /= Void end
 			l_nested ?= l_assign.source
 			check l_nested /= Void end
-
 			l_class := l_nested.target.type.associated_class
-			if l_class.name_in_upper ~ "ARRAY" then
-				create {E2B_ARRAY_ACROSS_HANDLER} l_across_handler.make (Current, l_object_test_local, l_nested.target, a_node)
-			elseif l_class.name_in_upper ~ "INTEGER_INTERVAL" then
-				l_access ?= l_nested.target
-				check l_access /= Void end
-				l_bin_free ?= l_access.expr
-				check l_bin_free /= Void end
-				create {E2B_INTERVAL_ACROSS_HANDLER} l_across_handler.make (Current, l_object_test_local, l_bin_free, a_node)
-			elseif helper.is_class_logical (l_class) then
-				create {E2B_SET_ACROSS_HANDLER} l_across_handler.make (Current, l_object_test_local, l_nested.target, a_node)
-			else
-				last_expression := dummy_node (a_node.type)
-			end
+
+			l_across_handler := translation_mapping.handler_for_across (a_node, Current)
 
 			is_in_quantifier := True
 
@@ -761,6 +749,9 @@ feature -- Visitors
 				across_handler_map.put (l_across_handler, l_object_test_local.position)
 				l_across_handler.handle_across_expression
 				across_handler_map.remove (l_object_test_local.position)
+			else
+				last_expression := dummy_node (a_node.type)
+				helper.add_semantic_error (context_feature, "Across over type " + l_class.name_in_upper + " not supported", context_line_number)
 			end
 
 			is_in_quantifier := False
