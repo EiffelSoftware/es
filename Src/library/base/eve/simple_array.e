@@ -1,5 +1,5 @@
 note
-	description: "New version of an array, for use in verification."
+	description: "Array with specification usable in AutoProof."
 	status: skip
 
 frozen class
@@ -10,9 +10,19 @@ inherit
 	ITERABLE [G]
 
 create
-	make, init
+	make_empty, make, make_from_array, init
 
 feature {NONE} -- Initialization
+
+	make_empty
+			-- Create an empty array.
+		note
+			status: creator
+		do
+			create sequence
+		ensure
+			empty_array: count = 0
+		end
 
 	make (n: INTEGER)
 			-- Create an array of size `n' filled with default values.
@@ -21,9 +31,20 @@ feature {NONE} -- Initialization
 		require
 			n_non_negative: n >= 0
 		do
+			create sequence.constant (({G}).default, n)
 		ensure
 			count_set: count = n
 			all_default: across sequence.domain as i all sequence [i.item] = ({G}).default end
+		end
+
+	make_from_array (a: SIMPLE_ARRAY [G])
+			-- Create an array with the same elements as `a'.
+		note
+			status: creator
+		do
+			sequence := a.sequence
+		ensure
+			same_elements: sequence = a.sequence
 		end
 
 	init (s: MML_SEQUENCE [G])
@@ -31,6 +52,7 @@ feature {NONE} -- Initialization
 		note
 			status: creator
 		do
+			sequence := s
 		ensure
 			count_set: count = s.count
 			sequence_set: sequence = s
@@ -45,9 +67,12 @@ feature -- Access
 
 	count: INTEGER
 			-- Number of elements.
+		note
+			status: functional
 		require
 			reads (Current)
 		do
+			Result := sequence.count
 		ensure
 			definition: Result = sequence.count
 		end
@@ -59,6 +84,7 @@ feature -- Access
 			valid_index: valid_index (i)
 			reads (Current)
 		do
+			Result := sequence[i]
 		ensure
 			definition: Result = sequence [i]
 		end
@@ -72,6 +98,7 @@ feature -- Access
 			u_not_too_large: u <= count
 			l_not_too_large: l <= u + 1
 		do
+			create Result.init (sequence.interval (l, u))
 		ensure
 			result_wrapped: Result.is_wrapped
 			result_fresh: Result.is_fresh
@@ -81,6 +108,8 @@ feature -- Access
 
 	new_cursor: ITERATION_CURSOR [G]
 			-- <Precursor>
+		note
+			status: impure
 		do
 		end
 
@@ -98,8 +127,10 @@ feature -- Status report
 			-- Is `i' a valid index into the array?
 		note
 			status: functional
+		require
+			reads (Current)
 		do
-			Result := 1 <= i and i <= count
+			Result := 1 <= i and i <= sequence.count
 		end
 
 feature -- Modification
@@ -110,9 +141,41 @@ feature -- Modification
 			in_bounds: 1 <= i and i <= count
 			valid_index: valid_index (i)
 		do
+			sequence := sequence.replaced_at (i, v)
+			check sequence.count > 0 end
+			check count > 0 end
 		ensure
 			same_count: count = old count
 			sequence_effect: sequence = old sequence.replaced_at (i, v)
+		end
+
+	force (v: G; i: INTEGER)
+			-- Update value at position `i' with `v'.
+		require
+			in_bounds: 1 <= i and i <= count + 1
+		do
+			if i = count + 1 then
+				sequence := sequence.extended (v)
+			else
+				sequence := sequence.replaced_at (i, v)
+			end
+		ensure
+			count_effect: (i = old count + 1) implies count = old count + 1
+			sequence_effect: (i = old count + 1) implies sequence = old sequence.extended (v)
+			count_effect: (i <= old count) implies count = old count
+			sequence_effect: (i <= old count) implies sequence = old sequence.replaced_at (i, v)
+		end
+
+	remove_at (i: INTEGER)
+			-- Remove element at position `i'.
+		require
+			in_bounds: 1 <= i and i <= count + 1
+			valid_index: valid_index (i)
+		do
+			sequence := sequence.removed_at (i)
+		ensure
+			count_reduced: count = old count - 1
+			sequence_effect: sequence = old sequence.removed_at (i)
 		end
 
 invariant
