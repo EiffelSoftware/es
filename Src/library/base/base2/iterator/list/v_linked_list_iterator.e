@@ -30,8 +30,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			modify_field (["observers", "closed"], list)
 		do
 			target := list
-			active := Void
-			after_ := False
 			set_target_index_sequence
 			target.add_iterator (Current)
 			check target.inv_only ("bag_definition", "map_definition_list", "lower_definition") end
@@ -39,6 +37,28 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			target_effect: target = list
 			index_effect: index_ = 0
 			list_observers_effect: list.observers = old list.observers & Current
+		end
+
+	switch_target (list: V_LINKED_LIST [G])
+			-- Set target to `list'.
+		require
+			is_wrapped
+			list_closed: list.closed
+			has_observer: list.observers [Current]
+			modify_model (["target", "index_", "subjects", "sequence", "target_index_sequence"], Current)
+		do
+			unwrap
+			target := list
+			active := Void
+			after_ := False
+			index_ := 0
+			set_target_index_sequence
+			check target.inv_only ("bag_definition", "map_definition_list", "lower_definition") end
+			wrap
+		ensure
+			is_wrapped
+			target_effect: target = list
+			index_effect: index_ = 0
 		end
 
 feature -- Initialization
@@ -410,7 +430,7 @@ feature -- Removal
 			set_target_index_sequence
 		end
 
-feature {V_LINKED_LIST_ITERATOR} -- Implementation
+feature {V_ITERATOR} -- Implementation
 
 	active: V_LINKABLE [G]
 			-- Cell at current position.
@@ -425,7 +445,6 @@ feature {V_LINKED_LIST_ITERATOR} -- Implementation
 			active_exists: active /= Void
 			closed: closed
 			target_closed: target.closed
---			reads (Current, target.ownership_domain)
 			reads (universe)
 		local
 			c: V_LINKABLE [G]
@@ -449,6 +468,25 @@ feature {V_LINKED_LIST_ITERATOR} -- Implementation
 			target.lemma_cells_distinct
 		ensure
 			definition: Result = index_
+		end
+
+	go_to_cell (c: V_LINKABLE [G])
+			-- Move to cell `c'.
+		require
+			wrapped: is_wrapped
+			target_closed: target.closed
+			c_in_list: target.cells.has (c)
+			modify_model ("index_", Current)
+		do
+			check target.inv end
+			unwrap
+			active := c
+			after_ := False
+			index_ := target.cells.index_of (c)
+			wrap
+		ensure
+			index_effect: target.cells [index_] = c
+			wrapped: is_wrapped
 		end
 
 invariant

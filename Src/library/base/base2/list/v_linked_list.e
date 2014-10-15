@@ -16,7 +16,7 @@ frozen class
 inherit
 	V_LIST [G]
 		redefine
-			default_create,
+--			default_create,
 			first,
 			last,
 			is_equal_,
@@ -25,17 +25,17 @@ inherit
 			reverse
 		end
 
-feature {NONE} -- Initialization
+--feature {NONE} -- Initialization
 
-	default_create
-			-- Create an empty list.
-		note
-			status: creator
-		do
-		ensure then
-			sequence_effect: sequence.is_empty
-			observers_empty: observers.is_empty
-		end
+--	default_create
+--			-- Create an empty list.
+--		note
+--			status: creator
+--		do
+--		ensure then
+--			sequence_effect: sequence.is_empty
+--			observers_empty: observers.is_empty
+--		end
 
 feature -- Initialization
 

@@ -100,8 +100,18 @@ axiom (forall<T> a: Seq T, x: T:: {Seq#Occurrences(Seq#Extended(a, x), x)}
   Seq#Occurrences(Seq#Extended(a, x), x) == Seq#Occurrences(a, x) + 1);
 axiom (forall<T> a: Seq T, x: T, y: T :: {Seq#Occurrences(Seq#Extended(a, y), x)}
   x != y ==> Seq#Occurrences(Seq#Extended(a, y), x) == Seq#Occurrences(a, x));
+// axiom (forall<T> x: T:: {Seq#Occurrences(Seq#Singleton(x), x)}
+  // Seq#Occurrences(Seq#Singleton(x), x) == 1);
+// axiom (forall<T> x: T, y: T :: {Seq#Occurrences(Seq#Singleton(x), y)}
+  // x != y ==> Seq#Occurrences(Seq#Singleton(x), y) == 0);  
  // axiom (forall<T> a: Seq T, x: T :: {Seq#Occurrences(a, x)}
   // !Seq#Has(a, x) ==> Seq#Occurrences(a, x) == 0);
+  
+function Seq#IndexOf<T>(Seq T, T): int;
+axiom (forall<T> s: Seq T, x: T :: { Seq#IndexOf(s,x) }
+  Seq#Has(s,x) ==> 1 <= Seq#IndexOf(s,x) && Seq#IndexOf(s,x) <= Seq#Length(s) && Seq#Item(s, Seq#IndexOf(s,x)) == x);
+axiom (forall<T> s: Seq T, x: T :: { Seq#IndexOf(s,x) }
+  !Seq#Has(s,x) ==> Seq#IndexOf(s,x) < 1 || Seq#Length(s) < Seq#IndexOf(s,x));
 
 // Are two sequences equal?  
 function Seq#Equal<T>(Seq T, Seq T): bool;
@@ -323,8 +333,9 @@ axiom (forall<T> :: Seq#Drop(Seq#Empty() : Seq T, 0) == Seq#Empty() : Seq T);  /
 function Seq#NonNull(s: Seq ref): bool
 { (forall i: int :: { Seq#Item(s, i) } 1 <= i && i <= Seq#Length(s) ==> Seq#Item(s, i) != Void) }
 
-// function Seq#NoDuplicates<T>(s: Seq T): bool
-// { (forall i, j: int :: 1 <= i && i < j && j < Seq#Length(s) ==> Seq#Item(s, i) != Seq#Item(s, j)) }
+function Seq#NoDuplicates<T>(s: Seq T): bool
+{ (forall i, j: int :: 1 <= i && i < j && j <= Seq#Length(s) ==> Seq#Item(s, i) != Seq#Item(s, j)) }
+// { (forall i, j: int :: 1 <= i && i <= Seq#Length(s) && 1 <= j && j <= ) }
 
 // Type property
 function {: inline } Seq#ItemsType(heap: HeapType, s: Seq ref, t: Type): bool 

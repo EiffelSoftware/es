@@ -21,7 +21,7 @@ inherit
 feature -- Access	
 
 	sets: MML_SET [V_HASH_SET [G]]
-			-- Sets that might share elements owned by this lock.		
+			-- Sets that might share elements owned by this lock.
 
 invariant
 	valid_buckets: across sets as s all

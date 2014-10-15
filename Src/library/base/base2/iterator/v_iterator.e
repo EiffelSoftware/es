@@ -84,7 +84,7 @@ feature -- Status report
 	off: BOOLEAN
 			-- Is current position off scope?
 		note
-			status: dynamic, inv_unfriendly
+			status: dynamic
 		do
 			check inv end
 			Result := before or after

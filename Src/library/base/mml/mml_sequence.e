@@ -112,6 +112,11 @@ feature -- Measurement
 		do
 		end
 
+	index_of (x: G): INTEGER
+			-- Position of some occurrence of `x'; out of bounds if `x' does not occur.
+		do
+		end
+
 feature -- Comparison
 
 	is_equal (a_other: like Current): BOOLEAN
@@ -251,6 +256,28 @@ feature -- Convenience
 		note
 			maps_to: "Seq#NonNull"
 		do
+		end
+
+	no_duplicates: BOOLEAN
+		do
+		end
+
+feature -- Lemmas
+
+	lemma_no_duplicates
+			-- In a sequence with no duplicates, each element occurs exactly once.
+		note
+			status: lemma
+		require
+			no_duplicates: no_duplicates
+		do
+			if not is_empty then
+				but_last.lemma_no_duplicates
+				check Current = but_last & last end
+				check but_last.to_bag [last] = 0 end
+			end
+		ensure
+			single_occurrence: across 1 |..| count as i all occurrences (item (i.item)) = 1 end
 		end
 
 end

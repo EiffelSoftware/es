@@ -279,7 +279,7 @@ feature -- Extension
 			v_locked: lock.owns [v]
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
-			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
+			no_iterators: observers = [lock]
 			modify_model ("set", Current)
 		deferred
 		ensure
@@ -297,7 +297,7 @@ feature -- Extension
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
 			other_registered: lock.sets [other]
-			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
+			no_iterators: observers = [lock]
 			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		local
@@ -350,7 +350,7 @@ feature -- Removal
 			v_locked: lock.owns [v]
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
-			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
+			no_iterators: observers = [lock]
 			modify_model (["set", "observers"], Current)
 		local
 			it: V_SET_ITERATOR [G]
@@ -372,6 +372,21 @@ feature -- Removal
 			observers_restored: observers ~ old observers
 		end
 
+--	remove (v: G)
+--			-- Add `v' to the set.
+--		require
+--			v_locked: lock.owns [v]
+--			lock_wrapped: lock.is_wrapped
+--			set_registered: lock.sets [Current]
+--			no_iterators: observers = [lock]
+--			modify_model ("set", Current)
+--		deferred
+--		ensure
+--			abstract_effect: not set_has (v)
+--			precise_effect_not_found: not old set_has (v) implies set = old set
+--			precise_effect_found: old set_has (v) implies set = old set / set_item (v)
+--		end
+
 	meet (other: V_SET [G])
 			-- Keep only elements that are also in `other'.
 		note
@@ -381,7 +396,7 @@ feature -- Removal
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
 			other_registered: lock.sets [other]
-			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
+			no_iterators: observers = [lock]
 			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		local
@@ -433,7 +448,7 @@ feature -- Removal
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
 			other_registered: lock.sets [other]
-			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
+			no_iterators: observers = [lock]
 			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		local
@@ -485,7 +500,7 @@ feature -- Removal
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
 			other_registered: lock.sets [other]
-			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
+			no_iterators: observers = [lock]
 			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		local
@@ -541,8 +556,8 @@ feature -- Removal
 		require
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
-			iterators_open: across observers as o all o.item /= lock implies o.item.is_open end
-			modify_model ("set", Current)
+			no_iterators: observers = [lock]
+			modify_model (["set", "owns"], Current)
 		deferred
 		ensure
 			set_effect: set.is_empty

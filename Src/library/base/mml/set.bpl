@@ -21,6 +21,7 @@ function Set#Singleton<T>(T): Set T;
 axiom (forall<T> r: T :: { Set#Singleton(r) } Set#Singleton(r)[r]);
 axiom (forall<T> r: T, o: T :: { Set#Singleton(r)[o] } Set#Singleton(r)[o] <==> r == o);
 axiom (forall<T> r: T :: { Set#Card(Set#Singleton(r)) } Set#Card(Set#Singleton(r)) == 1);
+axiom (forall<T> s: Set T, x: T :: { Set#Singleton(x), Set#Card(s) } Set#Card(s) == 1 && s[x]  ==>  s == Set#Singleton(x));
 
 // Is a set empty?
 function {: inline } Set#IsEmpty<T>(s: Set T): bool

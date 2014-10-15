@@ -114,21 +114,6 @@ feature -- Specification
 		attribute
 		end
 
-	add_iterator (it: V_ITERATOR [G])
-			-- Add `it' to `observers'.
-		note
-			status: ghost
-			explicit: contracts
-		require
-			wrapped: is_wrapped
-			modify_field (["observers", "closed"], Current)
-		do
-			set_observers (observers & it)
-		ensure
-			wrapped: is_wrapped
-			observer_added: observers = old observers & it
-		end
-
 	forget_iterator (it: V_ITERATOR [G])
 			-- Remove `it' from `observers'.
 		note
@@ -147,6 +132,24 @@ feature -- Specification
 			wrapped: is_wrapped
 			it_open: it.is_open
 			observer_removed: observers = old observers / it
+		end
+
+feature {V_CONTAINER, V_ITERATOR} -- Specification
+
+	add_iterator (it: V_ITERATOR [G])
+			-- Add `it' to `observers'.
+		note
+			status: ghost
+		require
+			wrapped: is_wrapped
+			modify_field (["observers", "closed"], Current)
+		do
+			unwrap
+			set_observers (observers & it)
+			wrap
+		ensure
+			wrapped: is_wrapped
+			observer_added: observers = old observers & it
 		end
 
 invariant

@@ -973,20 +973,25 @@ feature -- Translation: Functions
 			-- Translate the decreases of feature `a_feature' of type `a_type'.
 		local
 			l_decreases_list: like decreases_expressions_of
-			l_entity: IV_ENTITY
+			l_entity, l_heap, l_current: IV_ENTITY
 			l_function: IV_FUNCTION
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 		do
 			set_context (a_feature, a_type)
 			helper.set_up_byte_context (current_feature, current_type)
+			create l_heap.make ("heap", types.heap)
+			create l_current.make ("current", types.for_class_type (a_type))
 
 			create l_translator.make
-			l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
-			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
+			l_translator.entity_mapping.set_heap (l_heap)
+			l_translator.entity_mapping.set_current (l_current)
 			l_translator.set_context (current_feature, current_type)
 			l_decreases_list := decreases_expressions_of (contracts_of (current_feature, current_type).decreases, l_translator)
 			if l_decreases_list.is_empty then
 				-- No decreases clause: apply default
+				if l_current.type /~ types.ref then
+					l_decreases_list.extend (l_current)
+				end
 				across arguments_of_current_feature as j loop
 					if j.item.boogie_type.has_rank then
 						create l_entity.make (j.item.name, j.item.boogie_type)
@@ -1014,8 +1019,8 @@ feature -- Translation: Functions
 
 						-- Arguments
 					translation_pool.add_type (current_type)
-					l_function.add_argument ("heap", types.heap)
-					l_function.add_argument ("current", types.ref)
+					l_function.add_argument (l_heap.name, l_heap.type)
+					l_function.add_argument (l_current.name, l_current.type)
 					across arguments_of_current_feature as j loop
 						l_function.add_argument (j.item.name, j.item.boogie_type)
 					end

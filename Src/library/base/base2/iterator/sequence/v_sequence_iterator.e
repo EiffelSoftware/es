@@ -58,7 +58,7 @@ feature {NONE} -- Specification
 		note
 			status: ghost, dynamic
 		require
-			target_wrapped: target.is_wrapped
+			target_closed: target.closed
 			no_observers: observers = []
 			modify_field ("target_index_sequence", Current)
 		local
