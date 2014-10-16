@@ -33,7 +33,7 @@ feature -- Status report
 				(a_nested.target.type.base_class.name_in_upper ~ "TYPE")
 			then
 				if attached {FEATURE_B} a_nested.message as f then
-					Result := f.feature_name.same_string ("default")
+					Result := f.feature_name.same_string ("default") or f.feature_name.same_string ("adapt")
 				end
 			end
 		end
@@ -88,12 +88,19 @@ feature -- Implementation
 		local
 			l_type: CL_TYPE_A
 		do
-			a_translator.set_last_expression (factory.void_)
 			if attached {ACCESS_EXPR_B} a_nested.target as x then
 				if attached {TYPE_EXPR_B} x.expr as t then
-					l_type := a_translator.class_type_in_current_context (t.type_data.generics.first)
-					a_translator.set_last_expression (types.for_class_type (l_type).default_value)
+					if attached {FEATURE_B} a_nested.message as l_call and then l_call.feature_name ~ "adapt" then
+							-- Ignore type, just follow parameters
+						check l_call.parameters.count = 1 end
+						l_call.parameters.first.expression.process (a_translator)
+					else
+						l_type := a_translator.class_type_in_current_context (t.type_data.generics.first)
+						a_translator.set_last_expression (types.for_class_type (l_type).default_value)
+					end
 				end
+			else
+				a_translator.set_last_expression (factory.void_)
 			end
 		end
 
