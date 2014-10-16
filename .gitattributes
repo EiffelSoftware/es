@@ -5267,6 +5267,9 @@ Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
 Src/unstable/library/text/encryption/crypto/license.lic -text
 Src/unstable/library/text/encryption/crypto/tests/license.lic -text
+Src/unstable/library/text/text_filter/testing/testing-safe.ecf svneol=native#text/xml
+Src/unstable/library/text/text_filter/text_filter-safe.ecf svneol=native#text/xml
+Src/unstable/library/text/text_filter/text_filter.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/cms.ini -text
 Src/web/eiffel-lang.org/data/documentation/current/Eiffel/Language_Reference.wiki -text
 Src/web/eiffel-lang.org/data/documentation/current/Eiffel/Overview.wiki -text
@@ -5304,9 +5307,6 @@ Src/web/eiffel-lang.org/library/cms/www/themes/smarty/theme.info -text
 Src/web/eiffel-lang.org/library/cms/www/themes/test/res/favicon.ico -text
 Src/web/eiffel-lang.org/library/cms/www/themes/test/res/logo.png -text
 Src/web/eiffel-lang.org/library/cms/www/themes/test/res/style.css -text
-Src/web/eiffel-lang.org/library/text_filter/testing/testing-safe.ecf svneol=native#text/xml
-Src/web/eiffel-lang.org/library/text_filter/text_filter-safe.ecf svneol=native#text/xml
-Src/web/eiffel-lang.org/library/text_filter/text_filter.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/testing/testing-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs.ecf svneol=native#text/xml
