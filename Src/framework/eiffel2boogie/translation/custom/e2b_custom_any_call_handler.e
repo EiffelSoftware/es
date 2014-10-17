@@ -26,7 +26,7 @@ feature -- Status report
 	is_handling_nested (a_nested: NESTED_B): BOOLEAN
 			-- <Precursor>
 		do
-			Result := (is_message_feature (a_nested, "old_") or chain_has_old (a_nested)) or 	-- old_
+			Result := has_old (a_nested) or 													-- old_
 				(is_type_target (a_nested) and is_message_feature (a_nested, "default")) or		-- default
 				(is_type_target (a_nested) and is_message_feature (a_nested, "adapt"))			-- adapt
 		end
@@ -80,11 +80,17 @@ feature -- Implementation
 			l_target: IV_EXPRESSION
 			l_target_type: CL_TYPE_A
 		do
-			if chain_has_old (a_nested) then
-					-- We have `old_' as either top-level target or as a target further down the message
+			if has_old (a_nested) then
+					-- Dealing with "old_"
 				if attached {FEATURE_B} a_nested.target as f and then f.feature_name.same_string ("old_") then
 						-- Top-level target: skip it and process the message
-					a_nested.message.process (a_translator)
+						-- (unless the message is old_ as well, then don't do anything)
+					if not is_message_feature (a_nested, "old_") then
+						a_nested.message.process (a_translator)
+					end
+				elseif is_message_feature (a_nested, "old_") then
+						-- It is the message: process target in the old context					
+					a_translator.process_as_old (a_nested.target)
 				else
 						-- Further down the message: process the target in the old context,
 						-- switch translator's current target to that expression,
@@ -98,7 +104,7 @@ feature -- Implementation
 					a_translator.add_void_call_check (a_nested)
 
 					check attached {NESTED_B} a_nested.message as n then
-						check chain_has_old (n) end
+						check has_old (n) end
 						handle_nested (a_translator, n)
 					end
 					a_translator.set_current_target (l_target)
@@ -106,9 +112,7 @@ feature -- Implementation
 				end
 			elseif attached {FEATURE_B} a_nested.message as f then
 				l_name := f.feature_name
-				if l_name.same_string ("old_") then
-					a_translator.process_as_old (a_nested.target)
-				elseif l_name.same_string ("adapt") then
+				if l_name.same_string ("adapt") then
 					a_translator.set_last_expression (factory.void_)
 					if attached {ACCESS_EXPR_B} a_nested.target as x then
 						if attached {TYPE_EXPR_B} x.expr as t then
@@ -146,11 +150,12 @@ feature -- Implementation
 				f.feature_name.same_string (a_feature_name)
 		end
 
-	chain_has_old (a_nested: NESTED_B): BOOLEAN
+	has_old (a_nested: NESTED_B): BOOLEAN
 			-- Is there an `old_' somewhere in `a_nested'?
 		do
-			Result := (attached {FEATURE_B} a_nested.target as f and then f.feature_name.same_string ("old_"))
-				or (attached {NESTED_B} a_nested.message as n and then chain_has_old (n))
+			Result := is_message_feature (a_nested, "old_") or 												-- is it the message?
+				(attached {FEATURE_B} a_nested.target as f and then f.feature_name.same_string ("old_"))	-- is it the target?
+				or (attached {NESTED_B} a_nested.message as n and then has_old (n))					-- or is it inside the message?
 		end
 
 end

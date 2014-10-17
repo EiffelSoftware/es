@@ -596,7 +596,7 @@ feature -- Specification
 	lemma_count (b: MML_BAG [G])
 			-- Defines number of elements in a constant bag.
 		note
-			status: lemma
+			status: lemma, dynamic
 		require
 			bag_constant: b.is_constant (1)
 		local
@@ -617,7 +617,7 @@ feature -- Specification
 	lemma_symmetric_subtract (seq: MML_SEQUENCE [G]; i: INTEGER; s, old_s: MML_SET [G]; z: G)
 			-- Helper lemma to reestablish the loop invariant in `symmetric_subtract'.
 		note
-			status: lemma
+			status: lemma, dynamic
 		require
 			i_in_bounds: 1 <= i and i <= seq.count
 			old_s_non_void: old_s.non_void
