@@ -28,6 +28,7 @@ feature {NONE} -- Initialization
 			s_open: s.is_open
 			s.inv_only ("set_non_void", "set_not_too_small", "set_not_too_large", "no_precise_duplicates", "bag_domain_definition", "bag_definition")
 			it_wrapped: it.is_wrapped
+			target_is_bucket: s.lists.has (it.target)
 			modify_field ("owner", it)
 			modify_field ("observers", s)
 			modify (Current)
@@ -104,7 +105,7 @@ feature -- Status report
 	after: BOOLEAN
 			-- Is current position after any position in `target'?
 		do
-			check inv; target.inv end
+			check inv; target.inv; list_iterator.inv_only ("sequence_definition") end
 			Result := bucket_index > target.capacity
 			if target.buckets_.domain [bucket_index] then
 				lemma_single_out (target.buckets_, bucket_index)
@@ -141,7 +142,7 @@ feature -- Cursor movement
 		do
 			check target.inv_only ("buckets_non_empty", "buckets_lower", "buckets_count", "lists_definition", "buckets_content",
 				"owns_definition", "list_observers_same", "set_non_void", "set_not_too_small") end
-			check target.lock.inv_only ("owns_items", "valid_buckets") end
+			check target.lock.inv_only ("owns_items", "valid_buckets", "no_duplicates") end
 			bucket_index := target.index (v)
 			c := target.cell_equal (target.buckets [bucket_index], v)
 			check target.lists [bucket_index].sequence = target.buckets_ [bucket_index] end
@@ -156,6 +157,7 @@ feature -- Cursor movement
 				check list_iterator.inv_only ("sequence_definition") end
 				index_ := total_count (target.buckets_.front (bucket_index - 1)) + list_iterator.index_
 				lemma_single_out (target.buckets_, bucket_index)
+				v.lemma_transitive (sequence [index_], [target.set_item (v)])
 			end
 		end
 
@@ -184,6 +186,7 @@ feature -- Cursor movement
 			end
 			index_ := 1
 			lemma_empty (target.buckets_.front (bucket_index - 1))
+			check list_iterator.inv_only ("sequence_definition") end
 		end
 
 	finish
@@ -266,10 +269,27 @@ feature -- Removal
 
 	remove
 			-- Remove element at current position. Move cursor to the next position.
+		note
+			explicit: wrapping
 		do
+			unwrap
+			check target.inv_only ("buckets_count", "buckets_content") end
+			check list_iterator.inv_only ("sequence_definition") end
+			lemma_single_out (target.buckets_, bucket_index)
+
 			target.remove_at (Current)
+
+			check target.inv end
+			lemma_single_out (target.buckets_, bucket_index)
+			check target.buckets_.tail (bucket_index + 1) = (target.buckets_.old_).tail (bucket_index + 1) end
+			sequence := sequence.removed_at (index_)
+			lemma_content (target.buckets_, target.set, target.bag, sequence)
+			check list_iterator.inv_only ("sequence_definition") end
+
 			if list_iterator.after then
 				to_next_bucket
+			else
+				wrap
 			end
 		end
 
@@ -353,6 +373,7 @@ feature {NONE} -- Implementation
 				list_iterator.switch_target (target.buckets [bucket_index])
 				list_iterator.start
 			end
+			check list_iterator.inv_only ("sequence_definition") end
 			wrap
  		ensure
 			wrapped: is_wrapped
@@ -513,7 +534,7 @@ invariant
 	owns_structure: owns = [ list_iterator ]
 	target_is_bucket: target.lists.has (list_iterator.target)
 	targets_which_bucket: target.lists.domain [bucket_index] implies list_iterator.target = target.lists [bucket_index]
-	list_iterator_not_off: target.lists.domain [bucket_index] implies 1 <= list_iterator.index_ and list_iterator.index_ <= target.lists [bucket_index].sequence.count
+	list_iterator_not_off: target.lists.domain [bucket_index] implies 1 <= list_iterator.index_ and list_iterator.index_ <= list_iterator.sequence.count
 	sequence_implementation: sequence = flattened (target.buckets_)
 	index_before: bucket_index = 0 implies index_ = 0
 	index_after: bucket_index > target.lists.count implies index_ = total_count (target.buckets_) + 1

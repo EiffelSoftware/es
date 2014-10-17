@@ -44,7 +44,8 @@ classes = [
   'V_SET_ITERATOR',
   'V_HASHABLE',
   'V_HASH_LOCK',
-  'V_HASH_SET'
+  'V_HASH_SET',
+  'V_HASH_SET_ITERATOR'
 ]
 
 outfile_name = 'base2.out'

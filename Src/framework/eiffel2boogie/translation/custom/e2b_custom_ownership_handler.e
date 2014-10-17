@@ -92,7 +92,6 @@ feature -- Basic operations
 			l_name: STRING
 			l_type: IV_TYPE
 			l_tag_filters: LIST [STRING]
-			l_field: IV_ENTITY
 			l_attr: FEATURE_I
 			l_partial_inv_class: CLASS_C
 		do
@@ -131,7 +130,7 @@ feature -- Basic operations
 					if attached {STRING_B} a_parameters.first.expression as l_string then
 						-- ToDo: can origin class be different?
 						l_attr := helper.attribute_from_string (l_string.value, a_translator.current_target_type, a_translator.current_target_type.base_class, a_translator.context_feature, a_translator.context_line_number)
-						if attached l_field then
+						if attached l_attr then
 							a_translator.set_last_expression (factory.frame_access (
 								a_translator.context_writable,
 								a_translator.current_target,
@@ -149,7 +148,7 @@ feature -- Basic operations
 					if attached a_translator.context_readable then
 						if attached {STRING_B} a_parameters.first.expression as l_string then
 							l_attr := helper.attribute_from_string (l_string.value, a_translator.current_target_type, a_translator.current_target_type.base_class, a_translator.context_feature, a_translator.context_line_number)
-							if attached l_field then
+							if attached l_attr then
 								a_translator.set_last_expression (factory.frame_access (
 									a_translator.context_readable,
 									a_translator.current_target,

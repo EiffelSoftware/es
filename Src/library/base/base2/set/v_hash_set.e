@@ -15,8 +15,8 @@ frozen class
 inherit
 	V_SET [G]
 		redefine
-			lock
---			forget_iterator
+			lock,
+			forget_iterator
 		end
 
 create
@@ -113,54 +113,13 @@ feature -- Extension
 				count_ := count_ + 1
 				bag := bag & v
 				check set [v] end
-				check lock.inv_only ("valid_buckets") end
+				lemma_set_not_too_large
 				wrap
 			end
 			check set_has (v) end
 		end
 
 feature -- Removal
-
---	remove (v: G)
---			-- Add `v' to the set.
---		note
---			explicit: wrapping
---		local
---			idx: INTEGER
---			list: V_LINKED_LIST [G]
---			c: V_LINKABLE [G]
---			x: G
---		do
---			check lock.inv_only ("owns_items", "valid_buckets", "no_duplicates") end
---			check inv_only ("buckets_exist", "owns_definition", "buckets_non_empty", "buckets_count", "lists_definition", "buckets_lower",
---				"set_non_void", "set_not_too_small", "lists_definition", "buckets_content") end
---			idx := index (v)
---			list := buckets [idx]
---			c := cell_before_equal (list, v)
---			if c = Void and not list.is_empty then
---				x := list.first
---				check v.is_model_equal (x) end
---				unwrap
---				list.remove_front
---				set := set / x
---				count_ := count_ - 1
---				buckets_ := buckets_.replaced_at (idx, buckets_ [idx].but_first)
---				bag := bag / x
---				x.lemma_transitive (v, set)
---				wrap
---			elseif c /= Void and then c.right /= Void then
---				check assume: false end
---				unwrap
---				list.extend_back (v)
---				buckets_ := buckets_.replaced_at (idx, buckets_ [idx] & v)
---				set := set & v
---				count_ := count_ + 1
---				bag := bag & v
---				check set [v] end
---				wrap
---			end
---			check assume: false end
---		end
 
 	wipe_out
 			-- Remove all elements.
@@ -264,42 +223,6 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			definition_found: Result /= Void implies list.cells.has (Result) and list.sequence.has (Result.item) and v.is_model_equal (Result.item)
 		end
 
---	cell_before_equal (list: V_LINKED_LIST [G]; v: G): V_LINKABLE [G]
---		require
---			list_closed: list.closed
---			list_items_non_void: list.sequence.non_void
---			v_non_void: v /= Void
---		local
---			j: INTEGER
---			next: V_LINKABLE [G]
---		do
---			from
---				j := 1
---				next := list.first_cell
---			invariant
---				list.inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_first", "cells_last", "first_cell_empty", "sequence_implementation")
---				1 <= j and j <= list.sequence.count + 1
---				next = if list.sequence.domain [j] then list.cells [j] else ({V_LINKABLE [G]}).default end
---				Result = if list.sequence.domain [j - 1] then list.cells [j - 1] else ({V_LINKABLE [G]}).default end
---				across 1 |..| (j - 1) as k all not v.is_model_equal (list.sequence [k.item]) end
---			until
---				next = Void or else v.is_model_equal (next.item)
---			loop
---				Result := next
---				next := next.right
---				j := j + 1
---			variant
---				list.sequence.count - j
---			end
---		ensure
---			definition_void: Result = Void implies list.sequence.is_empty or else v.is_model_equal (list.sequence.first)
---			definition_not_found: Result /= Void and then Result.right = Void implies
---				across 1 |..| list.sequence.count as i all not v.is_model_equal (list.sequence [i.item]) end
---			definition_found: Result /= Void and then Result.right /= Void implies
---				list.cells.has (Result) and list.cells.has (Result.right) and list.sequence.has (Result.right.item) and v.is_model_equal (Result.right.item)
---		end
-
-
 	empty_buckets (n: INTEGER): V_ARRAY [V_LINKED_LIST [G]]
 			-- Array of `n' empty buckets.
 		note
@@ -392,23 +315,43 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 		require
 			wrapped: is_wrapped
 			it_open: it.is_open
+			valid_target: it.target = Current
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
 			only_iterator: observers = [lock, it]
 			1 <= it.bucket_index and it.bucket_index <= lists.count
 			list_iterator_wrapped: it.list_iterator.is_wrapped
+			it.inv_only ("targets_which_bucket", "list_iterator_not_off")
 			modify_model ("set", Current)
 			modify_model (["index_", "sequence", "target_index_sequence"], it.list_iterator)
 		local
+			idx, i: INTEGER
 			x: G
 		do
 			unwrap
+			check across bag.domain.old_ as y all y.item /= x implies bag [y.item] = 1 end end
+			idx := it.bucket_index
+			i := it.list_iterator.index_
+			check it.list_iterator.inv_only ("subjects_definition", "A2", "sequence_definition") end
 			x := it.list_iterator.item
---			check x = (buckets_ [bi]) [li.index_] end
+			check x = (buckets_ [idx]) [i] end
+
+			check lists [idx].observers = [it.list_iterator] end
 			it.list_iterator.remove
+
 			count_ := count_ - 1
---			auto_resize
+			set := set / x
+			buckets_ := buckets_.replaced_at (idx, buckets_ [idx].removed_at (i))
+			bag := bag / x
+			lemma_set_not_too_large
 			wrap
 		ensure
 			wrapped: is_wrapped
+			list_iterator_wrapped: it.list_iterator.is_wrapped
+			set_effect: set = old (set / (buckets_ [it.bucket_index]) [it.list_iterator.index_])
+			same_index: it.list_iterator.index_ = old it.list_iterator.index_
+			same_lists: lists = old lists
+			buckets_effect: buckets_ = old (buckets_.replaced_at (it.bucket_index, buckets_ [it.bucket_index].removed_at (it.list_iterator.index_)))
 		end
 
 feature -- Specification
@@ -429,13 +372,15 @@ feature -- Specification
 		end
 
 	is_lock_int (new: INTEGER; o: ANY): BOOLEAN
+			-- Is observer `o' the `lock' object? (Update guard)
 		note
-			status: functional
+			status: functional, ghost
 		do
 			Result := o = lock
 		end
 
 	is_lock_ref (new: ANY; o: ANY): BOOLEAN
+			-- Is observer `o' the `lock' object? (Update guard)
 		note
 			status: functional
 		do
@@ -443,29 +388,77 @@ feature -- Specification
 		end
 
 	is_lock_seq (new: MML_SEQUENCE [ANY]; o: ANY): BOOLEAN
+			-- Is observer `o' the `lock' object? (Update guard)
 		note
-			status: functional
+			status: functional, ghost
 		do
 			Result := o = lock
 		end
 
---	forget_iterator (it: like new_cursor)
---			-- Remove `it' from `observers'.
---		note
---			status: ghost
---			explicit: contracts
---		local
---			i: INTEGER
---		do
---			i := it.bucket_index
---			check it.list_iterator.target = lists [i] end
+	set_not_too_large (s: like set; bs: like buckets_): BOOLEAN
+			-- Is every element of `s' contained in at least one of `bs'?
+		note
+			status: functional, ghost
+		require
+			reads_field ([])
+		do
+			Result := across s as x all across 1 |..| bs.count as i some bs [i.item].has (x.item) end end
+		end
 
-----			it.unwrap
-----			set_observers (observers / it)			
-----			check it.iterator.inv_only ("subjects_definition", "A2") end
-----			lists [i].forget_iterator (it.list_iterator)
---			check assume: false end
---		end
+	forget_iterator (it: like new_cursor)
+			-- Remove `it' from `observers'.
+		note
+			status: ghost
+			explicit: contracts
+		local
+			i, j: INTEGER
+		do
+			check it.inv_only ("target_is_bucket", "owns_structure") end
+			check it.list_iterator.inv_only ("subjects_definition", "A2") end
+			i := it.bucket_index
+			it.unwrap
+			set_observers (observers / it)
+
+			if lists.domain [i] then
+				lists [i].forget_iterator (it.list_iterator)
+			else
+				it.list_iterator.unwrap
+			end
+
+			from
+				j := 1
+			invariant
+				1 <= j and j <= lists.count + 1
+				it.list_iterator.is_open
+				across 1 |..| lists.count as k all lists [k.item].is_wrapped and then
+					lists [k.item].observers = if k.item >= j and k.item /= i
+						then lists [k.item].observers.old_
+						else lists [k.item].observers.old_ / it.list_iterator end end
+				modify_field (["observers", "closed"], lists.range)
+			until
+				j > lists.count
+			loop
+				if j /= i then
+					lists [j].unwrap
+					lists [j].observers := lists [j].observers / it.list_iterator
+					lists [j].wrap
+				end
+				j := j + 1
+			end
+		end
+
+	lemma_set_not_too_large
+			-- `set_not_too_large (set, buckets_)' is a weaker version of `valid_buckets' invariant of the `lock'.
+		note
+			status: lemma
+		require
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
+		do
+			check lock.inv_only ("valid_buckets") end
+		ensure
+			set_not_too_large (set, buckets_)
+		end
 
 feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Specification
 
@@ -482,7 +475,7 @@ invariant
 	buckets_non_empty: not buckets_.is_empty
 	set_not_too_small: across 1 |..| buckets_.count as i all
 		across 1 |..| buckets_ [i.item].count as j all set [(buckets_ [i.item])[j.item]] end end
-	set_not_too_large: across set as x all across 1 |..| buckets_.count as i some buckets_ [i.item].has (x.item) end end
+	set_not_too_large: set_not_too_large (set, buckets_)
 	no_precise_duplicates: across 1 |..| buckets_.count as i all
 		across 1 |..| buckets_.count as j all
 			across 1 |..| buckets_ [i.item].count as k all
@@ -497,15 +490,13 @@ invariant
 	all_lists_exist: lists.non_void
 	owns_definition: owns = create {MML_SET [ANY]}.singleton (buckets) + lists.range
 	buckets_count: buckets_.count = lists.count
---	lists_distinct: across 1 |..| buckets_.count as i all across 1 |..| buckets_.count as j all
---		i.item /= j.item implies lists [i.item] /= lists [j.item] end end
 	lists_distinct: lists.no_duplicates
 	buckets_content: across 1 |..| buckets_.count as i all buckets_ [i.item] = lists [i.item].sequence end
 		-- Iterators:
 	array_observers: buckets.observers.is_empty
 	list_observers_same: across 1 |..| lists.count as i all
 		across 1 |..| lists.count as j all lists [i.item].observers = lists [j.item].observers end end
-	list_observers_count: across 1 |..| lists.count as i all lists [i.item].observers.count = observers.count - 1 end
+	list_observers_count: across 1 |..| lists.count as i all lists [i.item].observers.count < observers.count end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

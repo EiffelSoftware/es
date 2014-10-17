@@ -113,7 +113,7 @@ axiom (forall<T> a: Bag T, x: T :: { Bag#Removed(a, x)[x] }
   a[x] > 0 ==> Bag#Removed(a, x)[x] == a[x] - 1);
 axiom (forall<T> a: Bag T, x: T :: { Bag#Removed(a, x)[x] }
   a[x] == 0 ==> Bag#Removed(a, x)[x] == 0);  
-axiom (forall<T> a: Bag T, x: T, y: T :: { Bag#Removed(a, x), a[y] }
+axiom (forall<T> a: Bag T, x: T, y: T :: { Bag#Removed(a, x)[y] }
   x != y ==> a[y] == Bag#Removed(a, x)[y]);
 axiom (forall<T> a: Bag T, x: T :: { Bag#Card(Bag#Removed(a, x)) }
   a[x] > 0 ==> Bag#Card(Bag#Removed(a, x)) == Bag#Card(a) - 1);    

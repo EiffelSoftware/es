@@ -830,7 +830,7 @@ feature -- Visitors
 				else
 					check False end
 				end
-				if last_expression = Void then
+				if last_expression = Void and not a_node.type.is_void then
 					last_expression := dummy_node (a_node.type)
 				end
 			else
@@ -845,14 +845,7 @@ feature -- Visitors
 				current_target := last_expression
 				current_target_type := expression_class_type (a_node.target)
 
-					-- Check if target is attached;
-					-- skip if target is expanded or a mathematical type, or this is a special any feature
-					-- ToDo: better define a special nested handler in E2B_CUSTOM_ANY_HANDLER
-				if not (current_target_type.is_expanded or
-						helper.is_class_logical (current_target_type.base_class) or
-						(attached {FEATURE_B} a_node.message as f and then translation_mapping.void_ok_features.has (f.feature_name))) then
-					add_safety_check (factory.not_equal (current_target, factory.void_), "attached", context_tag, context_line_number)
-				end
+				add_void_call_check (a_node)
 
 					-- Evaluate message with original expression
 --				if attached {CL_TYPE_A} current_target_type as l_cl_type then
@@ -1223,6 +1216,27 @@ feature -- Translation
 				if not l_conversion.is_empty then
 					last_expression := factory.function_call (l_conversion, << last_expression >>, types.set (a_content_type))
 				end
+			end
+		end
+
+	process_as_old (a_expr: EXPR_B)
+			-- Process `old a_expr'.
+		local
+			l_temp_heap: IV_EXPRESSION
+		do
+			l_temp_heap := entity_mapping.heap
+			entity_mapping.set_heap (entity_mapping.old_heap)
+			safe_process (a_expr)
+			entity_mapping.set_heap (l_temp_heap)
+		end
+
+	add_void_call_check (a_node: NESTED_B)
+			-- Add void check for the target of `a_node' if needed.
+		do
+			if not (current_target_type.is_expanded or
+					helper.is_class_logical (current_target_type.base_class) or
+					(attached {FEATURE_B} a_node.message as f and then translation_mapping.void_ok_features.has (f.feature_name))) then
+				add_safety_check (factory.not_equal (current_target, factory.void_), "attached", context_tag, context_line_number)
 			end
 		end
 

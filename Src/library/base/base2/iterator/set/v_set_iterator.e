@@ -33,7 +33,7 @@ feature -- Cursor movement
 			modify_model ("index_", Current)
 		deferred
 		ensure
-			index_effect_found: target.set_has (v) implies v.is_model_equal (sequence [index_])
+			index_effect_found: target.set_has (v) implies sequence [index_] = target.set_item (v)
 			index_effect_not_found: not target.set_has (v) implies index_ = sequence.count + 1
 		end
 
@@ -47,13 +47,14 @@ feature -- Removal
 			lock_wrapped: target.lock.is_wrapped
 			target_registered: target.lock.sets [target]
 			only_iterator: target.observers = [target.lock, Current]
-			modify_model (["sequence"], Current)
-			modify_model (["set"], target)
+			modify_model (["sequence", "box"], Current)
+			modify_model ("set", target)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.removed_at (index_)
 			target_set_effect: target.set ~ old (target.set / sequence [index_])
 			target_wrapped: target.is_wrapped
+			index_ = old index_
 		end
 
 invariant

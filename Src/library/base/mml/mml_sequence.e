@@ -268,16 +268,15 @@ feature -- Lemmas
 			-- In a sequence with no duplicates, each element occurs exactly once.
 		note
 			status: lemma
-		require
-			no_duplicates: no_duplicates
 		do
 			if not is_empty then
 				but_last.lemma_no_duplicates
 				check Current = but_last & last end
-				check but_last.to_bag [last] = 0 end
+				check across 1 |..| (count - 1) as i all item (i.item) /= last end implies but_last.to_bag [last] = 0 end
+				check but_last.to_bag [last] = 0 implies across 1 |..| (count - 1) as i all item (i.item) /= last end end
 			end
 		ensure
-			single_occurrence: across 1 |..| count as i all occurrences (item (i.item)) = 1 end
+			no_duplicates = to_bag.is_constant (1)
 		end
 
 end

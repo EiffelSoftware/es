@@ -96,14 +96,8 @@ feature -- Visitors
 
 	process_un_old_b (a_node: UN_OLD_B)
 			-- <Precursor>
-		local
-			l_call: IV_FUNCTION_CALL
-			l_temp_heap: IV_EXPRESSION
 		do
-			l_temp_heap := entity_mapping.heap
-			entity_mapping.set_heap (entity_mapping.old_heap)
-			safe_process (a_node.expr)
-			entity_mapping.set_heap (l_temp_heap)
+			process_as_old (a_node.expr)
 		end
 
 feature -- Translation
