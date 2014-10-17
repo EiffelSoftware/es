@@ -139,46 +139,53 @@ feature -- Workflow
 			--email is not already associated to a membership user, but there is a Contact entry, we do like the above and add a new interaction
 			--email is not in our database, we create a Contact user and add the interaction
 			--Once this is done, we associated a unique URL to the Contact and send that link to the user. In this Eiffel, we will also have links to Eiffel resources such as videos, documentation, etc (ex: How to install video, How to create your first Eiffel application ….)
-		local
-			l_data: STRING
 		do
 			if attached database_service as l_service then
 				if
 					attached {WSF_STRING} req.query_parameter ("token") as l_token and then
-					attached {TUPLE[email:READABLE_STRING_32; platform: READABLE_STRING_32]} l_service.retrieve_download_details (l_token.value) as l_tuple
+					attached {DOWNLOAD_INFORMATION} l_service.retrieve_download_details (l_token.value) as l_info and then
+					attached l_info.email  as email and then
+					attached l_info.platform as platform
 				then
-					if l_service.is_membership (l_tuple.email) then
-						log.write_debug (generator + "process_workflow:" + l_tuple.email +  " Membership")
+					l_info.set_platform (platform)
+					l_info.set_product ("EiffelStudio enterprise")
+					l_info.set_filename (downloaded_file (platform))
+					l_info.set_email_date (create {DATE_TIME}.make_now_utc)
+					if l_service.is_membership (email) then
+						log.write_debug (generator + "process_workflow:" + email +  " Membership")
 						if 	l_service.is_download_active (l_token.value) then
-							log.write_debug (generator + "process_workflow:" + l_tuple.email +  " Download active")
-							l_service.add_download_interaction_membership (l_tuple.email, "EiffelStudio", l_tuple.platform, "", l_token.value)
-							enterprise_download_options (req, res, link (l_tuple.platform))
+							log.write_debug (generator + "process_workflow:" + email +  " Download active")
+							l_service.add_download_interaction_membership (email, "EiffelStudio", platform, "", l_token.value)
+							enterprise_download_options (req, res, link (platform))
+							send_email_download_notification (l_info)
 						else
-							log.write_debug (generator + "process_workflow:" + l_tuple.email +  " Download not active using token:" + l_token.value )
+							log.write_debug (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
 							bad_request (req, res, "")
 						end
-					elseif l_service.is_contact (l_tuple.email) then
-						log.write_debug (generator + "process_workflow:" + l_tuple.email +  " Contact")
+					elseif l_service.is_contact (email) then
+						log.write_debug (generator + "process_workflow:" + email +  " Contact")
 						if 	l_service.is_download_active (l_token.value) then
-							log.write_debug (generator + "process_workflow:" + l_tuple.email +  " Download active")
-							l_service.add_download_interaction_contact (l_tuple.email, "EiffelStudio", l_tuple.platform, "", l_token.value)
-							enterprise_download_options (req, res, link (l_tuple.platform))
+							log.write_debug (generator + "process_workflow:" + email +  " Download active")
+							l_service.add_download_interaction_contact (email, "EiffelStudio", platform, "", l_token.value)
+							enterprise_download_options (req, res, link (platform))
+							send_email_download_notification (l_info)
 						else
-							log.write_debug (generator + "process_workflow:" + l_tuple.email +  " Download not active using token:" + l_token.value )
+							log.write_debug (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
 							bad_request (req, res, "")
 						end
 					else
 						check
-							l_service.is_new_contact (l_tuple.email)
+							l_service.is_new_contact (email)
 						end
-						log.write_debug (generator + "process_workflow:" + l_tuple.email +  " New Contact")
+						log.write_debug (generator + "process_workflow:" + email +  " New Contact")
 						if 	l_service.is_download_active (l_token.value ) then
-							log.write_debug (generator + "process_workflow:" + l_tuple.email +  " Download active")
-							l_service.validate_contact (l_tuple.email) --(add a new contact, remove temporary contact)
-							l_service.add_download_interaction_contact (l_tuple.email, "EiffelStudio", l_tuple.platform, "", l_token.value)
-							enterprise_download_options (req, res, link (l_tuple.platform))
+							log.write_debug (generator + "process_workflow:" + email +  " Download active")
+							l_service.validate_contact (email) --(add a new contact, remove temporary contact)
+							l_service.add_download_interaction_contact (email, "EiffelStudio", platform, "", l_token.value)
+							enterprise_download_options (req, res, link (platform))
+							send_email_download_notification (l_info)
 						else
-							log.write_debug (generator + "process_workflow:" + l_tuple.email +  " Download not active using token:" + l_token.value )
+							log.write_debug (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
 							bad_request (req, res, "")
 						end
 					end
@@ -367,12 +374,29 @@ feature -- Send Email
 				attached download_service as l_service then
 					create l_hp.make (layout.html_template_path, req.absolute_script_url (""), a_form,a_token, l_service)
 					if attached l_hp.representation as l_html_download_options then
-						l_email_service.send_download_email (a_form.email,l_html_download_options, a_host)
+						l_email_service.send_download_email (a_form.email, l_html_download_options, a_host)
 					else
-						l_email_service.send_download_email (a_form.email,"Internal Server Error", a_host)
+						l_email_service.send_download_email (a_form.email, "Internal Server Error", a_host)
 					end
 
 			end
+		end
+
+	send_email_download_notification (a_download_information: DOWNLOAD_INFORMATION)
+		local
+			l_hp: EMAIL_NOTIFICATION_DOWNLOAD
+		do
+			if attached email_service as l_email_service and then
+					attached download_service as l_service then
+						create l_hp.make (layout.html_template_path, a_download_information)
+						if attached l_hp.representation as l_html_download_info then
+							l_email_service.send_email_download_notification (l_html_download_info)
+						else
+							l_email_service.send_email_download_notification ("Internal Server Error")
+						end
+
+			end
+
 		end
 
 feature {NONE} -- Implementation
@@ -397,6 +421,26 @@ feature {NONE} -- Implementation
 					   attached l_options.filename as l_filename
 					then
 						l_result.append (l_filename)
+					end
+				end
+			end
+			Result := l_result
+		end
+
+	downloaded_file (a_platform: READABLE_STRING_32): READABLE_STRING_32
+			-- Name of the downloaded file, or empty string.
+		local
+			l_result: STRING_32
+		do
+			l_result := "";
+			if attached download_service as l_download_service then
+				if
+					attached l_download_service.retrieve_product_enterprise as l_product
+				then
+					if attached selected_platform (l_product.downloads, a_platform) as l_options  and then
+					   attached l_options.filename as l_filename
+					then
+						l_result := l_filename
 					end
 				end
 			end

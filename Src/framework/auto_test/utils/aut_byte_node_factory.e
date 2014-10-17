@@ -97,7 +97,8 @@ feature -- Byte node generation
 			a_feature_attached: a_feature /= Void
 			a_return_type_attached: a_return_type /= Void
 		do
-			Result ?= a_feature.access (a_return_type, True)
+				-- Currently the last argument is `False' because AutoTest does not support scoop yet.
+			Result ?= a_feature.access (a_return_type, True, False)
 			if a_parameters /= Void then
 				Result.set_parameters (a_parameters)
 			end
