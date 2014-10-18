@@ -36,7 +36,7 @@ feature {NONE} -- Initialization
 			target := s
 			s.observers := s.observers & Current
 			list_iterator := it
-			sequence := flattened (target.buckets_)
+			sequence := concat (target.buckets_)
 			lemma_content (target.buckets_, target.set, target.bag, sequence)
 		ensure
 			wrapped: is_wrapped
@@ -148,14 +148,14 @@ feature -- Cursor movement
 			check target.lists [bucket_index].sequence = target.buckets_ [bucket_index] end
 			if c = Void then
 				bucket_index := target.capacity + 1
-				index_ := total_count (target.buckets_) + 1
+				index_ := concat (target.buckets_).count + 1
 			else
 				check list_iterator.inv_only ("subjects_definition", "A2") end
 				check target.buckets [bucket_index].inv_only ("cells_domain", "owns_definition", "sequence_implementation") end
 				list_iterator.switch_target (target.buckets [bucket_index])
 				list_iterator.go_to_cell (c)
 				check list_iterator.inv_only ("sequence_definition") end
-				index_ := total_count (target.buckets_.front (bucket_index - 1)) + list_iterator.index_
+				index_ := concat (target.buckets_.front (bucket_index - 1)).count + list_iterator.index_
 				lemma_single_out (target.buckets_, bucket_index)
 				v.lemma_transitive (sequence [index_], [target.set_item (v)])
 			end
@@ -315,22 +315,22 @@ feature {NONE} -- Implementation
 		do
 			from
 				i := l
-				use_definition (flattened (target.buckets_.interval (l, l - 1)))
+				use_definition (concat (target.buckets_.interval (l, l - 1)))
 			invariant
 				l <= i and i <= u + 1
-				Result = total_count (target.buckets_.interval (l, i - 1))
+				Result = concat (target.buckets_.interval (l, i - 1)).count
 			until
 				i > u
 			loop
 				check target.inv end
 				Result := Result + target.buckets [i].count
-				use_definition (flattened (target.buckets_.interval (l, i)))
+				use_definition (concat (target.buckets_.interval (l, i)))
 				check target.buckets_.interval (l, i).but_last = target.buckets_.interval (l, i - 1) end
 				check target.buckets_.interval (l, i).last = target.buckets_ [i] end
 				i := i + 1
 			end
 		ensure
-			definition: Result = total_count (target.buckets_.interval (l, u))
+			definition: Result = concat (target.buckets_.interval (l, u)).count
 		end
 
 	to_next_bucket
@@ -363,15 +363,17 @@ feature {NONE} -- Implementation
 			end
 
 			check target.inv_only ("buckets_content") end
-			lemma_one_more (target.buckets_, bucket_index.old_)
 			lemma_empty (target.buckets_.interval (bucket_index.old_ + 1, bucket_index - 1))
-			check target.buckets_.front (bucket_index - 1) = target.buckets_.front (bucket_index.old_) + target.buckets_.interval (bucket_index.old_ + 1, bucket_index - 1) end
-			lemma_concat (target.buckets_.front (bucket_index.old_), target.buckets_.interval (bucket_index.old_ + 1, bucket_index - 1))
 
 			if bucket_index <= target.capacity then
 				check list_iterator.inv_only ("subjects_definition", "A2", "default_owns") end
 				list_iterator.switch_target (target.buckets [bucket_index])
 				list_iterator.start
+
+				lemma_single_out (target.buckets_.front (bucket_index - 1), bucket_index.old_)
+				check target.buckets_.front (bucket_index - 1).front (bucket_index.old_ - 1) = target.buckets_.front (bucket_index.old_ - 1) end
+			else
+				lemma_single_out (target.buckets_, bucket_index.old_)
 			end
 			check list_iterator.inv_only ("sequence_definition") end
 			wrap
@@ -426,98 +428,85 @@ feature {NONE} -- Implementation
 
 feature {V_CONTAINER, V_ITERATOR} -- Specification
 
-	flattened (bs: like target.buckets_): MML_SEQUENCE [G]
+	concat (seqs: like target.buckets_): MML_SEQUENCE [G]
+			-- All sequences in `seqs' concatenated together.
 		note
 			status: functional, ghost, opaque
 		require
 			reads ([])
 		do
-			Result := if bs.is_empty then {MML_SEQUENCE [G]}.empty_sequence else flattened (bs.but_last) + bs.last end
+			Result := if seqs.is_empty then {MML_SEQUENCE [G]}.empty_sequence else concat (seqs.but_last) + seqs.last end
 		end
 
-	total_count (bs: like target.buckets_): INTEGER
-		note
-			status: functional, ghost
-		require
-			reads ([])
-		do
-			Result := flattened (bs).count
-		end
-
-	lemma_one_more (bs: like target.buckets_; i: INTEGER)
-		note
-			status: lemma
-		require
-			i_in_bounds: 1 <= i and i <= bs.count
-		do
-			use_definition (flattened (bs.front (i)))
-			check bs.front (i).but_last = bs.front (i - 1) end
-		ensure
-			flattened (bs.front (i)) = flattened (bs.front (i - 1)) + bs [i]
-		end
-
-	lemma_single_out (bs: like target.buckets_; i: INTEGER)
-		note
-			status: lemma
-		require
-			i_in_bounds: 1 <= i and i <= bs.count
-		do
-			use_definition (flattened (bs.front (i)))
-			check bs.front (i).but_last = bs.front (i - 1) end
-			check bs = bs.front (i) + bs.tail (i + 1) end
-			lemma_concat (bs.front (i), bs.tail (i + 1))
-		ensure
-			flattened (bs) = flattened (bs.front (i - 1)) + bs [i] + flattened (bs.tail (i + 1))
-		end
-
-	lemma_empty (bs: like target.buckets_)
-		note
-			status: lemma
-		require
-			all_empty: across 1 |..| bs.count as i all bs [i.item].is_empty end
-		do
-			use_definition (flattened (bs))
-			if bs.count > 0 then
-				lemma_empty (bs.but_last)
-			end
-		ensure
-			total_count (bs) = 0
-		end
-
-	lemma_concat (a, b: like target.buckets_)
+	lemma_append (a, b: like target.buckets_)
+			-- Lemma: `concat' distributes over append.
 		note
 			status: lemma
 		do
-			use_definition (flattened (b))
+			use_definition (concat (b))
 			if b.is_empty then
 				check a + b = a end
 			else
 				check (a + b).but_last = a + b.but_last end
-				lemma_concat (a, b.but_last)
-				use_definition (flattened (a + b))
+				lemma_append (a, b.but_last)
+				use_definition (concat (a + b))
 			end
 		ensure
-			flattened (a + b) = flattened (a) + flattened (b)
+			concat (a + b) = concat (a) + concat (b)
+		end
+
+	lemma_single_out (seqs: like target.buckets_; i: INTEGER)
+			-- Lemma that singles out `seqs [i]' from `concat (seqs)'.
+		note
+			status: lemma
+		require
+			i_in_bounds: 1 <= i and i <= seqs.count
+		do
+			use_definition (concat (seqs.front (i)))
+			check seqs.front (i).but_last = seqs.front (i - 1) end
+			check seqs = seqs.front (i) + seqs.tail (i + 1) end
+			lemma_append (seqs.front (i), seqs.tail (i + 1))
+		ensure
+			concat (seqs) = concat (seqs.front (i - 1)) + seqs [i] + concat (seqs.tail (i + 1))
+		end
+
+	lemma_empty (seqs: like target.buckets_)
+			-- Lemma: `concat' of empty sequences is an empty sequence.
+		note
+			status: lemma
+		require
+			all_empty: across 1 |..| seqs.count as i all seqs [i.item].is_empty end
+		do
+			use_definition (concat (seqs))
+			if seqs.count > 0 then
+				lemma_empty (seqs.but_last)
+			end
+		ensure
+			concat (seqs).is_empty
 		end
 
 	lemma_content (bs: like target.buckets_; s: like target.set; b: like target.bag; seq: like sequence)
+			-- If `seq' is `concat (bs)', and `s' and `b' are the set and bag of elements in `bs' respectively,
+			-- then `s' and `b' are the set and bag of elements in `seq' as well.
 		note
 			status: lemma
 		require
 			target /= Void
-			valid_seq: seq = flattened (bs)
+			valid_seq: seq = concat (bs)
 			set_non_void: s.non_void
 			set_not_too_small: across 1 |..| bs.count as i all across 1 |..| bs [i.item].count as j all s [(bs [i.item])[j.item]] end end
-			set_not_too_large: across s as x all across 1 |..| bs.count as i some bs [i.item].has (x.item) end end
+			set_not_too_large: target.set_not_too_large (s, bs)
 			no_precise_duplicates: across 1 |..| bs.count as i all across 1 |..| bs.count as j all
 					across 1 |..| bs [i.item].count as k all across 1 |..| bs [j.item].count as l all
 							i.item /= j.item or k.item /= l.item implies (bs [i.item])[k.item] /= (bs [j.item])[l.item] end end end end
 			bag_domain_definition: b.domain ~ s
 			bag_definition: b.is_constant (1)
 		do
-			use_definition (flattened (bs))
+			use_definition (concat (bs))
+			use_definition (target.set_not_too_large (s, bs))
 			if not bs.is_empty then
 				check across 1 |..| (bs.count - 1) as i all bs [i.item] = bs.but_last [i.item] end end
+				use_definition (target.set_not_too_large (s - bs.last.range, bs.but_last))
 				lemma_content (bs.but_last, s - bs.last.range, b - bs.last.to_bag, seq.front (seq.count - bs.last.count))
 				bs.last.lemma_no_duplicates
 			else
@@ -535,10 +524,10 @@ invariant
 	target_is_bucket: target.lists.has (list_iterator.target)
 	targets_which_bucket: target.lists.domain [bucket_index] implies list_iterator.target = target.lists [bucket_index]
 	list_iterator_not_off: target.lists.domain [bucket_index] implies 1 <= list_iterator.index_ and list_iterator.index_ <= list_iterator.sequence.count
-	sequence_implementation: sequence = flattened (target.buckets_)
+	sequence_implementation: sequence = concat (target.buckets_)
 	index_before: bucket_index = 0 implies index_ = 0
-	index_after: bucket_index > target.lists.count implies index_ = total_count (target.buckets_) + 1
-	index_not_off: target.lists.domain [bucket_index] implies index_ = total_count (target.buckets_.front (bucket_index - 1)) + list_iterator.index_
+	index_after: bucket_index > target.lists.count implies index_ = concat (target.buckets_).count + 1
+	index_not_off: target.lists.domain [bucket_index] implies index_ = concat (target.buckets_.front (bucket_index - 1)).count + list_iterator.index_
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

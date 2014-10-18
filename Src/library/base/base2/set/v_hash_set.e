@@ -34,6 +34,7 @@ feature {NONE} -- Initialization
 			create buckets_.constant ({MML_SEQUENCE [G]}.empty_sequence, buckets.sequence.count)
 			lock := l
 			set_observers ([lock])
+			use_definition (set_not_too_large (set, buckets_))
 		ensure
 			set_empty: set.is_empty
 			lock_set: lock = l
@@ -130,6 +131,7 @@ feature -- Removal
 			lists := buckets.sequence
 			create buckets_.constant ({MML_SEQUENCE [G]}.empty_sequence, buckets.sequence.count)
 			create bag
+			use_definition (set_not_too_large (set, buckets_))
 		end
 
 feature {NONE} -- Performance parameters
@@ -398,7 +400,7 @@ feature -- Specification
 	set_not_too_large (s: like set; bs: like buckets_): BOOLEAN
 			-- Is every element of `s' contained in at least one of `bs'?
 		note
-			status: functional, ghost
+			status: functional, ghost, opaque
 		require
 			reads_field ([])
 		do
@@ -455,6 +457,7 @@ feature -- Specification
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
 		do
+			use_definition (set_not_too_large (set, buckets_))
 			check lock.inv_only ("valid_buckets") end
 		ensure
 			set_not_too_large (set, buckets_)

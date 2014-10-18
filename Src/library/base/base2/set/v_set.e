@@ -18,8 +18,8 @@ inherit
 		redefine
 			count,
 			is_empty,
-			occurrences
---			is_equal
+			occurrences,
+			is_model_equal
 		end
 
 feature -- Measurement
@@ -446,25 +446,22 @@ feature -- Removal
 			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
-			s: MML_SEQUENCE [G]
+			seq: MML_SEQUENCE [G]
 		do
 			check inv_only ("set_non_void", "lock_non_current") end
 			if other /= Current then
-				check lock.inv end
-				check across set as x all lock.owns [x.item] end end
 				from
 					it := other.new_cursor
-					s := it.sequence
+					seq := it.sequence
+					check other.inv_only ("set_non_void", "lock_non_current", "bag_definition") end
 				invariant
 					is_wrapped
-					other.is_wrapped
 					it.is_wrapped
-					other.inv_only ("set_non_void", "lock_non_current", "bag_definition")
 					lock.inv_only ("subjects_lock", "owns_items", "no_duplicates")
-					1 <= it.index_ and it.index_ <= it.sequence.count + 1
+					1 <= it.index_ and it.index_ <= seq.count + 1
 					across set.old_ as x all other.set_has (x.item).old_ or set [x.item]  end
-					across 1 |..| (it.index_ - 1) as j all s_has (set.old_, s [j.item]) or s_has (set, s [j.item]) end
-					across set as x all set.old_ [x.item] or across 1 |..| (it.index_ - 1) as j some x.item.is_model_equal (s [j.item]) end end
+					across 1 |..| (it.index_ - 1) as j all s_has (set.old_, seq [j.item]) or s_has (set, seq [j.item]) end
+					across set as x all set.old_ [x.item] or across 1 |..| (it.index_ - 1) as j some x.item.is_model_equal (seq [j.item]) end end
 					observers ~ observers.old_
 					modify_model (["set", "observers"], Current)
 					modify_model ("index_", it)
@@ -473,14 +470,14 @@ feature -- Removal
 				loop
 					if has (it.item) then
 						check it.inv_only ("target_bag_constraint") end
-						lemma_symmetric_subtract (it.sequence, it.index_, set, set.old_, set_item (s [it.index_]))
+						lemma_symmetric_subtract (seq, it.index_, set, set.old_, set_item (seq [it.index_]))
 						remove (it.item)
 					else
 						extend (it.item)
 					end
 					it.forth
 				variant
-					it.sequence.count - it.index_
+					seq.count - it.index_
 				end
 				other.forget_iterator (it)
 			else
@@ -636,6 +633,15 @@ feature -- Specification
 		ensure
 			across 1 |..| i as j all s_has (old_s, seq [j.item]) or s_has (s / z, seq [j.item]) end
 			across s / z as x all old_s [x.item] or across 1 |..| i as j some x.item.is_model_equal (seq [j.item]) end end
+		end
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is the abstract state of `Current' equal to that of `other'?
+		note
+			status: ghost, functional
+		do
+			Result := across set as x all other.set_has (x.item) end and
+				across other.set as x all set_has (x.item) end
 		end
 
 invariant
