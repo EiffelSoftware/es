@@ -313,7 +313,7 @@ procedure unwrap_all (Current: ref, s: Set ref);
   modifies Heap;
   ensures global(Heap);
   ensures (forall o: ref :: s[o] ==> is_open(Heap, o)); // UWE1
-  ensures (forall o: ref :: s[o] ==> (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o') && user_inv(Heap, o'))); // UWE2
+  ensures (forall o: ref :: s[o] ==> (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o'))); // UWE2
   ensures (forall <T> o: ref, f: Field T :: !(f == closed && s[o]) && !(f == owner && (exists o': ref :: s[o'] && old(Heap[o', owns][o]))) ==> Heap[o, f] == old(Heap[o, f]));
   ensures (forall o: ref :: s[o] ==> user_inv(Heap, o) && inv_frame_trigger(o));
   free ensures HeapSucc(old(Heap), Heap);

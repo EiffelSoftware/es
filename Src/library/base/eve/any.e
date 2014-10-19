@@ -490,6 +490,11 @@ feature -- Verification: ownership operations
 		do
 		end
 
+	frozen unwrap_no_inv
+			-- Unwrap object `a' and do not assume its invariant.
+		do
+		end
+
 	frozen unwrap_all (a: MML_SET [ANY])
 			-- Unwrap all objects in `a' simultaneously.
 		do

@@ -139,6 +139,7 @@ feature -- Access (built-ins)
 				"wrap",
 				"wrap_all",
 				"unwrap",
+				"unwrap_no_inv",
 				"unwrap_all",
 				"use_definition"
 			>>

@@ -56,6 +56,8 @@ feature -- Basic operations
 				a_translator.process_builtin_function_call (a_feature, a_parameters, "domain")
 			elseif translation_mapping.builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_function_call (a_feature, a_parameters, l_name)
+			elseif l_name ~ "unwrap_no_inv" then
+				a_translator.process_builtin_routine_call (a_feature, a_parameters, "unwrap")
 			elseif translation_mapping.builtin_any_procedures.has (l_name) then
 				pre_builtin_call (a_translator, a_feature)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)

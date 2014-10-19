@@ -28,13 +28,11 @@ feature {NONE} -- Initialization
 			-- Create an empty set that will use the lock `l'.
 		note
 			status: creator
+			explicit: wrapping
 		do
-			buckets := empty_buckets (default_capacity)
-			lists := buckets.sequence
-			create buckets_.constant ({MML_SEQUENCE [G]}.empty_sequence, buckets.sequence.count)
 			lock := l
 			set_observers ([lock])
-			use_definition (set_not_too_large (set, buckets_))
+			make_empty_buckets (default_capacity)
 		ensure
 			set_empty: set.is_empty
 			lock_set: lock = l
@@ -97,47 +95,33 @@ feature -- Extension
 			-- Add `v' to the set.
 		note
 			explicit: wrapping
-		local
-			idx: INTEGER
-			list: V_LINKED_LIST [G]
 		do
-			check lock.inv_only ("owns_items", "valid_buckets") end
-			check inv_only ("buckets_exist", "owns_definition", "buckets_non_empty", "buckets_count", "lists_definition", "buckets_lower",
-				"set_non_void", "set_not_too_small", "lists_definition", "buckets_content") end
-			idx := index (v)
-			list := buckets [idx]
-			if cell_equal (list, v) = Void then
-				unwrap
-				list.extend_back (v)
-				buckets_ := buckets_.replaced_at (idx, buckets_ [idx] & v)
-				set := set & v
-				count_ := count_ + 1
-				bag := bag & v
-				check set [v] end
-				lemma_set_not_too_large
-				wrap
-			end
-			check set_has (v) end
+			check lock.inv_only ("owns_items") end
+			auto_resize (count_ + 1)
+			simple_extend (v)
 		end
 
 feature -- Removal
 
 	wipe_out
 			-- Remove all elements.
+		note
+			explicit: wrapping
 		do
-			buckets := empty_buckets (default_capacity)
-			count_ := 0
-			create set
-			lists := buckets.sequence
-			create buckets_.constant ({MML_SEQUENCE [G]}.empty_sequence, buckets.sequence.count)
-			create bag
-			use_definition (set_not_too_large (set, buckets_))
+			unwrap
+			make_empty_buckets (default_capacity)
 		end
 
 feature {NONE} -- Performance parameters
 
 	default_capacity: INTEGER = 16
 			-- Default size of `buckets'.		
+
+	target_load_factor: INTEGER = 75
+			-- Approximate percentage of elements per bucket that bucket array has after automatic resizing.
+
+	growth_rate: INTEGER = 2
+			-- Rate by which bucket array grows and shrinks.			
 
 feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 
@@ -225,52 +209,51 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			definition_found: Result /= Void implies list.cells.has (Result) and list.sequence.has (Result.item) and v.is_model_equal (Result.item)
 		end
 
-	empty_buckets (n: INTEGER): V_ARRAY [V_LINKED_LIST [G]]
-			-- Array of `n' empty buckets.
-		note
-			status: impure
+	make_empty_buckets (n: INTEGER)
+			-- Create an empty set with `buckets' of size `n'.
 		require
-			n_non_negative: n >= 0
-			modify ([])
+			open: is_open
+			n_positive: n > 0
+			no_iterators: observers = [lock]
+			inv_only ("lock_non_void", "default_subjects")
+			modify_field (["buckets", "count_", "set", "lists", "buckets_", "bag", "owns", "closed"], Current)
 		local
 			i: INTEGER
 		do
-			create Result.make (1, n)
+			create buckets.make (1, n)
 			from
 				i := 1
 			invariant
 				1 <= i and i <= n + 1
-				Result.is_wrapped
-				Result.sequence.count = n
+				buckets.is_wrapped
+				buckets.sequence.count = n
 				across 1 |..| (i - 1) as j all
-					Result.sequence [j.item].is_wrapped and
-					Result.sequence [j.item].is_fresh and
-					Result.sequence [j.item].sequence.is_empty and
-					Result.sequence [j.item].observers.is_empty
+					buckets.sequence [j.item].is_wrapped and
+					buckets.sequence [j.item].is_fresh and
+					buckets.sequence [j.item].sequence.is_empty and
+					buckets.sequence [j.item].observers.is_empty
 				end
 				across 1 |..| (i - 1) as k all across 1 |..| (i - 1) as l all
-					k.item /= l.item implies Result.sequence [k.item] /= Result.sequence [l.item] end end
-				modify_model ("sequence", Result)
+					k.item /= l.item implies buckets.sequence [k.item] /= buckets.sequence [l.item] end end
+				modify_model ("sequence", buckets)
 			until
 				i > n
 			loop
-				Result [i] := create {V_LINKED_LIST [G]}
+				buckets [i] := create {V_LINKED_LIST [G]}
 				i := i + 1
 			end
+
+			count_ := 0
+			create set
+			lists := buckets.sequence
+			create buckets_.constant ({MML_SEQUENCE [G]}.empty_sequence, buckets.sequence.count)
+			create bag
+			use_definition (set_not_too_large (set, buckets_))
+			wrap
 		ensure
-			wrapped: Result.is_wrapped
-			fresh: Result.is_fresh
-			lower: Result.lower_ = 1
-			count: Result.sequence.count = n
-			no_observers: Result.observers.is_empty
-			content: across 1 |..| Result.sequence.count as j all
-					Result.sequence [j.item].is_wrapped and
-					Result.sequence [j.item].is_fresh and
-					Result.sequence [j.item].sequence.is_empty and
-					Result.sequence [j.item].observers.is_empty
-				end
-			lists_distinct: across 1 |..| Result.sequence.count as k all across 1 |..| Result.sequence.count as l all
-				k.item /= l.item implies Result.sequence [k.item] /= Result.sequence [l.item] end end
+			wrapped: is_wrapped
+			set_effect: set.is_empty
+			capacity_effect: lists.count = n
 		end
 
 	fresh_cursor: V_HASH_SET_ITERATOR [G]
@@ -354,6 +337,139 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			same_index: it.list_iterator.index_ = old it.list_iterator.index_
 			same_lists: lists = old lists
 			buckets_effect: buckets_ = old (buckets_.replaced_at (it.bucket_index, buckets_ [it.bucket_index].removed_at (it.list_iterator.index_)))
+		end
+
+	simple_extend (v: G)
+			-- Add `v' to the set without resizing the buckets.
+		require
+			wrapped: is_wrapped
+			v_locked: lock.owns [v]
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
+			no_iterators: observers = [lock]
+			modify_model ("set", Current)
+		local
+			idx: INTEGER
+			list: V_LINKED_LIST [G]
+		do
+			check lock.inv_only ("owns_items", "valid_buckets") end
+			check inv_only ("buckets_exist", "owns_definition", "buckets_non_empty", "buckets_count", "lists_definition", "buckets_lower",
+				"set_non_void", "set_not_too_small", "lists_definition", "buckets_content") end
+			idx := index (v)
+			list := buckets [idx]
+			if cell_equal (list, v) = Void then
+				unwrap
+				list.extend_back (v)
+				buckets_ := buckets_.replaced_at (idx, buckets_ [idx] & v)
+				set := set & v
+				count_ := count_ + 1
+				bag := bag & v
+				check set [v] end
+				lemma_set_not_too_large
+				wrap
+			end
+			check set_has (v) end
+		ensure
+			wrapped: is_wrapped
+			abstract_effect: set_has (v)
+			precise_effect_has: old set_has (v) implies set = old set
+			precise_effect_new: not old set_has (v) implies set = old set & v
+			capacity_unchanged: lists.count = old lists.count
+		end
+
+	auto_resize (new_count: INTEGER)
+			-- Resize `buckets' to an optimal size for `new_count'.
+		require
+			wrapped: is_wrapped
+			no_iterators: observers = [lock]
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
+			modify_model (["set", "owns"], Current)
+		do
+			check inv end
+			if new_count * target_load_factor // 100 > growth_rate * capacity then
+				resize (capacity * growth_rate)
+			elseif capacity > default_capacity and new_count * target_load_factor // 100 < capacity // growth_rate then
+				resize (capacity // growth_rate)
+			end
+		ensure
+			wrapped: is_wrapped
+			set_unchanged: set ~ old set
+		end
+
+	resize (c: INTEGER)
+			-- Resize `buckets' to `c'.
+		require
+			wrapped: is_wrapped
+			c_positive: c > 0
+			no_iterators: observers = [lock]
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
+			modify_model (["set", "owns"], Current)
+		local
+			i: INTEGER
+			b: V_ARRAY [V_LINKED_LIST [G]]
+			it: V_LINKED_LIST_ITERATOR [G]
+		do
+			b := buckets
+			check lock.inv_only ("owns_items", "no_duplicates") end
+			check inv_only ("lock_non_void", "default_subjects", "owns_definition", "lists_definition", "buckets_count", "buckets_lower", "buckets_content") end
+			unwrap_no_inv
+			make_empty_buckets (c)
+			use_definition (set_not_too_large (set, buckets_.old_))
+			from
+				i := 1
+			invariant
+				is_wrapped
+				b.is_wrapped
+				across 1 |..| buckets_.old_.count as j all lists.old_ [j.item].is_wrapped end
+				1 <= i and i <= buckets_.old_.count + 1
+				lists.count = c
+				set <= set.old_
+				across 1 |..| buckets_.old_.count as k all across 1 |..| buckets_.old_ [k.item].count as l all
+					set [(buckets_.old_ [k.item])[l.item]] = (k.item < i) end end
+				across set.old_ - set as x all not set_has (x.item) end
+				set_not_too_large (set, buckets_.old_)
+				modify_model ("set", Current)
+				modify_field (["observers", "closed"], lists.old_.range)
+			until
+				i > b.count
+			loop
+				from
+					it := b [i].new_cursor
+				invariant
+					is_wrapped
+					it.is_wrapped
+					1 <= it.index_ and it.index_ <= lists.old_ [i].count + 1
+					lists.old_ [i].sequence = buckets_.old_ [i]
+					lists.count = c
+					across 1 |..| buckets_.old_.count as k all across 1 |..| buckets_.old_ [k.item].count as l all
+						set [(buckets_.old_ [k.item])[l.item]] = (k.item < i or (k.item = i and l.item < it.index_)) end end
+					set <= set.old_
+					across set.old_ - set as x all not set_has (x.item) end
+					set_not_too_large (set, buckets_.old_)
+					modify_model ("set", Current)
+					modify_model ("index_", it)
+				until
+					it.after
+				loop
+					check it.inv_only ("sequence_definition") end
+					check inv_only ("set_not_too_small", "no_precise_duplicates").old_ end
+					lemma_set_one_more_not_too_large (set, buckets_.old_, i, it.index_)
+					simple_extend (it.item)
+					check no_duplicates (set.old_) end
+					it.forth
+				variant
+					lists.old_ [i].count - it.index_
+				end
+				i := i + 1
+			end
+			check inv_only ("set_not_too_large").old_ end
+			lemma_same_content (buckets_.old_, set.old_, set)
+		ensure
+			wrapped: is_wrapped
+			capacity_effect: lists.count = c
+			set_unchanged: set = old set
 		end
 
 feature -- Specification
@@ -461,6 +577,37 @@ feature -- Specification
 			check lock.inv_only ("valid_buckets") end
 		ensure
 			set_not_too_large (set, buckets_)
+		end
+
+	lemma_set_one_more_not_too_large (s: like set; bs: like buckets_; i, j: INTEGER)
+			-- Adding `(bs [i]) [j]' to `s' preserves `set_not_too_large'.
+		note
+			status: lemma
+		require
+			set_not_too_large (s, bs)
+			i_in_bounds: 1 <= i and i <= bs.count
+			j_in_bounds: 1 <= j and j <= bs [i].count
+		do
+			use_definition (set_not_too_large (s, bs))
+			use_definition (set_not_too_large (s & (bs [i]) [j], bs))
+		ensure
+			set_not_too_large (s & (bs [i]) [j], bs)
+		end
+
+	lemma_same_content (bs: like buckets_; s1, s2: like set)
+			-- If `s1' and `s2' both have the same elements as `bs', then they are equal.
+		note
+			status: lemma
+		require
+			across 1 |..| bs.count as i all across 1 |..| bs [i.item].count as j all s1 [(bs [i.item])[j.item]] end end
+			set_not_too_large (s1, bs)
+			across 1 |..| bs.count as i all across 1 |..| bs [i.item].count as j all s2 [(bs [i.item])[j.item]] end end
+			set_not_too_large (s2, bs)
+		do
+			use_definition (set_not_too_large (s1, bs))
+			use_definition (set_not_too_large (s2, bs))
+		ensure
+			s1 = s2
 		end
 
 feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Specification

@@ -233,7 +233,7 @@ feature -- Extension
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
 			no_iterators: observers = [lock]
-			modify_model ("set", Current)
+			modify_model (["set", "owns"], Current)
 		deferred
 		ensure
 			abstract_effect: set_has (v)
@@ -251,7 +251,7 @@ feature -- Extension
 			set_registered: lock.sets [Current]
 			other_registered: lock.sets [other]
 			no_iterators: observers = [lock]
-			modify_model ("set", Current)
+			modify_model (["set", "owns"], Current)
 			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
@@ -271,7 +271,7 @@ feature -- Extension
 					set.old_ <= set
 					across 1 |..| (it.index_ - 1) as i all set_has (it.sequence [i.item]) end
 					across set as x all set.old_ [x.item] or other.set_has (x.item).old_ end
-					modify_model ("set", Current)
+					modify_model (["set", "owns"], Current)
 					modify_model ("index_", it)
 				until
 					it.after
@@ -304,7 +304,7 @@ feature -- Removal
 			lock_wrapped: lock.is_wrapped
 			set_registered: lock.sets [Current]
 			no_iterators: observers = [lock]
-			modify_model (["set", "observers"], Current)
+			modify_model (["set", "owns", "observers"], Current)
 		local
 			it: V_SET_ITERATOR [G]
 			x: G
@@ -338,7 +338,7 @@ feature -- Removal
 			set_registered: lock.sets [Current]
 			other_registered: lock.sets [other]
 			no_iterators: observers = [lock]
-			modify_model ("set", Current)
+			modify_model (["set", "owns"], Current)
 			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
@@ -358,7 +358,7 @@ feature -- Removal
 					set <= set.old_
 					across 1 |..| (it.index_ - 1) as i all other.set_has (it.sequence [i.item]) end
 					across set.old_ as y all other.set_has (y.item) implies set [y.item] end
-					modify_model ("set", Current)
+					modify_model (["set", "owns"], Current)
 					modify_model (["sequence", "index_"], it)
 				until
 					it.after
@@ -411,7 +411,7 @@ feature -- Removal
 					across 1 |..| (it.index_ - 1) as i all not set_has (it.sequence [i.item]) end
 					across set.old_ as y all not other.set_has (y.item) implies set [y.item] end
 					observers ~ observers.old_
-					modify_model (["set", "observers"], Current)
+					modify_model (["set", "owns", "observers"], Current)
 					modify_model ("index_", it)
 				until
 					it.after
@@ -463,7 +463,7 @@ feature -- Removal
 					across 1 |..| (it.index_ - 1) as j all s_has (set.old_, seq [j.item]) or s_has (set, seq [j.item]) end
 					across set as x all set.old_ [x.item] or across 1 |..| (it.index_ - 1) as j some x.item.is_model_equal (seq [j.item]) end end
 					observers ~ observers.old_
-					modify_model (["set", "observers"], Current)
+					modify_model (["set", "owns", "observers"], Current)
 					modify_model ("index_", it)
 				until
 					it.after
@@ -494,8 +494,6 @@ feature -- Removal
 	wipe_out
 			-- Remove all elements.
 		require
-			lock_wrapped: lock.is_wrapped
-			set_registered: lock.sets [Current]
 			no_iterators: observers = [lock]
 			modify_model (["set", "owns"], Current)
 		deferred
@@ -640,8 +638,7 @@ feature -- Specification
 		note
 			status: ghost, functional
 		do
-			Result := across set as x all other.set_has (x.item) end and
-				across other.set as x all set_has (x.item) end
+			Result := set ~ other.set
 		end
 
 invariant
