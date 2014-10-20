@@ -5280,6 +5280,15 @@ Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Getting[!!-~]sta
 Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Reference.wiki -text
 Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Tutorial.wiki -text
 Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/index.wiki -text
+Src/web/eiffel-lang.org/data/documentation/current/_images/LogoBeta.png -text
+Src/web/eiffel-lang.org/data/documentation/current/_images/LogoConstruction.png -text
+Src/web/eiffel-lang.org/data/documentation/current/_images/LogoDefinition.png -text
+Src/web/eiffel-lang.org/data/documentation/current/_images/LogoInformation.png -text
+Src/web/eiffel-lang.org/data/documentation/current/_images/LogoRecommended.png -text
+Src/web/eiffel-lang.org/data/documentation/current/_images/LogoReviewRequested.png -text
+Src/web/eiffel-lang.org/data/documentation/current/_images/LogoRule.png -text
+Src/web/eiffel-lang.org/data/documentation/current/_images/LogoUpdateNeeded.png -text
+Src/web/eiffel-lang.org/data/documentation/current/_images/LogoWarning.png -text
 Src/web/eiffel-lang.org/eiffel-lang-app.ini -text
 Src/web/eiffel-lang.org/eiffel-lang.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/eiffel-lang.ini -text

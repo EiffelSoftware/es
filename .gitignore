@@ -586,5 +586,9 @@ Src/unstable/library/compression/zlib/example/EIFGENs
 Src/unstable/library/persistency/database/sqlite3/spec/mingw
 Src/unstable/library/persistency/database/sqlite3/spec/msc
 Src/web/eiffel-lang.org/_db
+Src/web/eiffel-lang.org/_storage_
+Src/web/eiffel-lang.org/data/documentation/archive
+Src/web/eiffel-lang.org/library/wikidocs/testing/tmp
+Src/web/eiffel-lang.org/tmp
 eweasel/compilation/EIFGENs
 eweasel/tmp
