@@ -5280,6 +5280,7 @@ Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Getting[!!-~]sta
 Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Reference.wiki -text
 Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Tutorial.wiki -text
 Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/index.wiki -text
+Src/web/eiffel-lang.org/eiffel-lang-app.ini -text
 Src/web/eiffel-lang.org/eiffel-lang.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/eiffel-lang.ini -text
 Src/web/eiffel-lang.org/eiffel-lang.json -text
@@ -5308,6 +5309,7 @@ Src/web/eiffel-lang.org/library/cms/www/themes/test/res/favicon.ico -text
 Src/web/eiffel-lang.org/library/cms/www/themes/test/res/logo.png -text
 Src/web/eiffel-lang.org/library/cms/www/themes/test/res/style.css -text
 Src/web/eiffel-lang.org/library/wikidocs/testing/testing-safe.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/library/wikidocs/testing/testing.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/wiki_docs/wiki_docs-safe.ecf svneol=native#text/xml
