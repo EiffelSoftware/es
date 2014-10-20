@@ -628,7 +628,9 @@ feature -- Visitors
 			check a_node.is_static_call end
 
 			l_current_type := current_target_type
-			current_target_type := class_type_in_current_context (a_node.static_class_type)
+			if a_node.is_static_call then
+				current_target_type := class_type_in_current_context (a_node.static_class_type)
+			end
 
 			l_feature := helper.feature_for_call_access (a_node, current_target_type)
 			check feature_valid: l_feature /= Void end

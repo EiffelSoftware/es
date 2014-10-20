@@ -259,7 +259,7 @@ feature -- Styles
 	table_style: STRING = "width:100%%"
 	tr_header_style: STRING = "background-color:black;color:white"
 	tr_success_style: STRING = "background-color: #dfd"
-	tr_twostep_style: STRING = "background-color:#fe6"
+	tr_twostep_style: STRING = "background-color:#def"
 	tr_failed_style: STRING = "background-color:#fdd"
 	tr_error_style: STRING = "background-color:#ffd"
 	td_name_style: STRING = "padding: 5px; padding-right:15px"

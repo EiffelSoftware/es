@@ -485,9 +485,15 @@ function multiply(a, b: int): int { a * b }
 function modulo(a, b: int): int { a mod b }
 function divide(a, b: int): int { a div b }
 
-function min(a, b: int): int { if a <= b then a else b }
-function max(a, b: int): int { if a >= b then a else b }
-function abs(a: int): int { if a >= 0 then a else -a }
+function min_int(a, b: int): int { if a <= b then a else b }
+function max_int(a, b: int): int { if a >= b then a else b }
+function abs_int(a: int): int { if a >= 0 then a else -a }
+function sign_int(a: int): int { if a == 0 then 0 else if a > 0 then 1 else -1 }
+
+function min_real(a, b: real): real { if a <= b then a else b }
+function max_real(a, b: real): real { if a >= b then a else b }
+function abs_real(a: real): real { if a >= 0.0 then a else -a }
+function sign_real(a: real): int { if a == 0.0 then 0 else if a > 0.0 then 1 else -1 }
 
 // Expanded types
 
