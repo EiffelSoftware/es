@@ -19,30 +19,82 @@ create {V_HASH_SET}
 
 feature {NONE} -- Initialization
 
-	make (s: V_HASH_SET [G]; it: V_LINKED_LIST_ITERATOR [G])
-			-- Create an iterator over `s'.
+	make (t: V_HASH_SET [G])
+			-- Create iterator over `t'.
 		note
-			explicit: contracts
-			status: creator
+			explicit: contracts, wrapping
 		require
-			s_open: s.is_open
-			s.inv_only ("set_non_void", "set_not_too_small", "set_not_too_large", "no_precise_duplicates", "bag_domain_definition", "bag_definition")
-			it_wrapped: it.is_wrapped
-			target_is_bucket: s.lists.has (it.target)
-			modify_field ("owner", it)
-			modify_field ("observers", s)
+			open: is_open
+			t_wrapped: t.is_wrapped
+			no_observers: observers.is_empty
+			not_observing_t: not t.observers [Current]
+			modify_field (["observers", "closed"], t)
 			modify (Current)
+		local
+			i: INTEGER
 		do
-			target := s
-			s.observers := s.observers & Current
-			list_iterator := it
+			target := t
+			t.unwrap
+			t.observers := t.observers & Current
+			list_iterator := t.buckets [1].new_cursor
+			from
+				i := 2
+			invariant
+				2 <= i and i <= t.lists.count + 1
+				across 1 |..| t.lists.count as j all t.lists [j.item].is_wrapped end
+				across 1 |..| (i - 1) as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ & list_iterator end
+				across i |..| t.lists.count as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ end
+				modify_field (["observers", "closed"], t.lists.range)
+			until
+				i > t.lists.count
+			loop
+				t.lists [i].add_iterator (list_iterator)
+				i := i + 1
+			end
+			t.wrap
+
+			bucket_index := 0
+			index_ := 0
 			sequence := concat (target.buckets_)
 			lemma_content (target.buckets_, target.set, target.bag, sequence)
+			wrap
 		ensure
 			wrapped: is_wrapped
-			target_effect: target = s
-			index_effect: index_ = 0
-			s_observers_effect: s.observers = old s.observers & Current
+			t_wrapped: t.is_wrapped
+			target_effect: target = t
+			t_observers_effect: t.observers = old t.observers & Current
+			list_iterator.is_fresh
+		end
+
+feature -- Initialization
+
+	copy_ (other: like Current)
+			-- Initialize with the same `target' and position as in `other'.
+		note
+			explicit: wrapping
+		require
+			target_wrapped: target.is_wrapped
+			other_target_wrapped: other.target.is_wrapped
+			target /= other.target implies not other.target.observers [Current]
+			modify (Current)
+			modify_model ("observers", [target, other.target])
+		do
+			if Current /= other then
+				if target /= other.target then
+					check inv_only ("no_observers") end
+					target.forget_iterator (Current)
+					make (other.target)
+				end
+				go_to_other (other)
+			end
+		ensure
+			target_effect: target = old other.target
+			index_effect: index_ = old other.index_
+			old_target_wrapped: (old target).is_wrapped
+			other_target_wrapped: other.target.is_wrapped
+			old_target_observers_effect: other.target /= old target implies (old target).observers = old target.observers / Current
+			other_target_observers_effect: other.target /= old target implies other.target.observers = old other.target.observers & Current
+			target_observers_preserved: other.target = old target implies other.target.observers = old other.target.observers
 		end
 
 feature -- Access
@@ -408,6 +460,47 @@ feature {NONE} -- Implementation
 			wrapped: is_wrapped
 		end
 
+	go_to_other (other: like Current)
+			-- Move to the same position as `other'.
+		note
+			explicit: contracts
+		require
+			is_wrapped
+			other.is_wrapped
+			other /= Current
+			same_target: target = other.target
+			target_wrapped: target.is_wrapped
+			modify_model ("index_", Current)
+		do
+			unwrap
+			bucket_index := other.bucket_index
+			check other.inv_only ("owns_definition", "bucket_index_in_bounds", "target_which_bucket") end
+			check target.inv_only ("owns_definition", "lists_definition", "buckets_count", "list_observers_same") end
+
+			if 1 <= bucket_index and bucket_index <= target.capacity then
+				check inv_only ("target_is_bucket") end
+				check list_iterator.inv_only ("subjects_definition", "A2") end
+				list_iterator.switch_target (other.list_iterator.target)
+
+				check other.inv_only ("index_not_off", "list_iterator_not_off") end
+				check other.list_iterator.inv_only ("sequence_definition", "index_constraint", "cell_not_off") end
+				check list_iterator.inv_only ("sequence_definition") end
+				check target.lists [bucket_index].inv_only ("cells_domain") end
+				list_iterator.go_to_cell (other.list_iterator.active)
+				list_iterator.target.lemma_cells_distinct
+			end
+			index_ := other.index_
+
+			check other.inv_only ("index_before", "index_after", "index_constraint", "sequence_implementation") end
+			lemma_static (other, target.buckets_)
+			lemma_static (other, target.buckets_.front (bucket_index - 1))
+			wrap
+		ensure
+			is_wrapped
+			other.is_wrapped
+			index_effect: index_ = old other.index_
+		end
+
 feature {V_CONTAINER, V_ITERATOR} -- Specification
 
 	concat (seqs: like target.buckets_): MML_SEQUENCE [G]
@@ -467,6 +560,22 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 			concat (seqs).is_empty
 		end
 
+	lemma_static (other: like Current; seqs: like target.buckets_)
+			-- `concat' does not depend on the target (TODO; static features).
+		note
+			status: lemma
+		require
+			other_exists: other /= Void
+		do
+			use_definition (concat (seqs))
+			use_definition (other.concat (seqs))
+			if seqs.count > 0 then
+				lemma_static (other, seqs.but_last)
+			end
+		ensure
+			concat (seqs) = other.concat (seqs)
+		end
+
 	lemma_content (bs: like target.buckets_; s: like target.set; b: like target.bag; seq: like sequence)
 			-- If `seq' is `concat (bs)', and `s' and `b' are the set and bag of elements in `bs' respectively,
 			-- then `s' and `b' are the set and bag of elements in `seq' as well.
@@ -502,9 +611,9 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 invariant
 	list_iterator_exists: list_iterator /= Void
 	bucket_index_in_bounds: 0 <= bucket_index and bucket_index <= target.lists.count + 1
-	owns_structure: owns = [ list_iterator ]
+	owns_definition: owns = [ list_iterator ]
 	target_is_bucket: target.lists.has (list_iterator.target)
-	targets_which_bucket: target.lists.domain [bucket_index] implies list_iterator.target = target.lists [bucket_index]
+	target_which_bucket: target.lists.domain [bucket_index] implies list_iterator.target = target.lists [bucket_index]
 	list_iterator_not_off: target.lists.domain [bucket_index] implies 1 <= list_iterator.index_ and list_iterator.index_ <= list_iterator.sequence.count
 	sequence_implementation: sequence = concat (target.buckets_)
 	index_before: bucket_index = 0 implies index_ = 0

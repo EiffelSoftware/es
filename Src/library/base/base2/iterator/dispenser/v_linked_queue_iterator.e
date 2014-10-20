@@ -21,7 +21,7 @@ create {V_CONTAINER}
 feature {NONE} -- Initialization
 
 	make (t: V_LINKED_QUEUE [G])
-			-- Create a proxy for `it' with target `t'.
+			-- Create iterator over `t'.
 		note
 			explicit: contracts, wrapping
 		require
@@ -50,6 +50,7 @@ feature {NONE} -- Initialization
 feature -- Initialization
 
 	copy_ (other: like Current)
+			-- Initialize with the same `target' and position as in `other'.
 		note
 			explicit: wrapping
 		require
@@ -65,20 +66,7 @@ feature -- Initialization
 					target.forget_iterator (Current)
 					make (other.target)
 				end
-				unwrap
-				check other.inv_only ("owns_definition", "targets_connected", "same_sequence", "same_index") end
-				check target.inv_only ("owns_definition"); target.list.inv_only ("cells_domain") end
-				check iterator.inv_only ("sequence_definition") end
-				check other.iterator.inv_only ("sequence_definition", "index_constraint", "cell_not_off") end
-				if other.iterator.before then
-					iterator.go_before
-				elseif other.iterator.after then
-					iterator.go_after
-				else
-					iterator.go_to_cell (other.iterator.active)
-					target.list.lemma_cells_distinct
-				end
-				wrap
+				go_to_other (other)
 			end
 		ensure
 			target_effect: target = old other.target
@@ -215,6 +203,36 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 	iterator: V_LINKED_LIST_ITERATOR [G]
 			-- Iterator over the storage.
+
+	go_to_other (other: like Current)
+			-- Move to the same position as `other'.
+		require
+			is_wrapped
+			other.is_wrapped
+			other /= Current
+			same_target: target = other.target
+			target_wrapped: target.is_wrapped
+			modify_model ("index_", Current)
+		do
+			unwrap
+			check other.inv_only ("owns_definition", "targets_connected", "same_sequence", "same_index") end
+			check target.inv_only ("owns_definition"); target.list.inv_only ("cells_domain") end
+			check iterator.inv_only ("sequence_definition") end
+			check other.iterator.inv_only ("sequence_definition", "index_constraint", "cell_not_off") end
+			if other.iterator.before then
+				iterator.go_before
+			elseif other.iterator.after then
+				iterator.go_after
+			else
+				iterator.go_to_cell (other.iterator.active)
+				target.list.lemma_cells_distinct
+			end
+			wrap
+		ensure
+			is_wrapped
+			other.is_wrapped
+			index_effect: index_ = old other.index_
+		end
 
 invariant
 	sequence_definition: sequence ~ target.sequence

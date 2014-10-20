@@ -422,7 +422,6 @@ feature {V_DOUBLY_LINKED_LIST_ITERATOR} -- Implementation
 			active_exists: active /= Void
 			closed: closed
 			target_closed: target.closed
---			reads (Current, target.ownership_domain)
 			reads (universe)
 		local
 			cf, cb: V_DOUBLY_LINKABLE [G]

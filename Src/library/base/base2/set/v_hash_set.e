@@ -55,7 +55,8 @@ feature -- Initialization
 		do
 			if other /= Current then
 				unwrap
-				make_empty_buckets (other.count.max (default_capacity))
+				check other.inv end
+				make_empty_buckets (other.capacity)
 				join (other)
 				lemma_same_set (other)
 			end
@@ -102,7 +103,7 @@ feature -- Iteration
 		note
 			status: impure
 		do
-			Result := fresh_cursor
+			create Result.make (Current)
 			Result.start
 		end
 
@@ -111,7 +112,7 @@ feature -- Iteration
 		note
 			status: impure
 		do
-			Result := fresh_cursor
+			create Result.make (Current)
 			Result.search (v)
 		end
 
@@ -282,45 +283,6 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			capacity_effect: lists.count = n
 		end
 
-	fresh_cursor: V_HASH_SET_ITERATOR [G]
-			-- New iterator over the set (position unspecified).
-		note
-			status: impure
-		require
-			wrapped: is_wrapped
-			modify_field (["observers", "closed"], Current)
-		local
-			list_iterator: V_LINKED_LIST_ITERATOR [G]
-			i: INTEGER
-		do
-			unwrap
-			list_iterator := buckets [1].new_cursor
-			check buckets_ = buckets_.old_ end
-			create Result.make (Current, list_iterator)
-			from
-				i := 2
-			invariant
-				2 <= i and i <= lists.count + 1
-				across 1 |..| lists.count as j all lists [j.item].is_wrapped end
-				across 1 |..| (i - 1) as j all lists [j.item].observers = lists [j.item].observers.old_ & list_iterator end
-				across i |..| lists.count as j all lists [j.item].observers = lists [j.item].observers.old_ end
-				modify_field (["observers", "closed"], lists.range)
-			until
-				i > lists.count
-			loop
-				lists [i].add_iterator (list_iterator)
-				i := i + 1
-			end
-			check buckets_ = buckets_.old_ end
-			wrap
-		ensure
-			wrapped: is_wrapped
-			result_fresh: Result.is_fresh
-			result_wrapped: Result.is_wrapped
-			result_in_observers: observers = old observers & Result
-			target_definition: Result.target = Current
-		end
-
 	remove_at (it: V_HASH_SET_ITERATOR [G])
 			-- Remove element to which `it' points.
 		require
@@ -332,7 +294,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			only_iterator: observers = [lock, it]
 			1 <= it.bucket_index and it.bucket_index <= lists.count
 			list_iterator_wrapped: it.list_iterator.is_wrapped
-			it.inv_only ("targets_which_bucket", "list_iterator_not_off")
+			it.inv_only ("target_which_bucket", "list_iterator_not_off")
 			modify_model ("set", Current)
 			modify_model (["index_", "sequence", "target_index_sequence"], it.list_iterator)
 		local
@@ -557,7 +519,7 @@ feature -- Specification
 		local
 			i, j: INTEGER
 		do
-			check it.inv_only ("target_is_bucket", "owns_structure") end
+			check it.inv_only ("target_is_bucket", "owns_definition") end
 			check it.list_iterator.inv_only ("subjects_definition", "A2") end
 			i := it.bucket_index
 			it.unwrap
