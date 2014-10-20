@@ -73,25 +73,25 @@ feature -- Implementation
 				l_fname := "real"
 			elseif l_name.same_string ("min") then
 				if l_type.is_natural or l_type.is_integer or l_type.is_character then
-					l_fname := "min_int"
+					l_fname := "min"
 				elseif l_type.is_real_32 or l_type.is_real_64 then
 					l_fname := "min_real"
 				end
 			elseif l_name.same_string ("max") then
 				if l_type.is_natural or l_type.is_integer or l_type.is_character then
-					l_fname := "max_int"
+					l_fname := "max"
 				elseif l_type.is_real_32 or l_type.is_real_64 then
 					l_fname := "max_real"
 				end
 			elseif l_name.same_string ("abs") then
 				if l_type.is_natural or l_type.is_integer or l_type.is_character then
-					l_fname := "abs_int"
+					l_fname := "abs"
 				elseif l_type.is_real_32 or l_type.is_real_64 then
 					l_fname := "abs_real"
 				end
 			elseif l_name.same_string ("sign") then
 				if l_type.is_natural or l_type.is_integer or l_type.is_character then
-					l_fname := "sign_int"
+					l_fname := "sign"
 				elseif l_type.is_real_32 or l_type.is_real_64 then
 					l_fname := "sign_real"
 				end
