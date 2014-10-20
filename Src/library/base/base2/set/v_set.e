@@ -270,7 +270,7 @@ feature -- Extension
 					1 <= it.index_ and it.index_ <= it.sequence.count + 1
 					set.old_ <= set
 					across 1 |..| (it.index_ - 1) as i all set_has (it.sequence [i.item]) end
-					across set as x all set.old_ [x.item] or other.set_has (x.item).old_ end
+					across set as x all set.old_ [x.item] or other.set.old_ [x.item] end
 					modify_model (["set", "owns"], Current)
 					modify_model ("index_", it)
 				until
@@ -285,8 +285,8 @@ feature -- Extension
 			end
 		ensure
 			has_old: old set <= set
-			has_other: across old other.set as y all y.item /= Void and then set_has (y.item) end
-			no_extra: across set as x all set_has (x.item).old_ or other.set_has (x.item).old_ end
+			has_other: across old other.set as y all set_has (y.item) end
+			no_extra: across set as x all set.old_ [x.item] or other.set.old_ [x.item] end
 			observers_restored: observers ~ old observers
 			other_observers_restored: other.observers ~ old other.observers
 		end
@@ -460,8 +460,8 @@ feature -- Removal
 					lock.inv_only ("subjects_lock", "owns_items", "no_duplicates")
 					1 <= it.index_ and it.index_ <= seq.count + 1
 					across set.old_ as x all other.set_has (x.item).old_ or set [x.item]  end
-					across 1 |..| (it.index_ - 1) as j all s_has (set.old_, seq [j.item]) or s_has (set, seq [j.item]) end
-					across set as x all set.old_ [x.item] or across 1 |..| (it.index_ - 1) as j some x.item.is_model_equal (seq [j.item]) end end
+					across 1 |..| (it.index_ - 1) as j all s_has (set.old_, seq [j.item]) or set [seq [j.item]] end
+					across set as x all set.old_ [x.item] or across 1 |..| (it.index_ - 1) as j some x.item = seq [j.item] end end
 					observers ~ observers.old_
 					modify_model (["set", "owns", "observers"], Current)
 					modify_model ("index_", it)
@@ -470,7 +470,7 @@ feature -- Removal
 				loop
 					if has (it.item) then
 						check it.inv_only ("target_bag_constraint") end
-						lemma_symmetric_subtract (seq, it.index_, set, set.old_, set_item (seq [it.index_]))
+						seq.lemma_no_duplicates
 						remove (it.item)
 					else
 						extend (it.item)
@@ -484,9 +484,9 @@ feature -- Removal
 				wipe_out
 			end
 		ensure
-			set_effect_old: across old set as x all other.set_has (x.item).old_ or set_has (x.item)  end
-			set_effect_other: across other.set.old_ as x all set_has (x.item).old_ or set_has (x.item) end
-			set_effect_new: across set as x all set_has (x.item).old_ or other.set_has (x.item).old_ end
+			set_effect_old: across old set as x all other.set_has (x.item).old_ or set [x.item]  end
+			set_effect_other: across other.set.old_ as x all set_has (x.item).old_ or set [x.item] end
+			set_effect_new: across set as x all set.old_ [x.item] or other.set.old_ [x.item] end
 			observers_restored: observers ~ old observers
 			other_observers_restored: other.observers ~ old other.observers
 		end
@@ -607,30 +607,6 @@ feature -- Specification
 			end
 		ensure
 			same_count: b.count = b.domain.count
-		end
-
-	lemma_symmetric_subtract (seq: MML_SEQUENCE [G]; i: INTEGER; s, old_s: MML_SET [G]; z: G)
-			-- Helper lemma to reestablish the loop invariant in `symmetric_subtract'.
-		note
-			status: lemma, dynamic
-		require
-			i_in_bounds: 1 <= i and i <= seq.count
-			old_s_non_void: old_s.non_void
-			s_non_void: s.non_void
-			seq_non_void: seq.non_void
-			single_occurrence: seq.to_bag.is_constant (1)
-			no_duplicates: no_duplicates (seq.range)
-			inv1: across 1 |..| (i - 1) as j all s_has (old_s, seq [j.item]) or s_has (s, seq [j.item]) end
-			inv2: across s as x all old_s [x.item] or across 1 |..| (i - 1) as j some x.item.is_model_equal (seq [j.item]) end end
-			set_has: s_has (s, seq [i])
-			z_in_set: s [z]
-			z_equal_current: z.is_model_equal (seq [i])
-		do
-			z.lemma_transitive (seq [i], seq.front (i - 1).range)
-			seq.lemma_no_duplicates
-		ensure
-			across 1 |..| i as j all s_has (old_s, seq [j.item]) or s_has (s / z, seq [j.item]) end
-			across s / z as x all old_s [x.item] or across 1 |..| i as j some x.item.is_model_equal (seq [j.item]) end end
 		end
 
 	is_model_equal (other: like Current): BOOLEAN

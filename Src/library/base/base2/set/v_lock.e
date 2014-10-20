@@ -41,6 +41,24 @@ feature -- Basic operations
 			wrapped: is_wrapped
 		end
 
+	remove_set (s: V_SET [G])
+			-- Add `s' to `sets'.
+		note
+			status: setter
+		require
+			wrapped: is_wrapped
+			modify_field (["sets", "subjects", "closed"], Current)
+			modify_field ("owner", owns)
+		do
+			unwrap
+			sets := sets / s
+			set_subjects (subjects / s)
+			wrap
+		ensure
+			sets_effect: sets = old sets / s
+			wrapped: is_wrapped
+		end
+
 	lock (item: G)
 			-- Add `item' to `owns'.
 		note
@@ -88,9 +106,6 @@ invariant
 		across s.item.set as x all owns [x.item] end end
 	no_owned_sets: subjects.is_disjoint (owns)
 	no_duplicates: across sets as s all s.item.set.non_void and then s.item.no_duplicates (s.item.set) end
---		across s.item.set as x all
---			across s.item.set as y all
---				x.item /= Void and y.item /= Void and then (x.item /= y.item implies not x.item.is_model_equal (y.item)) end end end
 	adm2: across sets as s all s.item.observers [Current] end
 	no_observers: observers.is_empty
 

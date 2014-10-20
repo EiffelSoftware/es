@@ -72,13 +72,8 @@ feature -- Iteration
 			-- New iterator pointing to a position in the container, from which it can traverse all elements by going `forth'.
 		note
 			status: impure
-		local
-			list_cursor: V_LINKED_LIST_ITERATOR [G]
 		do
-			unwrap
-			list_cursor := list.new_cursor
-			create Result.make (Current, list_cursor)
-			wrap
+			create Result.make (Current)
 		end
 
 feature -- Comparison

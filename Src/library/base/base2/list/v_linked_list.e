@@ -587,7 +587,7 @@ feature -- Specificaton
 		attribute
 		end
 
-feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton	
+feature {V_CONTAINER, V_ITERATOR} -- Specificaton	
 
 	lemma_cells_distinct
 			-- All cells in `cells' are distinct.

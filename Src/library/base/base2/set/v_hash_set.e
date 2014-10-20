@@ -39,6 +39,32 @@ feature {NONE} -- Initialization
 			observers_set: observers = [lock]
 		end
 
+feature -- Initialization
+
+	copy_ (other: V_HASH_SET [G])
+			-- Initialize by copying all the items of `other'.
+		note
+			explicit: wrapping
+		require
+			lock_wrapped: lock.is_wrapped
+			set_registered: lock.sets [Current]
+			other_registered: lock.sets [other]
+			no_iterators: observers = [lock]
+			modify_model (["set", "owns"], Current)
+			modify_model ("observers", [Current, other])
+		do
+			if other /= Current then
+				unwrap
+				make_empty_buckets (other.count.max (default_capacity))
+				join (other)
+				lemma_same_set (other)
+			end
+		ensure
+			set_effect: set ~ old other.set
+			observers_restored: observers ~ old observers
+			other_observers_restored: other.observers ~ old other.observers
+		end
+
 feature -- Measurement
 
 	count: INTEGER
@@ -608,6 +634,24 @@ feature -- Specification
 			use_definition (set_not_too_large (s2, bs))
 		ensure
 			s1 = s2
+		end
+
+	lemma_same_set (other: V_HASH_SET [G])
+			-- If `set' if a subset of `other.set' in terms of reference equality,
+			-- and the reverse holds in term of object equality,
+			-- then it also holds in terms of reference equality.
+		note
+			status: lemma
+		require
+			lock_wrapped: lock.is_wrapped
+			other_registered: lock.sets [other]
+			set <= other.set
+			across other.set as y all set_has (y.item) end
+		do
+			check lock.inv_only ("no_duplicates") end
+			check other.no_duplicates (other.set) end
+		ensure
+			set = other.set
 		end
 
 feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Specification

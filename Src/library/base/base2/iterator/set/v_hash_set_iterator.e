@@ -45,24 +45,6 @@ feature {NONE} -- Initialization
 			s_observers_effect: s.observers = old s.observers & Current
 		end
 
---feature -- Initialization
-
---	copy (other: like Current)
---			-- Initialize with the same `target' and position as in `other'.
---		note
---			modify: target, sequence, index
---		do
---			if other /= Current then
---				target := other.target
---				list_iterator := other.list_iterator.twin
---				bucket_index := other.bucket_index
---			end
---		ensure then
---			target_effect: target = other.target
---			sequence_effect: sequence |=| other.sequence
---			index_effect: index = other.index
---		end
-
 feature -- Access
 
 	target: V_HASH_SET [G]
