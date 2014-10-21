@@ -204,8 +204,9 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			-- Void if the list has no such cell.
 		require
 			list_closed: list.closed
+			v_closed: v.closed
 			list_items_non_void: list.sequence.non_void
-			v_non_void: v /= Void
+			list_items_closed: across 1 |..| list.sequence.count as i all list.sequence [i.item].closed end
 		local
 			j: INTEGER
 		do
@@ -218,7 +219,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 				Result = if list.sequence.domain [j] then list.cells [j] else ({V_LINKABLE [G]}).default end
 				across 1 |..| (j - 1) as k all not v.is_model_equal (list.sequence [k.item]) end
 			until
-				Result = Void or else v.is_model_equal (Result.item)
+				Result = Void or else v.is_equal_ (Result.item)
 			loop
 				Result := Result.right
 				j := j + 1
