@@ -16,6 +16,10 @@ feature -- Access
 
 	sets: MML_SET [V_SET [G]]
 			-- Sets that might share elements owned by this lock.
+		note
+			guard: in_sets
+		attribute
+		end
 
 feature -- Basic operations
 
@@ -29,12 +33,13 @@ feature -- Basic operations
 			valid_lock: s.lock = Current
 			valid_observers: s.observers [Current]
 			empty_set: s.set.is_empty
-			modify_field (["sets", "subjects", "closed"], Current)
+			modify_field (["sets", "subjects", "observers", "closed"], Current)
 			modify_field ("owner", owns)
 		do
 			unwrap
 			sets := sets & s
-			set_subjects (subjects & s)
+			Current.subjects := subjects & s
+			Current.observers := observers & s
 			wrap
 		ensure
 			sets_effect: sets = old sets & s
@@ -47,12 +52,14 @@ feature -- Basic operations
 			status: setter
 		require
 			wrapped: is_wrapped
-			modify_field (["sets", "subjects", "closed"], Current)
+			s_open: s.is_open
+			modify_field (["sets", "subjects", "observers", "closed"], Current)
 			modify_field ("owner", owns)
 		do
 			unwrap
 			sets := sets / s
-			set_subjects (subjects / s)
+			Current.subjects := subjects / s
+			Current.observers := observers / s
 			wrap
 		ensure
 			sets_effect: sets = old sets / s
@@ -99,15 +106,24 @@ feature -- Basic operations
 			wrapped: is_wrapped
 		end
 
+feature -- Specification
+
+	in_sets (new_sets: like observers; o: ANY): BOOLEAN
+			-- Is `o' in `new_sets'? (Guard for `sets')
+		note
+			status: functional, ghost
+		do
+			Result := new_sets [o]
+		end
+
 invariant
 	subjects_definition: subjects = sets
-	subjects_lock: across sets as s all s.item.lock = Current end
+	observers_definition: observers = sets
 	owns_items: across sets as s all
 		across s.item.set as x all owns [x.item] end end
 	no_owned_sets: subjects.is_disjoint (owns)
 	no_duplicates: across sets as s all s.item.set.non_void and then s.item.no_duplicates (s.item.set) end
 	adm2: across sets as s all s.item.observers [Current] end
-	no_observers: observers.is_empty
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

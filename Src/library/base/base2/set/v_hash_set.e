@@ -15,28 +15,24 @@ frozen class
 inherit
 	V_SET [G]
 		redefine
+			default_create,
 			lock,
 			forget_iterator
 		end
 
-create
-	make
-
 feature {NONE} -- Initialization
 
-	make (l: V_HASH_LOCK [G])
-			-- Create an empty set that will use the lock `l'.
+	default_create
+			-- Create an empty set without a lock.
 		note
 			status: creator
 			explicit: wrapping
 		do
-			lock := l
-			set_observers ([lock])
 			make_empty_buckets (default_capacity)
-		ensure
+		ensure then
 			set_empty: set.is_empty
-			lock_set: lock = l
-			observers_set: observers = [lock]
+			no_lock: lock = Void
+			observers_empty: observers.is_empty
 		end
 
 feature -- Initialization
@@ -47,8 +43,7 @@ feature -- Initialization
 			explicit: wrapping
 		require
 			lock_wrapped: lock.is_wrapped
-			set_registered: lock.sets [Current]
-			other_registered: lock.sets [other]
+			same_lock: lock = other.lock
 			no_iterators: observers = [lock]
 			modify_model (["set", "owns"], Current)
 			modify_model ("observers", [Current, other])
@@ -123,7 +118,7 @@ feature -- Extension
 		note
 			explicit: wrapping
 		do
-			check lock.inv_only ("owns_items") end
+			check inv_only ("registered"); lock.inv_only ("owns_items") end
 			auto_resize (count_ + 1)
 			simple_extend (v)
 		end
@@ -241,13 +236,14 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 		require
 			open: is_open
 			n_positive: n > 0
-			no_iterators: observers = [lock]
-			inv_only ("lock_non_void", "default_subjects")
+			no_iterators: observers <= [lock]
+			inv_only ("subjects_definition", "observers_constraint", "registered", "A2")
 			modify_field (["buckets", "count_", "set", "lists", "buckets_", "bag", "owns", "closed"], Current)
 		local
 			i: INTEGER
 		do
 			create buckets.make (1, n)
+			check buckets.inv_only ("owns_definition"); buckets.area.inv_only ("default_owns") end
 			from
 				i := 1
 			invariant
@@ -290,7 +286,6 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			it_open: it.is_open
 			valid_target: it.target = Current
 			lock_wrapped: lock.is_wrapped
-			set_registered: lock.sets [Current]
 			only_iterator: observers = [lock, it]
 			1 <= it.bucket_index and it.bucket_index <= lists.count
 			list_iterator_wrapped: it.list_iterator.is_wrapped
@@ -333,16 +328,15 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			wrapped: is_wrapped
 			v_locked: lock.owns [v]
 			lock_wrapped: lock.is_wrapped
-			set_registered: lock.sets [Current]
 			no_iterators: observers = [lock]
 			modify_model ("set", Current)
 		local
 			idx: INTEGER
 			list: V_LINKED_LIST [G]
 		do
-			check lock.inv_only ("owns_items", "valid_buckets") end
-			check inv_only ("buckets_exist", "owns_definition", "buckets_non_empty", "buckets_count", "lists_definition", "buckets_lower",
+			check inv_only ("registered", "buckets_exist", "owns_definition", "buckets_non_empty", "buckets_count", "lists_definition", "buckets_lower",
 				"set_non_void", "set_not_too_small", "lists_definition", "buckets_content") end
+			check lock.inv_only ("owns_items", "valid_buckets") end
 			idx := index (v)
 			list := buckets [idx]
 			if cell_equal (list, v) = Void then
@@ -371,7 +365,6 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			wrapped: is_wrapped
 			no_iterators: observers = [lock]
 			lock_wrapped: lock.is_wrapped
-			set_registered: lock.sets [Current]
 			modify_model (["set", "owns"], Current)
 		do
 			check inv end
@@ -392,7 +385,6 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			c_positive: c > 0
 			no_iterators: observers = [lock]
 			lock_wrapped: lock.is_wrapped
-			set_registered: lock.sets [Current]
 			modify_model (["set", "owns"], Current)
 		local
 			i: INTEGER
@@ -400,8 +392,8 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			it: V_LINKED_LIST_ITERATOR [G]
 		do
 			b := buckets
+			check inv_only ("registered", "subjects_definition", "owns_definition", "lists_definition", "buckets_count", "buckets_lower", "buckets_content", "A2") end
 			check lock.inv_only ("owns_items", "no_duplicates") end
-			check inv_only ("lock_non_void", "default_subjects", "owns_definition", "lists_definition", "buckets_count", "buckets_lower", "buckets_content") end
 			unwrap_no_inv
 			make_empty_buckets (c)
 			use_definition (set_not_too_large (set, buckets_.old_))
@@ -477,6 +469,21 @@ feature -- Specification
 		attribute
 		end
 
+	set_lock (l: V_HASH_LOCK [G])
+			-- Set `lock' to `l'.
+		note
+			status: ghost
+		require
+			no_observers: observers.is_empty
+			registered: l.sets [Current]
+			not_iterator: not attached {V_ITERATOR [G]} l
+		do
+			lock := l
+			Current.subjects := [lock]
+			Current.observers := observers & lock
+			check lock.inv end
+		end
+
 	is_lock_int (new: INTEGER; o: ANY): BOOLEAN
 			-- Is observer `o' the `lock' object? (Update guard)
 		note
@@ -520,12 +527,13 @@ feature -- Specification
 			i, j: INTEGER
 		do
 			check it.inv_only ("target_is_bucket", "owns_definition") end
-			check it.list_iterator.inv_only ("subjects_definition", "A2") end
+			check it.list_iterator.inv_only ("subjects_definition", "default_owns", "A2") end
 			i := it.bucket_index
 			it.unwrap
 			set_observers (observers / it)
 
 			if lists.domain [i] then
+				lemma_lists_domain (i)
 				lists [i].forget_iterator (it.list_iterator)
 			else
 				it.list_iterator.unwrap
@@ -540,6 +548,7 @@ feature -- Specification
 					lists [k.item].observers = if k.item >= j and k.item /= i
 						then lists [k.item].observers.old_
 						else lists [k.item].observers.old_ / it.list_iterator end end
+				lock /= Void implies lock.sets = lock.sets.old_ and lock.observers = lock.observers.old_
 				modify_field (["observers", "closed"], lists.range)
 			until
 				j > lists.count
@@ -626,6 +635,21 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Specification
 		attribute
 		end
 
+	lemma_lists_domain (i: INTEGER)
+			-- `lock' is not in the ownership domain of any of the `lists'.
+		note
+			status: lemma
+		require
+			1 <= i and i <= lists.count
+			lists [i].closed
+		do
+			check lists [i].inv_only ("owns_definition") end
+			check across 1 |..| lists [i].cells.count as j all lists [i].cells [j.item].inv_only ("default_owns") end end
+			check not lists [i].transitive_owns [lock] end
+		ensure
+			not lists [i].ownership_domain [lock]
+		end
+
 invariant
 		-- Abstract state:
 	buckets_non_empty: not buckets_.is_empty
@@ -652,7 +676,7 @@ invariant
 	array_observers: buckets.observers.is_empty
 	list_observers_same: across 1 |..| lists.count as i all
 		across 1 |..| lists.count as j all lists [i.item].observers = lists [j.item].observers end end
-	list_observers_count: across 1 |..| lists.count as i all lists [i.item].observers.count < observers.count end
+	list_observers_count: across 1 |..| lists.count as i all lists [i.item].observers.count <= (observers - subjects).count end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

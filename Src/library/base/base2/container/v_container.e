@@ -43,6 +43,7 @@ feature -- Search
 		note
 			status: impure, dynamic
 		require
+			subjects_closed: across subjects as o all o.item.closed end
 			modify_model ("observers", Current)
 		local
 			it: V_ITERATOR [G]
@@ -62,6 +63,7 @@ feature -- Search
 		note
 			status: impure, dynamic
 		require
+			subjects_closed: across subjects as o all o.item.closed end
 			modify_model ("observers", Current)
 		local
 			it: V_ITERATOR [G]

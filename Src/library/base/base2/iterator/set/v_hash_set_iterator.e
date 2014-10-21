@@ -36,6 +36,7 @@ feature {NONE} -- Initialization
 			target := t
 			t.unwrap
 			t.observers := t.observers & Current
+			t.lemma_lists_domain (1)
 			list_iterator := t.buckets [1].new_cursor
 			from
 				i := 2
@@ -44,10 +45,12 @@ feature {NONE} -- Initialization
 				across 1 |..| t.lists.count as j all t.lists [j.item].is_wrapped end
 				across 1 |..| (i - 1) as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ & list_iterator end
 				across i |..| t.lists.count as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ end
+				t.lock /= Void implies t.lock.sets [t] and t.lock.observers [t]
 				modify_field (["observers", "closed"], t.lists.range)
 			until
 				i > t.lists.count
 			loop
+				t.lemma_lists_domain (i)
 				t.lists [i].add_iterator (list_iterator)
 				i := i + 1
 			end
@@ -174,7 +177,7 @@ feature -- Cursor movement
 		local
 			c: V_LINKABLE [G]
 		do
-			check target.inv_only ("buckets_non_empty", "buckets_lower", "buckets_count", "lists_definition", "buckets_content",
+			check target.inv_only ("registered", "buckets_non_empty", "buckets_lower", "buckets_count", "lists_definition", "buckets_content",
 				"owns_definition", "list_observers_same", "set_non_void", "set_not_too_small") end
 			check target.lock.inv_only ("owns_items", "valid_buckets", "no_duplicates") end
 			bucket_index := target.index (v)
@@ -307,7 +310,7 @@ feature -- Removal
 			explicit: wrapping
 		do
 			unwrap
-			check target.inv_only ("buckets_count", "buckets_content") end
+			check target.inv_only ("registered", "buckets_count", "buckets_content") end
 			check list_iterator.inv_only ("sequence_definition") end
 			lemma_single_out (target.buckets_, bucket_index)
 
