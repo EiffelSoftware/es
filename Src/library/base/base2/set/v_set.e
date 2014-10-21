@@ -312,7 +312,6 @@ feature -- Removal
 			end
 			check lock.inv_only ("owns_items", "no_duplicates") end
 			forget_iterator (it)
-			check inv_only ("set_non_void") end
 		ensure
 			abstract_effect: not set_has (v)
 			precise_effect_not_found: not old set_has (v) implies set = old set

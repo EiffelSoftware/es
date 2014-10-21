@@ -27,15 +27,6 @@ feature -- Access
 	target: V_MUTABLE_SEQUENCE [G]
 			-- Sequence to iterate over.
 
-feature -- Measurement
-
-	index_: INTEGER
-			-- Current position.
-		note
-			status: ghost
-		attribute
-		end
-
 feature -- Replacement
 
 	put (v: G)
@@ -45,6 +36,15 @@ feature -- Replacement
 		deferred
 		ensure then
 			target_sequence_effect: target.sequence ~ old (target.sequence.replaced_at (index_, v))
+		end
+
+feature -- Specficiation
+
+	index_: INTEGER
+			-- Current position.
+		note
+			status: ghost
+		attribute
 		end
 
 note
