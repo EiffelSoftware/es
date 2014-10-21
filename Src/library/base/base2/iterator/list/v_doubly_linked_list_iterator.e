@@ -35,7 +35,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			active := Void
 			after_ := False
 			set_target_index_sequence
-			check target.inv_only ("bag_definition", "map_definition_list", "lower_definition") end
+			check target.inv_only ("cells_domain", "bag_definition", "map_definition_list", "lower_definition") end
+			target.lemma_cells_distinct
 		ensure
 			target_effect: target = list
 			index_effect: index_ = 0
@@ -66,6 +67,7 @@ feature -- Initialization
 				set_target_index_sequence
 				set_owns (other.owns)
 				check target.inv_only ("cells_domain", "bag_definition", "map_definition_list", "lower_definition") end
+				target.lemma_cells_distinct
 				wrap
 			end
 		ensure
@@ -113,24 +115,6 @@ feature -- Status report
 			Result := active = Void
 		end
 
-	is_first: BOOLEAN
-			-- Is cursor at the first position?
-		do
-			check inv end
-			check target.inv end
-			Result := active /= Void and active = target.first_cell
-			target.lemma_cells_distinct
-		end
-
-	is_last: BOOLEAN
-			-- Is cursor at the last position?
-		do
-			check inv end
-			check target.inv end
-			Result := active /= Void and then active = target.last_cell
-			target.lemma_cells_distinct
-		end
-
 	after: BOOLEAN
 			-- Is current position after the last container position?
 		do
@@ -145,13 +129,28 @@ feature -- Status report
 			Result := active = Void and not after_
 		end
 
+	is_first: BOOLEAN
+			-- Is cursor at the first position?
+		do
+			check inv end
+			check target.inv end
+			Result := active /= Void and active = target.first_cell
+		end
+
+	is_last: BOOLEAN
+			-- Is cursor at the last position?
+		do
+			check inv end
+			check target.inv end
+			Result := active /= Void and then active = target.last_cell
+		end
+
 feature -- Comparison
 
 	is_equal_ (other: like Current): BOOLEAN
 			-- Is iterator traversing the same container and is at the same position at `other'?		
 		do
 			check inv; other.inv end
-			target.lemma_cells_distinct
 			Result := target = other.target and active = other.active and after_ = other.after_
 		end
 
@@ -238,7 +237,7 @@ feature -- Replacement
 	put (v: G)
 			-- Replace item at current position with `v'.
 		do
-			check target.inv_only ("cells_domain", "map_definition_list", "bag_definition") end
+			check target.inv_only ("map_definition_list", "bag_definition") end
 			target.put_cell (v, active, index_)
 			check target.inv_only ("bag_definition", "map_definition_list", "lower_definition") end
 		end
@@ -257,6 +256,7 @@ feature -- Extension
 				check target.inv_only ("bag_definition", "map_definition_list", "cells_domain", "count_definition", "lower_definition") end
 				index_ := index_ + 1
 				set_target_index_sequence
+				target.lemma_cells_distinct
 				wrap
 			else
 				back
@@ -271,10 +271,10 @@ feature -- Extension
 	extend_right (v: G)
 			-- Insert `v' to the right of current position. Do not move cursor.
 		do
-			check target.inv_only ("cells_domain") end
 			target.extend_after (create {V_DOUBLY_LINKABLE [G]}.put (v), active, index_)
 			check target.inv_only ("bag_definition", "map_definition_list", "cells_domain",  "count_definition", "lower_definition") end
 			set_target_index_sequence
+			target.lemma_cells_distinct
 		ensure then
 			cell_sequence_front_preserved: target.cells.old_.front (index_) ~ target.cells.front (index_)
 			cell_sequence_tail_preserved: target.cells.old_.tail (index_ + 1) ~ target.cells.tail (index_ + 2)
@@ -293,6 +293,7 @@ feature -- Extension
 				check target.inv_only ("bag_definition", "map_definition_list", "cells_domain",  "count_definition", "lower_definition") end
 				index_ := index_ + other.sequence.tail (other.index_.old_).count
 				set_target_index_sequence
+				target.lemma_cells_distinct
 				wrap
 			else
 				back
@@ -355,10 +356,11 @@ feature -- Extension
 			modify_model (["sequence", "target_index_sequence"], Current)
 			modify_model (["sequence", "owns"], [target, other])
 		do
-			check target.inv_only ("cells_domain") end
 			target.merge_after (other, active, index_)
 			check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "lower_definition") end
 			set_target_index_sequence
+			check target.inv_only ("cells_domain") end
+			target.lemma_cells_distinct
 		ensure
 			sequence_effect: sequence ~ old (sequence.front (index_) + other.sequence + sequence.tail (index_ + 1))
 			other_sequence_effect: other.sequence.is_empty
@@ -378,6 +380,7 @@ feature -- Removal
 				active := target.first_cell
 				after_ := active = Void
 				set_target_index_sequence
+				target.lemma_cells_distinct
 				wrap
 			else
 				check inv_only ("subjects_definition", "sequence_definition") end
@@ -401,10 +404,10 @@ feature -- Removal
 	remove_right
 			-- Remove element to the right of current position. Do not move cursor.
 		do
-			check target.inv_only ("cells_domain") end
 			target.remove_after (active, index_)
 			check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "lower_definition") end
 			set_target_index_sequence
+			target.lemma_cells_distinct
 		end
 
 feature {V_DOUBLY_LINKED_LIST_ITERATOR} -- Implementation
@@ -463,7 +466,9 @@ feature {V_DOUBLY_LINKED_LIST_ITERATOR} -- Implementation
 invariant
 	after_definition: after_ = (index_ = sequence.count + 1)
 	cell_off: (index_ < 1 or sequence.count < index_) = (active = Void)
-	cell_not_off: 1 <= index_ and index_ <= target.cells.count implies active = target.cells [index_]
+	target_cells_domain: target.cells.count = sequence.count
+	cell_not_off: 1 <= index_ and index_ <= sequence.count implies active = target.cells [index_]
+	target_cells_distinct: target.cells.no_duplicates
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

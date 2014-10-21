@@ -146,8 +146,8 @@ feature -- Comparison
 	is_equal_ (other: like Current): BOOLEAN
 			-- Is iterator traversing the same container and is at the same position at `other'?
 		do
-			check inv; other.inv; iterator.inv; other.iterator.inv; target.inv; other.target.inv end
-			Result := iterator.is_equal_ (other.iterator)
+			check inv; other.inv; iterator.inv; other.iterator.inv end
+			Result := target = other.target and iterator.is_equal_ (other.iterator)
 		end
 
 feature -- Cursor movement

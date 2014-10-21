@@ -148,11 +148,14 @@ feature -- Replacement
 
 	reverse
 			-- Reverse the order of elements.
+		note
+			explicit: wrapping
 		local
 			rest, next: V_LINKABLE [G]
 			rest_cells: MML_SEQUENCE [V_LINKABLE [G]]
 		do
 			lemma_cells_distinct
+			unwrap
 			from
 				last_cell := first_cell
 				rest := first_cell
@@ -190,6 +193,7 @@ feature -- Replacement
 			variant
 				rest_cells.count
 			end
+			wrap
 		end
 
 feature -- Extension
@@ -502,8 +506,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "owns"], Current)
 		do
-			unwrap
 			lemma_cells_distinct
+			unwrap
 			check c.right = cells [index_ + 1] end
 			check index_ + 1 < cells.count implies c.right.right = cells [index_ + 2] end
 
@@ -594,17 +598,14 @@ feature {V_CONTAINER, V_ITERATOR} -- Specificaton
 		note
 			status: lemma
 		require
-			inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_last")
+			closed
 		do
+			check inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_last") end
 			if cells.count > 0 then
 				lemma_cells_distinct_from (1)
 			end
 		ensure
-			cells_distinct: across 1 |..| cells.count as j all
-				across 1 |..| cells.count as k all
-					j.item < k.item implies cells [j.item] /= cells [k.item]
-				end
-			end
+			cells_distinct: cells.no_duplicates
 		end
 
 	lemma_cells_distinct_from (i: INTEGER)

@@ -158,11 +158,14 @@ feature -- Replacement
 
 	reverse
 			-- Reverse the order of elements.
+		note
+			explicit: wrapping
 		local
 			rest, next: V_DOUBLY_LINKABLE [G]
 			rest_cells: MML_SEQUENCE [V_DOUBLY_LINKABLE [G]]
 		do
 			lemma_cells_distinct
+			unwrap
 			from
 				last_cell := first_cell
 				rest := first_cell
@@ -217,6 +220,7 @@ feature -- Replacement
 			if first_cell /= Void then
 				first_cell.wrap
 			end
+			wrap
 		end
 
 feature -- Extension
@@ -367,13 +371,16 @@ feature -- Removal
 
 	remove_front
 			-- Remove first element.
+		note
+			explicit: wrapping
 		local
 			second: like first_cell
 		do
+			lemma_cells_distinct
+			unwrap
 			if count_ = 1 then
 				last_cell := Void
 			else
-				lemma_cells_distinct
 				second := first_cell.right
 				check second = cells [2] end
 				check second.inv end
@@ -387,20 +394,23 @@ feature -- Removal
 
 			cells := cells.but_first
 			sequence := sequence.but_first
+			wrap
 		ensure then
 			cells_preserved: cells ~ old cells.but_first
 		end
 
 	remove_back
 			-- Remove last element.
+		note
+			explicit: wrapping
 		local
 			second_last: like first_cell
 		do
-			check inv end
+			lemma_cells_distinct
+			unwrap
 			if count_ = 1 then
 				first_cell := Void
 			else
-				lemma_cells_distinct
 				second_last := last_cell.left
 				check cells [cells.count - 1].inv end
 				check cells [cells.count - 1].right = last_cell end
@@ -414,6 +424,7 @@ feature -- Removal
 
 			cells := cells.but_last
 			sequence := sequence.but_last
+			wrap
 		ensure then
 			cells_preserved: cells ~ old cells.but_last
 		end
@@ -566,8 +577,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "owns"], Current)
 		do
-			unwrap
 			lemma_cells_distinct
+			unwrap
 			check c.right = cells [index_ + 1] end
 			check index_ + 1 < cells.count implies c.right.right = cells [index_ + 2] end
 
@@ -700,17 +711,14 @@ feature {V_DOUBLY_LINKED_LIST, V_DOUBLY_LINKED_LIST_ITERATOR} -- Specificaton
 		note
 			status: lemma
 		require
-			inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_last")
+			closed
 		do
+			check inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_last") end
 			if cells.count > 0 then
 				lemma_cells_distinct_from (1)
 			end
 		ensure
-			cells_distinct: across 1 |..| cells.count as j all
-				across 1 |..| cells.count as k all
-					j.item < k.item implies cells [j.item] /= cells [k.item]
-				end
-			end
+			cells_distinct: cells.no_duplicates
 		end
 
 	lemma_cells_distinct_from (i: INTEGER)

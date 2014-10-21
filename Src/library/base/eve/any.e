@@ -78,8 +78,6 @@ feature -- Comparison
 --			same_type: generating_type = other.generating_type
 			closed: closed
 			other_closed: other.closed
-			subjects_closed: across subjects as s all s.item.closed end
-			other_subjects_closed: across other.subjects as s all s.item.closed end
 		do
 			Result := True
 		ensure
@@ -673,6 +671,9 @@ feature -- Verification: auxiliary
 			reads (x, y)
 		do
 			Result := (x = Void and y = Void) or ((x /= Void and x.generating_type = y.generating_type) and then x.is_model_equal (y))
+		ensure
+			reflexive: x = y implies Result
+			symmetric: Result = model_equals (y, x)
 		end
 
 	frozen old_: like Current

@@ -51,7 +51,7 @@ feature -- Search
 			-- (Uses object equality.)
 		require
 			v_closed: v.closed
-			lock_wrapped: lock.is_wrapped
+			lock_closed: lock.closed
 		deferred
 		ensure
 			definition: Result = set_has (v)
@@ -62,7 +62,7 @@ feature -- Search
 		require
 			v_closed: v.closed
 			has: set_has (v)
-			lock_wrapped: lock.is_wrapped
+			lock_closed: lock.closed
 		deferred
 		ensure
 			definition: Result = set_item (v)
@@ -73,7 +73,6 @@ feature -- Search
 			-- (Uses reference equality.)
 		note
 			status: impure, dynamic
-			explicit: wrapping
 		do
 			if has_exactly (v) then
 				Result := 1
@@ -613,6 +612,7 @@ feature -- Specification
 
 invariant
 	set_non_void: set.non_void
+	non_empty_has_lock: not set.is_empty implies lock /= Void
 	lock_non_current: lock /= Current
 	lock_non_iterator: not attached {V_ITERATOR [G]} lock
 	subjects_definition: if lock = Void then subjects.is_empty else subjects = [lock] end
