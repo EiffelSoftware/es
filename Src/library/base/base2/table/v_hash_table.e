@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 
 --feature -- Initialization
 
---	copy_ (other: V_HASH_SET [G])
+--	copy_ (other: V_HASH_TABLE [K, V])
 --			-- Initialize by copying all the items of `other'.
 --		note
 --			explicit: wrapping
@@ -45,18 +45,47 @@ feature {NONE} -- Initialization
 --			lock_wrapped: lock.is_wrapped
 --			same_lock: lock = other.lock
 --			no_iterators: observers = [lock]
---			modify_model (["set", "owns"], Current)
+--			modify_model (["map", "owns"], Current)
 --			modify_model ("observers", [Current, other])
+--		local
+--			it: V_HASH_TABLE_ITERATOR [K, V]
 --		do
 --			if other /= Current then
 --				unwrap
 --				check other.inv end
 --				make_empty_buckets (other.capacity)
---				join (other)
---				lemma_same_set (other)
+
+--				from
+--					it := other.new_cursor
+--				invariant
+--					is_wrapped
+--					other.is_wrapped
+--					it.is_wrapped
+--					inv_only ("lock_non_current")
+--					other.inv_only ("domain_non_void", "lock_non_current")
+--					lock.inv_only ("owns_keys")
+--					1 <= it.index_ and it.index_ <= it.sequence.count + 1
+--					across 1 |..| (it.index_ - 1) as i all map.domain [it.sequence [i.item]] and then
+--						map [it.sequence [i.item]] = other.map [it.sequence [i.item]] end
+--					across it.index_ |..| it.sequence.count as i all not domain_has (it.sequence [i.item]) end
+--					across map.domain as k all other.map.domain [k.item] end
+--					modify_model (["map", "owns"], Current)
+--					modify_model ("index_", it)
+--				until
+--					it.after
+--				loop
+--					use_definition (it.value_sequence_from (it.sequence, other.map))
+--					check it.item = other.map [it.key] end
+--					simple_extend (it.item, it.key)
+--					it.forth
+--				variant
+--					it.sequence.count - it.index_
+--				end
+--				check map.domain = other.map.domain end
+--				other.forget_iterator (it)
 --			end
 --		ensure
---			set_effect: set ~ old other.set
+--			map_effect: map ~ old other.map
 --			observers_restored: observers ~ old observers
 --			other_observers_restored: other.observers ~ old other.observers
 --		end
@@ -123,7 +152,7 @@ feature -- Extension
 			explicit: wrapping
 		do
 			check inv_only ("registered"); lock.inv_only ("owns_keys") end
---			auto_resize (count_ + 1)
+			auto_resize (count_ + 1)
 			simple_extend (v, k)
 		end
 
@@ -385,7 +414,7 @@ feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Implementation
 			fresh_key: not domain_has (k)
 			lock_wrapped: lock.is_wrapped
 			no_iterators: observers = [lock]
-			modify_model (["map", "owns"], Current)
+			modify_model ("map", Current)
 		local
 			idx: INTEGER
 			list: V_LINKED_LIST [MML_PAIR [K, V]]
@@ -403,101 +432,101 @@ feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Implementation
 		ensure
 			wrapped: is_wrapped
 			map_effect: map ~ old map.updated (k, v)
+			map_domain_effect: map.domain ~ old map.domain & k
 			capacity_unchanged: lists.count = old lists.count
 		end
 
---	auto_resize (new_count: INTEGER)
---			-- Resize `buckets' to an optimal size for `new_count'.
---		require
---			wrapped: is_wrapped
---			no_iterators: observers = [lock]
---			lock_wrapped: lock.is_wrapped
---			modify_model (["map", "owns"], Current)
---		do
---			check inv end
---			if new_count * target_load_factor // 100 > growth_rate * capacity then
---				resize (capacity * growth_rate)
---			elseif capacity > default_capacity and new_count * target_load_factor // 100 < capacity // growth_rate then
---				resize (capacity // growth_rate)
---			end
---		ensure
---			wrapped: is_wrapped
---			map_unchanged: map ~ old map
---		end
+	auto_resize (new_count: INTEGER)
+			-- Resize `buckets' to an optimal size for `new_count'.
+		require
+			wrapped: is_wrapped
+			no_iterators: observers = [lock]
+			lock_wrapped: lock.is_wrapped
+			modify_model (["map", "owns"], Current)
+		do
+			check inv end
+			if new_count * target_load_factor // 100 > growth_rate * capacity then
+				resize (capacity * growth_rate)
+			elseif capacity > default_capacity and new_count * target_load_factor // 100 < capacity // growth_rate then
+				resize (capacity // growth_rate)
+			end
+		ensure
+			wrapped: is_wrapped
+			map_unchanged: map ~ old map
+		end
 
---	resize (c: INTEGER)
---			-- Resize `buckets' to `c'.
---		require
---			wrapped: is_wrapped
---			c_positive: c > 0
---			no_iterators: observers = [lock]
---			lock_wrapped: lock.is_wrapped
---			modify_model (["map", "owns"], Current)
---		local
---			i: INTEGER
---			b: V_ARRAY [V_LINKED_LIST [MML_PAIR [K, V]]]
---			it: V_LINKED_LIST_ITERATOR [MML_PAIR [K, V]]
---		do
---			b := buckets
---			check inv_only ("registered", "subjects_definition", "owns_definition", "lists_definition", "buckets_count", "buckets_lower", "buckets_content", "A2") end
---			check lock.inv_only ("owns_items", "no_duplicates") end
---			unwrap_no_inv
---			make_empty_buckets (c)
---			use_definition (map_not_too_large (map, buckets_.old_))
---			from
---				i := 1
---			invariant
---				is_wrapped
---				b.is_wrapped
---				across 1 |..| buckets_.old_.count as j all lists.old_ [j.item].is_wrapped end
---				1 <= i and i <= buckets_.old_.count + 1
---				lists.count = c
---				map.domain <= map.domain.old_
---				across 1 |..| buckets_.old_.count as k all across 1 |..| buckets_.old_ [k.item].count as l all
---					map.domain [(buckets_.old_ [k.item])[l.item]] = (k.item < i) end end
---				across map.domain.old_ - map.domain as x all not domain_has (x.item) end
---				map_not_too_large (map, buckets_.old_)
---				modify_model ("map", Current)
---				modify_field (["observers", "closed"], lists.old_.range)
---			until
---				i > b.count
---			loop
---				from
---					it := b [i].new_cursor
---				invariant
---					is_wrapped
---					it.is_wrapped
---					1 <= it.index_ and it.index_ <= lists.old_ [i].count + 1
---					lists.old_ [i].sequence = buckets_.old_ [i]
---					lists.count = c
---					across 1 |..| buckets_.old_.count as k all across 1 |..| buckets_.old_ [k.item].count as l all
---						map.domain [(buckets_.old_ [k.item])[l.item]] = (k.item < i or (k.item = i and l.item < it.index_)) end end
---					map.domain <= map.domain.old_
---					across map.domain.old_ - map.domain as x all not domain_has (x.item) end
---					map_not_too_large (map, buckets_.old_)
---					modify_model ("map", Current)
---					modify_model ("index_", it)
---				until
---					it.after
---				loop
---					check it.inv_only ("sequence_definition") end
---					check inv_only ("map_not_too_small", "no_precise_duplicates").old_ end
---					lemma_map_one_more_not_too_large (map, buckets_.old_, i, it.index_)
---					simple_extend (it.item.left, it.item.right)
---					check no_duplicates (map.domain.old_) end
---					it.forth
---				variant
---					lists.old_ [i].count - it.index_
---				end
---				i := i + 1
---			end
---			check inv_only ("map_not_too_large").old_ end
---			lemma_same_content (buckets_.old_, map.old_, map)
---		ensure
---			wrapped: is_wrapped
---			capacity_effect: lists.count = c
---			set_unchanged: set = old set
---		end
+	resize (c: INTEGER)
+			-- Resize `buckets' to `c'.
+		require
+			wrapped: is_wrapped
+			c_positive: c > 0
+			no_iterators: observers = [lock]
+			lock_wrapped: lock.is_wrapped
+			modify_model (["map", "owns"], Current)
+		local
+			i: INTEGER
+			b: like buckets
+			it: V_LINKED_LIST_ITERATOR [MML_PAIR [K, V]]
+		do
+			b := buckets
+			check inv_only ("registered", "subjects_definition", "owns_definition", "lists_definition", "buckets_count", "buckets_lower", "lists_counts", "buckets_content", "A2") end
+			check lock.inv_only ("owns_keys", "no_duplicates") end
+			unwrap_no_inv
+			make_empty_buckets (c)
+			from
+				i := 1
+			invariant
+				is_wrapped
+				b.is_wrapped
+				across 1 |..| buckets_.old_.count as j all lists.old_ [j.item].is_wrapped end
+				1 <= i and i <= buckets_.old_.count + 1
+				lists.count = c
+				map.domain <= map.domain.old_
+				map = map.old_ | map.domain
+				across 1 |..| buckets_.old_.count as k all across 1 |..| buckets_.old_ [k.item].count as l all
+					map.domain [(buckets_.old_ [k.item])[l.item]] = (k.item < i) end end
+				across map.domain.old_ - map.domain as x all not domain_has (x.item) end
+				modify_model ("map", Current)
+				modify_field (["observers", "closed"], lists.old_.range)
+			until
+				i > b.count
+			loop
+				from
+					it := b [i].new_cursor
+				invariant
+					is_wrapped
+					it.is_wrapped
+					1 <= it.index_ and it.index_ <= lists.old_ [i].count + 1
+					lists.count = c
+					across 1 |..| buckets_.old_.count as k all across 1 |..| buckets_.old_ [k.item].count as l all
+						map.domain [(buckets_.old_ [k.item])[l.item]] = (k.item < i or (k.item = i and l.item < it.index_)) end end
+					map.domain <= map.domain.old_
+					map = map.old_ | map.domain
+					across map.domain.old_ - map.domain as x all not domain_has (x.item) end
+					modify_model ("map", Current)
+					modify_model ("index_", it)
+				until
+					it.after
+				loop
+					check it.inv_only ("sequence_definition") end
+					check inv_only ("domain_not_too_small", "no_precise_duplicates", "map_implementation").old_ end
+
+					simple_extend (it.item.right, it.item.left)
+
+					check no_duplicates (map.domain.old_) end
+					it.forth
+				variant
+					lists.old_ [i].count - it.index_
+				end
+				i := i + 1
+			end
+			check inv_only ("domain_not_too_large").old_ end
+			use_definition (set_not_too_large (map.domain.old_, buckets_.old_))
+		ensure
+			wrapped: is_wrapped
+			capacity_effect: lists.count = c
+			map_unchanged: map = old map
+		end
 
 feature -- Specification
 
@@ -621,55 +650,6 @@ feature -- Specification
 			check lock.inv_only ("valid_buckets") end
 		ensure
 			set_not_too_large (map.domain, buckets_)
-		end
-
-	lemma_set_one_more_not_too_large (s: like map.domain; bs: like buckets_; i, j: INTEGER)
-			-- Adding `(bs [i]) [j]' to `s' preserves `set_not_too_large'.
-		note
-			status: lemma
-		require
-			set_not_too_large (s, bs)
-			i_in_bounds: 1 <= i and i <= bs.count
-			j_in_bounds: 1 <= j and j <= bs [i].count
-		do
-			use_definition (set_not_too_large (s, bs))
-			use_definition (set_not_too_large (s & (bs [i]) [j], bs))
-		ensure
-			set_not_too_large (s & (bs [i]) [j], bs)
-		end
-
-	lemma_same_content (bs: like buckets_; s1, s2: like map.domain)
-			-- If `s1' and `s2' both have the same elements as `bs', then they are equal.
-		note
-			status: lemma
-		require
-			across 1 |..| bs.count as i all across 1 |..| bs [i.item].count as j all s1 [(bs [i.item])[j.item]] end end
-			set_not_too_large (s1, bs)
-			across 1 |..| bs.count as i all across 1 |..| bs [i.item].count as j all s2 [(bs [i.item])[j.item]] end end
-			set_not_too_large (s2, bs)
-		do
-			use_definition (set_not_too_large (s1, bs))
-			use_definition (set_not_too_large (s2, bs))
-		ensure
-			s1 = s2
-		end
-
-	lemma_same_domain (other: V_HASH_TABLE [K, V])
-			-- If `map.domain' if a subset of `other.map.domain' in terms of reference equality,
-			-- and the reverse holds in term of object equality,
-			-- then it also holds in terms of reference equality.
-		note
-			status: lemma
-		require
-			lock_wrapped: lock.is_wrapped
-			other_registered: lock.tables [other]
-			map.domain <= other.map.domain
-			across other.map.domain as y all domain_has (y.item) end
-		do
-			check lock.inv_only ("no_duplicates") end
-			check other.no_duplicates (other.map.domain) end
-		ensure
-			map.domain = other.map.domain
 		end
 
 feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Specification
