@@ -5291,6 +5291,7 @@ Src/web/eiffel-lang.org/data/documentation/current/_images/LogoReviewRequested.p
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoRule.png -text
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoUpdateNeeded.png -text
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoWarning.png -text
+Src/web/eiffel-lang.org/downloads_configuration.json -text
 Src/web/eiffel-lang.org/eiffel-lang-app.ini -text
 Src/web/eiffel-lang.org/eiffel-lang.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/eiffel-lang.ini -text
@@ -5323,6 +5324,7 @@ Src/web/eiffel-lang.org/library/wikidocs/testing/testing-safe.ecf svneol=native#
 Src/web/eiffel-lang.org/library/wikidocs/testing/testing.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/modules/eiffel_download/eiffel_download-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/wiki_docs/wiki_docs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/themes/demo/css/all.css -text
 Src/web/eiffel-lang.org/themes/demo/images/bg-header.jpg -text
