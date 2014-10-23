@@ -103,11 +103,22 @@ feature -- Specification
 		attribute
 		end
 
+	value_sequence_from (seq: like sequence; m: like target.map): MML_SEQUENCE [V]
+			-- Value sequnce for key sequence `seq' and target map `m'.			
+		note
+			status: ghost, functional, opaque
+		require
+			in_domain: seq.range <= m.domain
+			reads ([])
+		do
+			Result := m.sequence_image (seq)
+		ensure
+			same_count: Result.count = seq.count
+		end
+
 invariant
-	same_count: sequence.count = value_sequence.count
---	target_domain_constraint: target.map.domain ~ sequence.range
-	target_map_constraint: across 1 |..| sequence.count as i all
-		target.map.domain [sequence [i.item]] and then value_sequence [i.item] = target.map [sequence [i.item]] end
+	target_domain_constraint: target.map.domain ~ sequence.range
+	value_sequence_definition: value_sequence ~ value_sequence_from (sequence, target.map)
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

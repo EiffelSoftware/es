@@ -37,6 +37,21 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
+	set_lock (l: V_HASH_LOCK [G])
+			-- Set `lock' to `l'.
+		note
+			status: ghost
+		require
+			no_observers: observers.is_empty
+			registered: l.sets [Current]
+			not_iterator: not attached {V_ITERATOR [G]} l
+		do
+			lock := l
+			Current.subjects := [lock]
+			Current.observers := [lock]
+			check lock.inv end
+		end
+
 	copy_ (other: V_HASH_SET [G])
 			-- Initialize by copying all the items of `other'.
 		note
@@ -298,7 +313,6 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			x: G
 		do
 			unwrap
-			check across bag.domain.old_ as y all y.item /= x implies bag [y.item] = 1 end end
 			idx := it.bucket_index
 			i := it.list_iterator.index_
 			check it.list_iterator.inv_only ("subjects_definition", "A2", "sequence_definition") end
@@ -347,14 +361,11 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 				set := set & v
 				count_ := count_ + 1
 				bag := bag & v
-				check set [v] end
 				lemma_set_not_too_large
 				wrap
 			end
-			check set_has (v) end
 		ensure
 			wrapped: is_wrapped
-			abstract_effect: set_has (v)
 			precise_effect_has: old set_has (v) implies set = old set
 			precise_effect_new: not old set_has (v) implies set = old set & v
 			capacity_unchanged: lists.count = old lists.count
@@ -468,21 +479,6 @@ feature -- Specification
 		note
 			status: ghost
 		attribute
-		end
-
-	set_lock (l: V_HASH_LOCK [G])
-			-- Set `lock' to `l'.
-		note
-			status: ghost
-		require
-			no_observers: observers.is_empty
-			registered: l.sets [Current]
-			not_iterator: not attached {V_ITERATOR [G]} l
-		do
-			lock := l
-			Current.subjects := [lock]
-			Current.observers := observers & lock
-			check lock.inv end
 		end
 
 	is_lock_int (new: INTEGER; o: ANY): BOOLEAN

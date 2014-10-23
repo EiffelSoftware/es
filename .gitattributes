@@ -3863,6 +3863,7 @@ Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/library/base/eve/array.bpl -text
 Src/library/base/mml/bag.bpl -text
 Src/library/base/mml/map.bpl -text
+Src/library/base/mml/pair.bpl -text
 Src/library/base/mml/relation.bpl -text
 Src/library/base/mml/sequence.bpl -text
 Src/library/base/mml/set.bpl -text

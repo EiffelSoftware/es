@@ -169,4 +169,25 @@ feature -- Convenience
 			]"
 		end
 
+feature -- Lemmas
+
+	lemma_sequence_image_bag (seq: MML_SEQUENCE [K])
+			-- If `seq' has no duplicates, its image under this map has the same elements
+			-- as the restriction of this map onto `seq's range.
+		note
+			status: lemma
+		require
+			seq.range <= domain
+			seq.no_duplicates
+			decreases (seq)
+		do
+			if not seq.is_empty then
+				lemma_sequence_image_bag (seq.but_last)
+				check sequence_image (seq) = sequence_image (seq.but_last) & item (seq.last) end
+				check (Current | seq.range) = (Current | seq.but_last.range).updated (seq.last, item (seq.last)) end
+			end
+		ensure
+			sequence_image (seq).to_bag ~ (Current | seq.range).to_bag
+		end
+
 end

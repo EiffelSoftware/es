@@ -18,19 +18,6 @@ inherit
 			is_empty
 		end
 
-feature -- Access
-
-	item alias "[]" (k: K): V assign force
-			-- Value associated with `k'.
-		require
-			k_closed: k.closed
-			has_key: domain_has (k)
-			lock_closed: lock.closed
-		deferred
-		ensure
-			definition: Result = map [domain_item (k)]
-		end
-
 feature -- Measurement
 
 	count: INTEGER
@@ -77,9 +64,20 @@ feature -- Search
 			definition: Result = domain_item (k)
 		end
 
+	item alias "[]" (k: K): V assign force
+			-- Value associated with `k'.
+		require
+			k_closed: k.closed
+			has_key: domain_has (k)
+			lock_closed: lock.closed
+		deferred
+		ensure
+			definition: Result = map [domain_item (k)]
+		end
+
 feature -- Iteration
 
-	new_cursor: V_MAP_ITERATOR [K, V]
+	new_cursor: V_TABLE_ITERATOR [K, V]
 			-- New iterator pointing to a position in the map, from which it can traverse all elements by going `forth'.
 		note
 			status: impure
@@ -306,6 +304,16 @@ feature -- Specification
 			Result := across s as x all across s as y all x.item /= y.item implies not x.item.is_model_equal (y.item) end end
 		end
 
+	bag_from (m: like map): like bag
+			-- Bag of values in `m'.
+		note
+			status: ghost, functional, opaque
+		require
+			reads ([])
+		do
+			Result := m.to_bag
+		end
+
 invariant
 	domain_non_void: map.domain.non_void
 	non_empty_has_lock: not map.is_empty implies lock /= Void
@@ -314,7 +322,7 @@ invariant
 	subjects_definition: if lock = Void then subjects.is_empty else subjects = [lock] end
 	registered: lock /= Void implies lock.tables [Current]
 	observers_constraint: lock /= Void implies observers [lock]
-	bag_definition: bag ~ map.to_bag
+	bag_definition: bag ~ bag_from (map)
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

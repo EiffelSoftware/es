@@ -72,19 +72,28 @@ axiom (forall<U, V> m: Map U V, s: Seq U, i: int :: { Seq#Item(Map#SequenceImage
   
 // Bag of map values  
 function Map#ToBag<U, V>(m: Map U V): Bag V;
-axiom (forall<U, V> m: Map U V :: { Bag#Equal(Map#ToBag(m), Bag#Empty()) } 
-  Bag#Equal(Map#ToBag(m), Bag#Empty() : Bag V) <==> Map#Equal (m, Map#Empty() : Map U V));
-axiom (forall<U, V> :: { Map#ToBag(Map#Empty() : Map U V) } Map#ToBag(Map#Empty() :  Map U V) == Bag#Empty() : Bag V);
+axiom (forall<U, V> m: Map U V :: { Map#ToBag(m) } Bag#IsValid(Map#ToBag(m)));
+// axiom (forall<U, V> m: Map U V :: { Bag#Equal(Map#ToBag(m), Bag#Empty()) } 
+  // Bag#Equal(Map#ToBag(m), Bag#Empty() : Bag V) <==> Map#Equal (m, Map#Empty() : Map U V));
+axiom (forall<U, V> :: Map#ToBag(Map#Empty() :  Map U V) == Bag#Empty() : Bag V);
 axiom (forall<U, V> m: Map U V, x: V :: { Map#ToBag(m)[x] } 
   Map#ToBag(m)[x] > 0 <==> Map#Range(m)[x]);
+// update axiom
 axiom (forall<U, V> m: Map U V, k: U, x: V :: { Map#ToBag(Map#Update(m, k, x)) }
   !Map#Domain(m)[k] ==> Map#ToBag(Map#Update(m, k, x)) == Bag#Extended(Map#ToBag(m), x));
 axiom (forall<U, V> m: Map U V, k: U, x: V :: { Map#ToBag(Map#Update(m, k, x)) }
   Map#Domain(m)[k] ==> Map#ToBag(Map#Update(m, k, x)) == Bag#Extended(Bag#Removed(Map#ToBag(m), Map#Elements(m)[k]), x));
+// removed axiom
 axiom (forall<U, V> m: Map U V, k: U :: { Map#ToBag(Map#Removed(m, k)) }
-  Map#Domain(m)[k] ==> Map#ToBag(Map#Removed(m, k)) == Bag#Removed(Map#ToBag(m), Map#Elements(m)[k]));
+  Map#Domain(m)[k] ==> Map#ToBag(Map#Removed(m, k)) == Bag#Removed(Map#ToBag(m), Map#Elements(m)[k]));  
+// cardinality axiom 
 axiom (forall<U, V> m: Map U V :: { Bag#Card(Map#ToBag(m)) }
   Bag#Card(Map#ToBag(m)) == Map#Card(m));  
+// disjoint union axiom
+axiom (forall<U, V> a: Map U V, b: Map U V, x: V ::
+  { Map#ToBag(Map#Override(a, b))[x] }
+    Set#Disjoint(Map#Domain(a), Map#Domain(b)) ==> Map#ToBag(Map#Override(a, b))[x] == Map#ToBag(a)[x] + Map#ToBag(b)[x] );
+  
   
 // Equality
 function Map#Equal<U, V>(Map U V, Map U V): bool;

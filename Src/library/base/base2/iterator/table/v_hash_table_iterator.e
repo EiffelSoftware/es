@@ -1,27 +1,28 @@
 note
-	description: "Iterators over hash sets."
+	description: "Iterators over hash tables."
 	author: "Nadia Polikarpova"
 	model: target, sequence, index_
 	manual_inv: true
 	false_guards: true
 
 class
-	V_HASH_SET_ITERATOR [G -> V_HASHABLE]
+	V_HASH_TABLE_ITERATOR [K -> V_HASHABLE, V]
 
 inherit
-	V_SET_ITERATOR [G]
+	V_TABLE_ITERATOR [K, V]
 		redefine
 			target
 		end
 
-create {V_HASH_SET}
+create {V_HASH_TABLE}
 	make
 
 feature {NONE} -- Initialization
 
-	make (t: V_HASH_SET [G])
+	make (t: V_HASH_TABLE [K, V])
 			-- Create iterator over `t'.
 		note
+			status: creator
 			explicit: contracts, wrapping
 		require
 			open: is_open
@@ -45,7 +46,7 @@ feature {NONE} -- Initialization
 				across 1 |..| t.lists.count as j all t.lists [j.item].is_wrapped end
 				across 1 |..| (i - 1) as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ & list_iterator end
 				across i |..| t.lists.count as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ end
-				t.lock /= Void implies t.lock.sets [t] and t.lock.observers [t]
+				t.lock /= Void implies t.lock.tables [t] and t.lock.observers [t]
 				modify_field (["observers", "closed"], t.lists.range)
 			until
 				i > t.lists.count
@@ -58,7 +59,7 @@ feature {NONE} -- Initialization
 
 			bucket_index := 0
 			index_ := 0
-			lemma_content (target.buckets_, target.set, target.bag, concat (target.buckets_))
+			lemma_content (target.buckets_, target.map)
 			wrap
 		ensure
 			wrapped: is_wrapped
@@ -68,49 +69,59 @@ feature {NONE} -- Initialization
 			list_iterator.is_fresh
 		end
 
-feature -- Initialization
+--feature -- Initialization
 
-	copy_ (other: like Current)
-			-- Initialize with the same `target' and position as in `other'.
-		note
-			explicit: wrapping
-		require
-			target_wrapped: target.is_wrapped
-			other_target_wrapped: other.target.is_wrapped
-			target /= other.target implies not other.target.observers [Current]
-			modify (Current)
-			modify_model ("observers", [target, other.target])
-		do
-			if Current /= other then
-				if target /= other.target then
-					check inv_only ("no_observers") end
-					target.forget_iterator (Current)
-					make (other.target)
-				end
-				go_to_other (other)
-			end
-		ensure
-			target_effect: target = old other.target
-			index_effect: index_ = old other.index_
-			old_target_wrapped: (old target).is_wrapped
-			other_target_wrapped: other.target.is_wrapped
-			old_target_observers_effect: other.target /= old target implies (old target).observers = old target.observers / Current
-			other_target_observers_effect: other.target /= old target implies other.target.observers = old other.target.observers & Current
-			target_observers_preserved: other.target = old target implies other.target.observers = old other.target.observers
-		end
+--	copy_ (other: like Current)
+--			-- Initialize with the same `target' and position as in `other'.
+--		note
+--			explicit: wrapping
+--		require
+--			target_wrapped: target.is_wrapped
+--			other_target_wrapped: other.target.is_wrapped
+--			target /= other.target implies not other.target.observers [Current]
+--			modify (Current)
+--			modify_model ("observers", [target, other.target])
+--		do
+--			if Current /= other then
+--				if target /= other.target then
+--					check inv_only ("no_observers") end
+--					target.forget_iterator (Current)
+--					make (other.target)
+--				end
+--				go_to_other (other)
+--			end
+--		ensure
+--			target_effect: target = old other.target
+--			index_effect: index_ = old other.index_
+--			old_target_wrapped: (old target).is_wrapped
+--			other_target_wrapped: other.target.is_wrapped
+--			old_target_observers_effect: other.target /= old target implies (old target).observers = old target.observers / Current
+--			other_target_observers_effect: other.target /= old target implies other.target.observers = old other.target.observers & Current
+--			target_observers_preserved: other.target = old target implies other.target.observers = old other.target.observers
+--		end
 
 feature -- Access
 
-	target: V_HASH_SET [G]
-			-- Set to iterate over.
+	target: V_HASH_TABLE [K, V]
+			-- Table to iterate over.
 
-	item: G
-			-- Item at current position.
+	key: K
+			-- Key at current position.
 		do
 			check inv; target.inv end
 			check list_iterator.inv_only ("sequence_definition", "subjects_definition") end
-			Result := list_iterator.item
+			Result := list_iterator.item.left
 			lemma_single_out (target.buckets_, bucket_index)
+		end
+
+	item: V
+			-- Value at current position.
+		do
+			check inv; target.inv end
+			check list_iterator.inv_only ("sequence_definition", "subjects_definition") end
+			Result := list_iterator.item.right
+			lemma_single_out (target.buckets_, bucket_index)
+			use_definition (value_sequence_from (sequence, target.map))
 		end
 
 feature -- Measurement		
@@ -139,7 +150,8 @@ feature -- Status report
 	after: BOOLEAN
 			-- Is current position after any position in `target'?
 		do
-			check inv; target.inv; list_iterator.inv_only ("sequence_definition") end
+			check inv; list_iterator.inv_only ("sequence_definition") end
+			check target.inv_only ("owns_definition", "lists_definition", "buckets_count", "lists_counts") end
 			Result := bucket_index > target.capacity
 			if target.buckets_.domain [bucket_index] then
 				lemma_single_out (target.buckets_, bucket_index)
@@ -149,16 +161,16 @@ feature -- Status report
 	is_first: BOOLEAN
 			-- Is cursor at the first position?
 		do
-			check inv; target.inv end
-			check list_iterator.inv_only ("sequence_definition") end
+			check inv; list_iterator.inv_only ("sequence_definition") end
+			check target.inv_only ("owns_definition", "lists_definition", "buckets_count", "lists_counts") end
 			Result := not off and then (list_iterator.is_first and count_sum (1, bucket_index - 1) = 0)
 		end
 
 	is_last: BOOLEAN
 			-- Is cursor at the last position?
 		do
-			check inv; target.inv end
-			check list_iterator.inv_only ("sequence_definition") end
+			check inv; list_iterator.inv_only ("sequence_definition") end
+			check target.inv_only ("owns_definition", "lists_definition", "buckets_count", "lists_counts") end
 			Result := not off and then (list_iterator.is_last and count_sum (bucket_index + 1, target.capacity) = 0)
 			if sequence.domain [index_] then
 				lemma_single_out (target.buckets_, bucket_index)
@@ -167,19 +179,20 @@ feature -- Status report
 
 feature -- Cursor movement
 
-	search (v: G)
+	search_key (k: K)
 			-- Move to an element equivalent to `v'.
 			-- If `v' does not appear, go after.
 			-- (Use object equality.)
 		local
-			c: V_LINKABLE [G]
+			c: V_LINKABLE [MML_PAIR [K, V]]
 		do
-			check target.inv_only ("registered", "buckets_non_empty", "buckets_lower", "buckets_count", "lists_definition", "buckets_content",
-				"owns_definition", "list_observers_same", "set_non_void", "set_not_too_small") end
-			check target.lock.inv_only ("owns_items", "valid_buckets", "no_duplicates") end
-			bucket_index := target.index (v)
-			c := target.cell_equal (target.buckets [bucket_index], v)
-			check target.lists [bucket_index].sequence = target.buckets_ [bucket_index] end
+			check target.inv_only ("registered", "buckets_non_empty", "buckets_lower", "buckets_count", "lists_definition",
+				"owns_definition", "list_observers_same", "domain_non_void", "domain_not_too_small", "lists_counts", "buckets_content") end
+			check target.lock.inv_only ("owns_keys", "valid_buckets", "no_duplicates") end
+			bucket_index := target.index (k)
+			c := target.cell_equal (target.buckets [bucket_index], k)
+			check across 1 |..| target.buckets_ [bucket_index].count as j all (target.buckets_ [bucket_index]) [j.item] =
+				target.lists [bucket_index].sequence [j.item].left end end
 			if c = Void then
 				bucket_index := target.capacity + 1
 				index_ := concat (target.buckets_).count + 1
@@ -191,14 +204,14 @@ feature -- Cursor movement
 				check list_iterator.inv_only ("sequence_definition") end
 				index_ := concat (target.buckets_.front (bucket_index - 1)).count + list_iterator.index_
 				lemma_single_out (target.buckets_, bucket_index)
-				v.lemma_transitive (sequence [index_], [target.set_item (v)])
+				k.lemma_transitive (sequence [index_], [target.domain_item (k)])
 			end
 		end
 
 	start
 			-- Go to the first position.
 		do
-			check target.inv_only ("buckets_count", "buckets_content", "owns_definition", "lists_definition", "buckets_lower", "list_observers_same") end
+			check target.inv_only ("buckets_count", "owns_definition", "lists_definition", "lists_counts", "buckets_lower", "list_observers_same") end
 			from
 				bucket_index := 1
 			invariant
@@ -226,7 +239,7 @@ feature -- Cursor movement
 	finish
 			-- Go to the last position.
 		do
-			check target.inv_only ("buckets_count", "buckets_content", "owns_definition", "lists_definition", "buckets_lower", "list_observers_same") end
+			check target.inv_only ("buckets_count", "owns_definition", "lists_definition", "lists_counts", "buckets_lower", "list_observers_same") end
 			from
 				bucket_index := target.capacity
 			invariant
@@ -299,6 +312,21 @@ feature -- Cursor movement
 			index_ := sequence.count + 1
 		end
 
+feature -- Replacement
+
+	put (v: V)
+			-- Replace item at current position with `v'.
+		do
+			check target.inv_only ("registered", "buckets_count", "lists_counts") end
+			lemma_single_out (target.buckets_, bucket_index)
+
+			target.replace_at (Current, v)
+
+			check target.inv end
+			lemma_content (target.buckets_, target.map)
+			check list_iterator.inv_only ("sequence_definition") end
+		end
+
 feature -- Removal
 
 	remove
@@ -307,8 +335,7 @@ feature -- Removal
 			explicit: wrapping
 		do
 			unwrap
-			check target.inv_only ("registered", "buckets_count", "buckets_content") end
-			check list_iterator.inv_only ("sequence_definition") end
+			check target.inv_only ("registered", "buckets_count", "lists_counts") end
 			lemma_single_out (target.buckets_, bucket_index)
 
 			target.remove_at (Current)
@@ -316,8 +343,9 @@ feature -- Removal
 			check target.inv end
 			lemma_single_out (target.buckets_, bucket_index)
 			check target.buckets_.tail (bucket_index + 1) = (target.buckets_.old_).tail (bucket_index + 1) end
-			sequence := sequence.removed_at (index_)
-			lemma_content (target.buckets_, target.set, target.bag, sequence)
+			lemma_content (target.buckets_, target.map)
+			sequence := concat (target.buckets_)
+			value_sequence := value_sequence_from (sequence, target.map)
 			check list_iterator.inv_only ("sequence_definition") end
 
 			if list_iterator.after then
@@ -327,9 +355,9 @@ feature -- Removal
 			end
 		end
 
-feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
+feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Implementation
 
-	list_iterator: V_LINKED_LIST_ITERATOR [G]
+	list_iterator: V_LINKED_LIST_ITERATOR [MML_PAIR [K, V]]
 			-- Iterator inside current bucket.
 
 	bucket_index: INTEGER
@@ -381,12 +409,12 @@ feature {NONE} -- Implementation
 			modify_field (["bucket_index", "closed", "box"], Current)
 			modify (list_iterator)
 		do
-			check target.inv_only ("buckets_exist", "lists_definition", "owns_definition", "buckets_lower", "buckets_count", "list_observers_same") end
+			check target.inv_only ("buckets_exist", "lists_definition", "owns_definition", "buckets_lower", "buckets_count", "list_observers_same", "lists_counts") end
 			from
 				bucket_index := bucket_index + 1
 			invariant
 				bucket_index.old_ < bucket_index and bucket_index <= target.buckets.sequence.count + 1
-				across (bucket_index.old_ + 1) |..| (bucket_index - 1) as i all target.lists [i.item].sequence.is_empty end
+				across (bucket_index.old_ + 1) |..| (bucket_index - 1) as i all target.buckets_ [i.item].is_empty end
 				modify_field ("bucket_index", Current)
 			until
 				bucket_index > target.capacity or else not target.buckets [bucket_index].is_empty
@@ -396,7 +424,6 @@ feature {NONE} -- Implementation
 				target.buckets.sequence.count - bucket_index
 			end
 
-			check target.inv_only ("buckets_content") end
 			lemma_empty (target.buckets_.interval (bucket_index.old_ + 1, bucket_index - 1))
 
 			if bucket_index <= target.capacity then
@@ -429,12 +456,12 @@ feature {NONE} -- Implementation
 			modify_field (["bucket_index", "closed", "box"], Current)
 			modify (list_iterator)
 		do
-			check target.inv_only ("buckets_exist", "lists_definition", "owns_definition", "buckets_lower", "buckets_count", "list_observers_same", "buckets_content") end
+			check target.inv_only ("buckets_exist", "lists_definition", "owns_definition", "buckets_lower", "buckets_count", "list_observers_same", "lists_counts") end
 			from
 				bucket_index := bucket_index - 1
 			invariant
 				0 <= bucket_index and bucket_index < bucket_index.old_
-				across (bucket_index + 1) |..| (bucket_index.old_ - 1) as i all target.lists [i.item].sequence.is_empty end
+				across (bucket_index + 1) |..| (bucket_index.old_ - 1) as i all target.buckets_ [i.item].is_empty end
 				modify_field ("bucket_index", Current)
 			until
 				bucket_index < 1 or else not target.buckets [bucket_index].is_empty
@@ -444,7 +471,6 @@ feature {NONE} -- Implementation
 				bucket_index
 			end
 
-			check target.inv_only ("buckets_content") end
 			lemma_empty (target.buckets_.interval (bucket_index + 1, bucket_index.old_ - 1))
 
 			if bucket_index >= 1 then
@@ -491,7 +517,7 @@ feature {NONE} -- Implementation
 			end
 			index_ := other.index_
 
-			check other.inv_only ("index_before", "index_after", "index_constraint", "sequence_implementation") end
+			check other.inv_only ("index_before", "index_after", "index_constraint", "sequence_implementation", "value_sequence_definition") end
 			lemma_static (other, target.buckets_)
 			lemma_static (other, target.buckets_.front (bucket_index - 1))
 			wrap
@@ -503,14 +529,14 @@ feature {NONE} -- Implementation
 
 feature {V_CONTAINER, V_ITERATOR} -- Specification
 
-	concat (seqs: like target.buckets_): MML_SEQUENCE [G]
+	concat (seqs: like target.buckets_): MML_SEQUENCE [K]
 			-- All sequences in `seqs' concatenated together.
 		note
 			status: functional, ghost, opaque
 		require
 			reads ([])
 		do
-			Result := if seqs.is_empty then {MML_SEQUENCE [G]}.empty_sequence else concat (seqs.but_last) + seqs.last end
+			Result := if seqs.is_empty then {MML_SEQUENCE [K]}.empty_sequence else concat (seqs.but_last) + seqs.last end
 		end
 
 	lemma_append (a, b: like target.buckets_)
@@ -576,36 +602,43 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 			concat (seqs) = other.concat (seqs)
 		end
 
-	lemma_content (bs: like target.buckets_; s: like target.set; b: like target.bag; seq: like sequence)
-			-- If `seq' is `concat (bs)', and `s' and `b' are the set and bag of elements in `bs' respectively,
-			-- then `s' and `b' are the set and bag of elements in `seq' as well.
+	lemma_content (bs: like target.buckets_; m: like target.map)
+			-- If `m.domain' is the set of elements in `bs', then it is also the set elements in `concat (bs)';
+			-- and the values in `m' are the same as the values in the `m'-imgae of `concat (bs)'.
 		note
 			status: lemma
 		require
 			target /= Void
-			valid_seq: seq = concat (bs)
-			set_non_void: s.non_void
-			set_not_too_small: across 1 |..| bs.count as i all across 1 |..| bs [i.item].count as j all s [(bs [i.item])[j.item]] end end
-			set_not_too_large: target.set_not_too_large (s, bs)
+			domain_non_void: m.domain.non_void
+			domain_not_too_small: across 1 |..| bs.count as i all across 1 |..| bs [i.item].count as j all m.domain [(bs [i.item])[j.item]] end end
+			domain_not_too_large: target.set_not_too_large (m.domain, bs)
 			no_precise_duplicates: across 1 |..| bs.count as i all across 1 |..| bs.count as j all
 					across 1 |..| bs [i.item].count as k all across 1 |..| bs [j.item].count as l all
 							i.item /= j.item or k.item /= l.item implies (bs [i.item])[k.item] /= (bs [j.item])[l.item] end end end end
-			bag_domain_definition: b.domain ~ s
-			bag_definition: b.is_constant (1)
 		do
 			use_definition (concat (bs))
-			use_definition (target.set_not_too_large (s, bs))
+			use_definition (target.set_not_too_large (m.domain, bs))
+			use_definition (value_sequence_from (concat (bs), m))
+			use_definition (target.bag_from (m))
 			if not bs.is_empty then
 				check across 1 |..| (bs.count - 1) as i all bs [i.item] = bs.but_last [i.item] end end
-				use_definition (target.set_not_too_large (s - bs.last.range, bs.but_last))
-				lemma_content (bs.but_last, s - bs.last.range, b - bs.last.to_bag, seq.front (seq.count - bs.last.count))
+				use_definition (target.set_not_too_large (m.domain - bs.last.range, bs.but_last))
+				check  (m | (m.domain - bs.last.range)).domain = m.domain - bs.last.range end
+				lemma_content (bs.but_last, m | (m.domain - bs.last.range))
 				bs.last.lemma_no_duplicates
+
+				use_definition (value_sequence_from (concat (bs.but_last), m | (m.domain - bs.last.range)))
+				use_definition (target.bag_from (m | (m.domain - bs.last.range)))
+				check (m | (m.domain - bs.last.range)).sequence_image (concat (bs.but_last)) = m.sequence_image (concat (bs.but_last)) end
+				check m.sequence_image (concat (bs)) = m.sequence_image (concat (bs.but_last)) + m.sequence_image (bs.last) end
+				check m = (m | (m.domain - bs.last.range)) + (m | bs.last.range) end
+				m.lemma_sequence_image_bag (bs.last)
 			else
-				check b.is_empty end
+				check m.is_empty end
 			end
 		ensure
-			set_constraint: seq.range = s
-			bag_constraint: seq.to_bag = b
+			set_constraint: concat (bs).range = m.domain
+			value_sequence_from (concat (bs), m).to_bag ~ target.bag_from (m)
 		end
 
 invariant
@@ -619,6 +652,7 @@ invariant
 	index_before: bucket_index = 0 implies index_ = 0
 	index_after: bucket_index > target.lists.count implies index_ = concat (target.buckets_).count + 1
 	index_not_off: target.lists.domain [bucket_index] implies index_ = concat (target.buckets_.front (bucket_index - 1)).count + list_iterator.index_
+
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

@@ -989,7 +989,7 @@ feature -- Translation: Functions
 			l_decreases_list := decreases_expressions_of (contracts_of (current_feature, current_type).decreases, l_translator)
 			if l_decreases_list.is_empty then
 				-- No decreases clause: apply default
-				if l_current.type /~ types.ref then
+				if l_current.type.has_rank and l_current.type /~ types.ref then
 					l_decreases_list.extend (l_current)
 				end
 				across arguments_of_current_feature as j loop
@@ -1053,8 +1053,34 @@ feature {NONE} -- Translation: Functions
 			end
 
 			l_expr_translator := translator_for_function (l_fcall)
+
+				-- Generate axiom from postcondition
+			l_post := pre_post_expressions_of (current_feature, current_type, l_expr_translator.entity_mapping).post
+				-- Add type property
+			l_type := helper.class_type_in_context (current_feature.type, current_type.base_class, current_feature, current_type)
+			l_post := factory.and_clean (l_post,
+				types.type_property (l_type, l_expr_translator.entity_mapping.heap, l_fcall,
+					helper.is_type_exact (current_feature.type, l_type, current_feature),
+					current_feature.type.is_attached))
+			if not l_post.is_true then
+				if current_feature.is_once then
+					create l_forall.make (l_post)
+					check attached {IV_ENTITY} l_expr_translator.entity_mapping.heap as ent then
+						l_forall.add_bound_variable (ent)
+					end
+					l_forall.add_trigger (factory.function_call ("IsHeap", <<l_expr_translator.entity_mapping.heap>>, types.bool))
+				else
+					create l_forall.make (factory.implies_ (l_pre_call, l_post))
+					l_forall.add_trigger (l_fcall)
+				end
+				l_forall.bound_variables.append (a_function.arguments)
+				create l_axiom.make (l_forall)
+				boogie_universe.add_declaration (l_axiom)
+			end
+
+
+				-- If functional, generate another axiom from body
 			if helper.is_functional (current_feature) then
-					-- Generate `l_post' from body					
 				if attached Context.byte_code and then functional_body (Context.byte_code.compound) /= Void then
 					functional_body (Context.byte_code.compound).process (l_expr_translator)
 					l_post := factory.equal (l_fcall, l_expr_translator.last_expression)
@@ -1062,33 +1088,18 @@ feature {NONE} -- Translation: Functions
 					helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment, -1)
 					l_post := factory.true_
 				end
-			else
-				l_type := helper.class_type_in_context (current_feature.type, current_type.base_class, current_feature, current_type)
-					-- Take `l_post' from the postcondition
-				l_post := pre_post_expressions_of (current_feature, current_type, l_expr_translator.entity_mapping).post
-					-- Add type property
-				l_post := factory.and_clean (l_post,
-					types.type_property (l_type, l_expr_translator.entity_mapping.heap, l_fcall,
-						helper.is_type_exact (current_feature.type, l_type, current_feature),
-						current_feature.type.is_attached))
-			end
 
-			if current_feature.is_once then
-				create l_forall.make (l_post)
-				check attached {IV_ENTITY} l_expr_translator.entity_mapping.heap as ent then
-					l_forall.add_bound_variable (ent)
+				if helper.is_opaque (current_feature) then
+					create l_forall.make (factory.implies_ (factory.and_ (l_pre_call, l_trigger_call), l_post))
+					l_forall.add_trigger (l_trigger_call)
+				else
+					create l_forall.make (factory.implies_ (l_pre_call, l_post))
+					l_forall.add_trigger (l_fcall)
 				end
-				l_forall.add_trigger (factory.function_call ("IsHeap", <<l_expr_translator.entity_mapping.heap>>, types.bool))
-			elseif helper.is_opaque (current_feature) then
-				create l_forall.make (factory.implies_ (factory.and_ (l_pre_call, l_trigger_call), l_post))
-				l_forall.add_trigger (l_trigger_call)
-			else
-				create l_forall.make (factory.implies_ (l_pre_call, l_post))
-				l_forall.add_trigger (l_fcall)
+				l_forall.bound_variables.append (a_function.arguments)
+				create l_axiom.make (l_forall)
+				boogie_universe.add_declaration (l_axiom)
 			end
-			l_forall.bound_variables.append (a_function.arguments)
-			create l_axiom.make (l_forall)
-			boogie_universe.add_declaration (l_axiom)
 		end
 
 	functional_body (a_body: BYTE_LIST [BYTE_NODE]): detachable EXPR_B

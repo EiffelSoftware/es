@@ -727,15 +727,7 @@ feature -- Eiffel helpers
 			-- Feature represented by `a_node'.
 		do
 			check is_conforming_or_non_conforming_parent_class (a_target_type.associated_class, system.class_of_id (a_node.written_in)) end
-			Result := a_target_type.associated_class.feature_of_name_id (a_node.feature_name_id)
---			Result := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.feature_name_id)
-			if Result /= Void then
-					-- Not renamed
-				Result := a_target_type.associated_class.feature_of_name_id (a_node.feature_name_id)
-			else
-					-- Renamed
-				Result := a_target_type.associated_class.feature_of_rout_id (a_node.routine_id)
-			end
+			Result := a_target_type.associated_class.feature_of_rout_id (a_node.routine_id)
 			Result := Result.instantiated (a_target_type)
 			check Result /= Void end
 		end
