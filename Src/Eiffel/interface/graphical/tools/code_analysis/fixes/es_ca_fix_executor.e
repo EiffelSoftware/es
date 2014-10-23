@@ -20,6 +20,8 @@ inherit
 
 	SHARED_EIFFEL_PROJECT
 
+	ES_CODE_ANALYSIS_BENCH_HELPER
+
 create
 	make_with_fix
 
@@ -75,10 +77,18 @@ feature -- Fixing
 						-- Mark the fix as applied so that it may not be applied a second time. Then
 						-- color the rule violation entry in the GUI.
 					fix.set_applied
+
 		        	ui_row.set_background_color (l_helper.ca_command.fixed_violation_bgcolor.value)
 
 		        		-- Now compile again, which in all cases should succeed.
 		        	eiffel_project.quick_melt (True, True, True)
+
+		        	-- After applying the fix, run the code analyzer again. We need to create a new CLASSC_STONE because of the recompilation.
+					if attached {CLASSC_STONE} l_helper.ca_command.ca_tool.panel.scope_label.pebble as l_stone then
+						l_helper.ca_command.execute_with_stone (create {CLASSC_STONE}.make (l_stone.e_class))
+					else
+						l_helper.ca_command.execute
+					end
 
 		        	window_manager.display_message ("Fixing rule violation succeeded.")
 		        else
@@ -98,6 +108,8 @@ feature -- Fixing
 			if not is_parse_error then
 				fix.setup (ast, match_list, process_leading, true)
 				fix.execute (ast)
+
+				window_manager.refresh_all-- TODO Try me.
 				if not process_leading then
 					fix.process_all_break_as
 				end

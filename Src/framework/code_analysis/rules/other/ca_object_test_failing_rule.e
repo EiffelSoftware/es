@@ -69,9 +69,9 @@ feature {NONE} -- Implementation
 			-- Is there a class that conforms to both `a_t1' and `a_t2'?
 		do
 			across system.classes as l_class loop
---				if l_class.item.actual_type.conform_to (a_context_class: CLASS_C, other: TYPE_A) then
---					-- TODO Implement. Awaiting answers from Tschannen.
---				end
+				if l_class.item.actual_type.conforms_to(a_t1) and l_class.item.actual_type.conforms_to(a_t2) then
+					Result := True
+				end
 			end
 		end
 

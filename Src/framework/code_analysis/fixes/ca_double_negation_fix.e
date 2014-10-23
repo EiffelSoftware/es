@@ -47,7 +47,7 @@ feature {NONE} -- Visitor
 	process_un_not_as (a_un_not_as: UN_NOT_AS)
 		do
 			Precursor (a_un_not_as)
-			if unary.is_equivalent (a_un_not_as) then
+			if unary.index = a_un_not_as.index then
 				a_un_not_as.replace_text (get_expression(a_un_not_as.expr), matchlist)
 			end
 		end
