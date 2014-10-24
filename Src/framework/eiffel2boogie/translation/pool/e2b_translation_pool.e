@@ -294,7 +294,10 @@ feature {NONE} -- Implementation
 		do
 			create l_creator.make (a_feature, a_context_type)
 			add_translation_unit (l_creator)
-			if not a_is_referenced and not helper.is_skipped (a_feature) then
+			if a_is_referenced or helper.is_skipped (a_feature) or (helper.is_explicit (a_feature, "contracts") and not helper.is_creator (a_feature)) then
+				-- Skip if: only referenced, should be skipped or
+				-- contracts are explicit (unless creator), becuase in that case the non-creator version has a stronger spec and the same implementation
+			else
 				create l_creator_impl.make (a_feature, a_context_type)
 				add_translation_unit (l_creator_impl)
 			end

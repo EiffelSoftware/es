@@ -116,22 +116,26 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 feature -- Specification
 
-	forget_iterator (it: like new_cursor)
+	forget_iterator (it: V_ITERATOR [G])
 			-- Remove `it' from `observers'.
 		note
 			status: ghost
 			explicit: contracts
 		do
-			it.unwrap
-			set_observers (observers / it)
-			check it.iterator.inv_only ("subjects_definition", "A2") end
-			list.forget_iterator (it.iterator)
+			check it.inv_only ("subjects_definition", "A2") end
+			check attached {V_LINKED_STACK_ITERATOR [G]} it as lsit then
+				lsit.unwrap
+				set_observers (observers / lsit)
+				check lsit.iterator.inv_only ("subjects_definition", "A2") end
+				list.forget_iterator (lsit.iterator)
+			end
 		end
 
 invariant
 	list_exists: list /= Void
 	owns_definition: owns = [list]
 	sequence_implementation: sequence ~ list.sequence
+	observers_type: across observers as o all attached {V_LINKED_STACK_ITERATOR [G]} o.item end
 	observers_correspond: list.observers.count <= observers.count
 
 note

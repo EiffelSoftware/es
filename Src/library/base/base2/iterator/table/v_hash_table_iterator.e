@@ -22,7 +22,6 @@ feature {NONE} -- Initialization
 	make (t: V_HASH_TABLE [K, V])
 			-- Create iterator over `t'.
 		note
-			status: creator
 			explicit: contracts, wrapping
 		require
 			open: is_open
@@ -36,6 +35,7 @@ feature {NONE} -- Initialization
 		do
 			target := t
 			t.unwrap
+
 			t.observers := t.observers & Current
 			t.lemma_lists_domain (1)
 			list_iterator := t.buckets [1].new_cursor
@@ -69,36 +69,36 @@ feature {NONE} -- Initialization
 			list_iterator.is_fresh
 		end
 
---feature -- Initialization
+feature -- Initialization
 
---	copy_ (other: like Current)
---			-- Initialize with the same `target' and position as in `other'.
---		note
---			explicit: wrapping
---		require
---			target_wrapped: target.is_wrapped
---			other_target_wrapped: other.target.is_wrapped
---			target /= other.target implies not other.target.observers [Current]
---			modify (Current)
---			modify_model ("observers", [target, other.target])
---		do
---			if Current /= other then
---				if target /= other.target then
---					check inv_only ("no_observers") end
---					target.forget_iterator (Current)
---					make (other.target)
---				end
---				go_to_other (other)
---			end
---		ensure
---			target_effect: target = old other.target
---			index_effect: index_ = old other.index_
---			old_target_wrapped: (old target).is_wrapped
---			other_target_wrapped: other.target.is_wrapped
---			old_target_observers_effect: other.target /= old target implies (old target).observers = old target.observers / Current
---			other_target_observers_effect: other.target /= old target implies other.target.observers = old other.target.observers & Current
---			target_observers_preserved: other.target = old target implies other.target.observers = old other.target.observers
---		end
+	copy_ (other: like Current)
+			-- Initialize with the same `target' and position as in `other'.
+		note
+			explicit: wrapping
+		require
+			target_wrapped: target.is_wrapped
+			other_target_wrapped: other.target.is_wrapped
+			target /= other.target implies not other.target.observers [Current]
+			modify (Current)
+			modify_model ("observers", [target, other.target])
+		do
+			if Current /= other then
+				if target /= other.target then
+					check inv_only ("no_observers") end
+					target.forget_iterator (Current)
+					make (other.target)
+				end
+				go_to_other (other)
+			end
+		ensure
+			target_effect: target = old other.target
+			index_effect: index_ = old other.index_
+			old_target_wrapped: (old target).is_wrapped
+			other_target_wrapped: other.target.is_wrapped
+			old_target_observers_effect: other.target /= old target implies (old target).observers = old target.observers / Current
+			other_target_observers_effect: other.target /= old target implies other.target.observers = old other.target.observers & Current
+			target_observers_preserved: other.target = old target implies other.target.observers = old other.target.observers
+		end
 
 feature -- Access
 
@@ -271,7 +271,8 @@ feature -- Cursor movement
 			explicit: wrapping
 		do
 			unwrap
-			check target.inv; list_iterator.inv_only ("sequence_definition", "subjects_definition", "default_owns") end
+			check target.inv_only ("buckets_count", "owns_definition", "lists_definition", "lists_counts", "buckets_lower", "list_observers_same") end
+			check list_iterator.inv_only ("sequence_definition", "subjects_definition", "default_owns") end
 			list_iterator.forth
 			index_ := index_ + 1
 			if list_iterator.after then
@@ -287,7 +288,8 @@ feature -- Cursor movement
 			explicit: wrapping
 		do
 			unwrap
-			check target.inv; list_iterator.inv_only ("sequence_definition", "subjects_definition", "default_owns") end
+			check target.inv_only ("buckets_count", "owns_definition", "lists_definition", "lists_counts", "buckets_lower", "list_observers_same") end
+			check list_iterator.inv_only ("sequence_definition", "subjects_definition", "default_owns") end
 			list_iterator.back
 			index_ := index_ - 1
 			if list_iterator.before then

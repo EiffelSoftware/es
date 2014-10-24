@@ -270,7 +270,7 @@ feature -- Helper functions: contracts
 				if attached {FEATURE_B} i.item.clause.expr as l_call then
 					l_name := names_heap.item_32 (l_call.feature_name_id)
 					if l_name ~ a_function then
-						a_translator.set_origin_class (i.item.origin)
+--						a_translator.set_origin_class (i.item.origin)
 						l_objects_type := translate_contained_expressions (l_call.parameters.i_th (1).expression, a_translator, True)
 						Result.append (l_objects_type.expressions)
 					end

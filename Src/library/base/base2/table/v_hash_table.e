@@ -16,8 +16,8 @@ inherit
 	V_TABLE [K, V]
 		redefine
 			default_create,
-			lock
---			forget_iterator
+			lock,
+			forget_iterator
 		end
 
 feature {NONE} -- Initialization
@@ -239,7 +239,9 @@ feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Implementation
 			k_closed: k.closed
 			lock_closed: lock.closed
 		do
-			check inv; lock.inv_only ("owns_keys", "valid_buckets", "no_duplicates") end
+			check inv_only ("registered", "owns_definition", "buckets_non_empty", "buckets_lower", "buckets_count",
+				"lists_definition", "lists_counts", "buckets_content", "domain_not_too_small", "map_implementation") end
+			check lock.inv_only ("owns_keys", "valid_buckets", "no_duplicates") end
 			Result := cell_equal (buckets [index (k)], k)
 			check across 1 |..| buckets_ [index (k)].count as j all (buckets_ [index (k)]) [j.item] = lists [index (k)].sequence [j.item].left end end
 			if domain_has (k) then
@@ -593,49 +595,56 @@ feature -- Specification
 			Result := across s as x all across 1 |..| bs.count as i some bs [i.item].has (x.item) end end
 		end
 
---	forget_iterator (it: V_HASH_TABLE_ITERATOR [K, V])
---			-- Remove `it' from `observers'.
---		note
---			status: ghost
---			explicit: contracts
---		local
---			i, j: INTEGER
---		do
---			check it.inv_only ("target_is_bucket", "owns_definition") end
---			check it.list_iterator.inv_only ("subjects_definition", "default_owns", "A2") end
---			i := it.bucket_index
---			it.unwrap
---			set_observers (observers / it)
+	forget_iterator (it: V_ITERATOR [V])
+			-- Remove `it' from `observers'.
+		note
+			status: ghost
+			explicit: contracts, wrapping
+		local
+			i, j: INTEGER
+		do
+			check it.inv_only ("subjects_definition", "A2") end
+			check inv_only ("iterators_type", "list_observers_same", "list_observers_count", "owns_definition", "lists_distinct") end
+			unwrap_no_inv
+			check attached {V_HASH_TABLE_ITERATOR [K, V]} it as htit then
+				check htit.inv_only ("target_is_bucket", "owns_definition") end
+				check htit.list_iterator.inv_only ("subjects_definition", "default_owns", "A2") end
+				i := htit.bucket_index
+				htit.unwrap
+				set_observers (observers / htit)
 
---			if lists.domain [i] then
---				lemma_lists_domain (i)
---				lists [i].forget_iterator (it.list_iterator)
---			else
---				it.list_iterator.unwrap
---			end
+				if lists.domain [i] then
+					lemma_lists_domain (i)
+					lists [i].forget_iterator (htit.list_iterator)
+				else
+					htit.list_iterator.unwrap
+				end
 
---			from
---				j := 1
---			invariant
---				1 <= j and j <= lists.count + 1
---				it.list_iterator.is_open
---				across 1 |..| lists.count as k all lists [k.item].is_wrapped and then
---					lists [k.item].observers = if k.item >= j and k.item /= i
---						then lists [k.item].observers.old_
---						else lists [k.item].observers.old_ / it.list_iterator end end
---				lock /= Void implies lock.tables = lock.tables.old_ and lock.observers = lock.observers.old_
---				modify_field (["observers", "closed"], lists.range)
---			until
---				j > lists.count
---			loop
---				if j /= i then
---					lists [j].unwrap
---					lists [j].observers := lists [j].observers / it.list_iterator
---					lists [j].wrap
---				end
---				j := j + 1
---			end
---		end
+				from
+					j := 1
+				invariant
+					1 <= j and j <= lists.count + 1
+					htit.list_iterator.is_open
+					across 1 |..| lists.count as k all lists [k.item].is_wrapped and then
+						lists [k.item].observers = if k.item >= j and k.item /= i
+							then lists [k.item].observers.old_
+							else lists [k.item].observers.old_ / htit.list_iterator end end
+					lock /= Void implies lock.tables = lock.tables.old_ and lock.observers = lock.observers.old_
+					modify_field (["observers", "closed"], lists.range)
+				until
+					j > lists.count
+				loop
+					if j /= i then
+						lists [j].unwrap
+						lists [j].observers := lists [j].observers / htit.list_iterator
+						lists [j].wrap
+					end
+					j := j + 1
+				end
+			end
+			check inv_without ("iterators_type", "list_observers_same", "list_observers_count", "owns_definition", "lists_distinct").old_ end
+			wrap
+		end
 
 	lemma_set_not_too_large
 			-- `set_not_too_large (set, buckets_)' is a weaker version of `valid_buckets' invariant of the `lock'.
@@ -704,6 +713,7 @@ invariant
 		map [(buckets_ [i.item]) [j.item]] = lists [i.item].sequence [j.item].right end end
 		-- Iterators:
 	array_observers: buckets.observers.is_empty
+	iterators_type: across observers as o all o /= lock implies attached {V_HASH_TABLE_ITERATOR [K, V]} o.item end
 	list_observers_same: across 1 |..| lists.count as i all
 		across 1 |..| lists.count as j all lists [i.item].observers = lists [j.item].observers end end
 	list_observers_count: across 1 |..| lists.count as i all lists [i.item].observers.count <= (observers - subjects).count end

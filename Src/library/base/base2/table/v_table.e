@@ -238,7 +238,7 @@ feature -- Specification
 	s_has (s: MML_SET [K]; k: K): BOOLEAN
 			-- Does `s' contain an element equal to `v' under object equality?
 		note
-			status: ghost, functional
+			status: ghost, functional, dynamic
 		require
 			k_exists: k /= Void
 			set_non_void: s.non_void
@@ -250,7 +250,7 @@ feature -- Specification
 	domain_has (k: K): BOOLEAN
 			-- Does `set' contain an element equal to `v' under object equality?
 		note
-			status: ghost, functional
+			status: ghost, functional, dynamic
 		require
 			k_exists: k /= Void
 			domain_non_void: map.domain.non_void
@@ -263,7 +263,7 @@ feature -- Specification
 	domain_item (k: K): K
 			-- Element of `map.domain' that is equal to `k' under object equality.
 		note
-			status: ghost
+			status: ghost, dynamic
 		require
 			k_exists: k /= Void
 			k_in_domain: domain_has (k)
@@ -296,7 +296,7 @@ feature -- Specification
 	no_duplicates (s: like map.domain): BOOLEAN
 			-- Are all objects in `s' unique by value?
 		note
-			status: ghost, functional
+			status: ghost, functional, dynamic
 		require
 			non_void: s.non_void
 			reads (s)
@@ -307,7 +307,7 @@ feature -- Specification
 	bag_from (m: like map): like bag
 			-- Bag of values in `m'.
 		note
-			status: ghost, functional, opaque
+			status: ghost, functional, opaque, dynamic
 		require
 			reads ([])
 		do

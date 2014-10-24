@@ -515,48 +515,55 @@ feature -- Specification
 			Result := across s as x all across 1 |..| bs.count as i some bs [i.item].has (x.item) end end
 		end
 
-	forget_iterator (it: like new_cursor)
+	forget_iterator (it: V_ITERATOR [G])
 			-- Remove `it' from `observers'.
 		note
 			status: ghost
-			explicit: contracts
+			explicit: contracts, wrapping
 		local
 			i, j: INTEGER
 		do
-			check it.inv_only ("target_is_bucket", "owns_definition") end
-			check it.list_iterator.inv_only ("subjects_definition", "default_owns", "A2") end
-			i := it.bucket_index
-			it.unwrap
-			set_observers (observers / it)
+			check it.inv_only ("subjects_definition", "A2") end
+			check inv_only ("iterators_type", "list_observers_same", "list_observers_count", "owns_definition", "lists_distinct") end
+			unwrap_no_inv
+			check attached {V_HASH_SET_ITERATOR [G]} it as hsit then
+				check hsit.inv_only ("target_is_bucket", "owns_definition") end
+				check hsit.list_iterator.inv_only ("subjects_definition", "default_owns", "A2") end
+				i := hsit.bucket_index
+				hsit.unwrap
+				set_observers (observers / hsit)
 
-			if lists.domain [i] then
-				lemma_lists_domain (i)
-				lists [i].forget_iterator (it.list_iterator)
-			else
-				it.list_iterator.unwrap
-			end
-
-			from
-				j := 1
-			invariant
-				1 <= j and j <= lists.count + 1
-				it.list_iterator.is_open
-				across 1 |..| lists.count as k all lists [k.item].is_wrapped and then
-					lists [k.item].observers = if k.item >= j and k.item /= i
-						then lists [k.item].observers.old_
-						else lists [k.item].observers.old_ / it.list_iterator end end
-				lock /= Void implies lock.sets = lock.sets.old_ and lock.observers = lock.observers.old_
-				modify_field (["observers", "closed"], lists.range)
-			until
-				j > lists.count
-			loop
-				if j /= i then
-					lists [j].unwrap
-					lists [j].observers := lists [j].observers / it.list_iterator
-					lists [j].wrap
+				if lists.domain [i] then
+					lemma_lists_domain (i)
+					lists [i].forget_iterator (hsit.list_iterator)
+				else
+					hsit.list_iterator.unwrap
 				end
-				j := j + 1
+
+				from
+					j := 1
+				invariant
+					1 <= j and j <= lists.count + 1
+					hsit.list_iterator.is_open
+					across 1 |..| lists.count as k all lists [k.item].is_wrapped and then
+						lists [k.item].observers = if k.item >= j and k.item /= i
+							then lists [k.item].observers.old_
+							else lists [k.item].observers.old_ / hsit.list_iterator end end
+					lock /= Void implies lock.sets = lock.sets.old_ and lock.observers = lock.observers.old_
+					modify_field (["observers", "closed"], lists.range)
+				until
+					j > lists.count
+				loop
+					if j /= i then
+						lists [j].unwrap
+						lists [j].observers := lists [j].observers / hsit.list_iterator
+						lists [j].wrap
+					end
+					j := j + 1
+				end
 			end
+			check inv_without ("iterators_type", "list_observers_same", "list_observers_count", "owns_definition", "lists_distinct").old_ end
+			wrap
 		end
 
 	lemma_set_not_too_large
@@ -671,6 +678,7 @@ invariant
 	buckets_content: across 1 |..| buckets_.count as i all buckets_ [i.item] = lists [i.item].sequence end
 		-- Iterators:
 	array_observers: buckets.observers.is_empty
+	iterators_type: across observers as o all o /= lock implies attached {V_HASH_SET_ITERATOR [G]} o.item end
 	list_observers_same: across 1 |..| lists.count as i all
 		across 1 |..| lists.count as j all lists [i.item].observers = lists [j.item].observers end end
 	list_observers_count: across 1 |..| lists.count as i all lists [i.item].observers.count <= (observers - subjects).count end
