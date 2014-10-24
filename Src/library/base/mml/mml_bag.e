@@ -209,4 +209,26 @@ feature -- Lemmas
 			removed_multiple (v, Current [v]) = removed_all (v)
 		end
 
+	lemma_domain_count
+			-- `domain' has no more elements thatn the bag,
+			-- and they have equal number of elements iff every element occurs exactly once.
+		note
+			status: lemma
+		local
+			x: G
+		do
+			if not is_empty then
+				x := domain.any_item
+				check Current = (Current / x) & x end
+				check domain = (Current / x).domain & x end
+				check Current[x] = (Current / x)[x] + 1 end
+				check is_constant (1) implies not (Current / x).domain [x] end
+				check domain.count = if Current [x] = 1 then (Current / x).domain.count + 1 else (Current / x).domain.count end end
+				(Current / x).lemma_domain_count
+			end
+		ensure
+			(count = domain.count) = is_constant (1)
+			domain.count <= count
+		end
+
 end

@@ -35,60 +35,59 @@ feature {NONE} -- Initialization
 			observers_empty: observers.is_empty
 		end
 
---feature -- Initialization
+feature -- Initialization
 
---	copy_ (other: V_HASH_TABLE [K, V])
---			-- Initialize by copying all the items of `other'.
---		note
---			explicit: wrapping
---		require
---			lock_wrapped: lock.is_wrapped
---			same_lock: lock = other.lock
---			no_iterators: observers = [lock]
---			modify_model (["map", "owns"], Current)
---			modify_model ("observers", [Current, other])
---		local
---			it: V_HASH_TABLE_ITERATOR [K, V]
---		do
---			if other /= Current then
---				unwrap
---				check other.inv end
---				make_empty_buckets (other.capacity)
+	copy_ (other: V_HASH_TABLE [K, V])
+			-- Initialize by copying all the items of `other'.
+		note
+			explicit: wrapping
+		require
+			lock_wrapped: lock.is_wrapped
+			same_lock: lock = other.lock
+			no_iterators: observers = [lock]
+			modify_model (["map", "owns"], Current)
+			modify_model ("observers", [Current, other])
+		local
+			it: V_HASH_TABLE_ITERATOR [K, V]
+		do
+			if other /= Current then
+				unwrap
+				check other.inv_only ("registered", "buckets_owned", "buckets_count", "buckets_non_empty", "lists_definition") end
+				make_empty_buckets (other.capacity)
 
---				from
---					it := other.new_cursor
---				invariant
---					is_wrapped
---					other.is_wrapped
---					it.is_wrapped
---					inv_only ("lock_non_current")
---					other.inv_only ("domain_non_void", "lock_non_current")
---					lock.inv_only ("owns_keys")
---					1 <= it.index_ and it.index_ <= it.sequence.count + 1
---					across 1 |..| (it.index_ - 1) as i all map.domain [it.sequence [i.item]] and then
---						map [it.sequence [i.item]] = other.map [it.sequence [i.item]] end
---					across it.index_ |..| it.sequence.count as i all not domain_has (it.sequence [i.item]) end
---					across map.domain as k all other.map.domain [k.item] end
---					modify_model (["map", "owns"], Current)
---					modify_model ("index_", it)
---				until
---					it.after
---				loop
---					use_definition (it.value_sequence_from (it.sequence, other.map))
---					check it.item = other.map [it.key] end
---					simple_extend (it.item, it.key)
---					it.forth
---				variant
---					it.sequence.count - it.index_
---				end
---				check map.domain = other.map.domain end
---				other.forget_iterator (it)
---			end
---		ensure
---			map_effect: map ~ old other.map
---			observers_restored: observers ~ old observers
---			other_observers_restored: other.observers ~ old other.observers
---		end
+				from
+					it := other.new_cursor
+				invariant
+					is_wrapped
+					other.is_wrapped
+					it.is_wrapped
+					lock.inv_only ("owns_keys", "no_duplicates")
+					1 <= it.index_ and it.index_ <= it.sequence.count + 1
+					across 1 |..| it.sequence.count as i all map.domain [it.sequence [i.item]] = (i.item < it.index_) end
+					map.domain <= other.map.domain
+					map = other.map | map.domain
+					across other.map.domain - map.domain as x all not domain_has (x.item) end
+
+					modify_model (["map", "owns"], Current)
+					modify_model ("index_", it)
+				until
+					it.after
+				loop
+					use_definition (it.value_sequence_from (it.sequence, other.map))
+					simple_extend (it.item, it.key)
+					it.lemma_sequence_no_duplicates
+					it.forth
+				variant
+					it.sequence.count - it.index_
+				end
+				check map.domain = other.map.domain end
+				other.forget_iterator (it)
+			end
+		ensure
+			map_effect: map ~ old other.map
+			observers_restored: observers ~ old observers
+			other_observers_restored: other.observers ~ old other.observers
+		end
 
 feature -- Measurement
 

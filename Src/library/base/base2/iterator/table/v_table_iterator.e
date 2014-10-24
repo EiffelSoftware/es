@@ -116,6 +116,25 @@ feature -- Specification
 			same_count: Result.count = seq.count
 		end
 
+	lemma_sequence_no_duplicates
+			-- Key sequence has no duplicates.	
+		note
+			status: lemma
+		require
+			closed: closed
+			target_closed: target.closed
+		do
+			check inv end
+			check target.inv_only ("bag_definition") end
+			use_definition (target.bag_from (target.map))
+			check value_sequence.count = value_sequence.to_bag.count end
+			check sequence.to_bag.domain = sequence.range end
+			sequence.to_bag.lemma_domain_count
+			sequence.lemma_no_duplicates
+		ensure
+			sequence.no_duplicates
+		end
+
 invariant
 	target_domain_constraint: target.map.domain ~ sequence.range
 	value_sequence_definition: value_sequence ~ value_sequence_from (sequence, target.map)
