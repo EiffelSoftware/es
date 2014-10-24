@@ -37,7 +37,7 @@ feature -- Replacement
 		require
 			has_index: has_index (i)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model ("sequence", Current)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.replaced_at (idx (i), v)
@@ -52,7 +52,7 @@ feature -- Replacement
 			has_index_one: has_index (i1)
 			has_index_two: has_index (i2)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model ("sequence", Current)
 		local
 			v: G
 		do

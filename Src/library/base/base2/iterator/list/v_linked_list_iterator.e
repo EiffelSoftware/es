@@ -30,9 +30,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			modify_field (["observers", "closed"], list)
 		do
 			target := list
-			set_target_index_sequence
 			target.add_iterator (Current)
-			check target.inv_only ("cells_domain", "bag_definition", "map_definition_list", "lower_definition") end
+			check target.inv_only ("cells_domain", "bag_definition", "lower_definition") end
 			target.lemma_cells_distinct
 		ensure
 			target_effect: target = list
@@ -46,15 +45,14 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			is_wrapped
 			list_closed: list.closed
 			has_observer: list.observers [Current]
-			modify_model (["target", "index_", "subjects", "sequence", "target_index_sequence"], Current)
+			modify_model (["target", "index_", "subjects", "sequence"], Current)
 		do
 			unwrap
 			target := list
 			active := Void
 			after_ := False
 			index_ := 0
-			set_target_index_sequence
-			check target.inv_only ("cells_domain", "bag_definition", "map_definition_list", "lower_definition") end
+			check target.inv_only ("cells_domain", "bag_definition", "lower_definition") end
 			target.lemma_cells_distinct
 			wrap
 		ensure
@@ -84,9 +82,8 @@ feature -- Initialization
 				active := other.active
 				index_ := other.index_
 				after_ := other.after_
-				set_target_index_sequence
 				set_owns (other.owns)
-				check target.inv_only ("bag_definition", "map_definition_list", "lower_definition", "cells_domain") end
+				check target.inv_only ("bag_definition", "lower_definition", "cells_domain") end
 				target.lemma_cells_distinct
 				wrap
 			end
@@ -260,9 +257,9 @@ feature -- Replacement
 	put (v: G)
 			-- Replace item at current position with `v'.
 		do
-			check target.inv_only ("map_definition_list", "bag_definition") end
+			check target.inv_only ("bag_definition") end
 			target.put_cell (v, active, index_)
-			check target.inv_only ("bag_definition", "map_definition_list", "lower_definition") end
+			check target.inv_only ("bag_definition", "lower_definition") end
 		end
 
 feature -- Extension
@@ -276,9 +273,8 @@ feature -- Extension
 			if is_first then
 				unwrap
 				target.extend_front (v)
-				check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "lower_definition") end
+				check target.inv_only ("bag_definition", "count_definition", "lower_definition") end
 				index_ := index_ + 1
-				set_target_index_sequence
 				target.lemma_cells_distinct
 				wrap
 			else
@@ -295,8 +291,7 @@ feature -- Extension
 			-- Insert `v' to the right of current position. Do not move cursor.
 		do
 			target.extend_after (create {V_LINKABLE [G]}.put (v), active, index_)
-			check target.inv_only ("bag_definition", "map_definition_list", "cells_domain",  "count_definition", "lower_definition") end
-			set_target_index_sequence
+			check target.inv_only ("bag_definition", "cells_domain",  "count_definition", "lower_definition") end
 			target.lemma_cells_distinct
 		ensure then
 			cell_sequence_front_preserved: target.cells.old_.front (index_) ~ target.cells.front (index_)
@@ -313,9 +308,8 @@ feature -- Extension
 			if is_first then
 				unwrap
 				target.prepend (other)
-				check target.inv_only ("bag_definition", "map_definition_list", "cells_domain",  "count_definition", "lower_definition") end
+				check target.inv_only ("bag_definition", "cells_domain",  "count_definition", "lower_definition") end
 				index_ := index_ + other.sequence.tail (other.index_.old_).count
-				set_target_index_sequence
 				target.lemma_cells_distinct
 				wrap
 			else
@@ -376,12 +370,11 @@ feature -- Extension
 			not_after: index_ <= sequence.count
 			observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			other_observers_open: across other.observers as o all o.item.is_open end
-			modify_model (["sequence", "target_index_sequence"], Current)
+			modify_model (["sequence"], Current)
 			modify_model (["sequence", "owns"], [target, other])
 		do
 			target.merge_after (other, active, index_)
-			check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "lower_definition") end
-			set_target_index_sequence
+			check target.inv_only ("bag_definition", "count_definition", "lower_definition") end
 			check target.inv_only ("cells_domain") end
 			target.lemma_cells_distinct
 		ensure
@@ -399,10 +392,9 @@ feature -- Removal
 			if is_first then
 				unwrap
 				target.remove_front
-				check target.inv_only ("bag_definition", "map_definition_list",  "count_definition", "lower_definition", "cells_domain", "cells_exist", "first_cell_empty", "cells_first") end
+				check target.inv_only ("bag_definition", "count_definition", "lower_definition", "cells_domain", "cells_exist", "first_cell_empty", "cells_first") end
 				active := target.first_cell
 				after_ := active = Void
-				set_target_index_sequence
 				target.lemma_cells_distinct
 				wrap
 			else
@@ -428,8 +420,7 @@ feature -- Removal
 			-- Remove element to the right of current position. Do not move cursor.
 		do
 			target.remove_after (active, index_)
-			check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "lower_definition") end
-			set_target_index_sequence
+			check target.inv_only ("bag_definition", "count_definition", "lower_definition") end
 			target.lemma_cells_distinct
 		end
 

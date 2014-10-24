@@ -46,7 +46,6 @@ feature {NONE} -- Initialization
 			else
 				index := i
 			end
-			set_target_index_sequence
 			check target.inv end
 		ensure
 			target_effect: target = list
@@ -75,7 +74,6 @@ feature -- Initialization
 				target := other.target
 				target.add_iterator (Current)
 				index := other.index
-				set_target_index_sequence
 				check target.inv end
 				wrap
 			end
@@ -112,7 +110,6 @@ feature -- Extension
 			target.extend_at (v, index)
 			check target.inv end
 			index := index + 1
-			set_target_index_sequence
 		end
 
 	extend_right (v: G)
@@ -120,7 +117,6 @@ feature -- Extension
 		do
 			target.extend_at (v, index + 1)
 			check target.inv end
-			set_target_index_sequence
 		end
 
 	insert_left (other: V_ITERATOR [G])
@@ -133,7 +129,6 @@ feature -- Extension
 			target.insert_at (other, index)
 			check target.inv end
 			index := index + old_other_count
-			set_target_index_sequence
 		end
 
 	insert_right (other: V_ITERATOR [G])
@@ -146,7 +141,6 @@ feature -- Extension
 			target.insert_at (other, index + 1)
 			check target.inv end
 			index := index + old_other_count
-			set_target_index_sequence
 		end
 
 feature -- Removal
@@ -156,7 +150,6 @@ feature -- Removal
 		do
 			target.remove_at (index)
 			check target.inv end
-			set_target_index_sequence
 		end
 
 	remove_left
@@ -165,7 +158,6 @@ feature -- Removal
 			target.remove_at (index - 1)
 			index := index - 1
 			check target.inv end
-			set_target_index_sequence
 		end
 
 	remove_right
@@ -173,7 +165,6 @@ feature -- Removal
 		do
 			target.remove_at (index + 1)
 			check target.inv end
-			set_target_index_sequence
 		end
 
 feature -- Specification

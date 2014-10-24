@@ -46,7 +46,6 @@ feature {NONE} -- Initialization
 			else
 				index := i
 			end
-			set_target_index_sequence
 			check target.inv end
 		ensure
 			target_effect: target = t
@@ -75,7 +74,6 @@ feature -- Initialization
 				target := other.target
 				target.add_iterator (Current)
 				index := other.index
-				set_target_index_sequence
 				check target.inv end
 				wrap
 			end

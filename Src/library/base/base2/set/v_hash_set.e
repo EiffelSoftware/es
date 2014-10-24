@@ -307,7 +307,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			list_iterator_wrapped: it.list_iterator.is_wrapped
 			it.inv_only ("target_which_bucket", "list_iterator_not_off")
 			modify_model ("set", Current)
-			modify_model (["index_", "sequence", "target_index_sequence"], it.list_iterator)
+			modify_model (["index_", "sequence"], it.list_iterator)
 		local
 			idx, i: INTEGER
 			x: G

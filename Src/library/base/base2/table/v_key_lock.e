@@ -14,7 +14,7 @@ class
 
 feature -- Access	
 
-	tables: MML_SET [V_TABLE [K, ANY]]
+	tables: MML_SET [V_MAP [K, ANY]]
 			-- Tables that might share keys owned by this lock.
 		note
 			guard: in_tables
@@ -23,7 +23,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	add_table (t: V_TABLE [K, ANY])
+	add_table (t: V_MAP [K, ANY])
 			-- Add `s' to `sets'.
 		note
 			status: setter
@@ -46,7 +46,7 @@ feature -- Basic operations
 			wrapped: is_wrapped
 		end
 
-	remove_table (t: V_TABLE [K, ANY])
+	remove_table (t: V_MAP [K, ANY])
 			-- Add `s' to `tables'.
 		note
 			status: setter

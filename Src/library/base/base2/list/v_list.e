@@ -44,7 +44,7 @@ feature -- Measurement
 		note
 			status: dynamic
 		do
-			check inv_only ("count_definition", "map_definition_list", "bag_definition") end
+			check inv_only ("count_definition", "bag_definition") end
 			Result := count_
 		end
 
@@ -245,7 +245,7 @@ feature -- Removal
 				bag [v] = bag.old_ [v] - n
 				n >= 0
 				modify_model (["sequence", "owns"], Current)
-				modify_model (["index_", "sequence", "target_index_sequence"], i)
+				modify_model (["index_", "sequence"], i)
 			until
 				i.after
 			loop
@@ -293,7 +293,6 @@ feature -- Specification
 invariant
 	lower_definition: lower_ = 1
 	count_definition: count_ = sequence.count
-	map_definition_list: map = sequence.to_map
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
