@@ -54,6 +54,7 @@ feature -- Replacement
 		ensure
 			map_effect: map ~ old map.updated (domain_item (k), v)
 			observers_restored: observers ~ old observers
+			same_domain: map.domain ~ old map.domain
 		end
 
 feature -- Extension
@@ -68,6 +69,7 @@ feature -- Extension
 			modify_model (["map", "owns"], Current)
 		deferred
 		ensure
+			abstract_effect: domain_has (k)
 			map_effect: map ~ old map.updated (k, v)
 		end
 
@@ -130,7 +132,8 @@ feature -- Removal
 			check lock.inv_only ("owns_keys", "no_duplicates") end
 			forget_iterator (it)
 		ensure
-			map_effect: map ~ old map.removed (key (k))
+			map_effect: map ~ old map.removed (domain_item (k))
+			observers_restored: observers ~ old observers
 		end
 
 	wipe_out
