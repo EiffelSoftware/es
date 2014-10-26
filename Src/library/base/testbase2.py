@@ -49,7 +49,8 @@ classes = [
   'V_SET',
   'V_SET_ITERATOR',
   'V_HASH_SET',
-  'V_HASH_SET_ITERATOR',  
+  'V_HASH_SET_ITERATOR',
+  'V_RANDOM'
 ]
 
 outfile_name = 'base2.out'

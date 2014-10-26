@@ -216,7 +216,7 @@ feature -- Type translation
 				if helper.is_class_array (l_content_type.base_class) then
 					Result := factory.and_clean (Result, factory.function_call ("ARRAY.inv", << a_heap, a_expr >>, bool))
 				end
-			elseif l_boogie_type ~ int and options.is_checking_overflow then
+			elseif l_boogie_type ~ int then
 					-- If we are not checking for overflows, no need to differentiate between kinds of ints
 				Result := numeric_property (a_type, a_expr)
 			elseif helper.is_class_logical (a_type.base_class) then

@@ -495,6 +495,13 @@ function max_real(a, b: real): real { if a >= b then a else b }
 function abs_real(a: real): real { if a >= 0.0 then a else -a }
 function sign_real(a: real): int { if a == 0.0 then 0 else if a > 0.0 then 1 else -1 }
 
+function bit_and(a, b: int): int;
+function bit_or(a, b: int): int;
+function bit_xor(a, b: int): int;
+function bit_not(a: int): int;
+function bit_shift_left(a, n: int): int;
+function bit_shift_right(a, n: int): int;
+
 // Expanded types
 
 // type unknown;

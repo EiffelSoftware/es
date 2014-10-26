@@ -49,7 +49,7 @@ feature -- Replacement
 					s.item.is_wrapped and
 					across s.item.observers as o all o.item /= Current implies o.item.is_open end
 				end
-			input_subjects_wrapped: input.subjects.any_item.is_wrapped
+			input_subjects_wrapped: across input.subjects as s all s.item.is_wrapped end
 			modify (Current, subjects)
 			modify_model (["box"], input)
 		do
@@ -86,7 +86,7 @@ feature -- Replacement
 					s.item.is_wrapped and
 					across s.item.observers as o all o.item /= Current implies o.item.is_open end
 				end
-			input_subjects_wrapped: input.subjects.any_item.is_wrapped
+			input_subjects_wrapped: across input.subjects as s all s.item.is_wrapped end
 			modify_model (["box"], input)
 			modify (Current, subjects)
 		local

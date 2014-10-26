@@ -71,6 +71,18 @@ feature -- Implementation
 				l_fname := "int_to_integer_64"
 			elseif l_name.same_string ("to_double") or l_name.same_string ("to_real") then
 				l_fname := "real"
+			elseif l_name.same_string ("bit_and") then
+					l_fname := "bit_and"
+			elseif l_name.same_string ("bit_or") then
+					l_fname := "bit_or"
+			elseif l_name.same_string ("bit_xor") then
+					l_fname := "bit_xor"
+			elseif l_name.same_string ("bit_not") then
+					l_fname := "bit_not"
+			elseif l_name.same_string ("bit_shift_left") then
+					l_fname := "bit_shift_left"
+			elseif l_name.same_string ("bit_shift_right") then
+					l_fname := "bit_shift_right"
 			elseif l_name.same_string ("min") then
 				if l_type.is_natural or l_type.is_integer or l_type.is_character then
 					l_fname := "min"
