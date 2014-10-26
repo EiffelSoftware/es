@@ -124,6 +124,7 @@ feature -- Access
 			create Result.make (l, u)
 			check Result.inv end
 			Result.copy_range (Current, l, u, Result.lower)
+			check across 1 |..| Result.sequence.count as i all Result.sequence [i.item] = sequence [i.item - 1 + idx (l)] end end
 		ensure
 			result_wrapped: Result.is_wrapped
 			result_fresh: Result.is_fresh
