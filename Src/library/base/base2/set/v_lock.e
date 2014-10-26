@@ -71,94 +71,6 @@ feature -- Basic operations
 			wrapped: is_wrapped
 		end
 
-	add_set (s: V_SET [G])
-			-- Add `s' to `sets'.
-		note
-			status: setter
-		require
-			wrapped: is_wrapped
-			s_wrapped: s.is_wrapped
-			valid_lock: s.lock = Current
-			valid_observers: s.observers [Current]
-			empty_set: s.set.is_empty
-			not_table: not attached {V_MAP [G, ANY]} s
-			modify_field (["sets", "subjects", "observers", "closed"], Current)
-			modify_field ("owner", owns)
-		do
-			unwrap
-			sets := sets & s
-			Current.subjects := subjects & s
-			Current.observers := observers & s
-			wrap
-		ensure
-			sets_effect: sets = old sets & s
-			wrapped: is_wrapped
-		end
-
-	remove_set (s: V_SET [G])
-			-- Add `s' to `sets'.
-		note
-			status: setter
-		require
-			wrapped: is_wrapped
-			s_open: s.is_open
-			sets [s]
-			modify_field (["sets", "subjects", "observers", "closed"], Current)
-			modify_field ("owner", owns)
-		do
-			unwrap
-			sets := sets / s
-			Current.subjects := subjects / s
-			Current.observers := observers / s
-			wrap
-		ensure
-			sets_effect: sets = old sets / s
-			wrapped: is_wrapped
-		end
-
-	add_table (t: V_MAP [G, ANY])
-			-- Add `s' to `sets'.
-		note
-			status: setter
-		require
-			wrapped: is_wrapped
-			t_wrapped: t.is_wrapped
-			valid_lock: t.lock = Current
-			valid_observers: t.observers [Current]
-			empty_set: t.map.is_empty
-			modify_field (["tables", "subjects", "observers", "closed"], Current)
-			modify_field ("owner", owns)
-		do
-			unwrap
-			tables := tables & t
-			Current.subjects := subjects & t
-			Current.observers := observers & t
-			wrap
-		ensure
-			tables_effect: tables = old tables & t
-			wrapped: is_wrapped
-		end
-
-	remove_table (t: V_MAP [G, ANY])
-			-- Add `s' to `tables'.
-		note
-			status: setter
-		require
-			wrapped: is_wrapped
-			t_open: t.is_open
-			modify_field (["tables", "subjects", "observers", "closed"], Current)
-			modify_field ("owner", owns)
-		do
-			unwrap
-			tables := tables / t
-			Current.subjects := subjects / t
-			Current.observers := observers / t
-			wrap
-		ensure
-			tables_effect: tables = old tables / t
-			wrapped: is_wrapped
-		end
-
 feature -- Specification
 
 	in_sets (new_sets: like observers; o: ANY): BOOLEAN
@@ -236,6 +148,8 @@ invariant
 	subjects_definition: subjects = {MML_SET [ANY]} [sets] + tables
 	observers_definition: observers = subjects
 	disjoint: {MML_SET [ANY]} [sets].is_disjoint (tables)
+	sets_non_void: sets.non_void
+	tables_non_void: tables.non_void
 	items_non_void: across sets as s all s.item.set.non_void end
 	keys_non_void: across tables as t all t.item.map.domain.non_void end
 	owns_items: across sets as s all

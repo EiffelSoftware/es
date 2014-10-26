@@ -546,21 +546,6 @@ feature -- Specification
 		attribute
 		end
 
-	set_lock (l: V_HASH_LOCK [K])
-			-- Set `lock' to `l'.
-		note
-			status: ghost
-		require
-			no_observers: observers.is_empty
-			registered: l.tables [Current]
-			not_iterator: not attached {V_ITERATOR [V]} l
-		do
-			lock := l
-			Current.subjects := [lock]
-			Current.observers := observers & lock
-			check lock.inv end
-		end
-
 	is_lock_int (new: INTEGER; o: ANY): BOOLEAN
 			-- Is observer `o' the `lock' object? (Update guard)
 		note
@@ -701,6 +686,24 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Specification
 			check not transitive_owns [lock] end
 		ensure
 			not ownership_domain [lock]
+		end
+
+	set_lock (l: V_HASH_LOCK [K])
+			-- Set `lock' to `l'.
+		note
+			status: ghost, setter
+		require
+			open: is_open
+			no_observers: observers.is_empty
+			modify_field (["lock", "subjects", "observers"], Current)
+		do
+			lock := l
+			Current.subjects := [lock]
+			Current.observers := [lock]
+		ensure
+			lock = l
+			subjects = [l]
+			observers = [l]
 		end
 
 invariant

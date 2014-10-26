@@ -36,22 +36,6 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
---	set_lock (l: V_HASH_LOCK [G])
---			-- Set `lock' to `l'.
---		note
---			status: ghost
---		require
---			no_observers: observers.is_empty
---			registered: l.sets [Current]
---			not_iterator: not attached {V_ITERATOR [G]} l
---		do
---			lock := l
---			Current.subjects := [lock]
---			Current.observers := [lock]
---			table.set_lock (l)
---			check lock.inv end
---		end
-
 	copy_ (other: V_HASH_SET [G])
 			-- Initialize by copying all the items of `other'.
 		note
@@ -177,6 +161,26 @@ feature -- Specification
 				check hsit.iterator.inv_only ("owns_definition"); hsit.iterator.list_iterator.inv_only ("default_owns") end
 				table.forget_iterator (hsit.iterator)
 			end
+		end
+
+feature {V_CONTAINER, V_ITERATOR, V_LOCK}
+
+	set_lock (l: V_HASH_LOCK [G])
+			-- Set `lock' to `l'.
+		note
+			status: ghost, setter
+		require
+			open: is_open
+			no_observers: observers.is_empty
+			modify_field (["lock", "subjects", "observers"], Current)
+		do
+			lock := l
+			Current.subjects := [lock]
+			Current.observers := [lock]
+		ensure
+			lock = l
+			subjects = [l]
+			observers = [l]
 		end
 
 invariant
