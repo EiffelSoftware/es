@@ -173,4 +173,25 @@ feature -- Convenience
 		do
 		end
 
+feature -- Lemmas
+
+	lemma_subset (other: like Current)
+			-- A subset with no less elements is the same set.
+		note
+			status: lemma
+		require
+			subset: other <= Current
+			count: count <= other.count
+		local
+			x: G
+		do
+			if not other.is_empty then
+				x := other.any_item
+				removed (x).lemma_subset (other / x)
+				check Current = removed (x) & x end
+			end
+		ensure
+			Current = other
+		end
+
 end

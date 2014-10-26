@@ -86,9 +86,7 @@ feature -- Access
 	item: G
 			-- Item at current position.
 		do
-			check inv end
-			check iterator.inv end
-			check target.inv end
+			check inv; iterator.inv; target.inv end
 			Result := iterator.item
 		end
 
@@ -97,9 +95,7 @@ feature -- Measurement
 	index: INTEGER
 			-- Current position.
 		do
-			check inv end
-			check iterator.inv end
-			check target.inv end
+			check inv; iterator.inv; target.inv end
 			Result := iterator.index
 		end
 
@@ -108,17 +104,14 @@ feature -- Status report
 	before: BOOLEAN
 			-- Is current position before any position in `target'?
 		do
-			check inv end
-			check iterator.inv end
+			check inv; iterator.inv end
 			Result := iterator.before
 		end
 
 	after: BOOLEAN
 			-- Is current position after any position in `target'?
 		do
-			check inv end
-			check iterator.inv end
-			check target.inv end
+			check inv; iterator.inv; target.inv end
 			check iterator.target.ownership_domain <= target.ownership_domain end
 			Result := iterator.after
 		end
@@ -126,18 +119,14 @@ feature -- Status report
 	is_first: BOOLEAN
 			-- Is cursor at the first position?
 		do
-			check inv end
-			check iterator.inv end
-			check target.inv end
+			check inv; iterator.inv; target.inv end
 			Result := iterator.is_first
 		end
 
 	is_last: BOOLEAN
 			-- Is cursor at the last position?
 		do
-			check inv end
-			check iterator.inv end
-			check target.inv end
+			check inv; iterator.inv; target.inv end
 			Result := iterator.is_last
 		end
 
@@ -208,7 +197,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			-- Move to the same position as `other'.
 		require
 			is_wrapped
-			other.is_wrapped
+			other.closed
 			other /= Current
 			same_target: target = other.target
 			target_wrapped: target.is_wrapped
@@ -230,7 +219,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			wrap
 		ensure
 			is_wrapped
-			other.is_wrapped
 			index_effect: index_ = old other.index_
 		end
 

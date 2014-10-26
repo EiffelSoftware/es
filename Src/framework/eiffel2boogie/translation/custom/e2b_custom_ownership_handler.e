@@ -294,13 +294,14 @@ feature -- Basic operations
 				-- generate appropriate guarded assignments to implicit model queries and an invariant check
 			if a_feature.feature_name ~ "wrap" then
 				if use_static_invariant (a_translator) then
+						-- Check exact invariant definition.
+					create l_type_translator
+					l_type_translator.translate_inline_invaraint_check (a_translator.current_target_type, a_translator.current_target)
+
 					across helper.flat_model_queries (a_translator.current_target_type.base_class) as m loop
 						set_implicit_model_query (a_translator, m.item)
 					end
 
-						-- Check exact invariant definition.
-					create l_type_translator
-					l_type_translator.translate_inline_invaraint_check (a_translator.current_target_type)
 					across l_type_translator.last_clauses as c loop
 						c.item.node_info.set_line (a_translator.context_line_number)
 						c.item.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
@@ -351,10 +352,11 @@ feature -- Basic operations
 	use_static_invariant (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR): BOOLEAN
 			-- Should the static definition of the ivnariant be used for the current target of `a_translator'?
 		do
-				-- Yes if the current target is "Current" (in inlined procedures Current micht be mapped to something else)
-				-- and the context feature is not marked as dynamic.
-			Result := a_translator.current_target.same_expression (factory.std_current) and
-				not helper.is_dynamic (a_translator.context_feature)
+				-- Yes if the current target is "Current" and the context feature is not marked as dynamic,
+				-- or the type of the target is exact.
+			Result := (a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) and
+				not helper.is_dynamic (a_translator.context_feature)) or
+				helper.is_type_exact (a_translator.current_target_type, a_translator.current_target_type, a_translator.context_feature)
 		end
 
 	set_implicit_model_query (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_attr: FEATURE_I)
@@ -374,10 +376,10 @@ feature -- Basic operations
 				name_translator.boogie_function_for_ghost_definition (a_translator.current_target_type, l_field.name))
 			if attached l_function then
 				create l_pcall.make ("update_heap")
-				l_pcall.add_argument (a_translator.entity_mapping.current_expression)
+				l_pcall.add_argument (a_translator.current_target)
 				l_pcall.add_argument (l_field)
 				l_pcall.add_argument (factory.function_call (l_function.name,
-					<< a_translator.entity_mapping.heap, a_translator.entity_mapping.current_expression >>,
+					<< a_translator.entity_mapping.heap, a_translator.current_target >>,
 					types.field_content_type (l_field.type)))
 				l_pcall.node_info.set_attribute ("default", a_attr.feature_name_32)
 				l_pcall.node_info.set_line (a_translator.context_line_number)

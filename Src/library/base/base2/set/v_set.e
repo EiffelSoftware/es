@@ -301,8 +301,8 @@ feature -- Removal
 			it: V_SET_ITERATOR [G]
 			x: G
 		do
-			check inv_only ("registered", "set_non_void", "bag_definition", "lock_non_current") end
-			check lock.inv_only ("owns_items", "no_duplicates") end
+			check inv_only ("registered", "set_non_void", "lock_non_current") end
+			check lock.inv_only ("owns_items", "sets_no_duplicates") end
 			it := at (v)
 			if not it.after then
 				x := it.sequence [it.index_]
@@ -310,7 +310,7 @@ feature -- Removal
 				check it.inv end
 				v.lemma_transitive (x, set)
 			end
-			check lock.inv_only ("owns_items", "no_duplicates") end
+			check lock.inv_only ("owns_items", "sets_no_duplicates") end
 			forget_iterator (it)
 		ensure
 			abstract_effect: not set_has (v)
@@ -344,7 +344,7 @@ feature -- Removal
 					it.is_wrapped
 					inv_only ("set_non_void")
 					it.inv
-					lock.inv_only ("owns_items", "no_duplicates")
+					lock.inv_only ("owns_items", "sets_no_duplicates")
 					1 <= it.index_ and it.index_ <= it.sequence.count + 1
 					set <= set.old_
 					across 1 |..| (it.index_ - 1) as i all other.set_has (it.sequence [i.item]) end
@@ -396,7 +396,7 @@ feature -- Removal
 					it.is_wrapped
 					inv_only ("lock_non_current")
 					other.inv_only ("set_non_void", "lock_non_current")
-					lock.inv_only ("owns_items", "no_duplicates")
+					lock.inv_only ("owns_items", "sets_no_duplicates")
 					1 <= it.index_ and it.index_ <= it.sequence.count + 1
 					set <= set.old_
 					across 1 |..| (it.index_ - 1) as i all not set_has (it.sequence [i.item]) end
@@ -448,10 +448,10 @@ feature -- Removal
 				invariant
 					is_wrapped
 					it.is_wrapped
-					lock.inv_only ("owns_items", "no_duplicates")
+					lock.inv_only ("owns_items", "sets_no_duplicates")
 					1 <= it.index_ and it.index_ <= seq.count + 1
 					across set.old_ as x all other.set_has (x.item).old_ or set [x.item]  end
-					across 1 |..| (it.index_ - 1) as j all s_has (set.old_, seq [j.item]) or set [seq [j.item]] end
+					across 1 |..| (it.index_ - 1) as j all lock.set_has (set.old_, seq [j.item]) or set [seq [j.item]] end
 					across set as x all set.old_ [x.item] or across 1 |..| (it.index_ - 1) as j some x.item = seq [j.item] end end
 					observers ~ observers.old_
 					modify_model (["set", "owns", "observers"], Current)
@@ -511,94 +511,65 @@ feature -- Specification
 		attribute
 		end
 
-	s_has (s: MML_SET [G]; v: G): BOOLEAN
-			-- Does `s' contain an element equal to `v' under object equality?
-		note
-			status: ghost, functional
-		require
-			v_exists: v /= Void
-			set_non_void: s.non_void
-			reads (s, v)
-		do
-			Result := across s as x some v.is_model_equal (x.item) end
-		end
-
 	set_has (v: G): BOOLEAN
 			-- Does `set' contain an element equal to `v' under object equality?
 		note
-			status: ghost, functional
+			status: ghost, functional, dynamic
 		require
+			lock_exists: lock /= Void
 			v_exists: v /= Void
 			set_non_void: set.non_void
-			reads_field ("set", Current)
+			reads_field (["set", "lock"], Current)
 			reads (set, v)
 		do
-			Result := s_has (set, v)
+			Result := lock.set_has (set, v)
 		end
 
 	set_item (v: G): G
 			-- Element of `set' that is equal to `v' under object equality.
 		note
-			status: ghost
+			status: ghost, functional, dynamic
 		require
+			lock_exists: lock /= Void
 			v_exists: v /= Void
 			v_in_set: set_has (v)
 			set_non_void: set.non_void
-			reads_field ("set", Current)
+			reads_field (["set", "lock"], Current)
 			reads (set, v)
-		local
-			s: like set
 		do
-			from
-				s := set
-				Result := s.any_item
-			invariant
-				s [Result]
-				across s as x some v.is_model_equal (x.item) end
-				s <= set
-				decreases (s)
-			until
-				Result.is_model_equal (v)
-			loop
-				s := s / Result
-				check across s as x some v.is_model_equal (x.item) end end
-				Result := s.any_item
-			end
-		ensure
-			result_in_set: set [Result]
-			equal_to_v: Result.is_model_equal (v)
+			Result := lock.set_item (set, v)
 		end
 
-	no_duplicates (s: like set): BOOLEAN
-			-- Are all objects in `s' unique by value?
+	bag_from (s: like set): like bag
+			-- A bag that contains all elements of `s' exactly once.
 		note
-			status: ghost, functional
+			status: ghost, dynamic
+			explicit: contracts
 		require
-			non_void: s.non_void
-			reads (s)
-		do
-			Result := across s as x all across s as y all x.item /= y.item implies not x.item.is_model_equal (y.item) end end
-		end
-
-	lemma_count (b: MML_BAG [G])
-			-- Defines number of elements in a constant bag.
-		note
-			status: lemma, dynamic
-		require
-			bag_constant: b.is_constant (1)
+			reads ([])
 		local
 			x: G
-			b1: like b
+			s1: like set
 		do
-			if not b.is_empty then
-				x := b.domain.any_item
-				b1 := b / x
-				check across b.domain as y all y.item /= x implies b1 [y.item] = 1 end end
-				lemma_count (b1)
-				check b.domain = b1.domain & x end
+			from
+				s1 := s
+			invariant
+				s = s1 + Result.domain
+				s1.is_disjoint (Result.domain)
+				Result.is_constant (1)
+				s.count = s1.count + Result.count
+				decreases (s1)
+			until
+				s1.is_empty
+			loop
+				x := s1.any_item
+				Result := Result & x
+				s1 := s1 / x
 			end
 		ensure
-			same_count: b.count = b.domain.count
+			Result.domain = s
+			Result.count = s.count
+			Result.is_constant (1)
 		end
 
 	is_model_equal (other: like Current): BOOLEAN
@@ -616,9 +587,8 @@ invariant
 	lock_non_iterator: not attached {V_ITERATOR [G]} lock
 	subjects_definition: if lock = Void then subjects.is_empty else subjects = [lock] end
 	registered: lock /= Void implies lock.sets [Current]
-	observers_constraint: lock /= Void implies observers [lock]
-	bag_domain_definition: bag.domain ~ set
-	bag_definition: bag.is_constant (1)
+	observers_constraint: (lock /= Void) = observers [lock]
+	bag_definition: bag = bag_from (set)
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

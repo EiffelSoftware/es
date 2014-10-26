@@ -114,7 +114,7 @@ feature -- Specification
 		attribute
 		end
 
-	lock: V_KEY_LOCK [K]
+	lock: V_LOCK [K]
 			-- Helper object for keeping items consistent.
 		note
 			status: ghost
@@ -122,73 +122,33 @@ feature -- Specification
 		attribute
 		end
 
-	s_has (s: MML_SET [K]; k: K): BOOLEAN
-			-- Does `s' contain an element equal to `v' under object equality?
-		note
-			status: ghost, functional, dynamic
-		require
-			k_exists: k /= Void
-			set_non_void: s.non_void
-			reads (s, k)
-		do
-			Result := across s as x some k.is_model_equal (x.item) end
-		end
-
 	domain_has (k: K): BOOLEAN
 			-- Does `set' contain an element equal to `v' under object equality?
 		note
 			status: ghost, functional, dynamic
 		require
+			lock_exists: lock /= Void
 			k_exists: k /= Void
 			domain_non_void: map.domain.non_void
-			reads_field ("map", Current)
+			reads_field (["map", "lock"], Current)
 			reads (map.domain, k)
 		do
-			Result := s_has (map.domain, k)
+			Result := lock.set_has (map.domain, k)
 		end
 
 	domain_item (k: K): K
 			-- Element of `map.domain' that is equal to `k' under object equality.
 		note
-			status: ghost, dynamic
+			status: ghost, functional, dynamic
 		require
+			lock_exists: lock /= Void
 			k_exists: k /= Void
 			k_in_domain: domain_has (k)
 			domain_non_void: map.domain.non_void
-			reads_field ("map", Current)
+			reads_field (["map", "lock"], Current)
 			reads (map.domain, k)
-		local
-			s: like map.domain
 		do
-			from
-				s := map.domain
-				Result := s.any_item
-			invariant
-				s [Result]
-				across s as x some k.is_model_equal (x.item) end
-				s <= map.domain
-				decreases (s)
-			until
-				Result.is_model_equal (k)
-			loop
-				s := s / Result
-				check across s as x some k.is_model_equal (x.item) end end
-				Result := s.any_item
-			end
-		ensure
-			result_in_domain: map.domain [Result]
-			equal_to_v: Result.is_model_equal (k)
-		end
-
-	no_duplicates (s: like map.domain): BOOLEAN
-			-- Are all objects in `s' unique by value?
-		note
-			status: ghost, functional, dynamic
-		require
-			non_void: s.non_void
-			reads (s)
-		do
-			Result := across s as x all across s as y all x.item /= y.item implies not x.item.is_model_equal (y.item) end end
+			Result := lock.set_item (map.domain, k)
 		end
 
 	bag_from (m: like map): like bag

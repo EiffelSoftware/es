@@ -177,7 +177,7 @@ feature {NONE} -- Performance parameters
 	growth_rate: INTEGER = 2
 			-- Rate by which bucket array grows and shrinks.			
 
-feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Implementation
+feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 
 	buckets: V_ARRAY [V_LINKED_LIST [MML_PAIR [K, V]]]
 		-- Element storage.
@@ -514,7 +514,7 @@ feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Implementation
 
 					simple_extend (it.item.right, it.item.left)
 
-					check no_duplicates (map.domain.old_) end
+					check lock.no_duplicates (map.domain.old_) end
 					it.forth
 				variant
 					lists.old_ [i].count - it.index_
@@ -539,14 +539,14 @@ feature -- Specification
 		attribute
 		end
 
-	lock: V_HASH_KEY_LOCK [K]
+	lock: V_HASH_LOCK [K]
 			-- Helper object for keeping items consistent.
 		note
 			status: ghost
 		attribute
 		end
 
-	set_lock (l: V_HASH_KEY_LOCK [K])
+	set_lock (l: V_HASH_LOCK [K])
 			-- Set `lock' to `l'.
 		note
 			status: ghost
@@ -660,7 +660,7 @@ feature -- Specification
 			set_not_too_large (map.domain, buckets_)
 		end
 
-feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Specification
+feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Specification
 
 	lists: MML_SEQUENCE [V_LINKED_LIST [MML_PAIR [K, V]]]
 			-- Cache of `buckets.sequence' (required in the invariant of the iterator).
@@ -683,6 +683,24 @@ feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Specification
 			check not lists [i].transitive_owns [lock] end
 		ensure
 			not lists [i].ownership_domain [lock]
+		end
+
+	lemma_domain
+			-- `lock' is not in the ownership domain of `Current'.
+		note
+			status: lemma
+		require
+			closed
+		do
+			check inv_only ("owns_definition") end
+			check buckets.inv_only ("owns_definition"); buckets.area.inv_only ("default_owns") end
+
+			check across 1 |..| lists.count as i all lists [i.item].inv_only ("owns_definition") end end
+			check across 1 |..| lists.count as i all across 1 |..| lists [i.item].cells.count as j all lists [i.item].cells [j.item].inv_only ("default_owns") end end end
+			check across 1 |..| lists.count as i all not lists [i.item].transitive_owns [lock] end end
+			check not transitive_owns [lock] end
+		ensure
+			not ownership_domain [lock]
 		end
 
 invariant

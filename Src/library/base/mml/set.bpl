@@ -43,6 +43,9 @@ axiom(forall<T> a: Set T, b: Set T :: { Set#Equal(a,b) }  // extensionality axio
 function Set#Subset<T>(Set T, Set T): bool;
 axiom(forall<T> a: Set T, b: Set T :: { Set#Subset(a,b) }
   Set#Subset(a,b) <==> (forall o: T :: {a[o]} {b[o]} a[o] ==> b[o]));
+axiom(forall<T> a: Set T, b: Set T :: { Set#Subset(a,b), Set#Card(a) }{ Set#Subset(a,b), Set#Card(b) }
+  Set#Subset(a,b) ==> Set#Card(a) <= Set#Card(b));
+  
   
 // Is a superset of b?
 function {: inline } Set#Superset<T>(a: Set T, b: Set T): bool

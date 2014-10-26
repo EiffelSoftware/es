@@ -39,7 +39,7 @@ feature -- Cursor movement
 			-- If `k' does not appear, go after.
 			-- (Use object equality.)
 		require
-			target_wrapped: target.is_wrapped
+			target_closed: target.closed
 			lock_wrapped: target.lock.is_wrapped
 			k_locked: target.lock.owns [k]
 			modify_model ("index_", Current)

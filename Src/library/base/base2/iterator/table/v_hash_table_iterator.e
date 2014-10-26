@@ -197,7 +197,7 @@ feature -- Cursor movement
 				bucket_index := target.capacity + 1
 				index_ := concat (target.buckets_).count + 1
 			else
-				check list_iterator.inv_only ("subjects_definition", "A2") end
+				check list_iterator.inv_only ("subjects_definition", "A2", "default_owns") end
 				check target.buckets [bucket_index].inv_only ("cells_domain", "owns_definition", "sequence_implementation") end
 				list_iterator.switch_target (target.buckets [bucket_index])
 				list_iterator.go_to_cell (c)
@@ -357,13 +357,54 @@ feature -- Removal
 			end
 		end
 
-feature {V_CONTAINER, V_ITERATOR, V_KEY_LOCK} -- Implementation
+feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 
 	list_iterator: V_LINKED_LIST_ITERATOR [MML_PAIR [K, V]]
 			-- Iterator inside current bucket.
 
 	bucket_index: INTEGER
 			-- Index of current bucket.
+
+	go_to_other (other: like Current)
+			-- Move to the same position as `other'.
+		note
+			explicit: contracts
+		require
+			wrapped: is_wrapped
+			other_closed: other.closed
+			not_current: other /= Current
+			same_target: target = other.target
+			target_closed: target.closed
+			modify_model ("index_", Current)
+		do
+			unwrap
+			bucket_index := other.bucket_index
+			check other.inv_only ("owns_definition", "bucket_index_in_bounds", "target_which_bucket") end
+			check target.inv_only ("owns_definition", "lists_definition", "buckets_count", "list_observers_same") end
+
+			if 1 <= bucket_index and bucket_index <= target.capacity then
+				check inv_only ("target_is_bucket") end
+				check list_iterator.inv_only ("subjects_definition", "A2", "default_owns") end
+				list_iterator.switch_target (other.list_iterator.target)
+
+				check other.inv_only ("index_not_off", "list_iterator_not_off") end
+				check other.list_iterator.inv_only ("sequence_definition", "index_constraint", "cell_not_off") end
+				check list_iterator.inv_only ("sequence_definition") end
+				check target.lists [bucket_index].inv_only ("cells_domain") end
+				list_iterator.go_to_cell (other.list_iterator.active)
+				list_iterator.target.lemma_cells_distinct
+			end
+			index_ := other.index_
+
+			check other.inv_only ("index_before", "index_after", "index_constraint", "sequence_implementation", "value_sequence_definition") end
+			lemma_static (other, target.buckets_)
+			lemma_static (other, target.buckets_.front (bucket_index - 1))
+			wrap
+		ensure
+			is_wrapped
+			other.closed
+			index_effect: index_ = old other.index_
+		end
 
 feature {NONE} -- Implementation
 
@@ -486,47 +527,6 @@ feature {NONE} -- Implementation
 			wrap
  		ensure
 			wrapped: is_wrapped
-		end
-
-	go_to_other (other: like Current)
-			-- Move to the same position as `other'.
-		note
-			explicit: contracts
-		require
-			is_wrapped
-			other.is_wrapped
-			other /= Current
-			same_target: target = other.target
-			target_wrapped: target.is_wrapped
-			modify_model ("index_", Current)
-		do
-			unwrap
-			bucket_index := other.bucket_index
-			check other.inv_only ("owns_definition", "bucket_index_in_bounds", "target_which_bucket") end
-			check target.inv_only ("owns_definition", "lists_definition", "buckets_count", "list_observers_same") end
-
-			if 1 <= bucket_index and bucket_index <= target.capacity then
-				check inv_only ("target_is_bucket") end
-				check list_iterator.inv_only ("subjects_definition", "A2") end
-				list_iterator.switch_target (other.list_iterator.target)
-
-				check other.inv_only ("index_not_off", "list_iterator_not_off") end
-				check other.list_iterator.inv_only ("sequence_definition", "index_constraint", "cell_not_off") end
-				check list_iterator.inv_only ("sequence_definition") end
-				check target.lists [bucket_index].inv_only ("cells_domain") end
-				list_iterator.go_to_cell (other.list_iterator.active)
-				list_iterator.target.lemma_cells_distinct
-			end
-			index_ := other.index_
-
-			check other.inv_only ("index_before", "index_after", "index_constraint", "sequence_implementation", "value_sequence_definition") end
-			lemma_static (other, target.buckets_)
-			lemma_static (other, target.buckets_.front (bucket_index - 1))
-			wrap
-		ensure
-			is_wrapped
-			other.is_wrapped
-			index_effect: index_ = old other.index_
 		end
 
 feature {V_CONTAINER, V_ITERATOR} -- Specification

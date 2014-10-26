@@ -15,7 +15,8 @@ frozen class
 inherit
 	V_LOCK [G]
 		redefine
-			sets
+			sets,
+			tables
 		end
 
 feature -- Access	
@@ -23,11 +24,14 @@ feature -- Access
 	sets: MML_SET [V_HASH_SET [G]]
 			-- Sets that might share elements owned by this lock.
 
+	tables: MML_SET [V_HASH_TABLE [G, ANY]]
+			-- Tables that might share elements owned by this lock.			
+
 invariant
-	valid_buckets: across sets as s all
-		across s.item.set as x all
-			s.item.buckets_.count > 0 and then
-			s.item.buckets_ [s.item.bucket_index (x.item.hash_code_, s.item.buckets_.count)].has (x.item)
+	valid_buckets: across tables as t all
+		across t.item.map.domain as x all
+			t.item.buckets_.count > 0 and then
+			t.item.buckets_ [t.item.bucket_index (x.item.hash_code_, t.item.buckets_.count)].has (x.item)
 			end end
 
 note

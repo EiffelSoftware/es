@@ -167,15 +167,33 @@ feature -- Basic operations
 			generate_filtered_invariant_axiom (a_included, a_excluded, a_ancestor)
 		end
 
-	translate_inline_invaraint_check (a_type: CL_TYPE_A)
+	translate_inline_invaraint_check (a_type: CL_TYPE_A; a_target: IV_EXPRESSION)
 			-- Translate the invariant of `a_type' into assert statements and store them in `last_clauses'.
+		local
+			l_mapping: E2B_ENTITY_MAPPING
 		do
 			type := a_type
-			if invariant_check_cache.has_key (type) then
-				last_clauses := invariant_check_cache [type]
+
+			if a_target.same_expression (factory.std_current) then
+					-- Standard target: use cache
+				if invariant_check_cache.has_key (type) then
+					last_clauses := invariant_check_cache [type]
+				else
+					create l_mapping.make
+					generate_invariant_clauses (Void, Void, type.base_class, l_mapping)
+					invariant_check_cache.put (last_clauses, type)
+				end
 			else
-				generate_invariant_clauses (Void, Void, type.base_class, create {E2B_ENTITY_MAPPING}.make)
-				invariant_check_cache.put (last_clauses, type)
+					-- Custom target: do not use cache, customize mapping
+				if boogie_universe.function_named (name_translator.boogie_function_for_invariant (type)) = Void then
+						-- If the whole invariant has not yet been translated,
+						-- translate it first in order to generate static model definitions
+					generate_invariant_function (Void, Void, type.base_class)
+				end
+
+				create l_mapping.make
+				l_mapping.set_current (a_target)
+				generate_invariant_clauses (Void, Void, type.base_class, l_mapping)
 			end
 		end
 
@@ -280,21 +298,24 @@ feature {NONE} -- Implementation
 			else
 				create l_inv_function.make (name_translator.boogie_function_for_filtered_invariant (type, a_included, a_excluded, a_ancestor), types.bool)
 			end
-			l_inv_function.add_argument (l_heap.name, l_heap.type)
-			l_inv_function.add_argument (l_current.name, l_current.type)
-			boogie_universe.add_declaration (l_inv_function)
 
-			create l_mapping.make
-			l_mapping.set_heap (l_heap)
-			l_mapping.set_current (l_current)
+			if boogie_universe.function_named (l_inv_function.name) = Void then
+				l_inv_function.add_argument (l_heap.name, l_heap.type)
+				l_inv_function.add_argument (l_current.name, l_current.type)
+				boogie_universe.add_declaration (l_inv_function)
 
-			if type.base_class.is_tuple then
-				generate_tuple_invariant_clauses (l_mapping)
-			else
-				generate_invariant_clauses (a_included, a_excluded, a_ancestor, l_mapping)
+				create l_mapping.make
+				l_mapping.set_heap (l_heap)
+				l_mapping.set_current (l_current)
+
+				if type.base_class.is_tuple then
+					generate_tuple_invariant_clauses (l_mapping)
+				else
+					generate_invariant_clauses (a_included, a_excluded, a_ancestor, l_mapping)
+				end
+
+				l_inv_function.set_body (factory.conjunction (last_clauses))
 			end
-
-			l_inv_function.set_body (factory.conjunction (last_clauses))
 		end
 
 	generate_invariant_clauses (a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C; a_mapping: E2B_ENTITY_MAPPING)
@@ -439,7 +460,7 @@ feature {NONE} -- Implementation
 						l_translator.set_origin_class (a_class)
 						l_translator.set_context_line_number (l_assert.line_number)
 						l_translator.set_context_tag (l_assert.tag)
-						l_translator.set_context_readable (factory.function_call ("user_inv_readable", << factory.global_heap, factory.std_current >>, types.frame))
+						l_translator.set_context_readable (factory.function_call ("user_inv_readable", << a_mapping.heap, a_mapping.current_expression >>, types.frame))
 						l_translator.set_use_triggers (True)
 						l_assert.process (l_translator)
 						last_safety_checks.append (l_translator.side_effect)

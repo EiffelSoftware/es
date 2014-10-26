@@ -14,7 +14,7 @@ Successfully verified.
 F_HS_CLIENT.test_modification_fail
 Verification failed.
 
-Line: 131. Invariant unknown_invariant might not hold on call to wrap.
+Line: 131. Invariant valid_buckets might not hold on call to wrap.
 ======================================
 F_HS_HASHABLE (invariant admissibility)
 Successfully verified.

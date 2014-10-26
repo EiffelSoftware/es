@@ -26,7 +26,7 @@ feature -- Cursor movement
 			-- If `v' does not appear, go after.
 			-- (Use object equality.)
 		require
-			target_wrapped: target.is_wrapped
+			target_closed: target.closed
 			lock_wrapped: target.lock.is_wrapped
 			v_locked: target.lock.owns [v]
 			modify_model ("index_", Current)
@@ -56,7 +56,7 @@ feature -- Removal
 		end
 
 invariant
-	target_set_constraint: target.set = sequence.range
+	target_set_constraint: target.set ~ sequence.range
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
