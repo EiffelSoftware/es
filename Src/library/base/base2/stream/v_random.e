@@ -51,12 +51,15 @@ feature -- Access
 			-- Random integer from [min..max].
 		require
 			bounds_valid: max >= min
-			bounds_not_too_large: max < {INTEGER}.max_value or min > {INTEGER}.min_value
 		local
 			n: NATURAL
 		do
-			n := item.to_natural_32 \\ (max.to_integer_64 - min.to_integer_64 + 1).to_natural_32
-			Result := (min + n.to_integer_64).to_integer_32
+			if min = max then
+				Result := min
+			else
+				n := item.to_natural_32 \\ (max.to_integer_64 - min.to_integer_64).to_natural_32
+				Result := (min + n.to_integer_64).to_integer_32
+			end
 		ensure
 			result_in_bounds: min <= Result and Result <= max
 		end
