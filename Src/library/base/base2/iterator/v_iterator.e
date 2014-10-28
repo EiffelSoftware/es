@@ -118,7 +118,7 @@ feature -- Cursor movement
 			target_closed: target.closed
 			modify_model ("index_", Current)
 		deferred
-		ensure then
+		ensure
 			index_effect: index_ = 1
 			target_closed: target.closed
 		end

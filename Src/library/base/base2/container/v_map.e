@@ -151,16 +151,6 @@ feature -- Specification
 			Result := lock.set_item (map.domain, k)
 		end
 
-	bag_from (m: like map): like bag
-			-- Bag of values in `m'.
-		note
-			status: ghost, functional, opaque, dynamic
-		require
-			reads ([])
-		do
-			Result := m.to_bag
-		end
-
 invariant
 	domain_non_void: map.domain.non_void
 	non_empty_has_lock: not map.is_empty implies lock /= Void
@@ -169,7 +159,7 @@ invariant
 	subjects_definition: if lock = Void then subjects.is_empty else subjects = [lock] end
 	registered: lock /= Void implies lock.tables [Current]
 	observers_constraint: lock /= Void implies observers [lock]
-	bag_definition: bag ~ bag_from (map)
+	bag_definition: bag ~ map.to_bag
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

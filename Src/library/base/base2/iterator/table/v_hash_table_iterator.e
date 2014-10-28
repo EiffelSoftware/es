@@ -121,7 +121,6 @@ feature -- Access
 			check list_iterator.inv_only ("sequence_definition", "subjects_definition") end
 			Result := list_iterator.item.right
 			lemma_single_out (target.buckets_, bucket_index)
-			use_definition (value_sequence_from (sequence, target.map))
 		end
 
 feature -- Measurement		
@@ -347,7 +346,7 @@ feature -- Removal
 			check target.buckets_.tail (bucket_index + 1) = (target.buckets_.old_).tail (bucket_index + 1) end
 			lemma_content (target.buckets_, target.map)
 			sequence := concat (target.buckets_)
-			value_sequence := value_sequence_from (sequence, target.map)
+			value_sequence := target.map.sequence_image (sequence)
 			check list_iterator.inv_only ("sequence_definition") end
 
 			if list_iterator.after then
@@ -620,8 +619,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 		do
 			use_definition (concat (bs))
 			use_definition (target.set_not_too_large (m.domain, bs))
-			use_definition (value_sequence_from (concat (bs), m))
-			use_definition (target.bag_from (m))
 			if not bs.is_empty then
 				check across 1 |..| (bs.count - 1) as i all bs [i.item] = bs.but_last [i.item] end end
 				use_definition (target.set_not_too_large (m.domain - bs.last.range, bs.but_last))
@@ -629,8 +626,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 				lemma_content (bs.but_last, m | (m.domain - bs.last.range))
 				bs.last.lemma_no_duplicates
 
-				use_definition (value_sequence_from (concat (bs.but_last), m | (m.domain - bs.last.range)))
-				use_definition (target.bag_from (m | (m.domain - bs.last.range)))
 				check (m | (m.domain - bs.last.range)).sequence_image (concat (bs.but_last)) = m.sequence_image (concat (bs.but_last)) end
 				check m.sequence_image (concat (bs)) = m.sequence_image (concat (bs.but_last)) + m.sequence_image (bs.last) end
 				check m = (m | (m.domain - bs.last.range)) + (m | bs.last.range) end
@@ -640,7 +635,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 			end
 		ensure
 			set_constraint: concat (bs).range = m.domain
-			value_sequence_from (concat (bs), m).to_bag ~ target.bag_from (m)
+			m.sequence_image (concat (bs)).to_bag ~ m.to_bag
 		end
 
 invariant

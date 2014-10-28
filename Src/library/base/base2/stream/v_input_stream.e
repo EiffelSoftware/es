@@ -40,8 +40,6 @@ feature -- Cursor movement
 			not_off: not off
 			modify_model (["box"], Current)
 		deferred
-		ensure
-			subjects_closed: across subjects as s all s.item.closed end
 		end
 
 	search (v: G)

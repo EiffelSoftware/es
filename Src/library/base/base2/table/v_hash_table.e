@@ -73,7 +73,6 @@ feature -- Initialization
 				until
 					it.after
 				loop
-					use_definition (it.value_sequence_from (it.sequence, other.map))
 					simple_extend (it.item, it.key)
 					it.lemma_sequence_no_duplicates
 					it.forth
@@ -97,7 +96,6 @@ feature -- Measurement
 			status: dynamic
 		do
 			check inv_only ("count_definition", "bag_definition") end
-			use_definition (bag_from (map))
 			Result := count_
 		end
 
