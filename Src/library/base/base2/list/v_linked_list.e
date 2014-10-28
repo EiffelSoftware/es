@@ -18,6 +18,7 @@ inherit
 		redefine
 			first,
 			last,
+			new_cursor,
 			is_equal_,
 			put,
 			prepend,
@@ -77,6 +78,15 @@ feature -- Access
 		end
 
 feature -- Iteration
+
+	new_cursor: like at
+			-- New iterator pointing to the first position.
+		note
+			status: impure
+		do
+			create Result.make (Current)
+			Result.start
+		end
 
 	at (i: INTEGER): V_LINKED_LIST_ITERATOR [G]
 			-- New iterator pointing at position `i'.
@@ -419,8 +429,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 		require
 			valid_position: 1 <= i and i <= cells.count
 			inv_only ("cells_domain", "cells_exist", "cells_first", "cells_linked")
---			reads (Current, cells.range)
-			reads (universe)
 		local
 			j: INTEGER
 		do

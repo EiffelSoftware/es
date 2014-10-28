@@ -34,7 +34,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			target.add_iterator (Current)
 			active := Void
 			after_ := False
-			check target.inv_only ("cells_domain", "bag_definition", "lower_definition") end
+			check target.inv_only ("cells_domain", "bag_definition") end
 			target.lemma_cells_distinct
 		ensure
 			target_effect: target = list
@@ -64,7 +64,7 @@ feature -- Initialization
 				index_ := other.index_
 				after_ := other.after_
 				set_owns (other.owns)
-				check target.inv_only ("cells_domain", "bag_definition", "lower_definition") end
+				check target.inv_only ("cells_domain", "bag_definition") end
 				target.lemma_cells_distinct
 				wrap
 			end
@@ -235,9 +235,8 @@ feature -- Replacement
 	put (v: G)
 			-- Replace item at current position with `v'.
 		do
-			check target.inv_only ("bag_definition") end
 			target.put_cell (v, active, index_)
-			check target.inv_only ("bag_definition", "lower_definition") end
+			check target.inv_only ("bag_definition") end
 		end
 
 feature -- Extension
@@ -251,7 +250,7 @@ feature -- Extension
 			if is_first then
 				unwrap
 				target.extend_front (v)
-				check target.inv_only ("bag_definition", "cells_domain", "count_definition", "lower_definition") end
+				check target.inv_only ("bag_definition") end
 				index_ := index_ + 1
 				target.lemma_cells_distinct
 				wrap
@@ -269,8 +268,7 @@ feature -- Extension
 			-- Insert `v' to the right of current position. Do not move cursor.
 		do
 			target.extend_after (create {V_DOUBLY_LINKABLE [G]}.put (v), active, index_)
-			check target.inv_only ("bag_definition", "cells_domain",  "count_definition", "lower_definition") end
-			target.lemma_cells_distinct
+			check target.inv_only ("bag_definition") end
 		ensure then
 			cell_sequence_front_preserved: target.cells.old_.front (index_) ~ target.cells.front (index_)
 			cell_sequence_tail_preserved: target.cells.old_.tail (index_ + 1) ~ target.cells.tail (index_ + 2)
@@ -286,7 +284,7 @@ feature -- Extension
 			if is_first then
 				unwrap
 				target.prepend (other)
-				check target.inv_only ("bag_definition", "cells_domain",  "count_definition", "lower_definition") end
+				check target.inv_only ("bag_definition") end
 				index_ := index_ + other.sequence.tail (other.index_.old_).count
 				target.lemma_cells_distinct
 				wrap
@@ -352,8 +350,7 @@ feature -- Extension
 			modify_model (["sequence", "owns"], [target, other])
 		do
 			target.merge_after (other, active, index_)
-			check target.inv_only ("bag_definition", "count_definition", "lower_definition") end
-			check target.inv_only ("cells_domain") end
+			check target.inv_only ("cells_domain", "bag_definition") end
 			target.lemma_cells_distinct
 		ensure
 			sequence_effect: sequence ~ old (sequence.front (index_) + other.sequence + sequence.tail (index_ + 1))
@@ -370,7 +367,7 @@ feature -- Removal
 			if is_first then
 				unwrap
 				target.remove_front
-				check target.inv_only ("bag_definition", "count_definition", "lower_definition", "cells_domain", "cells_exist", "first_cell_empty", "cells_first") end
+				check target.inv_only ("bag_definition", "first_cell_empty", "cells_first") end
 				active := target.first_cell
 				after_ := active = Void
 				target.lemma_cells_distinct
@@ -398,8 +395,7 @@ feature -- Removal
 			-- Remove element to the right of current position. Do not move cursor.
 		do
 			target.remove_after (active, index_)
-			check target.inv_only ("bag_definition", "count_definition", "lower_definition") end
-			target.lemma_cells_distinct
+			check target.inv_only ("bag_definition") end
 		end
 
 feature {V_DOUBLY_LINKED_LIST_ITERATOR} -- Implementation

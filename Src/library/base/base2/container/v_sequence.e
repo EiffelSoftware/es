@@ -231,7 +231,6 @@ feature -- Specification
 			Result := i - lower_ + 1
 		end
 
-
 invariant
 	lower_constraint: sequence.is_empty implies lower_ = 1
 	bag_definition: bag ~ sequence.to_bag

@@ -54,10 +54,10 @@ feature -- Access
 		local
 			n: NATURAL
 		do
-			if min = max then
-				Result := min
+			if min = {INTEGER}.min_value and max = {INTEGER}.max_value then
+				Result := item
 			else
-				n := item.to_natural_32 \\ (max.to_integer_64 - min.to_integer_64).to_natural_32
+				n := item.to_natural_32 \\ (max.to_integer_64 - min.to_integer_64 + 1).to_natural_32
 				Result := (min + n.to_integer_64).to_integer_32
 			end
 		ensure
