@@ -5296,6 +5296,7 @@ Src/web/eiffel-lang.org/eiffel-lang-app.ini -text
 Src/web/eiffel-lang.org/eiffel-lang.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/eiffel-lang.ini -text
 Src/web/eiffel-lang.org/eiffel-lang.json -text
+Src/web/eiffel-lang.org/eiffel-lang_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/eiffel-lang_app.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/ewf.ini -text
 Src/web/eiffel-lang.org/library/cms/README.md -text
@@ -5325,7 +5326,9 @@ Src/web/eiffel-lang.org/library/wikidocs/testing/testing.ecf svneol=native#text/
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/eiffel_download/eiffel_download-safe.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/modules/eiffel_download/eiffel_download.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/wiki_docs/wiki_docs-safe.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/modules/wiki_docs/wiki_docs.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/themes/demo/css/all.css -text
 Src/web/eiffel-lang.org/themes/demo/images/bg-header.jpg -text
 Src/web/eiffel-lang.org/themes/demo/images/logo.png -text
