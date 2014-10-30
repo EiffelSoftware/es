@@ -92,8 +92,6 @@ feature -- Measurement
 
 	count: INTEGER
 			-- Number of elements.
-		note
-			status: dynamic
 		do
 			check inv_only ("count_definition", "bag_definition") end
 			Result := count_

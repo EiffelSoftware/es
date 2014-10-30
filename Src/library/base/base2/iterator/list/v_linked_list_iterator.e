@@ -424,7 +424,6 @@ feature {V_ITERATOR} -- Implementation
 
 	active: V_LINKABLE [G]
 			-- Cell at current position.
-			-- If unreachable from `target.first_cell' iterator is considered `before'.
 
 	after_: BOOLEAN
 			-- Is current position after the last container position?			

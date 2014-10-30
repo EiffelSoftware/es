@@ -402,7 +402,6 @@ feature {V_DOUBLY_LINKED_LIST_ITERATOR} -- Implementation
 
 	active: V_DOUBLY_LINKABLE [G]
 			-- Cell at current position.
-			-- If unreachable from `target.first_cell' iterator is considered `before'.
 
 	after_: BOOLEAN
 			-- Is current position after the last container position?			

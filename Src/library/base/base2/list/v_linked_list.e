@@ -115,6 +115,7 @@ feature -- Comparison
 			c1, c2: V_LINKABLE [G]
 			i: INTEGER
 		do
+			check inv end
 			if other = Current then
 				Result := True
 			elseif count = other.count then
@@ -125,7 +126,6 @@ feature -- Comparison
 					i := 1
 				invariant
 					1 <= i and i <= sequence.count + 1
-					inv
 					other.inv
 					i <= sequence.count implies c1 = cells [i] and c2 = other.cells [i]
 					i = sequence.count + 1 implies c1 = Void and c2 = Void
@@ -608,7 +608,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Specificaton
 		require
 			closed
 		do
-			check inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_last") end
+			check inv end
 			if cells.count > 0 then
 				lemma_cells_distinct_from (1)
 			end
