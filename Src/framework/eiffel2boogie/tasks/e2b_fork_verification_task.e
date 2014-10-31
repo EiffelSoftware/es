@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {E2B_FORK_VERIFICATION_TASK}."
-	author: ""
+	description: "Verification task that verifies one feature at a time and (possibly) in parallel."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -153,7 +152,7 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Basic operation
 				end
 			end
 
-			if translation_task = Void and not remaining_inputs.is_empty then
+			if translation_task = Void and not remaining_inputs.is_empty and verification_tasks.count < max_parallel_boogies then
 				remaining_inputs.start
 				create translation_task.make (remaining_inputs.item)
 				translation_task.set_context (context_from_input (remaining_inputs.item))
@@ -171,6 +170,9 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Basic operation
 		end
 
 feature {NONE} -- Implementation
+
+	max_parallel_boogies: INTEGER = 5
+			-- Maximum number of parallel Boogie instances.
 
 	remaining_inputs: LINKED_LIST [E2B_TRANSLATOR_INPUT]
 			-- Remaining inputs to work on.

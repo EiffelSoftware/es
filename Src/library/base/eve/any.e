@@ -287,11 +287,16 @@ feature -- Output
 
 	io: STD_FILES
 			-- Handle to standard file setup
+		note
+			status: impure
+			explicit: contracts
+		require
+			modify ([])
 		once
 			create Result
 			Result.set_output_default
 		ensure
-			io_not_void: Result /= Void
+			is_writable: Result.is_fully_writable
 		end
 
 	out: STRING
@@ -301,6 +306,20 @@ feature -- Output
 			Result := tagged_out
 		ensure
 			out_not_void: Result /= Void
+		end
+
+	out_: V_STRING
+			-- New string containing terse printable representation
+			-- of current object
+		note
+			status: impure, skip
+		require
+			modify ([])
+		do
+			create Result.make_from_string (out)
+		ensure
+			out_fresh: Result.is_fresh
+			out_wrapped: Result.is_wrapped
 		end
 
 	frozen tagged_out: STRING
@@ -315,6 +334,10 @@ feature -- Output
 	print (o: detachable ANY)
 			-- Write terse external representation of `o'
 			-- on standard output.
+		note
+			explicit: contracts
+		require
+			modify ([])
 		do
 			if o /= Void then
 				io.put_string (o.out)

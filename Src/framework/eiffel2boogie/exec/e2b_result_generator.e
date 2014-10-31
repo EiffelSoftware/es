@@ -236,7 +236,7 @@ feature {NONE} -- Implementation
 						Result := messages.loop_inv_violated_on_entry
 					end
 				else
-					check a_error.is_loop_inv_not_maintained end
+--					check a_error.is_loop_inv_not_maintained end
 					if l_has_tag then
 						Result := messages.loop_inv_with_tag_not_maintained
 					else
@@ -293,7 +293,7 @@ feature {NONE} -- Implementation
 				end
 			elseif l_type ~ "assign" then
 					-- Attribute update failed
-				check a_error.is_precondition_violation end
+--				check a_error.is_precondition_violation end
 				check l_has_tag end
 				if l_tag ~ "attached_and_allocated" then
 					Result := messages.assignment_attached_and_allocated

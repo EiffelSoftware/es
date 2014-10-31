@@ -29,6 +29,7 @@ feature {NONE} -- Initialization
 			call_handlers.extend (create {E2B_CUSTOM_INTEGER_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_ANY_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_AGENT_CALL_HANDLER})
+			call_handlers.extend (create {E2B_CUSTOM_STRING_HANDLER})
 			create nested_handlers.make
 			nested_handlers.extend (create {E2B_CUSTOM_LOGICAL_HANDLER})
 			nested_handlers.extend (create {E2B_CUSTOM_ANY_CALL_HANDLER})

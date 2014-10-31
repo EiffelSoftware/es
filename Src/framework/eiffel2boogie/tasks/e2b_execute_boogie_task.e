@@ -22,6 +22,7 @@ feature {NONE} -- Initialization
 		do
 			verifier := a_verifier
 			has_next_step := True
+			last_reported_time := -1000
 		end
 
 feature -- Status report
@@ -36,6 +37,8 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 
 	step
 			-- <Precursor>
+		local
+			l_time: INTEGER
 		do
 			if not is_started then
 				start_timer
@@ -44,10 +47,14 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 			end
 			has_next_step := verifier.is_running
 
+			l_time := current_timer
 			if has_next_step then
-				set_status (messages.status_boogie_running (current_timer))
+				if l_time > last_reported_time + 1000 then
+					last_reported_time := l_time
+				end
+				set_status (messages.status_boogie_running (l_time))
 			else
-				set_status (messages.status_boogie_finished (current_timer))
+				set_status (messages.status_boogie_finished (l_time))
 				stop_timer
 			end
 		end
@@ -66,5 +73,8 @@ feature {NONE} -- Implementation
 
 	verifier: attached E2B_VERIFIER
 			-- Boogie verifier.
+
+	last_reported_time: INTEGER
+			-- Last reported time.
 
 end

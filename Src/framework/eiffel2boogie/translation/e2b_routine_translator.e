@@ -147,6 +147,11 @@ feature -- Translation: Signature
 			if options.is_postcondition_predicate_enabled and not a_for_creator then
 				add_postcondition_predicate
 			end
+
+				-- Onces
+			if a_feature.is_once then
+				add_once_specification
+			end
 		end
 
 	translate_tuple_creator (a_type: CL_TYPE_A)
@@ -282,6 +287,7 @@ feature -- Translation: Signature
 		local
 			l_pre: IV_PRECONDITION
 			l_post: IV_POSTCONDITION
+			l_mapping: E2B_ENTITY_MAPPING
 		do
 				-- Preserves global invariant
 			create l_pre.make (factory.function_call ("global", << factory.global_heap >>, types.bool))
@@ -313,7 +319,9 @@ feature -- Translation: Signature
 
 					-- OWNERSHIP DEFAULTS
 					-- ToDo: should default precondtions be enabled for lemmas?
-				across ownership_default (a_for_creator, create {E2B_ENTITY_MAPPING}.make) as i loop
+				create l_mapping.make
+				l_mapping.set_current (current_boogie_procedure.arguments.first.entity)
+				across ownership_default (a_for_creator, l_mapping) as i loop
 					current_boogie_procedure.add_contract (i.item)
 				end
 			end
@@ -419,35 +427,37 @@ feature -- Translation: Signature
 						end
 					end
 				else -- Procedures and impure function
-					if a_for_creator then
-						create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-						l_post.node_info.set_type ("post")
-						l_post.node_info.set_tag ("default_is_wrapped")
-						l_post.node_info.set_attribute ("default", "contracts")
-						Result.extend (l_post)
-					elseif helper.is_public (current_feature) then
-						create l_pre.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-						l_pre.node_info.set_type ("pre")
-						l_pre.node_info.set_tag ("default_is_wrapped")
-						l_pre.node_info.set_attribute ("default", "contracts")
-						Result.extend (l_pre)
-						create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-						l_post.node_info.set_type ("post")
-						l_post.node_info.set_tag ("default_is_wrapped")
-						l_post.node_info.set_attribute ("default", "contracts")
-						Result.extend (l_post)
-					elseif helper.is_private (current_feature) then
-						create l_pre.make (factory.function_call ("is_open", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-						l_pre.node_info.set_type ("pre")
-						l_pre.node_info.set_tag ("default_is_open")
-						l_pre.node_info.set_attribute ("default", "contracts")
-						Result.extend (l_pre)
+					if a_mapping.current_expression.type ~ types.ref then
+						if a_for_creator then
+							create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+							l_post.node_info.set_type ("post")
+							l_post.node_info.set_tag ("default_is_wrapped")
+							l_post.node_info.set_attribute ("default", "contracts")
+							Result.extend (l_post)
+						elseif helper.is_public (current_feature) then
+							create l_pre.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+							l_pre.node_info.set_type ("pre")
+							l_pre.node_info.set_tag ("default_is_wrapped")
+							l_pre.node_info.set_attribute ("default", "contracts")
+							Result.extend (l_pre)
+							create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+							l_post.node_info.set_type ("post")
+							l_post.node_info.set_tag ("default_is_wrapped")
+							l_post.node_info.set_attribute ("default", "contracts")
+							Result.extend (l_post)
+						elseif helper.is_private (current_feature) then
+							create l_pre.make (factory.function_call ("is_open", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+							l_pre.node_info.set_type ("pre")
+							l_pre.node_info.set_tag ("default_is_open")
+							l_pre.node_info.set_attribute ("default", "contracts")
+							Result.extend (l_pre)
 
-						create l_post.make (factory.function_call ("is_open", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
-						l_post.node_info.set_type ("post")
-						l_post.node_info.set_tag ("default_is_open")
-						l_post.node_info.set_attribute ("default", "contracts")
-						Result.extend (l_post)
+							create l_post.make (factory.function_call ("is_open", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+							l_post.node_info.set_type ("post")
+							l_post.node_info.set_tag ("default_is_open")
+							l_post.node_info.set_attribute ("default", "contracts")
+							Result.extend (l_post)
+						end
 					end
 					if a_for_creator or helper.is_public (current_feature) then
 						l_written_feature := current_feature.written_class.feature_of_rout_id_set (current_feature.rout_id_set)
@@ -550,6 +560,7 @@ feature -- Translation: Signature
 						end
 						l_assert.node_info.set_attribute ("rid", l_old_version.rout_id_set.first.out)
 						l_assert.node_info.set_attribute ("cid", l_parent.base_class.class_id.out)
+						check system.class_of_id (l_parent.base_class.class_id).feature_of_rout_id (l_old_version.rout_id_set.first).feature_name_id = a_feature.feature_name_id end
 						l_impl.body.add_statement (l_assert)
 					end
 
@@ -591,6 +602,26 @@ feature -- Translation: Signature
 						end
 					end
 				end
+			end
+		end
+
+	add_once_specification
+			-- Add once spec.
+		require
+			current_feature.is_once
+		local
+			l_type: IV_TYPE
+			l_result: IV_ENTITY
+			l_fcall: IV_FUNCTION_CALL
+			l_post: IV_POSTCONDITION
+		do
+			if current_feature.has_return_value then
+				l_type := types.for_class_type (helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type))
+				l_result := factory.entity ("Result", l_type)
+				l_fcall := factory.function_call ("global_once_value", << factory.int_value (current_feature.rout_id_set.first) >>, l_type)
+				create l_post.make (factory.equal (l_result, l_fcall))
+				l_post.set_free
+				current_boogie_procedure.add_contract (l_post)
 			end
 		end
 
@@ -915,7 +946,7 @@ feature -- Translation: Functions
 				-- Arguments
 			translation_pool.add_type (current_type)
 			l_function.add_argument ("heap", types.heap)
-			l_function.add_argument ("current", types.ref)
+			l_function.add_argument ("current", types.for_class_type (current_type))
 			across arguments_of_current_feature as i loop
 				l_function.add_argument (i.item.name, i.item.boogie_type)
 			end

@@ -35,10 +35,11 @@
 			</option>
 			<file_rule>
 				<exclude>/kernel/any.e$</exclude>
-				<exclude>/kernel/tuple.e$</exclude>
 				<exclude>/kernel/array.e$</exclude>
 				<exclude>/kernel/iteration_cursor.e$</exclude>				
 				<exclude>/kernel/iterable.e$</exclude>
+				<exclude>/kernel/std_files.e$</exclude>
+				<exclude>/kernel/tuple.e$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/kernel/bit_ref.e$</exclude>

@@ -502,6 +502,13 @@ function bit_not(a: int): int;
 function bit_shift_left(a, n: int): int;
 function bit_shift_right(a, n: int): int;
 
+// ----------------------------------------------------------------------
+// once procedures
+
+function global_once_value<T>(rid: int): T;
+function object_once_value<T>(o: ref, rid: int): T;
+
+
 // Expanded types
 
 // type unknown;

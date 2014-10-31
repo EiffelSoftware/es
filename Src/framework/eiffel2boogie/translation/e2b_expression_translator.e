@@ -625,8 +625,6 @@ feature -- Visitors
 			l_current_type: CL_TYPE_A
 			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
-			check a_node.is_static_call end
-
 			l_current_type := current_target_type
 			if a_node.is_static_call then
 				current_target_type := class_type_in_current_context (a_node.static_class_type)
@@ -1257,8 +1255,9 @@ feature -- Translation
 					l_pre_call.add_argument (args.item)
 				end
 				add_safety_check_with_subsumption (l_pre_call, "check", "function_precondition", context_line_number)
-				last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+				last_safety_check.node_info.set_attribute ("cid", current_target_type.base_class.class_id.out)
 				last_safety_check.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
+				check system.class_of_id (current_target_type.base_class.class_id).feature_of_rout_id (a_feature.rout_id_set.first).feature_name_id = a_feature.feature_name_id end
 			end
 --				-- Assume free precondition to trigger the function definition;
 --				-- (definitions of logicals do not have free preconditions)
@@ -1284,8 +1283,9 @@ feature -- Translation
 					-- Using subsumption here, since in a query call chains it can trigger for the followings checks
 				add_safety_check_with_subsumption (factory.function_call ("Frame#Subset", <<l_fcall, context_readable>>, types.bool),
 					"access", "frame_readable", context_line_number)
-				last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+				last_safety_check.node_info.set_attribute ("cid", current_target_type.base_class.class_id.out)
 				last_safety_check.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
+				check system.class_of_id (current_target_type.base_class.class_id).feature_of_rout_id (a_feature.rout_id_set.first).feature_name_id = a_feature.feature_name_id end
 			end
 		end
 
@@ -1395,7 +1395,7 @@ feature -- Translation
 		end
 
 
-feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER} -- Implementation
+feature -- Implementation
 
 	parameters_stack: LINKED_STACK [LINKED_LIST [IV_EXPRESSION]]
 			-- Stack of procedure calls.

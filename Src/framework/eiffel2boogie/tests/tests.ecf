@@ -30,7 +30,7 @@
 			<cluster name="language" location=".\language\" recursive="true"/>
 			<cluster name="advanced" location=".\advanced\" recursive="true"/>
 			<cluster name="comcom" location=".\comcom\" recursive="true"/>
-			<cluster name="eb2" location="H:\Work\eve\eve\framework\eiffel2boogie\tests\eb2\"/>
+			<cluster name="eb2" location=".\eb2\" recursive="true"/>
 		</cluster>
 	</target>
 </system>

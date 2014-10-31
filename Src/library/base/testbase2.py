@@ -115,7 +115,7 @@ init()
 
 if len(sys.argv) > 1:
   # run all together
-  run_all ('H:\\Temp\\bin\\fin')
+  run_all ('C:\\Temp\\base2')
 else:
   # run one by one
-  run_each ('H:\\Temp\\bin\\fin')
+  run_each ('C:\\Temp\\base2')
