@@ -45,7 +45,7 @@ feature -- Initialization
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
 			no_iterators: observers = [lock]
-			modify_model (["map", "owns"], Current)
+			modify_model ("map", Current)
 			modify_model ("observers", [Current, other])
 		local
 			it: V_HASH_TABLE_ITERATOR [K, V]
@@ -68,7 +68,7 @@ feature -- Initialization
 					map = other.map | map.domain
 					across other.map.domain - map.domain as x all not domain_has (x.item) end
 
-					modify_model (["map", "owns"], Current)
+					modify_model ("map", Current)
 					modify_model ("index_", it)
 				until
 					it.after
@@ -318,7 +318,6 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 
 			count_ := 0
 			create map
-			lists := buckets.sequence
 			create buckets_.constant ({MML_SEQUENCE [K]}.empty_sequence, buckets.sequence.count)
 			use_definition (set_not_too_large (map.domain, buckets_))
 			wrap
@@ -439,7 +438,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			wrapped: is_wrapped
 			no_iterators: observers = [lock]
 			lock_wrapped: lock.is_wrapped
-			modify_model (["map", "owns"], Current)
+			modify_model ("map", Current)
 		do
 			check inv end
 			if new_count * target_load_factor // 100 > growth_rate * capacity then
@@ -459,7 +458,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			c_positive: c > 0
 			no_iterators: observers = [lock]
 			lock_wrapped: lock.is_wrapped
-			modify_model (["map", "owns"], Current)
+			modify_model ("map", Current)
 		local
 			i: INTEGER
 			b: like buckets

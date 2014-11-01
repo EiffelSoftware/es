@@ -14,14 +14,6 @@ inherit
 			target
 		end
 
---	V_IO_ITERATOR [V]
---		rename
---			sequence as value_sequence
---		redefine
---			target,
---			index_
---		end
-
 feature -- Access
 
 	target: V_TABLE [K, V]

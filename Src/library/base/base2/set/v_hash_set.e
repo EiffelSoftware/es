@@ -44,7 +44,7 @@ feature -- Initialization
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
 			no_iterators: observers = [lock]
-			modify_model (["set", "owns"], Current)
+			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		do
 			if other /= Current then

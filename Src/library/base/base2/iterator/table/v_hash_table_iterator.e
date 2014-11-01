@@ -290,6 +290,7 @@ feature -- Cursor movement
 			check target.inv_only ("buckets_count", "owns_definition", "lists_definition", "lists_counts", "buckets_lower", "list_observers_same") end
 			check list_iterator.inv_only ("sequence_definition", "subjects_definition", "default_owns") end
 			list_iterator.back
+			check list_iterator.inv_only ("default_owns") end
 			index_ := index_ - 1
 			if list_iterator.before then
 				to_prev_bucket

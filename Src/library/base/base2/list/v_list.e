@@ -66,7 +66,7 @@ feature -- Extension
 			-- Insert `v' at the front.
 		require
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.prepended (v)
@@ -76,7 +76,7 @@ feature -- Extension
 			-- Insert `v' at the back.
 		require
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old (sequence & v)
@@ -87,7 +87,7 @@ feature -- Extension
 		require
 			valid_index: 1 <= i and i <= sequence.count + 1
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.extended_at (i, v)
@@ -104,7 +104,7 @@ feature -- Extension
 			input_target_wrapped: input.target.is_wrapped
 			not_before: not input.before
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 			modify_model ("index_", input)
 		do
 			from
@@ -135,7 +135,7 @@ feature -- Extension
 			input_target_wrapped: input.target.is_wrapped
 			not_before: not input.before
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns", "observers"], Current)
+			modify_model (["sequence", "observers"], Current)
 			modify_model ("index_", input)
 		deferred
 		ensure
@@ -153,7 +153,7 @@ feature -- Extension
 			input_target_wrapped: input.target.is_wrapped
 			not_before: not input.before
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns", "observers"], Current)
+			modify_model (["sequence", "observers"], Current)
 			modify_model ("index_", input)
 		deferred
 		ensure
@@ -169,7 +169,7 @@ feature -- Removal
 		require
 			not_empty: not is_empty
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.but_first
@@ -180,7 +180,7 @@ feature -- Removal
 		require
 			not_empty: not is_empty
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.but_last
@@ -191,7 +191,7 @@ feature -- Removal
 		require
 			has_index: 1 <= i and i <= sequence.count
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.removed_at (i)
@@ -205,7 +205,7 @@ feature -- Removal
 		require
 			has: sequence.has (v)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "observers", "owns"], Current)
+			modify_model (["sequence", "observers"], Current)
 		local
 			i: V_LIST_ITERATOR [G]
 		do
@@ -226,7 +226,7 @@ feature -- Removal
 			explicit: wrapping
 		require
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "observers", "owns"], Current)
+			modify_model (["sequence", "observers"], Current)
 		local
 			i: V_LIST_ITERATOR [G]
 			n: INTEGER
@@ -244,7 +244,7 @@ feature -- Removal
 				bag = bag.old_.removed_multiple (v, n)
 				bag [v] = bag.old_ [v] - n
 				n >= 0
-				modify_model (["sequence", "owns"], Current)
+				modify_model ("sequence", Current)
 				modify_model (["index_", "sequence"], i)
 			until
 				i.after
@@ -269,7 +269,7 @@ feature -- Removal
 			-- Remove all elements.
 		require
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 		deferred
 		ensure
 			sequence_effect: sequence.is_empty

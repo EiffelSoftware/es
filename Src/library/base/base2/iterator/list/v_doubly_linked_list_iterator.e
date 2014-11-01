@@ -346,8 +346,8 @@ feature -- Extension
 			not_after: index_ <= sequence.count
 			observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			other_observers_open: across other.observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
-			modify_model (["sequence", "owns"], [target, other])
+			modify_model ("sequence", Current)
+			modify_model ("sequence", [target, other])
 		do
 			target.merge_after (other, active, index_)
 			check target.inv_only ("cells_domain", "bag_definition") end

@@ -12,12 +12,14 @@ inherit
 	V_SEQUENCE_ITERATOR [G]
 		redefine
 			target,
+			sequence,
 			index_
 		end
 
 	V_IO_ITERATOR [G]
 		redefine
 			target,
+			sequence,
 			index_,
 			put
 		end
@@ -39,6 +41,13 @@ feature -- Replacement
 		end
 
 feature -- Specficiation
+
+	sequence: MML_SEQUENCE [G]
+			-- Sequence of elements in `target'.
+		note
+			status: ghost
+		attribute
+		end
 
 	index_: INTEGER
 			-- Current position.

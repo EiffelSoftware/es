@@ -29,7 +29,7 @@ feature -- Extension
 			target_wrapped: target.is_wrapped
 			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			modify_model (["index_", "sequence", "box"], Current)
-			modify_model (["sequence", "owns"], target)
+			modify_model ("sequence", target)
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index_, v)
@@ -44,8 +44,8 @@ feature -- Extension
 			not_off: not off
 			target_wrapped: target.is_wrapped
 			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
-			modify_model (["sequence"], Current)
-			modify_model (["sequence", "owns"], target)
+			modify_model ("sequence", Current)
+			modify_model ("sequence", target)
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index_ + 1, v)
@@ -63,7 +63,7 @@ feature -- Extension
 			observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			different_target: target /= other.target
 			modify_model (["index_", "sequence"], Current)
-			modify_model (["sequence", "owns", "observers"], target)
+			modify_model (["sequence", "observers"], target)
 			modify_model ("index_", other)
 		deferred
 		ensure
@@ -85,7 +85,7 @@ feature -- Extension
 			observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			different_target: target /= other.target
 			modify_model (["index_", "sequence"], Current)
-			modify_model (["sequence", "owns", "observers"], target)
+			modify_model (["sequence", "observers"], target)
 			modify_model ("index_", other)
 		deferred
 		ensure
@@ -105,7 +105,7 @@ feature -- Removal
 			target_wrapped: target.is_wrapped
 			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			modify_model (["index_", "sequence"], Current)
-			modify_model (["sequence", "owns"], target)
+			modify_model ("sequence", target)
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index_)
@@ -121,7 +121,7 @@ feature -- Removal
 			target_wrapped: target.is_wrapped
 			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			modify_model (["index_", "sequence"], Current)
-			modify_model (["sequence", "owns"], target)
+			modify_model ("sequence", target)
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index_ - 1)
@@ -136,8 +136,8 @@ feature -- Removal
 			not_last: not is_last
 			target_wrapped: target.is_wrapped
 			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
-			modify_model (["sequence"], Current)
-			modify_model (["sequence", "owns"], target)
+			modify_model ("sequence", Current)
+			modify_model ("sequence", target)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.removed_at (index_ + 1)

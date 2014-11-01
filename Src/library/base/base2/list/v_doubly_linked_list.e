@@ -45,7 +45,7 @@ feature -- Initialization
 			explicit: wrapping
 		require
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 			modify_field (["observers", "closed"], other)
 		local
 			i: V_LIST_ITERATOR [G]
@@ -545,7 +545,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			new_right_void: new.right = Void
 			new_left_void: new.left = Void
 
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 			modify (new)
 		do
 			lemma_cells_distinct
@@ -575,7 +575,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			c_in_list: cells [index_] = c
 			wrapped: is_wrapped
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model ("sequence", Current)
 		do
 			lemma_cells_distinct
 			unwrap
@@ -611,7 +611,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			other_wrapped: other.is_wrapped
 			observers_open: across observers as o all o.item.is_open end
 			other_observers_open: across other.observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], [Current, other])
+			modify_model ("sequence", [Current, other])
 		local
 			other_first, other_last: V_DOUBLY_LINKABLE [G]
 			other_count: INTEGER

@@ -243,7 +243,7 @@ feature -- Translation: Signature
 		local
 			l_mapping: E2B_ENTITY_MAPPING
 			l_t: IV_VAR_TYPE
-			l_f, l_m: IV_ENTITY
+			l_f, l_a: IV_ENTITY
 			l_forall: IV_FORALL
 			l_post: IV_POSTCONDITION
 			l_cond: IV_EXPRESSION
@@ -258,11 +258,11 @@ feature -- Translation: Signature
 			l_excluded.extend (factory.entity ("allocated", types.field (types.bool)))
 			l_excluded.extend (factory.entity ("closed", types.field (types.bool)))
 			across
-				helper.flat_model_queries (current_type.base_class) as m
+				helper.ghost_attributes (current_type.base_class) as a
 			loop
-				l_m := helper.field_from_attribute (m.item, current_type)
-				if attached boogie_universe.function_named (name_translator.boogie_function_for_ghost_definition (current_type, l_m.name)) then
-					l_excluded.extend (l_m)
+				l_a := helper.field_from_attribute (a.item, current_type)
+				if attached boogie_universe.function_named (name_translator.boogie_function_for_ghost_definition (current_type, l_a.name)) then
+					l_excluded.extend (l_a)
 				end
 			end
 

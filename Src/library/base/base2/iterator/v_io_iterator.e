@@ -19,16 +19,6 @@ inherit
 			is_model_equal
 		end
 
-feature -- Measurement
-
-	index_: INTEGER
-			-- Current position.
-		note
-			status: ghost
-			replaces: off_
-		attribute
-		end
-
 feature -- Replacement
 
 	put (v: G)
@@ -61,6 +51,16 @@ feature -- Replacement
 		ensure then
 			sequence_effect: sequence ~ old (sequence.replaced_at (index_, v))
 			index_effect: index_ = old index_ + 1
+		end
+
+feature -- Specification
+
+	index_: INTEGER
+			-- Current position.
+		note
+			status: ghost
+			replaces: off_
+		attribute
 		end
 
 invariant

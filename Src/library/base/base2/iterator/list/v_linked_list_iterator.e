@@ -59,6 +59,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			is_wrapped
 			target_effect: target = list
 			index_effect: index_ = 0
+			default_owns: owns.is_empty
 		end
 
 feature -- Initialization
@@ -219,8 +220,7 @@ feature -- Cursor movement
 					start
 				invariant
 					1 <= index_ and index_ < index_.old_
-					inv_only ("cell_not_off", "after_definition")
-					attached active
+					inv_only ("cell_not_off", "after_definition", "default_owns")
 					across 1 |..| index_ as i all target.cells [i.item] /= old_active end
 					is_wrapped
 				until
@@ -368,8 +368,8 @@ feature -- Extension
 			not_after: index_ <= sequence.count
 			observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			other_observers_open: across other.observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
-			modify_model (["sequence", "owns"], [target, other])
+			modify_model ("sequence", Current)
+			modify_model ("sequence", [target, other])
 		do
 			target.merge_after (other, active, index_)
 			check target.inv_only ("cells_domain", "bag_definition") end

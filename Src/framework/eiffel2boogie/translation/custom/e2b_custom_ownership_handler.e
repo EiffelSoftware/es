@@ -298,8 +298,8 @@ feature -- Basic operations
 					create l_type_translator
 					l_type_translator.translate_inline_invaraint_check (a_translator.current_target_type, a_translator.current_target)
 
-					across helper.flat_model_queries (a_translator.current_target_type.base_class) as m loop
-						set_implicit_model_query (a_translator, m.item)
+					across helper.ghost_attributes (a_translator.current_target_type.base_class) as a loop
+						set_implicit_ghost (a_translator, a.item)
 					end
 
 					across l_type_translator.last_clauses as c loop
@@ -359,7 +359,7 @@ feature -- Basic operations
 				helper.is_type_exact (a_translator.current_target_type, a_translator.current_target_type, a_translator.context_feature)
 		end
 
-	set_implicit_model_query (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_attr: FEATURE_I)
+	set_implicit_ghost (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_attr: FEATURE_I)
 			-- If the definition of `a_attr' in `current_target_type' is statically known,
 			-- generate a guarded update and store it in the side effect of `a_translator'.
 		local

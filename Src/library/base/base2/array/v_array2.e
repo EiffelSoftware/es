@@ -72,8 +72,8 @@ feature -- Initialization
 			-- Initialize by copying all the items of `other'.
 		require
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "column_count", "owns"], Current)
-			modify_field (["closed"], other)
+			modify_model (["sequence", "column_count"], Current)
+			modify_field ("closed", other)
 		do
 			if other /= Current then
 				row_count := other.row_count
@@ -220,7 +220,7 @@ feature -- Replacement
 			valid_row: has_row (i)
 			valid_column: has_column (j)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model ("sequence", Current)
 		do
 			check inv end
 			flat_put (v, flat_index (i, j))

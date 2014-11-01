@@ -35,6 +35,7 @@ feature -- Cache control
 		do
 			map_access_feature_cache.wipe_out
 			flat_model_cache.wipe_out
+			ghost_attribute_cache.wipe_out
 			internal_counter.put (0)
 				-- Reset invariant checks
 			(create {E2B_TYPE_TRANSLATOR}).invariant_check_cache.wipe_out;
@@ -539,6 +540,38 @@ feature -- Ownership helpers
 			Result := translation_mapping.ghost_access.has (a_feature.feature_name_32)
 		end
 
+	ghost_attributes (a_class: CLASS_C): ARRAYED_LIST [FEATURE_I]
+			-- All ghost attributes of `a_class' (in the order from most immediate to most inherited).
+		local
+			l_feature: FEATURE_I
+		do
+			if ghost_attribute_cache.has_key (a_class.class_id) then
+				Result := ghost_attribute_cache [a_class.class_id]
+			else
+				from
+					create Result.make (5)
+					Result.start
+					a_class.feature_table.start
+				until
+					a_class.feature_table.after
+				loop
+					l_feature := a_class.feature_table.item_for_iteration
+					if (l_feature.is_attribute and is_ghost (l_feature)) or is_built_in_attribute (l_feature) then
+						from
+							Result.start
+						until
+							Result.after or else is_conforming_or_non_conforming_parent_class (l_feature.written_class, Result.item.written_class)
+						loop
+							Result.forth
+						end
+						Result.put_left (l_feature)
+					end
+					a_class.feature_table.forth
+				end
+				ghost_attribute_cache.put (Result, a_class.class_id)
+			end
+		end
+
 feature -- Model helpers
 
 	model_queries (a_class: CLASS_C): ARRAYED_LIST [STRING_32]
@@ -548,7 +581,7 @@ feature -- Model helpers
 		end
 
 	flat_model_queries (a_class: CLASS_C): ARRAYED_LIST [FEATURE_I]
-			-- Names of model queries declared in class `a_class' and all its ancestors.
+			-- Model queries declared in class `a_class' and all its ancestors.
 		local
 			l_new_version: FEATURE_I
 		do
@@ -557,9 +590,11 @@ feature -- Model helpers
 			else
 				create Result.make (5)
 				if a_class.class_id = system.any_id then
-					across translation_mapping.ghost_access as m loop
-						Result.extend (a_class.feature_named_32 (m.item))
-					end
+--					across translation_mapping.ghost_access as m loop
+--						Result.extend (a_class.feature_named_32 (m.item))
+--					end
+					Result.extend (a_class.feature_named_32 ("subjects"))
+					Result.extend (a_class.feature_named_32 ("observers"))
 				else
 					across model_queries (a_class) as m loop
 						Result.extend (a_class.feature_named_32 (m.item))
@@ -1013,5 +1048,12 @@ feature {NONE} -- Implementation
 		once
 			create Result.make (50)
 		end
+
+	ghost_attribute_cache: HASH_TABLE [ARRAYED_LIST [FEATURE_I], INTEGER]
+			-- Cache of a list of all ghost attributes for each class.
+		once
+			create Result.make (50)
+		end
+
 
 end

@@ -472,17 +472,17 @@ feature {NONE} -- Implementation
 						l_clause.node_info.set_attribute ("cid", a_class.class_id.out)
 						last_clauses.extend (l_clause)
 							-- If ownership is enabled and we are processing the full invariant,
-							-- check if the invariant clause defines one of the model queries
+							-- check if the invariant clause defines one of the ghost attribtues
 							-- and generate correspoding functions
 						if options.is_ownership_enabled and a_included = Void and a_excluded = Void then
 							l_found := False
 							across
-								helper.flat_model_queries (type.base_class) as m
+								helper.ghost_attributes (type.base_class) as a
 							until
 								l_found
 							loop
-								if helper.is_ghost (m.item) and m.item.feature_name_32 /~ "closed" and m.item.feature_name_32 /~ "owner" then
-									l_found := generate_model_query_definition (l_translator.last_expression, m.item)
+								if a.item.feature_name_32 /~ "closed" and a.item.feature_name_32 /~ "owner" then
+									l_found := generate_ghost_definition (l_translator.last_expression, a.item)
 								end
 							end
 						end
@@ -512,7 +512,7 @@ feature {NONE} -- Implementation
 				type, l_heap, l_current, <<>>)
 		end
 
-	generate_model_query_definition (a_expr: IV_EXPRESSION; a_attr: FEATURE_I): BOOLEAN
+	generate_ghost_definition (a_expr: IV_EXPRESSION; a_attr: FEATURE_I): BOOLEAN
 			-- If `a_expr' has the form `a_name = def', create a Boogie function that defines `a_name' for `type' as `def'.
 			-- (Only accepting definitions of this form to avoid cycles).
 		local

@@ -35,7 +35,7 @@ feature -- Initialization
 		require
 			no_observers: observers.is_empty
 			modify_model ("sequence", Current)
-			modify_model ("closed", other)
+			modify_field ("closed", other)
 		do
 			if other /= Current then
 				other.unwrap
