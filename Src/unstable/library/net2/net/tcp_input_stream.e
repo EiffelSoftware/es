@@ -49,7 +49,11 @@ feature -- Status setting
 feature -- Input
 	read_to_pointer (p: POINTER; nb_bytes: INTEGER)
 		do
+			error := error.no_error
 			socket.receive_to_pointer (p, nb_bytes, socket.pr_interval_no_timeout)
+			if attached socket.error as err then
+				error := error.from_nspr (err)
+			end
 			bytes_read := socket.bytes_received
 		end
 

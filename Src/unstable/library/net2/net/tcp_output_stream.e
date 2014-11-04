@@ -44,10 +44,18 @@ feature -- Output
 				socket.send_from_pointer (p.item, nb_bytes, socket.pr_interval_no_timeout)
 				i := socket.bytes_sent
 			until
-				i = nb_bytes or is_closed
+				attached socket.error or i = nb_bytes or is_closed
 			loop
 				socket.send_from_pointer (p.item + i, nb_bytes - i, socket.pr_interval_no_timeout)
 				i := i + socket.bytes_sent
+			end
+			if attached socket.error as err then
+				error := error.from_nspr (err)
+				-- Correcting the -1 caused by the error
+				i := i + 1
+			end
+			if socket.is_closed then
+				close
 			end
 			bytes_written := i
 		end

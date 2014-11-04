@@ -30,6 +30,8 @@ feature -- Status report
 	bytes_read: INTEGER
 			-- The number of bytes read by the last operation. May be positive even if `is_closed' is True.
 
+	error: IO_ERROR
+
 feature -- Status setting
 	set_network_byte_order (a_value: BOOLEAN)
 		do
@@ -51,8 +53,6 @@ feature -- Access
 	last_character_8: CHARACTER_8
 
 	last_character_32: CHARACTER_32
-
-	last_character_incomplete: BOOLEAN
 
 	last_natural_8: NATURAL_8
 
@@ -79,10 +79,11 @@ feature -- Input
 		local
 			l_item: NATURAL_8
 		do
+			error := error.no_error
 			read_to_pointer ($l_item, 1)
 			last_natural_8 := l_item
 		ensure
-			bytes_read = 0 implies is_closed
+			bytes_read < 1 implies not error.is_no_error or is_closed
 			bytes_read <= 1
 		end
 
@@ -90,6 +91,7 @@ feature -- Input
 		local
 			l_value: NATURAL_16
 		do
+			error := error.no_error
 			read_to_pointer ($l_value, 2)
 			if network_byte_order = platform.is_little_endian then
 			   	l_value := l_value.bit_and (0x00FF).bit_shift_left (8)
@@ -97,7 +99,7 @@ feature -- Input
 			end
 			last_natural_16 := l_value
 		ensure
-			bytes_read = 0 implies is_closed
+			bytes_read < 2 implies not error.is_no_error or is_closed
 			bytes_read <= 2
 		end
 
@@ -105,6 +107,7 @@ feature -- Input
 		local
 			l_value: NATURAL_32
 		do
+			error := error.no_error
 			read_to_pointer ($l_value, 4)
 			if network_byte_order = platform.is_little_endian then
 			   	l_value := l_value.bit_and (0xFF000000).bit_shift_right (24)
@@ -114,7 +117,7 @@ feature -- Input
 			end
 			last_natural_32 := l_value
 		ensure
-			bytes_read = 0 implies is_closed
+			bytes_read < 4 implies not error.is_no_error or is_closed
 			bytes_read <= 4
 		end
 
@@ -122,6 +125,7 @@ feature -- Input
 		local
 			l_value: NATURAL_64
 		do
+			error := error.no_error
 			read_to_pointer ($l_value, 8)
 			if network_byte_order = platform.is_little_endian then
 			   	l_value := l_value.bit_and (0xFF000000).bit_shift_right (24)
@@ -131,14 +135,18 @@ feature -- Input
 			end
 			last_natural_64 := l_value
 		ensure
-			bytes_read < 8 implies is_closed
+			bytes_read < 8  implies not error.is_no_error or is_closed
 			bytes_read <= 8
 		end
 
 	read_character_8
 		do
+			error := error.no_error
 			read_natural_8
 			last_character_8 := last_natural_8.to_character_8
+		ensure
+			bytes_read < 1 implies not error.is_no_error or is_closed
+			bytes_read <= 1
 		end
 
 	read_character_32
@@ -150,6 +158,7 @@ feature -- Input
 			l_buf16: NATURAL_16
 			l_bytes_read: INTEGER
 		do
+			error := error.no_error
 			if charset.is_unknown then
 				read_natural_8
 				last_character_32 := last_natural_8.to_character_32
@@ -173,7 +182,7 @@ feature -- Input
 							).to_character_32
 						else
 							last_character_32 := '%U'
-							last_character_incomplete := True
+							error := error.last_character_incomplete
 						end
 					elseif c1 <= 0xEF then
 							-- 1110xxxx 10xxxxxx 10xxxxxx
@@ -191,7 +200,7 @@ feature -- Input
 							).to_character_32
 						else
 							last_character_32 := '%U'
-							last_character_incomplete := True
+							error := error.last_character_incomplete
 						end
 					elseif c1 <= 0xF7 then
 							-- 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
@@ -213,12 +222,12 @@ feature -- Input
 							).to_character_32
 						else
 							last_character_32 := '%U'
-							last_character_incomplete := True
+							error := error.last_character_incomplete
 						end
 					end
 				else
 					last_character_32 := '%U'
-					last_character_incomplete := True
+					error := error.last_character_incomplete
 				end
 				bytes_read := l_bytes_read
 			elseif charset.is_utf_16 then
@@ -235,13 +244,13 @@ feature -- Input
 							last_character_32 := ((l_buf16.as_natural_32 |<< 10) + last_natural_16 - 0x35FDC00).to_character_32
 						else
 							last_character_32 := '%U'
-							last_character_incomplete := True
+							error := error.last_character_incomplete
 						end
 						bytes_read := bytes_read + 2
 					end
 				else
 					last_character_32 := '%U'
-					last_character_incomplete := True
+					error := error.last_character_incomplete
 				end
 			elseif charset.is_utf_32 then
 				read_natural_32
@@ -249,12 +258,13 @@ feature -- Input
 					last_character_32 := last_natural_32.to_character_32
 				else
 					last_character_32 := '%U'
-					last_character_incomplete := True
+					error := error.last_character_incomplete
 				end
 			else
 				check false end
 			end
 		ensure
+			bytes_read <= 0 implies not error.is_no_error or is_closed
 			bytes_read <= 4
 		end
 
@@ -264,6 +274,7 @@ feature -- Input
 			l_buffer: STRING_32
 			i: INTEGER
 		do
+			error := error.no_error
 			create l_buffer.make (a_max_count)
 			from
 				i := 1
@@ -271,14 +282,14 @@ feature -- Input
 				is_closed or i > a_max_count
 			loop
 				read_character_32
-				if not last_character_incomplete then
+				if not error.is_no_error then
 					l_buffer.extend (last_character_32)
 				end
 				i := i + 1
 			end
 			last_estring_32 := l_buffer
 		ensure
-			bytes_read = 0 implies is_closed
+			bytes_read <= 0  implies not error.is_no_error or is_closed
 			charset.is_unknown implies bytes_read = last_estring_32.count
 			charset.is_utf_8 implies bytes_read >= last_estring_32.count
 			charset.is_utf_16 implies bytes_read >= last_estring_32.count * 2
@@ -292,6 +303,7 @@ feature -- Input
 			l_buffer: STRING_8
 			i: INTEGER
 		do
+			error := error.no_error
 			create l_buffer.make (a_max_count)
 			from
 				i := 1
@@ -307,7 +319,7 @@ feature -- Input
 			last_estring_8 := l_buffer
 			bytes_read := last_estring_8.count
 		ensure
-			bytes_read = 0 implies is_closed
+			bytes_read <= 0 implies not error.is_no_error or is_closed
 			bytes_read = last_estring_8.count
 		end
 
@@ -320,6 +332,7 @@ feature -- Input
 			i: INTEGER
 			l_bytes_read: INTEGER
 		do
+			error := error.no_error
 			from
 				i := a_start_pos
 			until
@@ -334,6 +347,7 @@ feature -- Input
 			end
 			bytes_read := l_bytes_read
 		ensure
+			bytes_read <= 0 implies not error.is_no_error or is_closed
 			bytes_read <= a_end_pos - a_start_pos + 1
 			a_area.count >= a_start_pos + bytes_read - 1
 		end
@@ -346,7 +360,7 @@ feature -- Input
 			-- The number of bytes read is available from `bytes_read'
 		deferred
 		ensure
-			bytes_read = 0 implies is_closed
+			bytes_read <= 0 implies not error.is_no_error or is_closed
 			bytes_read <= nb_bytes
 		end
 
@@ -358,9 +372,10 @@ feature -- Input
 			nb_bytes > 0
 			p.count >= start_pos + nb_bytes
 		do
+			error := error.no_error
 			read_to_pointer (p.item.plus (start_pos), nb_bytes)
 		ensure
-			bytes_read = 0 implies is_closed
+			bytes_read <= 0 implies not error.is_no_error or is_closed
 			bytes_read <= nb_bytes
 		end
 
@@ -388,8 +403,5 @@ feature {NONE}
 		end
 
 	utf_converter: UTF_CONVERTER
-
-invariant
-	bytes_read >= 0
 
 end

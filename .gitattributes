@@ -5978,6 +5978,7 @@ Src/unstable/library/compression/zlib/spec/windows/lib/msc/zlibstat.lib -text
 Src/unstable/library/compression/zlib/testing/index.html -text
 Src/unstable/library/estring/estring.ecf svneol=native#text/xml
 Src/unstable/library/estring/estring_searcher.e svneol=native#text/plain
+Src/unstable/library/net2/error/io_error.e svneol=native#text/plain
 Src/unstable/library/net2/file/epath.e svneol=native#text/plain
 Src/unstable/library/net2/file/file_system.e svneol=native#text/plain
 Src/unstable/library/net2/file/file_system_access.e svneol=native#text/plain
@@ -5987,6 +5988,9 @@ Src/unstable/library/net2/net2.ecf svneol=native#text/plain
 Src/unstable/library/network/socket/netssl/README -text
 Src/unstable/library/network/socket/netssl/license.lic -text
 Src/unstable/library/nspr/nspr.ecf svneol=native#text/xml
+Src/unstable/library/nspr/nss/nss.e svneol=native#text/plain
+Src/unstable/library/nspr/nss/nss_access.e svneol=native#text/plain
+Src/unstable/library/nspr/nss/nss_c.e svneol=native#text/plain
 Src/unstable/library/pattern/criteria/README.txt -text
 Src/unstable/library/pattern/criteria/license.lic -text
 Src/unstable/library/pattern/criteria/testing/criteria_tests.rc -text

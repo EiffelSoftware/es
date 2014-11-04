@@ -64,26 +64,24 @@ feature {NONE} -- Initialization
 		do
 			address_family := a_address_family
 			error := Void
-			was_timeout := False
 			create l_addr.make_empty
 			l_fd := c.pr_accept (a_fd, l_addr.pointer, a_timeout)
 			if l_fd.is_default_pointer then
 				create l_error.make
-				if l_error.is_timeout then
-					was_timeout := True
-				else
-					error := l_error
+				if not l_error.is_timeout then
+					close
 					if use_exceptions then
 						(create {PR_EXCEPTION}.make).raise
 					end
 				end
+				error := l_error
 			else
 				pr_fd := l_fd
 				can_send := True
 				can_receive := True
 			end
 		ensure
-			(attached error or was_timeout) xor is_connected
+			not attached error implies is_connected
 		end
 
 feature -- Status setting
@@ -106,17 +104,15 @@ feature -- Status setting
 			l_error: PR_ERROR
 		do
 			error := Void
-			was_timeout := False
 			if pr_failure = c.pr_connect (pr_fd, a_addr.pointer, a_timeout) then
 				create l_error.make
-				if l_error.is_timeout then
-					was_timeout := True
-				else
-					error := l_error
+				if not l_error.is_timeout then
+					close
 					if use_exceptions then
 						(create {PR_EXCEPTION}.make).raise
 					end
 				end
+				error := l_error
 			else
 				can_receive := True
 				can_send := True
@@ -124,7 +120,7 @@ feature -- Status setting
 				peer_address := a_addr
 			end
 		ensure
-			not (attached error or was_timeout) implies
+			not attached error implies
 				can_receive and
 				can_send and
 				is_bound and
@@ -295,9 +291,6 @@ feature -- Status report
 
 	error: detachable PR_ERROR
 
-	was_timeout: BOOLEAN
-		-- True on timeout of `accept' or `connect'
-
 	recv_buffer_size: NATURAL
 		do
 			if not is_closed then
@@ -323,7 +316,6 @@ feature -- Input
 			l_amount: INTEGER_32
 		do
 			error := Void
-			was_timeout := False
 
 			if pr_fd.is_default_pointer then
 				l_amount := 0
@@ -331,24 +323,22 @@ feature -- Input
 				l_amount := receive_special_c (pr_fd, a_special, a_timeout)
 			end
 
+			bytes_received := l_amount
 			if l_amount = -1 then
 				create l_error.make
-				if l_error.is_timeout then
-					bytes_received := 0
-					was_timeout := True
-				else
-					error := l_error
+				if not l_error.is_timeout then
 					close
 					if use_exceptions then
 						(create {PR_EXCEPTION}.make).raise
 					end
 				end
+				error := l_error
 			elseif l_amount = 0 then
 				close
-				bytes_received := 0
-			else
-				bytes_received := l_amount
 			end
+		ensure
+			bytes_received = -1 implies attached error
+			bytes_received = 0 implies not is_connected
 		end
 
 	receive_to_managed_pointer (a_ptr: MANAGED_POINTER; a_timeout: NATURAL_64)
@@ -358,6 +348,9 @@ feature -- Input
 				or a_timeout = pr_interval_no_wait or a_timeout = pr_interval_no_timeout
 		do
 			receive_to_pointer (a_ptr.item, a_ptr.count, a_timeout)
+		ensure
+			bytes_received = -1 implies attached error
+			bytes_received = 0 implies not is_connected
 		end
 
 	receive_to_pointer (a_ptr: POINTER; a_count: INTEGER_32; a_timeout: NATURAL_64)
@@ -371,31 +364,30 @@ feature -- Input
 			l_char: CHARACTER_8
 		do
 			error := Void
-			was_timeout := False
 
 			if pr_fd.is_default_pointer then
 				l_amount := 0
+				bytes_received := 0
 			else
 				l_amount := c.pr_recv (pr_fd, a_ptr, a_count, 0, a_timeout)
 			end
 
+			bytes_received := l_amount
 			if l_amount = -1 then
 				create l_error.make
-				if l_error.is_timeout then
-					bytes_received := 0
-					was_timeout := True
-				else
-					error := l_error
+				if not l_error.is_timeout then
+					close
 					if use_exceptions then
 						(create {PR_EXCEPTION}.make).raise
 					end
 				end
+				error := l_error
 			elseif l_amount = 0 then
 				close
-				bytes_received := 0
-			else
-				bytes_received := l_amount
 			end
+		ensure
+			bytes_received = -1 implies attached error
+			bytes_received = 0 implies not is_connected
 		end
 
 	bytes_received: INTEGER
@@ -411,7 +403,6 @@ feature -- Output
 			l_amount: INTEGER_32
 		do
 			error := Void
-			was_timeout := False
 
 			if pr_fd.is_default_pointer then
 				l_amount := 0
@@ -419,27 +410,22 @@ feature -- Output
 				l_amount := send_special_c (pr_fd, a_special, a_timeout)
 			end
 
+			bytes_sent := l_amount
 			if l_amount = -1 then
 				create l_error.make
-				if l_error.is_timeout then
-					bytes_sent := 0
-					was_timeout := True
-				else
-					error := l_error
+				if not l_error.is_timeout then
 					close
 					if use_exceptions then
 						(create {PR_EXCEPTION}.make).raise
 					end
 				end
+				error := l_error
 			elseif l_amount = 0 then
 				close
-				bytes_sent := 0
-			else
-				bytes_sent := l_amount
 			end
 		ensure
-			not (attached error or was_timeout) implies
-				not is_connected or bytes_sent > 0
+			bytes_sent = -1 implies attached error
+			bytes_sent = 0 implies not is_connected
 		end
 
 	send_from_managed_pointer (a_ptr: MANAGED_POINTER; a_count: INTEGER_32; a_timeout: NATURAL_64)
@@ -450,8 +436,8 @@ feature -- Output
 		do
 			send_from_pointer (a_ptr.item, a_count, a_timeout)
 		ensure
-			not (attached error or was_timeout) implies
-				not is_connected or bytes_sent > 0
+			bytes_sent = -1 implies attached error
+			bytes_sent = 0 implies not is_connected
 		end
 
 	send_from_pointer (a_ptr: POINTER; a_count: INTEGER_32; a_timeout: NATURAL_64)
@@ -464,7 +450,6 @@ feature -- Output
 			l_amount: INTEGER_32
 		do
 			error := Void
-			was_timeout := False
 
 			if pr_fd.is_default_pointer then
 				l_amount := 0
@@ -472,27 +457,22 @@ feature -- Output
 				l_amount := c.pr_send (pr_fd, a_ptr, a_count, 0, a_timeout)
 			end
 
+			bytes_sent := l_amount
 			if l_amount = -1 then
-				bytes_sent := 0
 				create l_error.make
-				if l_error.is_timeout then
-					was_timeout := True
-				else
-					error := l_error
+				if not l_error.is_timeout then
 					close
 					if use_exceptions then
 						(create {PR_EXCEPTION}.make).raise
 					end
 				end
+				error := l_error
 			elseif l_amount = 0 then
 				close
-				bytes_sent := 0
-			else
-				bytes_sent := l_amount
 			end
 		ensure
-			not (attached error or was_timeout) implies
-				not is_connected or bytes_sent > 0
+			bytes_sent = -1 implies attached error
+			bytes_sent = 0 implies not is_connected
 		end
 
 	bytes_sent: INTEGER

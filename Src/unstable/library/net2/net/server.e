@@ -51,11 +51,6 @@ feature -- Status query
 			Result := socket.is_closed
 		end
 
-	was_timeout: BOOLEAN
-		do
-			Result := socket.was_timeout
-		end
-
 feature -- Status change
 	close
 		require
