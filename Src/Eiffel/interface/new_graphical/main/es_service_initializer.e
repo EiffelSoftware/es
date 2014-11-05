@@ -129,6 +129,7 @@ feature {NONE} -- Factory
 			if Result.is_interface_usable then
 				Result.register_tool (create {E2B_TOOL})
 				Result.register_tool (create {EBB_AUTOTEST_TOOL})
+				Result.register_tool (create {EBB_CA_TOOL})
 				create l_cluster_observer
 				l_cluster_observer.manager.extend (l_cluster_observer)
 			end
@@ -237,7 +238,7 @@ feature {NONE} -- Internationalization
 	lb_external_compilation: STRING = "External Compilation"
 
 ;note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
