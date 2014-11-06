@@ -5334,6 +5334,8 @@ Src/web/eiffel-lang.org/library/wikidocs/wikidocs-safe.ecf svneol=native#text/xm
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/eiffel_download/eiffel_download-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/eiffel_download/eiffel_download.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/modules/eiffel_lang_misc/eiffel_lang_misc-safe.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/modules/eiffel_lang_misc/eiffel_lang_misc.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/wiki_docs/wiki_docs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/wiki_docs/wiki_docs.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/themes/demo/css/all.css -text
