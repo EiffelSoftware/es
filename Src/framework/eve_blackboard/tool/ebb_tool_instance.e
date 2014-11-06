@@ -36,7 +36,7 @@ feature -- Access
 	input: attached EBB_TOOL_INPUT
 			-- Input associated with this instance.
 
-	status_message: detachable STRING
+	status_message: detachable READABLE_STRING_GENERAL
 			-- Status message of the tool.
 
 feature -- Status report
@@ -48,7 +48,7 @@ feature -- Status report
 
 feature -- Element change
 
-	set_status_message (a_string: STRING)
+	set_status_message (a_string: READABLE_STRING_GENERAL)
 			-- Set `status_message' to `a_string'.
 		do
 			status_message := a_string.twin

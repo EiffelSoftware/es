@@ -83,6 +83,7 @@ feature -- Fixing
 		        		-- Now compile again, which in all cases should succeed.
 		        	eiffel_project.quick_melt (True, True, True)
 
+		        	window_manager.last_focused_development_window.editors_manager.last_focused_editor.set_focus
 		        	-- After applying the fix, run the code analyzer again. We need to create a new CLASSC_STONE because of the recompilation.
 					if attached {CLASSC_STONE} l_helper.ca_command.ca_tool.panel.scope_label.pebble as l_stone then
 						l_helper.ca_command.execute_with_stone (create {CLASSC_STONE}.make (l_stone.e_class))
@@ -109,7 +110,6 @@ feature -- Fixing
 				fix.setup (ast, match_list, process_leading, true)
 				fix.execute (ast)
 
-				window_manager.refresh_all-- TODO Try me.
 				if not process_leading then
 					fix.process_all_break_as
 				end

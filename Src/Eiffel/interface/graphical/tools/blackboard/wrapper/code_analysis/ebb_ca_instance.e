@@ -33,10 +33,9 @@ feature -- Basic operations
 			create code_analyzer.make
 			across input.individual_classes as c loop code_analyzer.add_class (c.item.eiffel_class_c.original_class) end
 			across input.individual_features as f loop
-				code_analyzer.add_class (f.item.written_class.eiffel_class_c.original_class) -- TODO: Check if the class has already been added?
-																	 	 					 -- Not really possible though because either a class is selected or a single feature?
+				code_analyzer.add_class (f.item.written_class.eiffel_class_c.original_class)
 			end
-			--code_analyzer.add_output_action (agent set_status_message)  CatCall detected. expected TUPLE[STRING_8], but got TUPLE[STRING_32]
+			code_analyzer.add_output_action (agent set_status_message)
 			code_analyzer.add_completed_action (agent handle_analysis_results)
 			code_analyzer.analyze
 		end
