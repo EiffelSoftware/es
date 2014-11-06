@@ -161,6 +161,7 @@ feature -- Execution
 				options.set_bulk_verification_enabled (True)
 			elseif user_options.has ("-forked") then
 				options.set_bulk_verification_enabled (False)
+				options.set_max_parallel_boogies (option_argument ("-forked", options.max_parallel_boogies))
 			end
 			l_measure := user_options.has ("-measure")
 			l_html := user_options.has ("-html")

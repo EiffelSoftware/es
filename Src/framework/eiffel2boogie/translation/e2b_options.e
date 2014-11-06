@@ -44,6 +44,7 @@ feature {NONE} -- Initialization
 			is_generating_trivial_loop_variants := True
 
 			is_bulk_verification_enabled := True
+			max_parallel_boogies := 4
 
 			is_print_time := True
 		end
@@ -291,6 +292,15 @@ feature -- Other
 			-- Set `is_bulk_verification_enabled' to `a_value'.
 		do
 			is_bulk_verification_enabled := a_value
+		end
+
+	max_parallel_boogies: INTEGER
+			-- Maximum number of parallel Boogie instances.
+
+	set_max_parallel_boogies (a_value: INTEGER)
+			-- Set `max_parallel_boogies' to `a_value'.
+		do
+			max_parallel_boogies := a_value
 		end
 
 end
