@@ -104,6 +104,8 @@ def run_each(project_path):
       print Back.GREEN + Fore.GREEN + Style.BRIGHT + ': ok' + Style.RESET_ALL + ' (' +  '{0:0.2f}'.format(end - start) + ' sec)'
     else:
       print Back.RED + Fore.RED + Style.BRIGHT + ':OOPS' + Style.RESET_ALL + ' (' +  '{0:0.2f}'.format(end - start) + ' sec)'
+
+    time.sleep(10)
     
     outfile.write(open(tempfile_name).read())
     if os.path.isfile(tempfile_name):

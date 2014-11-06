@@ -48,7 +48,6 @@ feature -- Cursor movement
 			-- (Use reference equality.)
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			subjects_closed: across subjects as s all s.item.is_wrapped end
 			modify_model (["box"], Current)

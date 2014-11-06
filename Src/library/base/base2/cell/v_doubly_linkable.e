@@ -143,7 +143,7 @@ feature -- Specification
 	not_left (new_left: V_DOUBLY_LINKABLE [G]; o: ANY): BOOLEAN
 			-- Is `o' different from `left'?
 		note
-			status: functional
+			status: functional, ghost
 		do
 			Result := o /= left
 		end
@@ -151,7 +151,7 @@ feature -- Specification
 	not_right (new_right: V_DOUBLY_LINKABLE [G]; o: ANY): BOOLEAN
 			-- Is `o' different from `right'?
 		note
-			status: functional
+			status: functional, ghost
 		do
 			Result := o /= right
 		end

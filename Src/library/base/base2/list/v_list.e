@@ -97,7 +97,6 @@ feature -- Extension
 			-- Append sequence of values produced by `input'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			not_current: input /= Current
 			different_target: input.target /= Current
@@ -201,7 +200,6 @@ feature -- Removal
 			-- Remove the first occurrence of `v'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			has: sequence.has (v)
 			observers_open: across observers as o all o.item.is_open end
@@ -223,13 +221,12 @@ feature -- Removal
 			-- Remove all occurrences of `v'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "observers"], Current)
 		local
 			i: V_LIST_ITERATOR [G]
-			n: INTEGER
+			n_: INTEGER
 			b: like bag
 		do
 			from
@@ -241,9 +238,9 @@ feature -- Removal
 				1 <= i.index_ and i.index_ <= sequence.count + 1
 				not i.off implies i.item = v
 				not sequence.front (i.index_ - 1).has (v)
-				bag = bag.old_.removed_multiple (v, n)
-				bag [v] = bag.old_ [v] - n
-				n >= 0
+				bag = bag.old_.removed_multiple (v, n_)
+				bag [v] = bag.old_ [v] - n_
+				n_ >= 0
 				modify_model ("sequence", Current)
 				modify_model (["index_", "sequence"], i)
 			until
@@ -252,9 +249,9 @@ feature -- Removal
 				b := bag
 				i.remove
 				check i.inv_only ("target_bag_constraint", "sequence_definition") end
-				bag.old_.lemma_remove_multiple (v, n)
+				bag.old_.lemma_remove_multiple (v, n_)
 				i.search_forth (v)
-				n := n + 1
+				n_ := n_ + 1
 			variant
 				i.sequence.count - i.index_
 			end

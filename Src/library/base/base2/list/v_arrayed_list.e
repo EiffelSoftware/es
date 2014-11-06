@@ -72,7 +72,6 @@ feature -- Iteration
 			-- New iterator pointing at position `i'.
 		note
 			status: impure
-			explicit: wrapping
 		do
 			create Result.make (Current, i)
 			check Result.inv end

@@ -157,7 +157,6 @@ feature -- Cursor movement
 			-- Go to position `i'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			has_index: valid_index (i)
 			target_wrapped: target.is_wrapped
@@ -219,7 +218,6 @@ feature -- Cursor movement
 			-- (Use reference equality.)
 		note
 			status: dynamic
-			explicit: wrapping
 		do
 			check inv_only ("subjects_definition") end
 			if before then
@@ -252,7 +250,6 @@ feature -- Cursor movement
 			-- (Use reference equality.)
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			target_wrapped: target.is_wrapped
 			modify_model ("index_", Current)

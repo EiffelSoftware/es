@@ -238,7 +238,6 @@ feature -- Extension
 			-- Add all elements from `other'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: other.lock = lock
@@ -291,7 +290,6 @@ feature -- Removal
 			-- Otherwise do nothing.		
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			v_locked: lock.owns [v]
 			lock_wrapped: lock.is_wrapped
@@ -299,16 +297,14 @@ feature -- Removal
 			modify_model (["set", "observers"], Current)
 		local
 			it: V_SET_ITERATOR [G]
-			x: G
 		do
 			check inv_only ("registered", "set_non_void", "lock_non_current") end
 			check lock.inv_only ("owns_items", "sets_no_duplicates") end
 			it := at (v)
 			if not it.after then
-				x := it.sequence [it.index_]
+				v.lemma_transitive (it.sequence [it.index_], set / it.sequence [it.index_])
 				it.remove
 				check it.inv end
-				v.lemma_transitive (x, set)
 			end
 			check lock.inv_only ("owns_items", "sets_no_duplicates") end
 			forget_iterator (it)
@@ -323,7 +319,6 @@ feature -- Removal
 			-- Keep only elements that are also in `other'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
@@ -375,7 +370,6 @@ feature -- Removal
 			-- Remove elements that are in `other'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
@@ -427,7 +421,6 @@ feature -- Removal
 			-- Keep elements that are only in `Current' or only in `other'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock

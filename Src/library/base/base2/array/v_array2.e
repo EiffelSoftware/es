@@ -190,7 +190,6 @@ feature -- Iteration
 			-- New iterator pointing at flat position `i'.
 		note
 			status: impure
-			explicit: wrapping
 		do
 			check inv end
 			create Result.make (Current, i)

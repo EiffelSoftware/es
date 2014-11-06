@@ -696,7 +696,7 @@ feature -- Translation: Implementation
 			if options.is_ownership_enabled then
 					-- Public procedures unwrap Current in the beginning, unless lemma or marked with explicit wrapping
 				if not a_for_creator and helper.is_public (current_feature) and not a_feature.has_return_value and
-					not helper.is_explicit (current_feature, "wrapping") and not helper.is_lemma (a_feature) then
+					not helper.is_explicit (current_feature, "wrapping") and not helper.is_lemma (a_feature) and not helper.is_dynamic (a_feature) then
 					l_feature := system.any_type.base_class.feature_named_32 ("unwrap")
 					l_expr_translator.set_context_line_number (a_feature.body.start_location.line)
 
@@ -751,8 +751,8 @@ feature -- Translation: Implementation
 			end
 
 				-- OWNERSHIP: end of routine body
-			if options.is_ownership_enabled and not helper.is_lemma (a_feature) then
-				if not helper.is_explicit (current_feature, "wrapping") then
+			if options.is_ownership_enabled then
+				if not helper.is_explicit (current_feature, "wrapping") and not helper.is_lemma (a_feature) and not helper.is_dynamic (a_feature) then
 					if a_for_creator or helper.is_public (current_feature) and not a_feature.has_return_value then
 						l_feature := system.any_type.base_class.feature_named_32 ("wrap")
 						l_expr_translator.set_context_line_number (a_feature.body.end_location.line)

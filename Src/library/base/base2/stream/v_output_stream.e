@@ -41,7 +41,6 @@ feature -- Replacement
 			-- Copy values from `input' until either `Current' or `input' is `off'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			input_wrapped: input.is_wrapped
 			input_not_current: input /= Current
@@ -77,7 +76,6 @@ feature -- Replacement
 			-- Copy `n' elements from `input'; stop if either `Current' or `input' is `off'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			input_exists: input.is_wrapped
 			input_not_current: input /= Current

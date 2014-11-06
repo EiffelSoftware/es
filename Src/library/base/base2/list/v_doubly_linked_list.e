@@ -16,25 +16,12 @@ class
 inherit
 	V_LIST [G]
 		redefine
-			default_create,
 			first,
 			last,
 			is_equal_,
 			put,
 			prepend,
 			reverse
-		end
-
-feature {NONE} -- Initialization
-
-	default_create
-			-- Create an empty list.
-		note
-			status: creator
-		do
-		ensure then
-			sequence_effect: sequence.is_empty
-			observers_empty: observers.is_empty
 		end
 
 feature -- Initialization
@@ -92,7 +79,6 @@ feature -- Iteration
 			-- New iterator pointing at position `i'.
 		note
 			status: impure
-			explicit: wrapping
 		do
 			create Result.make (Current)
 			check Result.inv end
@@ -113,7 +99,7 @@ feature -- Comparison
 			-- (Use reference comparison.)
 		local
 			c1, c2: V_DOUBLY_LINKABLE [G]
-			i: INTEGER
+			i_: INTEGER
 		do
 			if other = Current then
 				Result := True
@@ -122,25 +108,25 @@ feature -- Comparison
 					Result := True
 					c1 := first_cell
 					c2 := other.first_cell
-					i := 1
+					i_ := 1
 				invariant
-					1 <= i and i <= sequence.count + 1
+					1 <= i_ and i_ <= sequence.count + 1
 					inv
 					other.inv
-					i <= sequence.count implies c1 = cells [i] and c2 = other.cells [i]
-					i = sequence.count + 1 implies c1 = Void and c2 = Void
+					i_ <= sequence.count implies c1 = cells [i_] and c2 = other.cells [i_]
+					i_ = sequence.count + 1 implies c1 = Void and c2 = Void
 					if Result
-						then across 1 |..| (i - 1) as k all sequence [k.item] = other.sequence [k.item] end
-						else sequence [i - 1] /= other.sequence [i - 1] end
+						then across 1 |..| (i_ - 1) as k all sequence [k.item] = other.sequence [k.item] end
+						else sequence [i_ - 1] /= other.sequence [i_ - 1] end
 				until
 					c1 = Void or not Result
 				loop
 					Result := c1.item = c2.item
 					c1 := c1.right
 					c2 := c2.right
-					i := i + 1
+					i_ := i_ + 1
 				variant
-					sequence.count - i
+					sequence.count - i_
 				end
 			end
 		end

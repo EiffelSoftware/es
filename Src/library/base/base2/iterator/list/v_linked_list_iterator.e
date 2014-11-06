@@ -434,7 +434,6 @@ feature {V_ITERATOR} -- Implementation
 			active_exists: active /= Void
 			closed: closed
 			target_closed: target.closed
-			reads (universe)
 		local
 			c: V_LINKABLE [G]
 		do

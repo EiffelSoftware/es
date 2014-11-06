@@ -47,7 +47,6 @@ feature -- Replacement
 			-- Swap values at positions `i1' and `i2'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			has_index_one: has_index (i1)
 			has_index_two: has_index (i2)
@@ -67,7 +66,6 @@ feature -- Replacement
 			-- Put `v' at positions [`l', `u'].
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			l_not_too_small: l >= lower_
 			u_not_too_large: u <= upper_
@@ -111,7 +109,6 @@ feature -- Replacement
 			-- Put default value at positions [`l', `u'].
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			l_not_too_small: l >= lower_
 			u_not_too_large: u <= upper_
@@ -132,7 +129,6 @@ feature -- Replacement
 			-- Copy items of `other' within bounds [`other_first', `other_last'] to current sequence starting at index `index'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			other_not_current: other /= Current
 			other_first_not_too_small: other_first >= other.lower_
@@ -192,7 +188,6 @@ feature -- Replacement
 			-- Reverse the order of elements.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence"], Current)

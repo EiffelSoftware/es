@@ -31,7 +31,7 @@ feature {NONE} -- Initialization
 			modify_field (["observers", "closed"], t)
 			modify (Current)
 		local
-			i: INTEGER
+			i_: INTEGER
 		do
 			target := t
 			t.unwrap
@@ -40,20 +40,20 @@ feature {NONE} -- Initialization
 			t.lemma_lists_domain (1)
 			list_iterator := t.buckets [1].new_cursor
 			from
-				i := 2
+				i_ := 2
 			invariant
-				2 <= i and i <= t.lists.count + 1
+				2 <= i_ and i_ <= t.lists.count + 1
 				across 1 |..| t.lists.count as j all t.lists [j.item].is_wrapped end
-				across 1 |..| (i - 1) as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ & list_iterator end
-				across i |..| t.lists.count as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ end
+				across 1 |..| (i_ - 1) as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ & list_iterator end
+				across i_ |..| t.lists.count as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ end
 				t.lock /= Void implies t.lock.tables [t] and t.lock.observers [t]
 				modify_field (["observers", "closed"], t.lists.range)
 			until
-				i > t.lists.count
+				i_ > t.lists.count
 			loop
-				t.lemma_lists_domain (i)
-				t.lists [i].add_iterator (list_iterator)
-				i := i + 1
+				t.lemma_lists_domain (i_)
+				t.lists [i_].add_iterator (list_iterator)
+				i_ := i_ + 1
 			end
 			t.wrap
 
@@ -121,6 +121,7 @@ feature -- Access
 			check list_iterator.inv_only ("sequence_definition", "subjects_definition") end
 			Result := list_iterator.item.right
 			lemma_single_out (target.buckets_, bucket_index)
+			use_definition (value_sequence_from (sequence, target.map))
 		end
 
 feature -- Measurement		
@@ -347,7 +348,7 @@ feature -- Removal
 			check target.buckets_.tail (bucket_index + 1) = (target.buckets_.old_).tail (bucket_index + 1) end
 			lemma_content (target.buckets_, target.map)
 			sequence := concat (target.buckets_)
-			value_sequence := target.map.sequence_image (sequence)
+			value_sequence := value_sequence_from (sequence, target.map)
 			check list_iterator.inv_only ("sequence_definition") end
 
 			if list_iterator.after then
@@ -620,6 +621,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 		do
 			use_definition (concat (bs))
 			use_definition (target.set_not_too_large (m.domain, bs))
+			use_definition (value_sequence_from (concat (bs), m))
+			use_definition (target.bag_from (m))
 			if not bs.is_empty then
 				check across 1 |..| (bs.count - 1) as i all bs [i.item] = bs.but_last [i.item] end end
 				use_definition (target.set_not_too_large (m.domain - bs.last.range, bs.but_last))
@@ -627,6 +630,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 				lemma_content (bs.but_last, m | (m.domain - bs.last.range))
 				bs.last.lemma_no_duplicates
 
+				use_definition (value_sequence_from (concat (bs.but_last), m | (m.domain - bs.last.range)))
+				use_definition (target.bag_from (m | (m.domain - bs.last.range)))
 				check (m | (m.domain - bs.last.range)).sequence_image (concat (bs.but_last)) = m.sequence_image (concat (bs.but_last)) end
 				check m.sequence_image (concat (bs)) = m.sequence_image (concat (bs.but_last)) + m.sequence_image (bs.last) end
 				check m = (m | (m.domain - bs.last.range)) + (m | bs.last.range) end
@@ -636,7 +641,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 			end
 		ensure
 			set_constraint: concat (bs).range = m.domain
-			m.sequence_image (concat (bs)).to_bag ~ m.to_bag
+			value_sequence_from (concat (bs), m).to_bag ~ target.bag_from (m)
 		end
 
 invariant

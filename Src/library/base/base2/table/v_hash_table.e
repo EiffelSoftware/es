@@ -73,6 +73,7 @@ feature -- Initialization
 				until
 					it.after
 				loop
+					use_definition (it.value_sequence_from (it.sequence, other.map))
 					simple_extend (it.item, it.key)
 					it.lemma_sequence_no_duplicates
 					it.forth
@@ -94,6 +95,7 @@ feature -- Measurement
 			-- Number of elements.
 		do
 			check inv_only ("count_definition", "bag_definition") end
+			use_definition (bag_from (map))
 			Result := count_
 		end
 
@@ -224,7 +226,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			check k.inv end
 			Result := bucket_index (k.hash_code, capacity)
 		ensure
-			definiton: Result = bucket_index (k.hash_code_, buckets.sequence.count)
+			definition: Result = bucket_index (k.hash_code_, buckets.sequence.count)
 		end
 
 	cell_for_key (k: K): V_LINKABLE [MML_PAIR [K, V]]
@@ -341,19 +343,19 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			modify_model ("map", Current)
 			modify_model (["index_", "sequence"], it.list_iterator)
 		local
-			idx, i: INTEGER
+			idx_, i_: INTEGER
 		do
 			unwrap
-			idx := it.bucket_index
-			i := it.list_iterator.index_
+			idx_ := it.bucket_index
+			i_ := it.list_iterator.index_
 			check it.list_iterator.inv_only ("subjects_definition", "A2", "sequence_definition") end
 
-			check lists [idx].observers = [it.list_iterator] end
+			check lists [idx_].observers = [it.list_iterator] end
 			it.list_iterator.remove
 
 			count_ := count_ - 1
-			map := map.removed ((buckets_ [idx]) [i])
-			buckets_ := buckets_.replaced_at (idx, buckets_ [idx].removed_at (i))
+			map := map.removed ((buckets_ [idx_]) [i_])
+			buckets_ := buckets_.replaced_at (idx_, buckets_ [idx_].removed_at (i_))
 			lemma_set_not_too_large
 			wrap
 		ensure
@@ -379,17 +381,17 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			modify_field (["map", "bag", "closed"], Current)
 			modify_model (["sequence", "box"], it.list_iterator)
 		local
-			idx, i: INTEGER
+			idx_, i_: INTEGER
 			x: K
 		do
 			unwrap
-			idx := it.bucket_index
-			i := it.list_iterator.index_
+			idx_ := it.bucket_index
+			i_ := it.list_iterator.index_
 			check it.list_iterator.inv_only ("subjects_definition", "A2", "sequence_definition") end
 			x := it.list_iterator.item.left
-			check x = (buckets_ [idx]) [i] end
+			check x = (buckets_ [idx_]) [i_] end
 
-			check lists [idx].observers = [it.list_iterator] end
+			check lists [idx_].observers = [it.list_iterator] end
 			it.list_iterator.put (create {MML_PAIR [K, V]}.make (x, v))
 
 			map := map.updated (x, v)
@@ -552,7 +554,7 @@ feature -- Specification
 	is_lock_ref (new: ANY; o: ANY): BOOLEAN
 			-- Is observer `o' the `lock' object? (Update guard)
 		note
-			status: functional
+			status: functional, ghost
 		do
 			Result := o = lock
 		end

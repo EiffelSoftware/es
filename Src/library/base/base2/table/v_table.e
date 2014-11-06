@@ -36,7 +36,6 @@ feature -- Replacement
 			-- Associate `v' with key `k'.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			lock_wrapped: lock.is_wrapped
 			v_locked: lock.owns [k]
@@ -78,7 +77,6 @@ feature -- Extension
 			-- Add `k' if not already present.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			k_locked: lock.owns [k]
 			lock_wrapped: lock.is_wrapped
@@ -109,7 +107,6 @@ feature -- Removal
 			-- Remove key `k' and its associated value.
 		note
 			status: dynamic
-			explicit: wrapping
 		require
 			v_locked: lock.owns [k]
 			has_key: domain_has (k)
@@ -118,16 +115,14 @@ feature -- Removal
 			modify_model (["map", "observers"], Current)
 		local
 			it: V_TABLE_ITERATOR [K, V]
-			x: K
 		do
 			check inv_only ("registered", "domain_non_void", "lock_non_current") end
 			check lock.inv_only ("owns_keys", "no_duplicates") end
 			it := at_key (k)
 			if not it.after then
-				x := it.sequence [it.index_]
+				k.lemma_transitive (it.sequence [it.index_], map.domain / it.sequence [it.index_])
 				it.remove
 				check it.inv end
-				k.lemma_transitive (x, map.domain)
 			end
 			check lock.inv_only ("owns_keys", "no_duplicates") end
 			forget_iterator (it)
