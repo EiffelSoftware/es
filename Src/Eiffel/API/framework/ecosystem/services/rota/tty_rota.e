@@ -58,6 +58,7 @@ feature {NONE} -- Implementation
 			until
 				l_tasks.is_empty
 			loop
+				min_sleep_time := {NATURAL_32}.max_value
 				proceed_all_tasks
 				if not l_tasks.is_empty and min_sleep_time > 0 then
 					l_int_64 := min_sleep_time.as_integer_64
@@ -71,7 +72,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
