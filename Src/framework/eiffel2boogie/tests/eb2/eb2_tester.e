@@ -9,10 +9,10 @@ feature -- Hash tables
 	test_hash_table
 			-- Test `V_HASH_TABLE'.
 		local
-			t1: V_HASH_TABLE [EB2_KEY, ANY]
+			t1: V_HASH_TABLE [EB2_KEY, B_BASIC]
 			i, j, k: EB2_KEY
-			lock: V_HASH_LOCK [EB2_KEY]
-			x, y: ANY
+			lock: V_HASH_LOCK [EB2_KEY, B_BASIC]
+			x, y: B_BASIC
 		do
 			create lock
 

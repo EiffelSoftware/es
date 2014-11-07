@@ -132,14 +132,14 @@ feature -- Removal
 			table.wipe_out
 		end
 
-feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
+feature -- Implementation
 
 	table: V_HASH_TABLE [G, ANY]
 			-- Hash table that stores set elements as keys.
 
 feature -- Specification
 
-	lock: V_HASH_LOCK [G]
+	lock: V_HASH_LOCK [G, ANY]
 			-- Helper object for keeping items consistent.
 		note
 			status: ghost
@@ -165,7 +165,7 @@ feature -- Specification
 
 feature {V_CONTAINER, V_ITERATOR, V_LOCK}
 
-	set_lock (l: V_HASH_LOCK [G])
+	set_lock (l: V_HASH_LOCK [G, ANY])
 			-- Set `lock' to `l'.
 		note
 			status: ghost, setter

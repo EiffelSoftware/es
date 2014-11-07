@@ -306,7 +306,11 @@ feature -- Basic operations
 						c.item.node_info.set_line (a_translator.context_line_number)
 						c.item.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
 						c.item.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
-						a_translator.add_independent_check (c.item)
+						if options.is_inv_check_independent then
+							a_translator.add_independent_check (c.item)
+						else	
+							a_translator.side_effect.extend (c.item)
+						end
 					end
 				else
 						-- Use dynamically bound invariant function.

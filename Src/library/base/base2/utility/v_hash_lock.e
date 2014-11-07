@@ -10,10 +10,10 @@ note
 	explicit: "all"
 
 frozen class
-	V_HASH_LOCK [G -> V_HASHABLE]
+	V_HASH_LOCK [K -> V_HASHABLE, V]
 
 inherit
-	V_LOCK [G]
+	V_LOCK [K, V]
 		redefine
 			sets,
 			tables
@@ -21,15 +21,15 @@ inherit
 
 feature -- Access	
 
-	sets: MML_SET [V_HASH_SET [G]]
+	sets: MML_SET [V_HASH_SET [K]]
 			-- Sets that might share elements owned by this lock.
 
-	tables: MML_SET [V_HASH_TABLE [G, ANY]]
+	tables: MML_SET [V_HASH_TABLE [K, V]]
 			-- Tables that might share elements owned by this lock.
 
 feature -- Basic operations
 
-	add_table (t: V_HASH_TABLE [G, ANY])
+	add_table (t: V_HASH_TABLE [K, V])
 			-- Add `t' to `tables'.
 		require
 			wrapped: is_wrapped
@@ -55,18 +55,19 @@ feature -- Basic operations
 			t_observers_effect: t.observers = [Current]
 		end
 
-	add_set (s: V_HASH_SET [G])
+	add_set (s: V_HASH_SET [K]; t: V_HASH_TABLE [K, V])
 			-- Add `s' to `sets'.
 		require
 			wrapped: is_wrapped
 			s_wrapped: s.is_wrapped
 			no_observers: s.observers.is_empty
 			empty_set: s.set.is_empty
+			valid_table: t = s.table
 			modify_field (["sets", "tables", "subjects", "observers", "closed"], Current)
 			modify_field (["lock", "subjects", "observers", "closed"], s)
 		do
 			s.unwrap
-			add_table (s.table)
+			add_table (t)
 			unwrap
 			s.set_lock (Current)
 			sets := sets & s

@@ -27,6 +27,7 @@ feature {NONE} -- Initialization
 			is_generating_triggers := False
 			is_triggering_on_arithmetic := False
 			is_arithmetic_extracted := False
+			is_inv_check_independent := True
 
 			is_ownership_enabled := True
 			is_ownership_defaults_enabled := True
@@ -218,6 +219,15 @@ feature -- Quantifiers
 			-- Set `is_arithmetic_extracted' to `a_value'.
 		do
 			is_arithmetic_extracted := a_value
+		end
+
+	is_inv_check_independent: BOOLEAN
+			-- Should each invariant clause be checked independently?
+
+	set_inv_check_independent (a_value: BOOLEAN)
+			-- Set `is_inv_check_independent' to `a_value'.
+		do
+			is_inv_check_independent := a_value
 		end
 
 feature -- Framing

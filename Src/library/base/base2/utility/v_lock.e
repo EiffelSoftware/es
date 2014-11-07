@@ -10,18 +10,18 @@ note
 	explicit: "all"
 
 class
-	V_LOCK [G]
+	V_LOCK [K, V]
 
 feature -- Access	
 
-	sets: MML_SET [V_SET [G]]
+	sets: MML_SET [V_SET [K]]
 			-- Sets that might share elements owned by this lock.
 		note
 			guard: in_sets
 		attribute
 		end
 
-	tables: MML_SET [V_MAP [G, ANY]]
+	tables: MML_SET [V_MAP [K, V]]
 			-- Tables that might share keys owned by this lock.
 		note
 			guard: in_tables
@@ -30,7 +30,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	lock (item: G)
+	lock (item: K)
 			-- Add `item' to `owns'.
 		note
 			status: setter
@@ -50,7 +50,7 @@ feature -- Basic operations
 			wrapped: is_wrapped
 		end
 
-	unlock (item: G)
+	unlock (item: K)
 			-- Remove `item' that is not in any of the `sets' from `owns'.
 		note
 			status: setter
@@ -78,7 +78,7 @@ feature -- Specification
 		note
 			status: functional, ghost
 		do
-			Result := new_sets [o] or attached {V_MAP [G, ANY]} o
+			Result := new_sets [o] or attached {V_MAP [K, V]} o
 		end
 
 	in_tables (new_tables: like observers; o: ANY): BOOLEAN
@@ -86,10 +86,10 @@ feature -- Specification
 		note
 			status: functional, ghost
 		do
-			Result := new_tables [o] or attached {V_SET [G]} o
+			Result := new_tables [o] or attached {V_SET [K]} o
 		end
 
-	set_has (s: MML_SET [G]; v: G): BOOLEAN
+	set_has (s: MML_SET [K]; v: K): BOOLEAN
 			-- Does `s' contain an element equal to `v' under object equality?
 		note
 			status: ghost, functional, dynamic
@@ -101,7 +101,7 @@ feature -- Specification
 			Result := across s as x some v.is_model_equal (x.item) end
 		end
 
-	set_item (set: MML_SET [G]; v: G): G
+	set_item (set: MML_SET [K]; v: K): K
 			-- Element of `set' that is equal to `v' under object equality.
 		note
 			status: ghost
@@ -111,7 +111,7 @@ feature -- Specification
 			set_non_void: set.non_void
 			reads (set, v)
 		local
-			s: MML_SET [G]
+			s: MML_SET [K]
 		do
 			from
 				s := set
@@ -133,7 +133,7 @@ feature -- Specification
 			equal_to_v: Result.is_model_equal (v)
 		end
 
-	no_duplicates (s: MML_SET [G]): BOOLEAN
+	no_duplicates (s: MML_SET [K]): BOOLEAN
 			-- Are all objects in `s' unique by value?
 		note
 			status: ghost, functional, dynamic

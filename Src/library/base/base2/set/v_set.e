@@ -496,7 +496,7 @@ feature -- Specification
 		attribute
 		end
 
-	lock: V_LOCK [G]
+	lock: V_LOCK [G, ANY]
 			-- Helper object for keeping items consistent.
 		note
 			status: ghost

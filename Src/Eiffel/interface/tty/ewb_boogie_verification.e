@@ -122,6 +122,11 @@ feature -- Execution
 			elseif user_options.has ("-noarithfresh") then
 				options.set_arithmetic_extracted (False)
 			end
+			if user_options.has ("-independent") then
+				options.set_inv_check_independent (True)
+			elseif user_options.has ("-noindependent") then
+				options.set_inv_check_independent (False)
+			end
 			if user_options.has ("-autounroll") then
 				options.set_automatic_loop_unrolling_enabled (True)
 			elseif user_options.has ("-noautounroll") then

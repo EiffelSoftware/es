@@ -536,7 +536,7 @@ feature -- Specification
 		attribute
 		end
 
-	lock: V_HASH_LOCK [K]
+	lock: V_HASH_LOCK [K, V]
 			-- Helper object for keeping items consistent.
 		note
 			status: ghost
@@ -685,7 +685,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Specification
 			not ownership_domain [lock]
 		end
 
-	set_lock (l: V_HASH_LOCK [K])
+	set_lock (l: V_HASH_LOCK [K, V])
 			-- Set `lock' to `l'.
 		note
 			status: ghost, setter
