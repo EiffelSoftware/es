@@ -299,7 +299,7 @@ feature -- Specification
 	is_model_equal (other: like Current): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
-			status: ghost, functional
+			status: ghost, functional, dynamic
 		do
 			Result := target = other.target and sequence ~ other.sequence and index_ = other.index_
 		end

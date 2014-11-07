@@ -76,7 +76,7 @@ feature -- Specification
 	in_sets (new_sets: like observers; o: ANY): BOOLEAN
 			-- Is `o' in `new_sets'? (Guard for `sets')
 		note
-			status: functional, ghost
+			status: functional, ghost, dynamic
 		do
 			Result := new_sets [o] or attached {V_MAP [K, V]} o
 		end
@@ -84,7 +84,7 @@ feature -- Specification
 	in_tables (new_tables: like observers; o: ANY): BOOLEAN
 			-- Is `o' in `new_tables'? (Guard for `tables')
 		note
-			status: functional, ghost
+			status: functional, ghost, dynamic
 		do
 			Result := new_tables [o] or attached {V_SET [K]} o
 		end
@@ -104,7 +104,7 @@ feature -- Specification
 	set_item (set: MML_SET [K]; v: K): K
 			-- Element of `set' that is equal to `v' under object equality.
 		note
-			status: ghost
+			status: ghost, dynamic
 		require
 			v_exists: v /= Void
 			v_in_set: set_has (set, v)

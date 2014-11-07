@@ -86,7 +86,7 @@ def run_each(project_path):
     '-project_path', project_path,
     '-boogie',	
     '-ownership',
-	'-forked 1',
+	# '-forked 1',
 	# '-noindependent'
 	]
     
@@ -108,8 +108,8 @@ def run_each(project_path):
     else:
       print Back.RED + Fore.RED + Style.BRIGHT + ':OOPS' + Style.RESET_ALL + ' (' +  '{0:0.2f}'.format(end - start) + ' sec)'
 
-    if c != classes[-1]:
-        time.sleep(10)
+    # if c != classes[-1]:
+        # time.sleep(10)
     
     outfile.write(open(tempfile_name).read())
     if os.path.isfile(tempfile_name):
