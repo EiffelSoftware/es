@@ -5434,6 +5434,7 @@ Src/web/support/db/tests/esa_api.log -text
 Src/web/support/db/tests/tests.ecf svneol=native#text/xml
 Src/web/support/db/tests/tests.rc -text
 benchmarks/scoop/Tests1-6.xls -text
+benchmarks/scoop/results/chart.ods -text
 benchmarks/scoop/results/linux-x86_64-2_xeon_e5420-old.csv -text
 benchmarks/scoop/results/linux-x86_64-2_xeon_e5420.csv -text
 benchmarks/scoop/results/windows-x86_64-1_i7_3720qm-old.csv eol=crlf
