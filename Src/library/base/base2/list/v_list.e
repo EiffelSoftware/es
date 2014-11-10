@@ -213,7 +213,10 @@ feature -- Removal
 			check i.inv_only ("target_bag_constraint", "sequence_definition") end
 			forget_iterator (i)
 		ensure
-			bag_effect: bag ~ old bag.removed (v)
+			sequence_effect: across 1 |..| sequence.count.old_ as j some
+					sequence.old_ [j.item] = v and
+					not sequence.old_.front (j.item - 1).has (v) and
+					sequence ~ sequence.old_.removed_at (j.item) end
 			observers_restored: observers ~ old observers
 		end
 
@@ -226,8 +229,7 @@ feature -- Removal
 			modify_model (["sequence", "observers"], Current)
 		local
 			i: V_LIST_ITERATOR [G]
-			n_: INTEGER
-			b: like bag
+			n_, j_: INTEGER
 		do
 			from
 				i := new_cursor
@@ -238,19 +240,26 @@ feature -- Removal
 				1 <= i.index_ and i.index_ <= sequence.count + 1
 				not i.off implies i.item = v
 				not sequence.front (i.index_ - 1).has (v)
-				bag = bag.old_.removed_multiple (v, n_)
-				bag [v] = bag.old_ [v] - n_
+				sequence.count + n_ = sequence.old_.count
+				sequence.front (i.index_ - 1) = removed_all (sequence.old_.front (i.index_ + n_ - 1), v)
+				across i.index_ |..| sequence.count as j all sequence [j.item] = sequence.old_[j.item + n_] end
 				n_ >= 0
 				modify_model ("sequence", Current)
 				modify_model (["index_", "sequence"], i)
 			until
 				i.after
 			loop
-				b := bag
+				use_definition (removed_all (sequence.old_.front (i.index_ + n_), v))
+				check sequence.old_.front (i.index_ + n_).but_last = sequence.old_.front (i.index_ + n_ - 1) end
 				i.remove
 				check i.inv_only ("target_bag_constraint", "sequence_definition") end
-				bag.old_.lemma_remove_multiple (v, n_)
+				j_ := i.index_
+
 				i.search_forth (v)
+
+				check sequence.old_.front (i.index_ + n_) = sequence.old_.front (j_ + n_) + sequence.old_.interval (j_ + n_ + 1, i.index_ + n_) end
+				check sequence.interval (j_, i.index_ - 1) = sequence.old_.interval (j_ + n_ + 1, i.index_ + n_) end
+				lemma_removed_all_concat (sequence.old_.front (j_ + n_), sequence.old_.interval (j_ + n_ + 1, i.index_ + n_), v)
 				n_ := n_ + 1
 			variant
 				i.sequence.count - i.index_
@@ -258,7 +267,7 @@ feature -- Removal
 			bag.old_.lemma_remove_all (v)
 			forget_iterator (i)
 		ensure
-			bag_effect: bag ~ old bag.removed_all (v)
+			sequence_effect: sequence ~ removed_all (old sequence, v)
 			observers_restored: observers ~ old observers
 		end
 
@@ -285,6 +294,37 @@ feature -- Specification
 			status: ghost, functional, dynamic
 		do
 			Result := sequence ~ other.sequence
+		end
+
+	removed_all (s: like sequence; x: G): like sequence
+			-- Sequence `s' with all occurrences of `x' removed.
+		note
+			status: ghost, functional, dynamic, opaque
+		require
+			reads ([])
+		do
+			Result := if s.is_empty then s else
+				if s.last = x then removed_all (s.but_last, x) else removed_all (s.but_last, x) & s.last end end
+		ensure
+			not Result.has (x)
+			not s.has (x) implies Result = s
+		end
+
+	lemma_removed_all_concat (s1, s2: like sequence; x: G)
+			-- `removed_all' ditributes over sequence concatenation.
+		note
+			status: lemma
+		do
+			use_definition (removed_all (s2, x))
+			if not s2.is_empty then
+				check (s1 + s2).but_last = s1 + s2.but_last end
+				lemma_removed_all_concat (s1, s2.but_last, x)
+				use_definition (removed_all (s1 + s2, x))
+			else
+				check s1 + s2 = s1 end
+			end
+		ensure
+			removed_all (s1 + s2, x) = removed_all (s1, x) + removed_all (s2, x)
 		end
 
 invariant
