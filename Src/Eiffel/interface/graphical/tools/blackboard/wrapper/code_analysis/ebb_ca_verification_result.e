@@ -8,15 +8,57 @@ class
 	EBB_CA_VERIFICATION_RESULT
 
 inherit
+	DOUBLE_MATH
+
 	EBB_VERIFICATION_RESULT
+		rename make as make_ end
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_feature: FEATURE_I; a_configuration: EBB_TOOL_CONFIGURATION; a_errors: INTEGER; a_warnings: INTEGER; a_hints: INTEGER)
+			-- Initialize result.
+		local
+			l_score, l_weight: REAL_64
+		do
+			errors := a_errors
+			warnings := a_warnings
+			hints := a_hints
+
+			if errors > 0 then
+				l_score := -1
+				l_weight := 1
+			else
+				l_score := 0 - a_warnings * 0.1
+
+				if l_score = 0 and a_hints = 0 then
+					l_weight := 0
+				else
+					l_weight := (1.0).min(sqrt(a_warnings / 10))
+				end
+			end
+
+			make_ (a_feature, a_configuration, l_score.truncated_to_real)
+
+			weight := l_weight.truncated_to_real
+		end
 
 feature -- Access
 
 	message: STRING
 		do
-			Result := "This is a code analysis result."
+			Result := "The analysis returned " + errors.out + " errors, " + warnings.out + " warnings and " + hints.out + " hints."
 		end
 
+	warnings: INTEGER
+
+	errors: INTEGER
+
+	hints: INTEGER
+
+invariant
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

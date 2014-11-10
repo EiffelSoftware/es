@@ -604,6 +604,11 @@ feature {NONE} -- Basic operations
 				if not l_viol.data.fixes.is_empty then
 					create l_text.make_with_text ("")
 					l_text.set_pixmap (stock_pixmaps.tool_diagram_icon)
+					l_text.set_background_color (colors.stock_colors.grey)
+					l_text.set_layout_procedure (agent (a_label: EV_GRID_LABEL_ITEM; a_layout: EV_GRID_LABEL_ITEM_LAYOUT)
+							do
+								a_layout.set_pixmap_x(a_label.width // 2 - a_label.pixmap.width // 2)
+							end)
 					l_text.pointer_button_release_actions.extend (agent show_fixes_context_menu (l_viol.data.fixes, a_row, ?, ?, ?, ?, ?, ?, ?, ?))
 					a_row.set_item(fix_column, l_text)
 				end

@@ -68,6 +68,11 @@ feature -- Basic operations
 			a_formatter.add_new_line
 		end
 
+	set_weight (a_weight: REAL)
+		do
+			weight := a_weight
+		end
+		
 invariant
 	score_in_range: has_score implies 0.0 <= score and score <= 1.0
 
