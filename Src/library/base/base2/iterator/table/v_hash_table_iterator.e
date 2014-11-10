@@ -368,8 +368,6 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 
 	go_to_other (other: like Current)
 			-- Move to the same position as `other'.
-		note
-			explicit: contracts
 		require
 			wrapped: is_wrapped
 			other_closed: other.closed
