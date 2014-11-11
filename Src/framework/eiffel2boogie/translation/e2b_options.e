@@ -28,6 +28,7 @@ feature {NONE} -- Initialization
 			is_triggering_on_arithmetic := False
 			is_arithmetic_extracted := False
 			is_inv_check_independent := True
+			is_ignoring_dynamic := False
 
 			is_ownership_enabled := True
 			is_ownership_defaults_enabled := True
@@ -45,7 +46,7 @@ feature {NONE} -- Initialization
 			is_generating_trivial_loop_variants := True
 
 			is_bulk_verification_enabled := True
-			max_parallel_boogies := 4
+			max_parallel_boogies := 3
 
 			is_print_time := True
 		end
@@ -228,6 +229,15 @@ feature -- Quantifiers
 			-- Set `is_inv_check_independent' to `a_value'.
 		do
 			is_inv_check_independent := a_value
+		end
+
+	is_ignoring_dynamic: BOOLEAN
+			-- Should the "dynamic" annotation be ignored?
+
+	set_ignoring_dynamic (a_value: BOOLEAN)
+			-- Set `is_ignoring_dynamic' to `a_value'.
+		do
+			is_ignoring_dynamic := a_value
 		end
 
 feature -- Framing

@@ -262,6 +262,15 @@ feature {NONE} -- Initialization
 			end
 			Result.extend (l_item)
 
+			create l_item.make_with_text_and_action ("Ignore dynamic annotations",
+				agent do
+					options.set_ignoring_dynamic (not options.is_ignoring_dynamic)
+				end)
+			if options.is_ignoring_dynamic then
+				l_item.toggle
+			end
+			Result.extend (l_item)
+
 			Result.extend (create {EV_MENU_SEPARATOR})
 
 --			create l_item.make_with_text_and_action ("Enable ownership",

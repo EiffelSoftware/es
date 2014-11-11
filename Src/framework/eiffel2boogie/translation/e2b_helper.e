@@ -210,7 +210,7 @@ feature -- Feature status helpers
 	is_dynamic (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' a dynamic feature (i.e. does not know the exact type of Current)?
 		do
-			Result := is_feature_status (a_feature, "dynamic")
+			Result := not options.is_ignoring_dynamic and then is_feature_status (a_feature, "dynamic")
 		end
 
 	is_functional (a_feature: FEATURE_I): BOOLEAN
