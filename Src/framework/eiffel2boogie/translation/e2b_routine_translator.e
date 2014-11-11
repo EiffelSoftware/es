@@ -1445,7 +1445,8 @@ feature {NONE} -- Implementation
 				until
 					Result or i > current_feature.assert_id_set.count
 				loop
-					Result := helper.is_functional (current_feature.assert_id_set [i].written_class.feature_of_body_index (current_feature.assert_id_set [i].body_index))
+					Result := not helper.is_same_class (current_feature.written_class, current_feature.assert_id_set [i].written_class) and
+						helper.is_functional (current_feature.assert_id_set [i].written_class.feature_of_body_index (current_feature.assert_id_set [i].body_index))
 					i := i + 1
 				end
 			end
