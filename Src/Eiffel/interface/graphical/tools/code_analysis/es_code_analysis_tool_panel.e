@@ -103,6 +103,7 @@ feature {NONE} -- Initialization
 			undo_button.set_pixel_buffer (stock_pixmaps.general_undo_icon_buffer)
 			undo_button.select_actions.extend (agent on_undo)
 			undo_button.set_text ("Undo Fix")
+			undo_button.disable_sensitive
 
 			update_button_titles
 

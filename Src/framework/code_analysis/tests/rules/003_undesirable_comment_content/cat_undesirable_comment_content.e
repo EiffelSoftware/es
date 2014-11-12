@@ -1,3 +1,6 @@
+note
+	ca_only: "CA037"
+
 class
 	CAT_UNDESIRABLE_COMMENT_CONTENT
 

@@ -98,6 +98,7 @@ feature {NONE} -- Initialization
 			create output_actions
 
 			create ignoredby.make (25)
+			create checked_only_by.make (25)
 			create library_class.make (25)
 			create nonlibrary_class.make (25)
 		end
@@ -360,11 +361,13 @@ feature {NONE} -- Implementation
 
 			Result := True
 
-			if ignoredby.has (l_affected_class)
-							and then (ignoredby.at (l_affected_class)).has (l_rule.id) then
+			if checked_only_by.at(l_affected_class).is_empty then
+				if  (ignoredby.at (l_affected_class)).has (l_rule.id) then
+					Result := False
+				end
+			elseif  not checked_only_by.at (l_affected_class).has (l_rule.id) then
 				Result := False
 			end
-
 			if (not l_rule.checks_library_classes) and then library_class.at (l_affected_class) then
 				Result := False
 			end
@@ -411,37 +414,41 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 			-- Extracts options from the indexing clause of class `a_class'.
 		local
 			l_ast: CLASS_AS
-			l_ignoredby: LINKED_LIST [STRING_32]
+			l_ignoredby, l_check_only: LINKED_LIST [STRING_32]
 		do
 			create l_ignoredby.make
-			l_ignoredby.compare_objects -- We want to compare the actual strings.
+			create l_check_only.make
+				-- We want to compare the actual strings.
+			l_ignoredby.compare_objects
+			l_check_only.compare_objects
 				-- Reset the class flags.
 			library_class.force (False, a_class)
 			nonlibrary_class.force (False, a_class)
 			l_ast := a_class.ast
 
 			if attached l_ast.internal_top_indexes as l_top then
-				search_indexing_tags (l_top, a_class, l_ignoredby)
+				search_indexing_tags (l_top, a_class, l_ignoredby, l_check_only)
 			end
 			if attached l_ast.internal_bottom_indexes as l_bottom then
-				search_indexing_tags (l_bottom, a_class, l_ignoredby)
+				search_indexing_tags (l_bottom, a_class, l_ignoredby, l_check_only)
 			end
 
 			ignoredby.force (l_ignoredby, a_class)
+			checked_only_by.force (l_check_only, a_class)
 		end
 
-	search_indexing_tags (a_clause: attached INDEXING_CLAUSE_AS; a_class: attached CLASS_C; a_ignoredby: attached LINKED_LIST [STRING_32])
+	search_indexing_tags (a_clause: attached INDEXING_CLAUSE_AS; a_class: attached CLASS_C; a_ignoredby, a_check_only: attached LINKED_LIST [STRING_32])
 			-- Searches `a_clause' for settings relevant to code analysis.
 		local
 			l_item: STRING_32
 		do
 			across a_clause as ic loop
 				if attached ic.item.tag as l_tag then
-					if l_tag.name_32.same_string_general ("ca_ignoredby") then
+					if l_tag.name_32.same_string_general ("ca_ignore") then
 							-- Class wants to ignore certain rules.
 						across ic.item.index_list as l_list loop
 							l_item := l_list.item.string_value_32
-							l_item.prune_all ('%"')
+							l_item.prune_all ('"')
 							a_ignoredby.extend (l_item)
 						end
 					elseif l_tag.name_32.is_equal ("ca_library") then
@@ -449,12 +456,19 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 						if not ic.item.index_list.is_empty then
 							l_item := ic.item.index_list.first.string_value_32
 							l_item.to_lower
-							l_item.prune_all ('%"')
+							l_item.prune_all ('"')
 							if l_item.is_equal ("true") then
 								library_class.force (True, a_class)
 							elseif l_item.is_equal ("false") then
 								nonlibrary_class.force (True, a_class)
 							end
+						end
+					elseif l_tag.name_32.is_equal ("ca_only") then
+							-- Class wants to check only certain rules.
+						across ic.item.index_list as l_list loop
+							l_item := l_list.item.string_value_32
+							l_item.prune_all ('"')
+							a_check_only.extend (l_item)
 						end
 					end
 				end
@@ -463,6 +477,10 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 
 	ignoredby: HASH_TABLE [LINKED_LIST [STRING_32], CLASS_C]
 			-- Maps classes to lists of rules (rule IDs) the class wants to be ignored by.
+
+	checked_only_by: HASH_TABLE [LINKED_LIST [STRING_32], CLASS_C]
+			-- Maps classes to lists of rules (rule IDs) the class wants to be checked by exclusively.
+
 
 	library_class, nonlibrary_class: HASH_TABLE [BOOLEAN, CLASS_C]
 			-- Stores classes that are marked as library or non-library classes.

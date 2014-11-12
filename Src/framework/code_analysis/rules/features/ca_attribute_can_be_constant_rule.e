@@ -93,17 +93,20 @@ feature {NONE} -- Feature Visitor for Violation Check
 						if not l_string_const.value_32.is_equal (l_stored.value_32) then
 							attributes.remove (l_key)
 						end
-					elseif attached {CONVERTED_EXPR_AS} a_assign.source as l_converted and then attached {REAL_AS} l_converted.expr as l_real_const and then attached {REAL_AS} l_attribute as l_stored then
+					elseif attached {CONVERTED_EXPR_AS} a_assign.source as l_converted and then attached {REAL_AS} l_converted.expr as l_real_const and attached {REAL_AS} l_attribute as l_stored then
 						if not l_real_const.value.is_equal (l_stored.value) then
 							attributes.remove (l_key)
 						end
 					end
 				else
-					-- This is the first assignment of this attribute, store the value.
+					-- This is the first assignment of this attribute, store the value, if it's a constant, otherwise remove the attribute.
 					if attached {ATOMIC_AS} a_assign.source as l_atomic then
 						attributes.replace (l_atomic, l_key)
 					elseif attached {CONVERTED_EXPR_AS} a_assign.source as l_converted and then attached {ATOMIC_AS} l_converted.expr as l_atomic then
 						attributes.replace (l_atomic, l_key)
+					else
+						-- The assignment source is not a constant value, hence we cannot make the attriute constant
+						attributes.remove (l_key)
 					end
 				end
 			end
@@ -115,7 +118,7 @@ feature {NONE} -- Feature Visitor for Violation Check
 		do
 			across attributes as l_key loop
 				if not unassigned_attributes.has (l_key.key) then
-					create_violation (current_context.checking_class.feature_with_name_32 (l_key.key), l_key.key)
+					create_violation (current_context.checking_class.feature_with_name_32 (l_key.key), l_key.item.string_value_32)
 				end
 			end
 
