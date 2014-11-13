@@ -35,7 +35,7 @@ feature {NONE} -- Initialization
 		do
 			fix := a_fix
 			ui_row := a_row
-
+			create helper
 				-- Call initialization of {ERF_CLASS_TEXT_MODIFICATION}.
 			make (fix.class_to_change.original_class)
 		end
@@ -48,16 +48,15 @@ feature {NONE} -- Implementation
 	ui_row: EV_GRID_ROW
 			-- The associated grid row of the GUI.
 
+	helper: ES_CODE_ANALYSIS_BENCH_HELPER
+
 feature -- Fixing
 
     apply_fix
             -- Make the changes.
 		local
 			l_dialog: ES_INFORMATION_PROMPT
-			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
         do
-        	create l_helper
-
         		-- Only continue fixing when there are no unsaved files.
         	if window_manager.has_modified_windows then
         		create l_dialog.make_standard ("You may not apply a fix when there are unsaved changes.")
@@ -70,26 +69,21 @@ feature -- Fixing
         		if eiffel_project.successful then
 					prepare
 
-					execute_fix (false)
+					execute_fix (False)
 
 		        	commit
 
 						-- Mark the fix as applied so that it may not be applied a second time. Then
 						-- color the rule violation entry in the GUI.
-					fix.set_applied
+					fix.set_applied (True)
 
-		        	ui_row.set_background_color (l_helper.ca_command.fixed_violation_bgcolor.value)
+						-- Register the undo action
+					helper.ca_command.ca_tool.panel.register_undo_action (agent undo_fix)
 
-		        		-- Now compile again, which in all cases should succeed.
-		        	eiffel_project.quick_melt (True, True, True)
+		        	ui_row.set_background_color (helper.ca_command.fixed_violation_bgcolor.value)
 
-		        	window_manager.last_focused_development_window.editors_manager.last_focused_editor.set_focus
-		        	-- After applying the fix, run the code analyzer again. We need to create a new CLASSC_STONE because of the recompilation.
-					if attached {CLASSC_STONE} l_helper.ca_command.ca_tool.panel.scope_label.pebble as l_stone then
-						l_helper.ca_command.execute_with_stone (create {CLASSC_STONE}.make (l_stone.e_class))
-					else
-						l_helper.ca_command.execute
-					end
+						-- After applying the fix, refresh the editor and analyze again.
+		        	refresh_and_analyze
 
 		        	window_manager.display_message ("Fixing rule violation succeeded.")
 		        else
@@ -98,6 +92,19 @@ feature -- Fixing
 		        end
 	        end
         end
+
+    refresh_and_analyze
+    	do
+				-- Refresh the editor window to show changes
+        	window_manager.last_focused_development_window.editors_manager.last_focused_editor.set_focus
+
+        		-- Run the code analyzer. We need to create a new CLASSC_STONE because of the recompilation.
+			if attached {CLASSC_STONE} helper.ca_command.ca_tool.panel.scope_label.pebble as l_stone then
+				helper.ca_command.execute_with_stone (create {CLASSC_STONE}.make (l_stone.e_class))
+			else
+				helper.ca_command.execute
+			end
+    	end
 
 	execute_fix (process_leading: BOOLEAN)
 			-- Execute `a_visitor' on this class, if we `process_leading' we process all nodes and process the `BREAK_AS' directly,
@@ -117,6 +124,24 @@ feature -- Fixing
 
 			rebuild_text
 			logger.refactoring_class (class_i)
+		end
+
+	undo_fix
+		require
+			fix_applied: is_fix_applied
+		local
+			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
+		do
+			undo
+			fix.set_applied (False)
+
+				-- After undoing the fix refresh the editor and analyze again.
+			refresh_and_analyze
+		end
+
+	is_fix_applied: BOOLEAN
+		do
+			Result := fix.applied
 		end
 
 note

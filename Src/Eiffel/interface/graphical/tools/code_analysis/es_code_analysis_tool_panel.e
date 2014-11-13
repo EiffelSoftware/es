@@ -44,6 +44,8 @@ feature {NONE} -- Initialization
 
 				-- We want the tool to synchronize with the event list, when first initialized.
 			is_event_list_synchronized_on_initialized := True
+
+			create undo_actions.make
 		end
 
 	on_after_initialized
@@ -455,7 +457,13 @@ feature {NONE} -- Events
 
 	on_undo
 		do
-			do_nothing
+			undo_actions.start
+			undo_actions.item.call (Void)
+			undo_actions.remove
+
+			if undo_actions.is_empty then
+				undo_button.disable_sensitive
+			end
 		end
 
 feature {NONE} -- Query
@@ -502,6 +510,14 @@ feature {NONE} -- Query
 			-- Does event `a_event_item' correspond to a "no issue" event?
 		do
 			Result := attached {CA_NO_ISSUES_EVENT} a_event_item
+		end
+
+feature -- Basic operations
+
+	register_undo_action (a_procedure: PROCEDURE[ANY, TUPLE])
+		do
+			undo_actions.put_front (a_procedure)
+			undo_button.enable_sensitive
 		end
 
 feature {NONE} -- Basic operations
@@ -634,7 +650,7 @@ feature {NONE} -- Basic operations
 				else -- No location attached.
 					create l_pos_token.make ("")
 				end
---					-- Create editor item.
+					-- Create editor item.
 				create l_line.make_unix_style
 				l_line.append_token (l_pos_token)
 				l_editor_item := create_clickable_grid_item (l_line, False)
@@ -758,9 +774,9 @@ feature {NONE} -- Basic operations
 							end)
 		end
 
+	undo_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE]]
+
 feature {NONE} -- Exception Info
-
-
 
 	raise_default_exception_dialog (a_empty_dialog: EV_DIALOG; an_exception: EXCEPTION)
 			-- Raises the exception dialog `a_empty_dialog' for `an_exception'.
