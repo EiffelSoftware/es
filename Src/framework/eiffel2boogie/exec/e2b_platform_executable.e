@@ -200,14 +200,22 @@ feature {NONE} -- Implementation
 				-- Launch Boogie
 			create l_ee
 			create l_process_factory
-			process := l_process_factory.process_launcher (boogie_executable, l_arguments, l_ee.current_working_directory)
+			if {PLATFORM}.is_windows then
+				process := l_process_factory.process_launcher (boogie_executable, l_arguments, l_ee.current_working_directory)
+				process.set_on_fail_launch_handler (agent handle_launch_failed (boogie_executable, l_arguments))
+			elseif {PLATFORM}.is_unix then
+				l_arguments.put_front (boogie_executable)
+				process := l_process_factory.process_launcher ("/usr/bin/mono", l_arguments, l_ee.current_working_directory)
+				process.set_on_fail_launch_handler (agent handle_launch_failed ("/usr/bin/mono " + boogie_executable, l_arguments))
+			else
+				check False end
+			end
 
 			process.enable_launch_in_new_process_group
 			create l_plain_text_file.make_open_write (boogie_output_file_name)
 			l_plain_text_file.close
 			process.redirect_output_to_file (boogie_output_file_name)
 			process.redirect_error_to_same_as_output
-			process.set_on_fail_launch_handler (agent handle_launch_failed (boogie_executable, l_arguments))
 			process.set_on_terminate_handler (agent handle_terminated)
 			process.set_on_exit_handler (agent handle_terminated)
 
