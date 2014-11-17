@@ -5330,6 +5330,8 @@ Src/web/eiffel-lang.org/ewf.ini -text
 Src/web/eiffel-lang.org/library/configuration/config-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/configuration/config.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/configuration/license.lic -text
+Src/web/eiffel-lang.org/library/configuration/tests/config_tests-safe.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/library/configuration/tests/config_tests.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/testing/testing-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/testing/testing.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs-safe.ecf svneol=native#text/xml
