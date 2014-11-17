@@ -154,7 +154,7 @@ feature -- Specification
 	bag_from (m: like map): like bag
 			-- Bag of values in `m'.
 		note
-			status: ghost, functional, opaque, nonvariant
+			status: ghost, functional, opaque, nonvariant, static
 		require
 			reads ([])
 		do

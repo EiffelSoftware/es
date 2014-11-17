@@ -15,8 +15,6 @@ feature {NONE} -- Initialization
 	default_create
 		note
 			status: creator
-		require else
-			modify (Current) -- default: creator
 		do
 			wrap -- default: creator
 		ensure then

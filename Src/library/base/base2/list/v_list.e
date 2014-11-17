@@ -299,7 +299,7 @@ feature -- Specification
 	removed_all (s: like sequence; x: G): like sequence
 			-- Sequence `s' with all occurrences of `x' removed.
 		note
-			status: ghost, functional, nonvariant, opaque
+			status: ghost, functional, nonvariant, static, opaque
 		require
 			reads ([])
 		do
@@ -313,7 +313,7 @@ feature -- Specification
 	lemma_removed_all_concat (s1, s2: like sequence; x: G)
 			-- `removed_all' distributes over sequence concatenation.
 		note
-			status: lemma
+			status: lemma, static
 		do
 			use_definition (removed_all (s2, x))
 			if not s2.is_empty then

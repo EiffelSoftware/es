@@ -9,12 +9,9 @@ inherit
 	A_MODELS
 		rename
 			x as xx,
-			y as yy,
-			bar_ok1 as bar_not_so_ok
+			y as yy
 		redefine
-			foo,
-			foo1,
-			suspicious
+			foo
 		end
 
 feature
@@ -27,8 +24,6 @@ feature
 	b: BOOLEAN
 
 	foo
-		require else
-			modify_model ("a", Current)
 		do
 			xx := 1
 			z := 1
@@ -37,29 +32,12 @@ feature
 			b := True -- Bad
 		end
 
-	foo1
-		require else
-			modify_model (["b"], Current)
-		do
-			xx := 1
-			z := 1
-			a := True
-			b := True
-		end
-
 	-- bar still fails as before
 	-- bar_ok still verifies becuase foo added model a, which replaces x
-	-- bar_not_so_ok now fails because its supplier foo1 now has a bigger frame
 
 	bad1
 		require
 			modify_model (["z"], Current) -- Bad: z is not a model
-		do
-		end
-
-	suspicious
-		require else
-			modify_model ("yy", Current) -- Bad: yy is outside of the parent's frame
 		do
 		end
 

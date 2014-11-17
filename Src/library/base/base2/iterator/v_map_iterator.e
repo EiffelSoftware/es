@@ -62,7 +62,7 @@ feature -- Specification
 	value_sequence_from (seq: like sequence; m: like target.map): MML_SEQUENCE [V]
 			-- Value sequnce for key sequence `seq' and target map `m'.			
 		note
-			status: ghost, functional, nonvariant, opaque
+			status: ghost, functional, nonvariant, opaque, static
 		require
 			in_domain: seq.range <= m.domain
 			reads ([])

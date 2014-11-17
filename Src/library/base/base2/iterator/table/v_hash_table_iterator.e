@@ -427,9 +427,7 @@ feature {NONE} -- Implementation
 				check target.inv end
 				Result := Result + target.buckets [i].count
 				check target.buckets_.interval (l, i).but_last = target.buckets_.interval (l, i - 1) end
-				check target.buckets_.interval (l, i).last = target.buckets_ [i] end
 				use_definition (concat (target.buckets_.interval (l, i)))
-				check concat (target.buckets_.interval (l, i)).count = concat (target.buckets_.interval (l, i - 1)).count + target.buckets_ [i].count end
 				i := i + 1
 			end
 		ensure

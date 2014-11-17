@@ -92,7 +92,7 @@ feature -- Specification
 	set_has (s: MML_SET [K]; v: K): BOOLEAN
 			-- Does `s' contain an element equal to `v' under object equality?
 		note
-			status: ghost, functional, nonvariant
+			status: ghost, functional, nonvariant, static
 		require
 			v_exists: v /= Void
 			set_non_void: s.non_void
@@ -104,7 +104,7 @@ feature -- Specification
 	set_item (set: MML_SET [K]; v: K): K
 			-- Element of `set' that is equal to `v' under object equality.
 		note
-			status: ghost, nonvariant
+			status: ghost, nonvariant, static
 		require
 			v_exists: v /= Void
 			v_in_set: set_has (set, v)
@@ -136,7 +136,7 @@ feature -- Specification
 	no_duplicates (s: MML_SET [K]): BOOLEAN
 			-- Are all objects in `s' unique by value?
 		note
-			status: ghost, functional, nonvariant
+			status: ghost, functional, nonvariant, static
 		require
 			non_void: s.non_void
 			reads (s)

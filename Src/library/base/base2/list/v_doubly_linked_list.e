@@ -732,7 +732,7 @@ feature {V_DOUBLY_LINKED_LIST, V_DOUBLY_LINKED_LIST_ITERATOR} -- Specificaton
 	is_linked (cs: like cells): BOOLEAN
 			-- Are adjacent cells of `cs' liked to each other?
 		note
-			status: ghost, functional
+			status: ghost, functional, static
 		require
 			cs.non_void
 			reads_field ("right", cs)

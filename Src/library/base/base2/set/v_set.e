@@ -536,7 +536,7 @@ feature -- Specification
 	bag_from (s: like set): like bag
 			-- A bag that contains all elements of `s' exactly once.
 		note
-			status: ghost, nonvariant
+			status: ghost, nonvariant, static
 			explicit: contracts
 		require
 			reads ([])

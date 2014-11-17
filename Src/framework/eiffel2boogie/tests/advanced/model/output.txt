@@ -1,7 +1,7 @@
 ======================================
 A_REMODELS.bad1
 AutoProof error.
-Line: 56. Validity: Feature 'z' is not a model attribute of class 'A_REMODELS'.
+Line: 41. Validity: Feature 'z' is not a model attribute of class 'A_REMODELS'.
 ======================================
 A_MODELS (invariant admissibility)
 Successfully verified.
@@ -12,23 +12,14 @@ Successfully verified.
 A_MODELS.foo
 Successfully verified.
 ======================================
-A_MODELS.foo1
-Successfully verified.
-======================================
 A_MODELS.bar
 Verification failed.
 
-Line: 36. Precondition frame_writable may be violated on call to foo.
+Line: 29. Precondition frame_writable may be violated on call to foo.
 --------------------------------------
-Line: 39. Target attribute may not be writable.
+Line: 32. Target attribute may not be writable.
 ======================================
 A_MODELS.bar_ok
-Successfully verified.
-======================================
-A_MODELS.bar_ok1
-Successfully verified.
-======================================
-A_MODELS.suspicious
 Successfully verified.
 ======================================
 A_REMODELS (invariant admissibility)
@@ -40,39 +31,17 @@ Successfully verified.
 A_MODELS.bar (inherited by A_REMODELS)
 Verification failed.
 
-Line: 36. Precondition frame_writable may be violated on call to foo.
+Line: 29. Precondition frame_writable may be violated on call to foo.
 --------------------------------------
-Line: 39. Target attribute may not be writable.
+Line: 32. Target attribute may not be writable.
 ======================================
 A_MODELS.bar_ok (inherited by A_REMODELS)
 Successfully verified.
 ======================================
-A_MODELS.bar_not_so_ok (inherited by A_REMODELS)
-Verification failed.
-
-Line: 65. Precondition frame_writable may be violated on call to foo1.
-======================================
 A_REMODELS.foo
 Verification failed.
 
-Line: 37. Target attribute may not be writable.
-======================================
-A_REMODELS.foo (frame)
-Successfully verified.
-======================================
-A_REMODELS.foo1
-Successfully verified.
-======================================
-A_REMODELS.foo1 (frame)
-Successfully verified.
-======================================
-A_REMODELS.suspicious
-Successfully verified.
-======================================
-A_REMODELS.suspicious (frame)
-Verification failed.
-
-The added write frame might not be a subset of the previous version suspicious.
+Line: 32. Target attribute may not be writable.
 ======================================
 A_REMODELS.new
 Successfully verified.

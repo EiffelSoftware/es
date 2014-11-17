@@ -640,7 +640,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Specificaton
 	is_linked (cs: like cells): BOOLEAN
 			-- Are adjacent cells of `cs' liked to each other?
 		note
-			status: ghost, functional
+			status: ghost, functional, static
 		require
 			cs.non_void
 			reads_field ("right", cs)

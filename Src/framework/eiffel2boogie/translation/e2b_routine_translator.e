@@ -716,12 +716,12 @@ feature -- Translation: Functions
 			if not current_feature.is_once then
 				l_function.add_argument ("heap", types.heap)
 				l_function0.add_argument ("heap", types.heap)
+				l_fcall.add_argument (factory.old_ (factory.global_heap))
 				if not helper.is_static (a_feature) then
 					l_function.add_argument ("current", types.ref)
 					l_function0.add_argument ("current", types.ref)
+					l_fcall.add_argument (factory.std_current)
 				end
-				l_fcall.add_argument (factory.old_ (factory.global_heap))
-				l_fcall.add_argument (factory.std_current)
 				across
 					arguments_of_current_feature as i
 				loop
@@ -750,7 +750,11 @@ feature -- Translation: Functions
 			l_translator.set_context (current_feature, current_type)
 			l_reads := read_expressions_of (contracts_of (current_feature, current_type).reads, l_translator).full_objects
 			if not current_feature.is_once and not (across l_reads as e some factory.universe.same_expression (e.item) end) then
-				generate_frame_axiom (l_function)
+				if helper.is_functional (current_feature) then
+					generate_frame_axiom (l_function, l_function0)
+				else
+					generate_frame_axiom (l_function, l_function)
+				end
 			end
 		end
 
@@ -1086,7 +1090,7 @@ feature {NONE} -- Translation: Functions
 			Result.entity_mapping.set_result (a_fcall)
 		end
 
-	generate_frame_axiom (a_function: IV_FUNCTION)
+	generate_frame_axiom (a_function, a_function0: IV_FUNCTION)
 			-- Generate a frame axiom for `a_function'.
 		local
 			l_old_heap, l_new_heap: IV_ENTITY
@@ -1101,9 +1105,9 @@ feature {NONE} -- Translation: Functions
 
 			create l_read_frame.make (name_translator.boogie_function_for_read_frame (current_feature, current_type), types.frame)
 			l_read_frame.add_argument (l_old_heap)
-			create l_old_call.make (a_function.name, a_function.type)
+			create l_old_call.make (a_function0.name, a_function0.type)
 			l_old_call.add_argument (l_old_heap)
-			create l_new_call.make (a_function.name, a_function.type)
+			create l_new_call.make (a_function0.name, a_function0.type)
 			l_new_call.add_argument (l_new_heap)
 			create l_old_pre.make (name_translator.boogie_function_precondition (a_function.name), types.bool)
 			l_old_pre.add_argument (l_old_heap)
@@ -1124,7 +1128,7 @@ feature {NONE} -- Translation: Functions
 			l_forall.add_bound_variable (l_old_heap)
 			l_forall.add_bound_variable (l_new_heap)
 			across
-				a_function.arguments as args
+				a_function0.arguments as args
 			loop
 				if not args.is_first then
 					l_arg := args.item.entity

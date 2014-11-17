@@ -40,3 +40,11 @@ A_FUNCTIONAL.caller2
 Verification failed.
 
 Line: 86. Precondition may be violated on invocation of functional4.
+======================================
+A_FUNCTIONAL.factorial
+Successfully verified.
+======================================
+A_FUNCTIONAL.factorial_client
+Verification failed.
+
+Line: 103. Check may be violated (untagged).
