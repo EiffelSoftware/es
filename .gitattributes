@@ -1,7 +1,10 @@
 * text=auto !eol
+ejson/current/doc/user_guide.mediawiki -text
 ejson/current/library/json-safe.ecf -text svneol=native#application/xml
 ejson/current/library/json.ecf -text svneol=native#application/xml
 ejson/current/library/json_gobo_extension.ecf -text svneol=native#application/xml
+ejson/current/library/license.lic -text
+ejson/current/package.iron -text
 ejson/current/test/autotest/test_suite/test_suite-safe.ecf -text svneol=native#application/xml
 ejson/current/test/autotest/test_suite/test_suite.ecf -text svneol=native#application/xml
 ejson/v0.3.0/History.txt -text
