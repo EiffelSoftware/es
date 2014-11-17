@@ -36,7 +36,7 @@ feature -- Status report
 	is_empty: BOOLEAN
 			-- Is container empty?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := count = 0
@@ -72,7 +72,7 @@ feature -- Search
 			-- How many times is `v' contained?
 			-- (Uses reference equality.)
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		do
 			if has_exactly (v) then
 				Result := 1
@@ -113,7 +113,7 @@ feature -- Comparison
 			-- Does `other' have all elements of `Current'?
 			-- (Uses object equality.)
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: other.lock = lock
@@ -158,7 +158,7 @@ feature -- Comparison
 			-- Does `Current' have all elements of `other'?
 			-- (Uses object equality..)
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: other.lock = lock
@@ -175,7 +175,7 @@ feature -- Comparison
 			-- Do no elements of `other' occur in `Current'?
 			-- (Uses object equality.)
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: other.lock = lock
@@ -237,7 +237,7 @@ feature -- Extension
 	join (other: V_SET [G])
 			-- Add all elements from `other'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: other.lock = lock
@@ -289,7 +289,7 @@ feature -- Removal
 			-- Remove `v' from the set, if contained.
 			-- Otherwise do nothing.		
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			v_locked: lock.owns [v]
 			lock_wrapped: lock.is_wrapped
@@ -318,7 +318,7 @@ feature -- Removal
 	meet (other: V_SET [G])
 			-- Keep only elements that are also in `other'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
@@ -369,7 +369,7 @@ feature -- Removal
 	subtract (other: V_SET [G])
 			-- Remove elements that are in `other'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
@@ -420,7 +420,7 @@ feature -- Removal
 	symmetric_subtract (other: V_SET [G])
 			-- Keep elements that are only in `Current' or only in `other'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
@@ -507,7 +507,7 @@ feature -- Specification
 	set_has (v: G): BOOLEAN
 			-- Does `set' contain an element equal to `v' under object equality?
 		note
-			status: ghost, functional, dynamic
+			status: ghost, functional, nonvariant
 		require
 			lock_exists: lock /= Void
 			v_exists: v /= Void
@@ -521,7 +521,7 @@ feature -- Specification
 	set_item (v: G): G
 			-- Element of `set' that is equal to `v' under object equality.
 		note
-			status: ghost, functional, dynamic
+			status: ghost, functional, nonvariant
 		require
 			lock_exists: lock /= Void
 			v_exists: v /= Void
@@ -536,7 +536,7 @@ feature -- Specification
 	bag_from (s: like set): like bag
 			-- A bag that contains all elements of `s' exactly once.
 		note
-			status: ghost, dynamic
+			status: ghost, nonvariant
 			explicit: contracts
 		require
 			reads ([])
@@ -568,7 +568,7 @@ feature -- Specification
 	is_model_equal (other: like Current): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
-			status: ghost, functional, dynamic
+			status: ghost, functional, nonvariant
 		do
 			Result := set ~ other.set
 		end

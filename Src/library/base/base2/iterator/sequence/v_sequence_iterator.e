@@ -19,7 +19,7 @@ feature -- Access
 	target_index: INTEGER
 			-- Target index at current position.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			target_closed: target.closed
 			not_off: not off

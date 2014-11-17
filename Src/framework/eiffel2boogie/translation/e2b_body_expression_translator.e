@@ -297,9 +297,11 @@ feature -- Translation
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 			if a_feature.has_return_value and helper.is_functional (a_feature) then
 				check not a_for_creator end
-				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_class_type (feature_class_type (a_feature)))
+				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type, False), types.for_class_type (feature_class_type (a_feature)))
 				l_fcall.add_argument (entity_mapping.heap)
-				l_fcall.add_argument (current_target)
+				if not helper.is_static (a_feature) then
+					l_fcall.add_argument (current_target)
+				end
 				process_parameters (a_parameters)
 				l_fcall.arguments.append (last_parameters)
 
@@ -315,7 +317,7 @@ feature -- Translation
 				last_expression := l_fcall
 			elseif helper.has_functional_representation (a_feature) and a_feature.is_once then
 					-- Once function: translate as a constant
-				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_class_type (feature_class_type (a_feature)))
+				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type, False), types.for_class_type (feature_class_type (a_feature)))
 				last_expression := l_fcall
 			else
 				if helper.is_setter (context_feature) and
@@ -343,7 +345,9 @@ feature -- Translation
 				l_pcall.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
 				check system.class_of_id (current_target_type.base_class.class_id).feature_of_rout_id (a_feature.rout_id_set.first).feature_name_id = a_feature.feature_name_id end
 
-				l_pcall.add_argument (current_target)
+				if not helper.is_static (a_feature) then
+					l_pcall.add_argument (current_target)
+				end
 				process_parameters (a_parameters)
 				l_pcall.arguments.append (last_parameters)
 
@@ -373,7 +377,9 @@ feature -- Translation
 			l_call: IV_PROCEDURE_CALL
 		do
 			create l_call.make (a_builtin_name)
-			l_call.add_argument (current_target)
+			if not helper.is_static (a_feature) then
+				l_call.add_argument (current_target)
+			end
 
 			process_parameters (a_parameters)
 			l_call.arguments.append (last_parameters)
@@ -403,7 +409,9 @@ feature -- Translation
 		do
 			create l_call.make (a_builtin_name, types.for_class_type (feature_class_type (a_feature)))
 			l_call.add_argument (entity_mapping.heap)
-			l_call.add_argument (current_target)
+			if not helper.is_static (a_feature) then
+				l_call.add_argument (current_target)
+			end
 
 			process_parameters (a_parameters)
 			l_call.arguments.append (last_parameters)
@@ -502,7 +510,9 @@ feature -- Translation
 			if local_writable /= Void and not helper.is_lemma (a_feature) then
 				create l_fcall.make (name_translator.boogie_function_for_write_frame (a_feature, current_target_type), types.frame)
 				l_fcall.add_argument (entity_mapping.heap)
-				l_fcall.add_argument (current_target)
+				if not helper.is_static (a_feature) then
+					l_fcall.add_argument (current_target)
+				end
 				l_fcall.arguments.append (last_parameters)
 				add_safety_check (factory.function_call ("Frame#Subset", <<l_fcall, local_writable>>, types.bool),
 					"check", "frame_writable", context_line_number)

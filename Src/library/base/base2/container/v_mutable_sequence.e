@@ -46,7 +46,7 @@ feature -- Replacement
 	swap (i1, i2: INTEGER)
 			-- Swap values at positions `i1' and `i2'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			has_index_one: has_index (i1)
 			has_index_two: has_index (i2)
@@ -65,7 +65,7 @@ feature -- Replacement
 	fill (v: G; l, u: INTEGER)
 			-- Put `v' at positions [`l', `u'].
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			l_not_too_small: l >= lower_
 			u_not_too_large: u <= upper_
@@ -108,7 +108,7 @@ feature -- Replacement
 	clear (l, u: INTEGER)
 			-- Put default value at positions [`l', `u'].
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			l_not_too_small: l >= lower_
 			u_not_too_large: u <= upper_
@@ -128,7 +128,7 @@ feature -- Replacement
 	copy_range (other: V_SEQUENCE [G]; other_first, other_last, index: INTEGER)
 			-- Copy items of `other' within bounds [`other_first', `other_last'] to current sequence starting at index `index'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			other_not_current: other /= Current
 			other_first_not_too_small: other_first >= other.lower_
@@ -187,7 +187,7 @@ feature -- Replacement
 	reverse
 			-- Reverse the order of elements.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence"], Current)

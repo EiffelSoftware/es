@@ -33,7 +33,7 @@ feature -- Measurement
 	lower: INTEGER
 			-- Lower bound of index interval.
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv_only ("lower_definition") end
 			Result := 1
@@ -42,7 +42,7 @@ feature -- Measurement
 	count: INTEGER
 			-- Number of elements.
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv_only ("count_definition", "bag_definition") end
 			Result := count_
@@ -96,7 +96,7 @@ feature -- Extension
 	append (input: V_ITERATOR [G])
 			-- Append sequence of values produced by `input'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			not_current: input /= Current
 			different_target: input.target /= Current
@@ -199,7 +199,7 @@ feature -- Removal
 	remove (v: G)
 			-- Remove the first occurrence of `v'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			has: sequence.has (v)
 			observers_open: across observers as o all o.item.is_open end
@@ -223,7 +223,7 @@ feature -- Removal
 	remove_all (v: G)
 			-- Remove all occurrences of `v'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "observers"], Current)
@@ -291,7 +291,7 @@ feature -- Specification
 	is_model_equal (other: like Current): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
-			status: ghost, functional, dynamic
+			status: ghost, functional, nonvariant
 		do
 			Result := sequence ~ other.sequence
 		end
@@ -299,7 +299,7 @@ feature -- Specification
 	removed_all (s: like sequence; x: G): like sequence
 			-- Sequence `s' with all occurrences of `x' removed.
 		note
-			status: ghost, functional, dynamic, opaque
+			status: ghost, functional, nonvariant, opaque
 		require
 			reads ([])
 		do
@@ -311,7 +311,7 @@ feature -- Specification
 		end
 
 	lemma_removed_all_concat (s1, s2: like sequence; x: G)
-			-- `removed_all' ditributes over sequence concatenation.
+			-- `removed_all' distributes over sequence concatenation.
 		note
 			status: lemma
 		do

@@ -356,10 +356,10 @@ feature -- Basic operations
 	use_static_invariant (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR): BOOLEAN
 			-- Should the static definition of the ivnariant be used for the current target of `a_translator'?
 		do
-				-- Yes if the current target is "Current" and the context feature is not marked as dynamic,
+				-- Yes if the current target is "Current" and the context feature is not marked as nonvariant,
 				-- or the type of the target is exact.
 			Result := (a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) and
-				not helper.is_dynamic (a_translator.context_feature)) or
+				not helper.is_nonvariant (a_translator.context_feature)) or
 				helper.is_type_exact (a_translator.current_target_type, a_translator.current_target_type, a_translator.context_feature)
 		end
 

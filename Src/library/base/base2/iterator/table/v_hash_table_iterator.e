@@ -396,8 +396,6 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			index_ := other.index_
 
 			check other.inv_only ("index_before", "index_after", "index_constraint", "sequence_implementation", "value_sequence_definition") end
-			lemma_static (other, target.buckets_)
-			lemma_static (other, target.buckets_.front (bucket_index - 1))
 			wrap
 		ensure
 			is_wrapped
@@ -428,9 +426,10 @@ feature {NONE} -- Implementation
 			loop
 				check target.inv end
 				Result := Result + target.buckets [i].count
-				use_definition (concat (target.buckets_.interval (l, i)))
 				check target.buckets_.interval (l, i).but_last = target.buckets_.interval (l, i - 1) end
 				check target.buckets_.interval (l, i).last = target.buckets_ [i] end
+				use_definition (concat (target.buckets_.interval (l, i)))
+				check concat (target.buckets_.interval (l, i)).count = concat (target.buckets_.interval (l, i - 1)).count + target.buckets_ [i].count end
 				i := i + 1
 			end
 		ensure
@@ -533,7 +532,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 	concat (seqs: like target.buckets_): MML_SEQUENCE [K]
 			-- All sequences in `seqs' concatenated together.
 		note
-			status: functional, ghost, opaque
+			status: functional, ghost, static, opaque
 		require
 			reads ([])
 		do
@@ -543,7 +542,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 	lemma_append (a, b: like target.buckets_)
 			-- Lemma: `concat' distributes over append.
 		note
-			status: lemma
+			status: lemma, static
 		do
 			use_definition (concat (b))
 			if b.is_empty then
@@ -560,7 +559,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 	lemma_single_out (seqs: like target.buckets_; i: INTEGER)
 			-- Lemma that singles out `seqs [i]' from `concat (seqs)'.
 		note
-			status: lemma
+			status: lemma, static
 		require
 			i_in_bounds: 1 <= i and i <= seqs.count
 		do
@@ -575,7 +574,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 	lemma_empty (seqs: like target.buckets_)
 			-- Lemma: `concat' of empty sequences is an empty sequence.
 		note
-			status: lemma
+			status: lemma, static
 		require
 			all_empty: across 1 |..| seqs.count as i all seqs [i.item].is_empty end
 		do
@@ -585,22 +584,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 			end
 		ensure
 			concat (seqs).is_empty
-		end
-
-	lemma_static (other: like Current; seqs: like target.buckets_)
-			-- `concat' does not depend on the target (TODO; static features).
-		note
-			status: lemma
-		require
-			other_exists: other /= Void
-		do
-			use_definition (concat (seqs))
-			use_definition (other.concat (seqs))
-			if seqs.count > 0 then
-				lemma_static (other, seqs.but_last)
-			end
-		ensure
-			concat (seqs) = other.concat (seqs)
 		end
 
 	lemma_content (bs: like target.buckets_; m: like target.map)

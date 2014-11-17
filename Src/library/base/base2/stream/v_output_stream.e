@@ -40,7 +40,7 @@ feature -- Replacement
 	pipe (input: V_INPUT_STREAM [G])
 			-- Copy values from `input' until either `Current' or `input' is `off'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			input_wrapped: input.is_wrapped
 			input_not_current: input /= Current
@@ -75,7 +75,7 @@ feature -- Replacement
 	pipe_n (input: V_INPUT_STREAM [G]; n: INTEGER)
 			-- Copy `n' elements from `input'; stop if either `Current' or `input' is `off'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			input_exists: input.is_wrapped
 			input_not_current: input /= Current

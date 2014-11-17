@@ -31,7 +31,7 @@ feature -- Access
 	first: G
 			-- First element.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			not_empty: not is_empty
 		do
@@ -44,7 +44,7 @@ feature -- Access
 	last: G
 			-- Last element.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			not_empty: not is_empty
 		do
@@ -66,7 +66,7 @@ feature -- Measurement
 	upper: INTEGER
 			-- Upper bound of index interval.
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := lower + count - 1
@@ -84,7 +84,7 @@ feature -- Measurement
 	has_index (i: INTEGER): BOOLEAN
 			-- Is any value associated with `i'?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := lower <= i and i <= upper
@@ -97,7 +97,7 @@ feature -- Status report
 	is_empty: BOOLEAN
 			-- Is container empty?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			Result := count = 0
 		ensure then
@@ -110,7 +110,7 @@ feature -- Search
 			-- Index of the first occurrence of `v';
 			-- out of range, if `v' does not occur.			
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		require
 			modify_model (["observers"], Current)
 		do
@@ -132,7 +132,7 @@ feature -- Search
 			-- Index of the first occurrence of `v' starting from position `i';
 			-- out of range, if `v' does not occur.
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		require
 			has_index: has_index (i)
 			modify_model (["observers"], Current)
@@ -159,7 +159,7 @@ feature -- Iteration
 	new_cursor: like at
 			-- New iterator pointing to the first position.
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		do
 			Result := at (lower)
 		end
@@ -167,7 +167,7 @@ feature -- Iteration
 	at_last: like at
 			-- New iterator pointing to the last position.
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		require
 			modify_field (["observers", "closed"], Current)
 		do
@@ -218,7 +218,7 @@ feature -- Specification
 	upper_: INTEGER
 			-- Upper bound of index interval.
 		note
-			status: functional, ghost, dynamic
+			status: functional, ghost, nonvariant
 		do
 			Result := lower_ + sequence.count - 1
 		end
@@ -226,7 +226,7 @@ feature -- Specification
 	idx (i: INTEGER): INTEGER
 			-- Sequence index of position `i'.
 		note
-			status: ghost, functional, dynamic
+			status: ghost, functional, nonvariant
 		do
 			Result := i - lower_ + 1
 		end

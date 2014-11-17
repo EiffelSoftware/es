@@ -35,7 +35,7 @@ feature -- Replacement
 	put (v: V; k: K)
 			-- Associate `v' with key `k'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			lock_wrapped: lock.is_wrapped
 			v_locked: lock.owns [k]
@@ -76,7 +76,7 @@ feature -- Extension
 			-- Make sure that `k' is associated with `v'.
 			-- Add `k' if not already present.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			k_locked: lock.owns [k]
 			lock_wrapped: lock.is_wrapped
@@ -106,7 +106,7 @@ feature -- Removal
 	remove (k: K)
 			-- Remove key `k' and its associated value.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			v_locked: lock.owns [k]
 			has_key: domain_has (k)

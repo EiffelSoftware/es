@@ -262,11 +262,11 @@ feature {NONE} -- Initialization
 			end
 			Result.extend (l_item)
 
-			create l_item.make_with_text_and_action ("Ignore dynamic annotations",
+			create l_item.make_with_text_and_action ("Ignore nonvariant annotations",
 				agent do
-					options.set_ignoring_dynamic (not options.is_ignoring_dynamic)
+					options.set_ignoring_nonvariant (not options.is_ignoring_nonvariant)
 				end)
-			if options.is_ignoring_dynamic then
+			if options.is_ignoring_nonvariant then
 				l_item.toggle
 			end
 			Result.extend (l_item)

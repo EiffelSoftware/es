@@ -127,10 +127,10 @@ feature -- Execution
 			elseif user_options.has ("-noindependent") then
 				options.set_inv_check_independent (False)
 			end
-			if user_options.has ("-dynamic") then
-				options.set_ignoring_dynamic (False)
-			elseif user_options.has ("-nodynamic") then
-				options.set_ignoring_dynamic (True)
+			if user_options.has ("-nonvariant") then
+				options.set_ignoring_nonvariant (False)
+			elseif user_options.has ("-nononvariant") then
+				options.set_ignoring_nonvariant (True)
 			end
 			if user_options.has ("-autounroll") then
 				options.set_automatic_loop_unrolling_enabled (True)

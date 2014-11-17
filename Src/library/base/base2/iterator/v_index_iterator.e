@@ -20,7 +20,7 @@ feature -- Access
 	item: G
 			-- Item at current position.
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := target [target.lower + index - 1]
@@ -36,7 +36,7 @@ feature -- Status report
 	before: BOOLEAN
 			-- Is current position before any position in `target'?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := index = 0
@@ -45,7 +45,7 @@ feature -- Status report
 	after: BOOLEAN
 			-- Is current position after any position in `target'?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := index = target.count + 1
@@ -54,7 +54,7 @@ feature -- Status report
 	is_first: BOOLEAN
 			-- Is cursor at the first position?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := not target.is_empty and index = 1
@@ -63,7 +63,7 @@ feature -- Status report
 	is_last: BOOLEAN
 			-- Is cursor at the last position?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := not target.is_empty and index = target.count
@@ -74,7 +74,7 @@ feature -- Comparison
 	is_equal_ (other: like Current): BOOLEAN
 			-- Is iterator traversing the same container and is at the same position at `other'?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv; other.inv end
 			Result := target = other.target and index = other.index

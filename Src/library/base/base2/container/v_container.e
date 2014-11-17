@@ -28,7 +28,7 @@ feature -- Status report
 	is_empty: BOOLEAN
 			-- Is container empty?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			Result := count = 0
 		ensure
@@ -41,7 +41,7 @@ feature -- Search
 			-- Is value `v' contained?
 			-- (Uses reference equality.)
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		require
 			modify_model ("observers", Current)
 		local
@@ -60,7 +60,7 @@ feature -- Search
 			-- How many times is value `v' contained?
 			-- (Uses reference equality.)
 		note
-			status: impure, dynamic
+			status: impure, nonvariant
 		require
 			modify_model ("observers", Current)
 		local

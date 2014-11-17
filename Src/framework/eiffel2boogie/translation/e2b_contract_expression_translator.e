@@ -138,7 +138,9 @@ feature -- Translation
 			check a_feature.has_return_value end
 
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
-			l_name := name_translator.boogie_function_for_feature (a_feature, current_target_type)
+			l_name := name_translator.boogie_function_for_feature (a_feature, current_target_type,
+				use_uninterpreted_context_function and helper.is_same_feature (a_feature, context_feature))
+
 			if helper.is_impure (a_feature) then
 					-- This is not a pure function
 				helper.add_semantic_error (context_feature, messages.impure_function_in_contract (a_feature.feature_name), context_line_number)
@@ -148,7 +150,9 @@ feature -- Translation
 					-- Once functions are translated as constants; they have neither arguments nor preconditions
 				if not a_feature.is_once then
 					l_call.add_argument (entity_mapping.heap)
-					l_call.add_argument (current_target)
+					if not helper.is_static (a_feature) then
+						l_call.add_argument (current_target)
+					end
 
 					process_parameters (a_parameters)
 					l_call.arguments.append (last_parameters)
@@ -176,7 +180,9 @@ feature -- Translation
 
 			create l_call.make (a_builtin_name, types.for_class_type (feature_class_type (a_feature)))
 			l_call.add_argument (entity_mapping.heap)
-			l_call.add_argument (current_target)
+			if not helper.is_static (a_feature) then
+				l_call.add_argument (current_target)
+			end
 
 			process_parameters (a_parameters)
 			l_call.arguments.append (last_parameters)

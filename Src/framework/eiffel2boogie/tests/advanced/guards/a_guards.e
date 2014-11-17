@@ -58,12 +58,12 @@ feature
 
 	test2
 		note
-			status: dynamic
+			status: nonvariant
 			explicit: contracts, wrapping
 		require
 			is_open
 		do
-			y := y + 1									-- Bad: dynamic, so precise guard is not known
+			y := y + 1									-- Bad: nonvariant, so precise guard is not known
 		end
 
 end

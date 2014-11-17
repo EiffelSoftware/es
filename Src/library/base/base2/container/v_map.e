@@ -32,7 +32,7 @@ feature -- Status report
 	is_empty: BOOLEAN
 			-- Is container empty?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := count = 0
@@ -125,7 +125,7 @@ feature -- Specification
 	domain_has (k: K): BOOLEAN
 			-- Does `set' contain an element equal to `v' under object equality?
 		note
-			status: ghost, functional, dynamic
+			status: ghost, functional, nonvariant
 		require
 			lock_exists: lock /= Void
 			k_exists: k /= Void
@@ -139,7 +139,7 @@ feature -- Specification
 	domain_item (k: K): K
 			-- Element of `map.domain' that is equal to `k' under object equality.
 		note
-			status: ghost, functional, dynamic
+			status: ghost, functional, nonvariant
 		require
 			lock_exists: lock /= Void
 			k_exists: k /= Void
@@ -154,7 +154,7 @@ feature -- Specification
 	bag_from (m: like map): like bag
 			-- Bag of values in `m'.
 		note
-			status: ghost, functional, opaque, dynamic
+			status: ghost, functional, opaque, nonvariant
 		require
 			reads ([])
 		do

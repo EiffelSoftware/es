@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 			is_triggering_on_arithmetic := False
 			is_arithmetic_extracted := False
 			is_inv_check_independent := True
-			is_ignoring_dynamic := False
+			is_ignoring_nonvariant := False
 
 			is_ownership_enabled := True
 			is_ownership_defaults_enabled := True
@@ -231,13 +231,13 @@ feature -- Quantifiers
 			is_inv_check_independent := a_value
 		end
 
-	is_ignoring_dynamic: BOOLEAN
-			-- Should the "dynamic" annotation be ignored?
+	is_ignoring_nonvariant: BOOLEAN
+			-- Should the "nonvariant" annotation be ignored?
 
-	set_ignoring_dynamic (a_value: BOOLEAN)
-			-- Set `is_ignoring_dynamic' to `a_value'.
+	set_ignoring_nonvariant (a_value: BOOLEAN)
+			-- Set `is_ignoring_nonvariant' to `a_value'.
 		do
-			is_ignoring_dynamic := a_value
+			is_ignoring_nonvariant := a_value
 		end
 
 feature -- Framing

@@ -241,7 +241,7 @@ feature {NONE} -- Implementation
 				if is_valid_guard_feature (a_guard_string, l_guard_feature, a_attr_type) then
 					translation_pool.add_referenced_feature (l_guard_feature, current_type)
 						-- Generate guard definition from `l_guard_feature'
-					l_fname := name_translator.boogie_function_for_feature (l_guard_feature, current_type)
+					l_fname := name_translator.boogie_function_for_feature (l_guard_feature, current_type, False)
 					if helper.has_flat_precondition (l_guard_feature) then
 						Result := factory.function_call (name_translator.boogie_function_precondition (l_fname), << a_h, a_cur, a_v, a_o >>, types.bool)
 					else

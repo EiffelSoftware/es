@@ -299,7 +299,6 @@ feature -- Helper functions: contracts
 
 						if l_objects_type.expressions.first /= Void then
 							l_type := helper.class_type_in_context (l_objects_type.type, i.item.origin, current_feature, current_type)
-
 							create l_fieldnames.make
 							if attached {STRING_B} l_call.parameters.i_th (1).expression as l_string then
 								l_fieldnames.extend (l_string.value)
@@ -468,6 +467,7 @@ feature -- Helper functions: contracts
 			l_expressions: LINKED_LIST [IV_EXPRESSION]
 			l_type: TYPE_A
 			l_feature: FEATURE_I
+			l_like_type: LIKE_FEATURE
 		do
 			create l_expr_list.make
 			if attached {TUPLE_CONST_B} a_expr as l_tuple then
@@ -492,8 +492,12 @@ feature -- Helper functions: contracts
 					k.item.process (a_translator)
 					l_expressions.extend (a_translator.last_expression)
 					if attached {CALL_ACCESS_B} k.item as a then
-						l_feature := helper.feature_for_call_access (a, a_translator.current_target_type)
-						l_type := l_feature.type
+--						l_feature := helper.feature_for_call_access (a, a_translator.current_target_type)
+--						l_type := l_feature.type
+						l_feature := helper.feature_for_call_access (a, a_translator.origin_class.actual_type)
+						create l_like_type.make (l_feature, a_translator.current_target_type.base_class.class_id)
+						l_like_type.set_actual_type (l_feature.type.actual_type)
+						l_type := l_like_type
 					else
 						l_type := k.item.type
 					end

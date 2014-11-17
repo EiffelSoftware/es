@@ -33,8 +33,6 @@ feature -- Replacement
 
 	put (v: G)
 			-- Replace item at current position with `v'.
-		require else
-			modify_model ("sequence", target)
 		deferred
 		ensure then
 			target_sequence_effect: target.sequence ~ old (target.sequence.replaced_at (index_, v))

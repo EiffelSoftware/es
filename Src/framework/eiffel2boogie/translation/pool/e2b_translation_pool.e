@@ -139,14 +139,6 @@ feature -- Adding independent units
 			add_translation_unit (create {E2B_TU_READ_FRAME}.make (a_feature, a_context_type))
 		end
 
-	add_contracts_check (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
-			-- Add consistency check for contracts of `a_feature' in `a_context_type'.
-		require
-			no_formals: not a_context_type.has_formal_generic
-		do
-			add_translation_unit (create {E2B_TU_CONTRACT_CHECK}.make (a_feature, a_context_type))
-		end
-
 	add_function_precondition_predicate (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add precondition predicate of feature `a_feature' of `a_context_type'.
 		require
@@ -229,10 +221,6 @@ feature {NONE} -- Implementation
 							-- (e.g. if it's supposed to be used as a creation procedure in descendants),
 							-- in this case it will not be verified at all in the current context type.
 						add_routine (a_feature, a_context_type, a_is_referenced)
-					end
-					if not a_is_referenced and a_feature.written_in = a_context_type.base_class.class_id then
-							-- If this is a new version of the feature, check contract consistency
-						add_contracts_check (a_feature, a_context_type)
 					end
 				end
 			elseif a_feature.is_constant then

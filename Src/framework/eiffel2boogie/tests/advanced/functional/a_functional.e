@@ -86,6 +86,25 @@ feature -- Preconditions
 			bad: functional4 (-1) = 0
 		end
 
+feature -- Recursion
+
+	factorial (x: INTEGER): INTEGER
+		note
+			status: functional
+		do
+			Result := if x <= 1 then 1 else x * factorial (x - 1) end
+		end
+
+	factorial_client (x: INTEGER; b: BOOLEAN)
+		require
+			x >= 5
+		do
+			if b then
+				check factorial (x) = x * (x - 1) * factorial (x - 2) end -- No: two unrollings needed				
+			else
+				check factorial (x) = x * factorial (x - 1) end -- OK: one unrolling is enough				
+			end
+		end
 
 invariant
 	subjects = []

@@ -136,7 +136,7 @@ feature -- Basic operations
 			create l_pre_acall.make ("routine.precondition_" + l_arg_str, types.bool)
 			l_pre_acall.add_argument (factory.heap_entity ("h"))
 			l_pre_acall.add_argument (l_agent_local)
-			create l_pre_fcall.make (name_translator.boogie_function_precondition (name_translator.boogie_function_for_feature (l_agent_feature, l_agent_type)), types.bool)
+			create l_pre_fcall.make (name_translator.boogie_function_precondition (name_translator.boogie_function_for_feature (l_agent_feature, l_agent_type, False)), types.bool)
 			l_pre_fcall.add_argument (factory.heap_entity ("h"))
 			create l_pre_forall.make (factory.equal (l_pre_acall, l_pre_fcall))
 			l_pre_forall.add_bound_variable (factory.heap_entity ("h"))

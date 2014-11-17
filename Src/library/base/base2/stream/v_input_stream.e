@@ -47,7 +47,7 @@ feature -- Cursor movement
 			-- If `v' does not occur, move `after'.
 			-- (Use reference equality.)
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			subjects_closed: across subjects as s all s.item.is_wrapped end
 			modify_model (["box"], Current)

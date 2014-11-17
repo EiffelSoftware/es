@@ -11,6 +11,7 @@ deferred class
 inherit
 	V_ITERATOR [G]
 		redefine
+			sequence,
 			index_
 		end
 
@@ -28,7 +29,7 @@ feature -- Replacement
 			target_wrapped: target.is_wrapped
 			target_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			modify_model (["sequence", "box"], Current)
-			modify_model (["bag"], target)
+			modify_model ("bag", target)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.replaced_at (index_, v)
@@ -39,9 +40,7 @@ feature -- Replacement
 	output (v: G)
 			-- Replace item at current position with `v' and go to the next position.
 		note
-			status: dynamic
-		require else
-			modify_model (["sequence", "index_"], Current)
+			status: nonvariant
 		do
 			check inv_only ("subjects_definition", "subjects_contraint") end
 			put (v)
@@ -53,6 +52,14 @@ feature -- Replacement
 		end
 
 feature -- Specification
+
+	sequence: MML_SEQUENCE [G]
+			-- Sequence of elements in `target'.
+		note
+			status: ghost
+			replaces: off_
+		attribute
+		end
 
 	index_: INTEGER
 			-- Current position.

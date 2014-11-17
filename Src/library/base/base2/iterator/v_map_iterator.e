@@ -62,7 +62,7 @@ feature -- Specification
 	value_sequence_from (seq: like sequence; m: like target.map): MML_SEQUENCE [V]
 			-- Value sequnce for key sequence `seq' and target map `m'.			
 		note
-			status: ghost, functional, dynamic, opaque
+			status: ghost, functional, nonvariant, opaque
 		require
 			in_domain: seq.range <= m.domain
 			reads ([])
@@ -75,7 +75,7 @@ feature -- Specification
 	lemma_sequence_no_duplicates
 			-- Key sequence has no duplicates.	
 		note
-			status: lemma, dynamic
+			status: lemma, nonvariant
 		require
 			closed: closed
 			target_closed: target.closed

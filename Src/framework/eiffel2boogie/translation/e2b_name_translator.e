@@ -47,7 +47,7 @@ feature -- Access
 			result_valid: is_valid_feature_name (Result)
 		end
 
-	boogie_function_for_feature (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
+	boogie_function_for_feature (a_feature: FEATURE_I; a_context_type: CL_TYPE_A; a_uninterpreted: BOOLEAN): STRING
 			-- Name of the boogie function that encodes the result of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
@@ -58,7 +58,11 @@ feature -- Access
 		do
 			l_type_name := boogie_name_for_type (a_context_type)
 			l_feature_name := a_feature.feature_name_32.as_lower
-			Result := "fun." + l_type_name + "." + l_feature_name
+			if a_uninterpreted then
+				Result := "fun0." + l_type_name + "." + l_feature_name
+			else
+				Result := "fun." + l_type_name + "." + l_feature_name
+			end
 		ensure
 			result_attached: attached Result
 		end

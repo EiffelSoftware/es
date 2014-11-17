@@ -142,6 +142,9 @@ feature -- Access
 	use_triggers: BOOLEAN
 			-- Should triggers be added to generated quntifiers?
 
+	use_uninterpreted_context_function: BOOLEAN
+			-- Translate function calls to `context_feature' with its uninterpreted version.
+
 feature -- Convenience
 
 	class_type_in_current_context (a_type: TYPE_A): CL_TYPE_A
@@ -273,6 +276,12 @@ feature -- Basic operations
 			-- Set `use_triggers' to `b'
 		do
 			use_triggers := b
+		end
+
+	set_use_uninterpreted_context_function (b: BOOLEAN)
+			-- Set `use_uninterpreted_context_function' to `b'
+		do
+			use_uninterpreted_context_function := b
 		end
 
 feature -- Visitors
@@ -1246,7 +1255,7 @@ feature -- Translation
 			l_fname: STRING
 			l_pre_call: IV_FUNCTION_CALL
 		do
-			l_fname := name_translator.boogie_function_for_feature (a_feature, current_target_type)
+			l_fname := name_translator.boogie_function_for_feature (a_feature, current_target_type, False)
 				-- Add check
 				-- Note: here we assume that there is no default precondition!
 			if helper.has_flat_precondition (a_feature) then
@@ -1278,7 +1287,9 @@ feature -- Translation
 			if context_readable /= Void and helper.has_functional_representation (a_feature) then
 				create l_fcall.make (name_translator.boogie_function_for_read_frame (a_feature, current_target_type), types.frame)
 				l_fcall.add_argument (entity_mapping.heap)
-				l_fcall.add_argument (current_target)
+				if not helper.is_static (a_feature) then
+					l_fcall.add_argument (current_target)
+				end
 				l_fcall.arguments.append (last_parameters)
 					-- Using subsumption here, since in a query call chains it can trigger for the followings checks
 				add_safety_check_with_subsumption (factory.function_call ("Frame#Subset", <<l_fcall, context_readable>>, types.bool),
@@ -1370,13 +1381,17 @@ feature -- Translation
 					check checked_when_creating: l_decreases_fun.type.has_rank end
 					create l_callee_variant.make (l_decreases_fun.name, l_decreases_fun.type)
 					l_callee_variant.add_argument (entity_mapping.heap)
-					l_callee_variant.add_argument (current_target)
+					if not helper.is_static (a_feature) then
+						l_callee_variant.add_argument (current_target)
+					end
 					l_callee_variant.arguments.append (last_parameters)
 					l_callee_variants.extend (l_callee_variant)
 
 					create l_caller_variant.make (l_decreases_fun.name, l_decreases_fun.type)
 					l_caller_variant.add_argument (factory.old_ (entity_mapping.heap))
-					l_caller_variant.add_argument (entity_mapping.current_expression)
+					if not helper.is_static (a_feature) then
+						l_caller_variant.add_argument (entity_mapping.current_expression)
+					end
 					from
 						j := 1
 					until

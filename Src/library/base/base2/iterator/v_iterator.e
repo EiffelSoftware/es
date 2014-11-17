@@ -55,7 +55,7 @@ feature -- Measurement
 	valid_index (i: INTEGER): BOOLEAN
 			-- Is `i' a valid position for a cursor?
 		note
-			status: functional, ghost, dynamic
+			status: functional, ghost, nonvariant
 		require
 			target_exists: target /= Void
 			reads (Current, target)
@@ -84,7 +84,7 @@ feature -- Status report
 	off: BOOLEAN
 			-- Is current position off scope?
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv end
 			Result := before or after
@@ -156,7 +156,7 @@ feature -- Cursor movement
 	go_to (i: INTEGER)
 			-- Go to position `i'.
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			has_index: valid_index (i)
 			target_wrapped: target.is_wrapped
@@ -217,7 +217,7 @@ feature -- Cursor movement
 			-- If `v' does not occur, move `after'.
 			-- (Use reference equality.)
 		note
-			status: dynamic
+			status: nonvariant
 		do
 			check inv_only ("subjects_definition") end
 			if before then
@@ -249,7 +249,7 @@ feature -- Cursor movement
 			-- If `v' does not occur, move `before'.
 			-- (Use reference equality.)
 		note
-			status: dynamic
+			status: nonvariant
 		require
 			target_wrapped: target.is_wrapped
 			modify_model ("index_", Current)
@@ -299,7 +299,7 @@ feature -- Specification
 	is_model_equal (other: like Current): BOOLEAN
 			-- Is the abstract state of `Current' equal to that of `other'?
 		note
-			status: ghost, functional, dynamic
+			status: ghost, functional, nonvariant
 		do
 			Result := target = other.target and sequence ~ other.sequence and index_ = other.index_
 		end
