@@ -85,8 +85,8 @@ feature -- Basic operations
 
 invariant
 	valid_buckets: across tables as t all
+		t.item.buckets_.count > 0 and then
 		across t.item.map.domain as x all
-			t.item.buckets_.count > 0 and then
 			t.item.buckets_ [t.item.bucket_index (x.item.hash_code_, t.item.buckets_.count)].has (x.item)
 			end end
 

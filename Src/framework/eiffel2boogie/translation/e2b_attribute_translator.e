@@ -234,8 +234,10 @@ feature {NONE} -- Implementation
 					-- The guard is trivially false
 				Result := factory.false_
 			elseif a_guard_string.as_lower ~ "inv" then
-					-- The guard it the invariant of observers in the post-state
-				Result := factory.function_call ("user_inv", << factory.map_update (a_h, << a_cur, a_f >>, a_v), a_o >>, types.bool)
+					-- The guard is the preservation of the invariant of observers
+				Result := factory.implies_ (
+					factory.function_call ("user_inv", << a_h, a_o >>, types.bool),
+					factory.function_call ("user_inv", << factory.map_update (a_h, << a_cur, a_f >>, a_v), a_o >>, types.bool))
 			else
 				l_guard_feature := a_origin_class.feature_named_32 (a_guard_string)
 				if is_valid_guard_feature (a_guard_string, l_guard_feature, a_attr_type) then

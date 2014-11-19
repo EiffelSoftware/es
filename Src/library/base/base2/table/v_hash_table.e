@@ -15,6 +15,7 @@ frozen class
 inherit
 	V_TABLE [K, V]
 		redefine
+			map,
 			default_create,
 			lock,
 			forget_iterator
@@ -155,6 +156,26 @@ feature -- Extension
 
 feature -- Removal
 
+	remove (k: K)
+			-- Remove key `k' and its associated value.
+		note
+			explicit: wrapping
+		local
+			idx, i_: INTEGER
+		do
+			unwrap
+			check lock.inv_only ("owns_keys", "valid_buckets", "no_duplicates") end
+			idx := index (k)
+			i_ := remove_equal (buckets [idx], k)
+			count_ := count_ - 1
+			k.lemma_transitive (domain_item (k), [(buckets_ [idx]) [i_]])
+			map := map.removed ((buckets_ [idx]) [i_])
+			buckets_ := buckets_.replaced_at (idx, buckets_ [idx].removed_at (i_))
+			lemma_set_not_too_large
+			wrap
+			auto_resize (count_)
+		end
+
 	wipe_out
 			-- Remove all elements.
 		note
@@ -180,14 +201,14 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 	buckets: V_ARRAY [V_LINKED_LIST [MML_PAIR [K, V]]]
 		-- Element storage.
 		note
-			guard: is_lock_ref
+			guard: true
 		attribute
 		end
 
 	count_: INTEGER
 			-- Number of elements.
 		note
-			guard: is_lock_int
+			guard: true
 		attribute
 		end
 
@@ -258,29 +279,59 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			list_closed: list.closed
 			k_closed: k.closed
 			list_keys_closed: across 1 |..| list.sequence.count as i all list.sequence [i.item].left.closed end
-		local
-			j: INTEGER
 		do
-			from
-				j := 1
-				Result := list.first_cell
-			invariant
-				list.inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_first", "cells_last", "first_cell_empty", "sequence_implementation")
-				1 <= j and j <= list.sequence.count + 1
-				Result = if list.sequence.domain [j] then list.cells [j] else ({V_LINKABLE [MML_PAIR [K, V]]}).default end
-				across 1 |..| (j - 1) as l all not k.is_model_equal (list.sequence [l.item].left) end
-			until
-				Result = Void or else k.is_equal_ (Result.item.left)
-			loop
-				Result := Result.right
-				j := j + 1
-			variant
-				list.sequence.count - j
+			check list.inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_first", "first_cell_empty", "sequence_implementation") end
+			if not list.is_empty then
+				Result := cell_before (list, k)
+				if Result = Void then
+					Result := list.first_cell
+				else
+					Result := Result.right
+				end
 			end
 		ensure
 			definition_not_found: Result = Void implies
 				across 1 |..| list.sequence.count as i all not k.is_model_equal (list.sequence [i.item].left) end
 			definition_found: Result /= Void implies list.cells.has (Result) and list.sequence.has (Result.item) and k.is_model_equal (Result.item.left)
+		end
+
+	cell_before (list: V_LINKED_LIST [MML_PAIR [K, V]]; k: K): V_LINKABLE [MML_PAIR [K, V]]
+			-- Cell of `list' to the left of the cell where the key is equal to `k' according to object equality.
+			-- Void if the first list element is equal to `k'; last cell if no list element is equal to `k'.
+		require
+			list_closed: list.closed
+			not_empty: not list.sequence.is_empty
+			k_closed: k.closed
+			list_keys_closed: across 1 |..| list.sequence.count as i all list.sequence [i.item].left.closed end
+		local
+			j_: INTEGER
+		do
+			check list.inv_only ("cells_domain", "cells_exist", "cells_first", "first_cell_empty", "sequence_implementation") end
+			if not k.is_equal_ (list.first_cell.item.left) then
+				from
+					j_ := 1
+					Result := list.first_cell
+				invariant
+					list.inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_first", "cells_last", "first_cell_empty", "sequence_implementation")
+					1 <= j_ and j_ <= list.sequence.count
+					Result = list.cells [j_]
+					list.sequence.domain [j_ + 1] implies Result.right = list.cells [j_ + 1]
+					across 1 |..| j_ as l all not k.is_model_equal (list.sequence [l.item].left) end
+				until
+					Result.right = Void or else k.is_equal_ (Result.right.item.left)
+				loop
+					Result := Result.right
+					j_ := j_ + 1
+				variant
+					list.sequence.count - j_
+				end
+			end
+		ensure
+			definition_not_found: Result /= Void and then Result.right = Void implies
+				across 1 |..| list.sequence.count as i all not k.is_model_equal (list.sequence [i.item].left) end
+			definition_found_first: Result = Void implies k.is_model_equal (list.sequence.first.left)
+			definition_found_later: Result /= Void and then Result.right /= Void implies
+				list.cells.has (Result) and list.cells.has (Result.right) and k.is_model_equal (Result.right.item.left)
 		end
 
 	make_empty_buckets (n: INTEGER)
@@ -354,6 +405,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			it.list_iterator.remove
 
 			count_ := count_ - 1
+			check lock.inv_only ("valid_buckets") end
 			map := map.removed ((buckets_ [idx_]) [i_])
 			buckets_ := buckets_.replaced_at (idx_, buckets_ [idx_].removed_at (i_))
 			lemma_set_not_too_large
@@ -365,6 +417,37 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			same_index: it.list_iterator.index_ = old it.list_iterator.index_
 			same_lists: lists = old lists
 			buckets_effect: buckets_ = old (buckets_.replaced_at (it.bucket_index, buckets_ [it.bucket_index].removed_at (it.list_iterator.index_)))
+		end
+
+	remove_equal (list: V_LINKED_LIST [MML_PAIR [K, V]]; k: K): INTEGER
+			-- Remove an element where key is equal to `k' from `list'; return the index of the element in the prestate.
+		note
+			status: impure
+		require
+			list_wrapped: list.is_wrapped
+			not_empty: not list.sequence.is_empty
+			lock_wrapped: lock.is_wrapped
+			key_owned: lock.owns [k]
+			list_keys_owned: across 1 |..| list.sequence.count as i all lock.owns [list.sequence [i.item].left] end
+			has_equal: across 1 |..| list.sequence.count as i some k.is_model_equal (list.sequence [i.item].left) end
+			no_observers: list.observers.is_empty
+			modify_model ("sequence", list)
+		local
+			c: V_LINKABLE [MML_PAIR [K, V]]
+		do
+			c := cell_before (list, k)
+			if c = Void then
+				Result := 1
+				list.remove_front
+			else
+				Result := list.cells.index_of (c) + 1
+				check list.inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_last", "sequence_implementation") end
+				list.remove_after (c, Result - 1)
+			end
+		ensure
+			list_wrapped: list.is_wrapped
+			found: k.is_model_equal ((old list.sequence) [Result].left)
+			removed: list.sequence ~ old list.sequence.removed_at (Result)
 		end
 
 	replace_at (it: V_HASH_TABLE_ITERATOR [K, V]; v: V)
@@ -418,7 +501,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			list: V_LINKED_LIST [MML_PAIR [K, V]]
 		do
 			unwrap
-			check lock.inv_only ("owns_keys", "valid_buckets") end
+			check lock.inv_only ("owns_keys", "valid_buckets", "no_duplicates") end
 			idx := index (k)
 			list := buckets [idx]
 			list.extend_back (create {MML_PAIR [K, V]}.make (k, v))
@@ -528,11 +611,19 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 
 feature -- Specification
 
+	map: MML_MAP [K, V]
+			-- Map of keys to values.
+		note
+			status: ghost
+			guard: is_map_in_buckets
+		attribute
+		end
+
 	buckets_: MML_SEQUENCE [MML_SEQUENCE [K]]
 			-- Abstract element storage.
 		note
 			status: ghost
-			guard: inv
+			guard: is_valid_buckets
 		attribute
 		end
 
@@ -543,20 +634,24 @@ feature -- Specification
 		attribute
 		end
 
-	is_lock_int (new: INTEGER; o: ANY): BOOLEAN
-			-- Is observer `o' the `lock' object? (Update guard)
+	is_valid_buckets (new: like buckets_; o: ANY): BOOLEAN
+			-- Is the `new' value for `buckets_' consistent with the invariant of `lock'? (Update guard)
 		note
 			status: functional, ghost
 		do
-			Result := o = lock
+			Result := o = lock and then
+				new.count > 0 and then
+				across map.domain as x all new [bucket_index (x.item.hash_code_, new.count)].has (x.item) end
 		end
 
-	is_lock_ref (new: ANY; o: ANY): BOOLEAN
-			-- Is observer `o' the `lock' object? (Update guard)
+	is_map_in_buckets (new: like map; o: ANY): BOOLEAN
+			-- Are the keys of `new' map appropriately stored in `buckets_'? (Update guard)
 		note
 			status: functional, ghost
+		require
+			 buckets_.count > 0
 		do
-			Result := o = lock
+			Result := new.domain <= map.domain or across new.domain as x all buckets_ [bucket_index (x.item.hash_code_, buckets_.count)].has (x.item) end
 		end
 
 	is_lock_seq (new: MML_SEQUENCE [ANY]; o: ANY): BOOLEAN

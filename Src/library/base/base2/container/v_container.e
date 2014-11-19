@@ -110,8 +110,16 @@ feature -- Specification
 			-- Bag of elements.
 		note
 			status: ghost
-			guard: inv
+			guard: not_iterator
 		attribute
+		end
+
+	not_iterator (new: like bag; o: ANY): BOOLEAN
+			-- Is `o' not an iterator? (Update guard)
+		note
+			status: functional, ghost
+		do
+			Result := not attached {V_ITERATOR [G]} o
 		end
 
 	forget_iterator (it: V_ITERATOR [G])

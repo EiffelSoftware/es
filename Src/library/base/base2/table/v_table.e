@@ -105,30 +105,15 @@ feature -- Removal
 
 	remove (k: K)
 			-- Remove key `k' and its associated value.
-		note
-			status: nonvariant
 		require
 			v_locked: lock.owns [k]
 			has_key: domain_has (k)
 			lock_wrapped: lock.is_wrapped
 			no_iterators: observers = [lock]
-			modify_model (["map", "observers"], Current)
-		local
-			it: V_TABLE_ITERATOR [K, V]
-		do
-			check inv_only ("registered", "domain_non_void", "lock_non_current") end
-			check lock.inv_only ("owns_keys", "no_duplicates") end
-			it := at_key (k)
-			if not it.after then
-				k.lemma_transitive (it.sequence [it.index_], map.domain / it.sequence [it.index_])
-				it.remove
-				check it.inv end
-			end
-			check lock.inv_only ("owns_keys", "no_duplicates") end
-			forget_iterator (it)
+			modify_model ("map", Current)
+		deferred
 		ensure
 			map_effect: map ~ old map.removed (domain_item (k))
-			observers_restored: observers ~ old observers
 		end
 
 	wipe_out

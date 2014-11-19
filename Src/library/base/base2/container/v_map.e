@@ -110,7 +110,7 @@ feature -- Specification
 		note
 			status: ghost
 			replaces: bag
-			guard: inv
+			guard: is_valid_map
 		attribute
 		end
 
@@ -159,6 +159,20 @@ feature -- Specification
 			reads ([])
 		do
 			Result := m.to_bag
+		end
+
+	is_valid_map (new: like map; o: ANY): BOOLEAN
+			-- Is the `new' map consistent with the invariant of the `lock'? (Update guard)
+		note
+			status: functional, ghost
+		require
+			lock /= Void
+		do
+			Result := o = lock and
+				(new.domain <= map.domain or
+				(new.domain.non_void and then
+				lock.no_duplicates (new.domain) and then
+				across new.domain as x all lock.owns [x.item] end))
 		end
 
 invariant

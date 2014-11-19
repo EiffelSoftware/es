@@ -287,7 +287,7 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
   requires (Current != Void) && (Heap[Current, allocated]); // type:assign tag:attached_and_allocated
   requires field != closed && field != owner; // type:assign tag:closed_or_owner_not_allowed UP4
   requires is_open(Heap, Current); // type:assign tag:target_open UP1
-  requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) && IsHeap(Heap[Current, field := value]) ==> guard(Heap, Current, field, value, o)))); // type:assign tag:observers_open_or_guard_holds UP2  
+  requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (IsHeap(Heap[Current, field := value]) ==> guard(Heap, Current, field, value, o)))); // type:assign tag:observers_open_or_guard_holds UP2  
   requires writable[Current, field]; // type:assign tag:attribute_writable UP3
   modifies Heap;
   ensures global(Heap);
