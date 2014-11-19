@@ -648,10 +648,9 @@ feature -- Specification
 			-- Are the keys of `new' map appropriately stored in `buckets_'? (Update guard)
 		note
 			status: functional, ghost
-		require
-			 buckets_.count > 0
 		do
-			Result := new.domain <= map.domain or across new.domain as x all buckets_ [bucket_index (x.item.hash_code_, buckets_.count)].has (x.item) end
+			Result := new.domain <= map.domain or
+				(buckets_.count > 0 and then across new.domain as x all buckets_ [bucket_index (x.item.hash_code_, buckets_.count)].has (x.item) end)
 		end
 
 	is_lock_seq (new: MML_SEQUENCE [ANY]; o: ANY): BOOLEAN
