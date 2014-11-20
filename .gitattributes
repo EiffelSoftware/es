@@ -5309,7 +5309,12 @@ Src/unstable/library/web/cms/library/persistence/implementation/sqlite/tests/cms
 Src/unstable/library/web/cms/library/persistence/implementation/sqlite/tests/tests-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/src/kernel/content/cms_block.e.bak -text
 Src/web/eiffel-lang.org/cms.ini -text
+Src/web/eiffel-lang.org/data/documentation/current/Eiffel/index.data -text
+Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Getting[!!-~]started.data -text
+Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Reference.data -text
+Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Tutorial.data -text
 Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/_images/estudio_dev_window.png -text
+Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/index.data -text
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoBeta.png -text
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoConstruction.png -text
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoDefinition.png -text
