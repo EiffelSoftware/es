@@ -27,6 +27,7 @@ feature {NONE} -- Initialization
 	make
 		do
 			make_with_defaults
+			can_have_violations := True
 			create all_locals.make (10)
 		end
 
@@ -66,9 +67,18 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				checking_assigns := True
+				is_checking_assigns := True
 				process_routine_as (l_routine)
-				checking_assigns := False
+				is_checking_assigns := False
+
+				if can_have_violations and attached violating_assignment then
+					create_violation (a_feature)
+				end
+
+				-- Reset the access id and booleans for the next feature.
+				violating_assignment := Void
+				can_have_violations := True
+				has_found_result_assignment := False
 			end
 		end
 
@@ -76,38 +86,60 @@ feature {NONE} -- Implementation
 
 	process_assign_as (a_assign: attached ASSIGN_AS)
 		do
-			if
-				checking_assigns
-				and then attached {EXPR_CALL_AS} a_assign.source as l_expr_call
-				and then attached {ACCESS_ID_AS} l_expr_call.call as l_access
-				and then all_locals.has (l_access.access_name_8)
-			then
+			if is_checking_assigns and can_have_violations then
 				if attached {RESULT_AS} a_assign.target then
-					-- TODO What happens if 2 locals are assigned to Result. Might be dangerous to fix this then.
+					if has_found_result_assignment then
+							-- We cannot create any violations when there is more than 1 assignment to Result from a local variable.
+						can_have_violations := False
+					else
+						has_found_result_assignment := True
+					end
+
+					if
+						can_have_violations
+						and then attached {EXPR_CALL_AS} a_assign.source as l_expr_call
+						and then attached {ACCESS_ID_AS} l_expr_call.call as l_access
+						and then all_locals.has (l_access.access_name_8)
+					then
+						violating_assignment := a_assign
+					end
 				end
 			end
 
 			Precursor (a_assign)
 		end
 
-	checking_assigns: BOOLEAN
+	is_checking_assigns: BOOLEAN
 		-- Is the rule currently checking assign statements?
 
-	create_violation (a_ot: attached OBJECT_TEST_AS)
+	has_found_result_assignment: BOOLEAN
+		-- Has the rule already found an assignment to Result?
+
+	can_have_violations: BOOLEAN
+		-- Can the rule have valid violations?
+
+	violating_assignment: ASSIGN_AS
+		-- The assignment which violates this rule.
+
+	create_violation (a_feature: attached FEATURE_AS)
 		local
 			l_violation: CA_RULE_VIOLATION
---			l_fix: CA_OBJECT_TEST_FAILING_FIX TODO Implement.
+			l_fix: CA_LOCAL_USED_FOR_RESULT_FIX
 		do
 			create l_violation.make_with_rule (Current)
 
-			l_violation.set_location (a_ot.start_location)
+			l_violation.set_location (violating_assignment.start_location)
 
-			if attached {ACCESS_ID_AS} a_ot.expression as l_expr then
-				l_violation.long_description_info.extend (l_expr.access_name_32)
+			if
+				attached {EXPR_CALL_AS} violating_assignment.source as l_expr_call
+				and then attached {ACCESS_ID_AS} l_expr_call.call as l_access
+			then
+				l_violation.long_description_info.extend (l_access.access_name_32)
+
+				create l_fix.make_with_feature_and_name (current_context.checking_class, a_feature, l_access.access_name_32)
 			end
 
---			create l_fix.make
---			l_violation.fixes.extend (l_fix)
+			l_violation.fixes.extend (l_fix)
 
 			violations.extend (l_violation)
 		end

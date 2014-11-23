@@ -56,11 +56,12 @@ feature {NONE} -- Implementation
 			l_type_1, l_type_2: TYPE_A
 		do
 			if attached {OBJECT_TEST_AS} a_if.condition as l_ot then
+				-- Check if object_test has type!
 				 l_type_1 := current_context.node_type (l_ot.expression, current_feature)
 				 l_type_2 := current_context.node_type (l_ot.type, current_feature)
 
 				 if not has_common_child (l_type_1, l_type_2) then
-				 	create_violation (l_ot)
+				 	create_violation (a_if)
 				 end
 			end
 		end
@@ -69,29 +70,35 @@ feature {NONE} -- Implementation
 			-- Is there a class that conforms to both `a_t1' and `a_t2'?
 		do
 			across system.classes as l_class loop
-				if l_class.item.actual_type.conforms_to(a_t1) and l_class.item.actual_type.conforms_to(a_t2) then
-					Result := True
+				if attached l_class.item then
+					if l_class.item.actual_type.conform_to(current_context.checking_class, a_t1) and l_class.item.actual_type.conform_to(current_context.checking_class, a_t2) then
+						Result := True
+					end
 				end
 			end
 		end
 
 	current_feature: FEATURE_I
 
-	create_violation (a_ot: attached OBJECT_TEST_AS)
+	create_violation (a_if: attached IF_AS)
 		local
 			l_violation: CA_RULE_VIOLATION
---			l_fix: CA_OBJECT_TEST_FAILING_FIX TODO Implement.
+			l_fix: CA_OBJECT_TEST_FAILING_FIX
 		do
 			create l_violation.make_with_rule (Current)
 
-			l_violation.set_location (a_ot.start_location)
+			l_violation.set_location (a_if.start_location)
 
-			if attached {ACCESS_ID_AS} a_ot.expression as l_expr then
-				l_violation.long_description_info.extend (l_expr.access_name_32)
+			if
+				attached {OBJECT_TEST_AS} a_if.condition as l_ot
+				and then attached {EXPR_CALL_AS} l_ot.expression as l_expr_call
+				and then attached {ACCESS_ID_AS} l_expr_call.call as l_access_id
+			then
+				l_violation.long_description_info.extend (l_access_id.access_name_32)
 			end
 
---			create l_fix.make
---			l_violation.fixes.extend (l_fix)
+			create l_fix.make_with_if (current_context.checking_class, a_if)
+			l_violation.fixes.extend (l_fix)
 
 			violations.extend (l_violation)
 		end

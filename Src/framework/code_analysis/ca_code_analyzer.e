@@ -89,6 +89,8 @@ feature {NONE} -- Initialization
 			add_rule (create {CA_REAL_NAN_COMPARISON_RULE}.make)
 			add_rule (create {CA_LOCAL_USED_FOR_RESULT_RULE}.make)
 			add_rule (create {CA_MERGEABLE_CONDITIONALS_RULE}.make)
+			add_rule (create {CA_UNUSED_INHERITANCE_RULE}.make_with_defaults)
+			add_rule (create {CA_EXPORTED_FEATURE_NEVER_CALLED_RULE}.make_with_defaults)
 
 			settings.initialize_rule_settings (rules)
 
@@ -167,6 +169,8 @@ feature -- Analysis interface
 			Result := a_rule.is_enabled.value
 						and then (system_wide_check or else (not a_rule.is_system_wide))
 						and then is_severity_enabled (a_rule.severity)
+
+						-- TODO Check if ignoredby or checkonly lists.
 		end
 
 	clear_classes_to_analyze

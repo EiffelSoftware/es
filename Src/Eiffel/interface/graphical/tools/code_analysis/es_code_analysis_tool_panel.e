@@ -299,6 +299,9 @@ feature -- Status report
 			Result := not is_initialized or else hints_button.is_selected
 		end
 
+	is_fix_in_progress: BOOLEAN
+			-- Is currently a fix in progress?
+
 	is_item_visible (a_item: EV_GRID_ROW): BOOLEAN
 			-- Is `a_item' visible?
 		local
@@ -457,12 +460,14 @@ feature {NONE} -- Events
 
 	on_undo
 		do
+			undo_button.disable_sensitive
+
 			undo_actions.start
 			undo_actions.item.call (Void)
 			undo_actions.remove
 
-			if undo_actions.is_empty then
-				undo_button.disable_sensitive
+			if not undo_actions.is_empty then
+				undo_button.enable_sensitive
 			end
 		end
 
@@ -518,6 +523,11 @@ feature -- Basic operations
 		do
 			undo_actions.put_front (a_procedure)
 			undo_button.enable_sensitive
+		end
+
+	set_fix_in_progress (a_value: BOOLEAN)
+		do
+			is_fix_in_progress := a_value
 		end
 
 feature {NONE} -- Basic operations
@@ -678,7 +688,7 @@ feature {NONE} -- Basic operations
 			l_fix_executor: ES_CA_FIX_EXECUTOR
 		do
 				-- Only process left clicks (`button = 1').
-			if button = 1 then
+			if button = 1 and not is_fix_in_progress then
 				create l_menu
 
 				across a_fixes as l_fixes loop

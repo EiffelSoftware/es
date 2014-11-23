@@ -67,6 +67,8 @@ feature -- Fixing
         		eiffel_project.quick_melt (True, True, True)
         			-- The compilation must be successful before the fix.
         		if eiffel_project.successful then
+        			helper.ca_command.ca_tool.panel.set_fix_in_progress (True)
+        			
 					prepare
 
 					execute_fix (False)
@@ -86,6 +88,7 @@ feature -- Fixing
 		        	refresh_and_analyze
 
 		        	window_manager.display_message ("Fixing rule violation succeeded.")
+		        	helper.ca_command.ca_tool.panel.set_fix_in_progress (False)
 		        else
 		        	create l_dialog.make_standard ("Fix could not be applied due to failed compilation.")
 		        	l_dialog.show_on_active_window
@@ -114,7 +117,7 @@ feature -- Fixing
 		do
 			compute_ast
 			if not is_parse_error then
-				fix.setup (ast, match_list, process_leading, true)
+				fix.setup (ast, match_list, process_leading, True)
 				fix.execute (ast)
 
 				if not process_leading then
@@ -129,8 +132,6 @@ feature -- Fixing
 	undo_fix
 		require
 			fix_applied: is_fix_applied
-		local
-			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 		do
 			undo
 			fix.set_applied (False)

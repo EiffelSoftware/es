@@ -39,6 +39,7 @@ feature {NONE} -- Implementation
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_if_pre_action (agent process_if)
+			a_checker.add_class_post_action (agent post_process_class)
 		end
 
 	process_if (a_if: attached IF_AS)
@@ -51,6 +52,12 @@ feature {NONE} -- Implementation
 			end
 
 			last_if := a_if
+		end
+
+	post_process_class (a_clas: attached CLASS_AS)
+		do
+				-- Reset last_if variable to avoid nullpointers when a fix has removed the last if statement.
+			last_if := Void
 		end
 
 	last_if: IF_AS
