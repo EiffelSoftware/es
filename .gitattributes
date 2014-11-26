@@ -5346,6 +5346,7 @@ Src/web/eiffel-lang.org/modules/eiffel_lang_misc/eiffel_lang_misc-safe.ecf svneo
 Src/web/eiffel-lang.org/modules/eiffel_lang_misc/eiffel_lang_misc.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/wiki_docs/wiki_docs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/wiki_docs/wiki_docs.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/site/config/application_configuration.json -text
 Src/web/eiffel-lang.org/site/config/cms.ini -text
 Src/web/eiffel-lang.org/site/config/eiffel-lang-app.ini -text
 Src/web/eiffel-lang.org/site/config/eiffel-lang.ini -text
