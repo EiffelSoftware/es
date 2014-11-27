@@ -78,7 +78,6 @@ Src/.git-svn/scm -text
 Src/.git-svn/users.txt -text
 Src/C/CONFIGS/iphone-arm-64 -text
 Src/C/eif_config_h.SH eol=lf
-Src/C/run-time/concurrency/rt_shared_ptr.hpp -text
 Src/C/run-time/eif_size_h.SH eol=lf
 Src/C/shell/bin/cat.exe -text
 Src/C/shell/bin/chmod.exe -text
