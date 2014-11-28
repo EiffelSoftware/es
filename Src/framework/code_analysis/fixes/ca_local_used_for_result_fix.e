@@ -35,7 +35,7 @@ feature {NONE} -- Implementation
 		do
 				-- Remove local
 
-			(create {FIX_UNUSED_LOCAL_APPLICATION}.make ([local_index, local_type], feature_as, matchlist)).do_nothing
+			--(create {FIX_UNUSED_LOCAL_APPLICATION}.make ([local_index, local_type], feature_as, matchlist)).do_nothing
 
 --			if
 --				attached feature_as.body.as_routine as l_routine

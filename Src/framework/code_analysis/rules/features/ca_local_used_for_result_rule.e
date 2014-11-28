@@ -136,7 +136,7 @@ feature {NONE} -- Implementation
 			then
 				l_violation.long_description_info.extend (l_access.access_name_32)
 
-				create l_fix.make_with_feature_and_name (current_context.checking_class, a_feature, l_access.access_name_32)
+				--create l_fix.make_with_feature_and_name (current_context.checking_class, a_feature, l_access.access_name_32)
 			end
 
 			l_violation.fixes.extend (l_fix)
