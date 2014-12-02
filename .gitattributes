@@ -2184,6 +2184,7 @@ Src/compatible/library/wel/extra/h2e.ico svneol=native#unset
 Src/compatible/library/wel/extra/h2e1.ico svneol=native#unset
 Src/compatible/library/wel/extra/h2e2.ico svneol=native#unset
 Src/compatible/library/wizard/help/Clib/htmlhelp.lib -text
+Src/contrib/examples/web/ewf/debug/debug.ecf svneol=native#text/xml
 Src/contrib/examples/web/ewf/desktop_app/README.md -text
 Src/contrib/examples/web/ewf/desktop_app/files/index.html -text
 Src/contrib/examples/web/ewf/desktop_app/home.html -text
