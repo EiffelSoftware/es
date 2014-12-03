@@ -589,6 +589,7 @@ Src/unstable/library/web/cms/library/src/service/*.bak
 Src/web/eiffel-lang.org/_db
 Src/web/eiffel-lang.org/_storage_
 Src/web/eiffel-lang.org/data/documentation/archive
+Src/web/eiffel-lang.org/data/documentation/backup
 Src/web/eiffel-lang.org/library/wikidocs/testing/tmp
 Src/web/eiffel-lang.org/tmp
 eweasel/compilation/EIFGENs

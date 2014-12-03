@@ -5306,7 +5306,6 @@ Src/unstable/library/web/cms/library/persistence/implementation/sqlite/scripts/t
 Src/unstable/library/web/cms/library/persistence/implementation/sqlite/tests/cms_lite.db -text
 Src/unstable/library/web/cms/library/persistence/implementation/sqlite/tests/tests-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/src/kernel/content/cms_block.e.bak -text
-Src/web/eiffel-lang.org/cms.ini -text
 Src/web/eiffel-lang.org/data/documentation/current/Eiffel/index.data -text
 Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Getting[!!-~]started.data -text
 Src/web/eiffel-lang.org/data/documentation/current/EiffelStudio/Reference.data -text
@@ -5323,9 +5322,7 @@ Src/web/eiffel-lang.org/data/documentation/current/_images/LogoRule.png -text
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoUpdateNeeded.png -text
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoWarning.png -text
 Src/web/eiffel-lang.org/downloads_configuration.json -text
-Src/web/eiffel-lang.org/eiffel-lang-app.ini -text
 Src/web/eiffel-lang.org/eiffel-lang-safe.ecf svneol=native#text/xml
-Src/web/eiffel-lang.org/eiffel-lang.ini -text
 Src/web/eiffel-lang.org/eiffel-lang.json -text
 Src/web/eiffel-lang.org/eiffel-lang_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/ewf.ini -text
@@ -5385,6 +5382,8 @@ Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/base/base-reset.scss
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/markup-mixins.scss -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/variables.scss -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/theme.info -text
+Src/web/eiffel-lang.org/tools/docs2svn/docs2svn-safe.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/tools/docs2svn/docs2svn.rc -text
 Src/web/eiffel_download/IIRF.ini -text
 Src/web/eiffel_download/download_tables.sql -text
 Src/web/eiffel_download/ewf_download.ecf svneol=native#text/xml
