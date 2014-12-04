@@ -215,8 +215,6 @@ feature -- Removal
 			check iterator.inv end
 			check iterator.list_iterator.inv_only ("default_owns") end
 			target.unwrap
-			check target.table.inv_only ("observers_constraint") end
-			target.table.observers.lemma_subset ([target.lock, iterator])
 
 			iterator.remove
 			target.wrap

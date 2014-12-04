@@ -60,13 +60,13 @@ feature -- Basic operations
 					-- Add equivalences
 				generate_equivalences_for_class (current_type.base_class)
 
-					-- Mark field as a ghost or non-ghost
-				l_expr := factory.function_call ("IsGhostField", << l_f >>, types.bool)
-				if helper.is_ghost (current_feature) then
-					boogie_universe.add_declaration (create {IV_AXIOM}.make (l_expr))
-				else
-					boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.not_ (l_expr)))
-				end
+--					-- Mark field as a ghost or non-ghost
+--				l_expr := factory.function_call ("IsGhostField", << l_f >>, types.bool)
+--				if helper.is_ghost (current_feature) then
+--					boogie_universe.add_declaration (create {IV_AXIOM}.make (l_expr))
+--				else
+--					boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.not_ (l_expr)))
+--				end
 
 					-- Add type properties
 				l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access, helper.is_type_exact (current_feature.type, l_class_type, Void),

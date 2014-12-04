@@ -38,15 +38,15 @@ feature -- Replacement
 			status: nonvariant
 		require
 			lock_wrapped: lock.is_wrapped
-			v_locked: lock.owns [k]
+			k_locked: lock.locked [k]
 			has_key: domain_has (k)
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model (["map", "observers"], Current)
 		local
 			it: V_TABLE_ITERATOR [K, V]
 		do
-			check inv_only ("registered", "domain_non_void", "lock_non_current") end
-			check lock.inv_only ("owns_keys", "no_duplicates") end
+			check inv_only ("locked_non_void", "locked_definition", "lock_non_current", "items_locked", "no_duplicates") end
+			check lock.inv_only ("owns_definition", "equivalence_definition") end
 			it := at_key (k)
 			it.put (v)
 			forget_iterator (it)
@@ -61,10 +61,10 @@ feature -- Extension
 	extend (v: V; k: K)
 			-- Extend table with key-value pair <`k', `v'>.
 		require
-			k_locked: lock.owns [k]
+			k_locked: lock.locked [k]
 			fresh_key: not domain_has (k)
 			lock_wrapped: lock.is_wrapped
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model ("map", Current)
 		deferred
 		ensure
@@ -78,15 +78,15 @@ feature -- Extension
 		note
 			status: nonvariant
 		require
-			k_locked: lock.owns [k]
+			k_locked: lock.locked [k]
 			lock_wrapped: lock.is_wrapped
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model (["map", "observers"], Current)
 		local
 			it: V_TABLE_ITERATOR [K, V]
 		do
-			check inv_only ("registered", "domain_non_void", "lock_non_current") end
-			check lock.inv_only ("owns_keys", "no_duplicates") end
+			check inv_only ("locked_non_void", "locked_definition", "lock_non_current", "items_locked", "no_duplicates") end
+			check lock.inv_only ("owns_definition", "equivalence_definition") end
 			it := at_key (k)
 			if it.after then
 				forget_iterator (it)
@@ -106,10 +106,10 @@ feature -- Removal
 	remove (k: K)
 			-- Remove key `k' and its associated value.
 		require
-			v_locked: lock.owns [k]
+			v_locked: lock.locked [k]
 			has_key: domain_has (k)
 			lock_wrapped: lock.is_wrapped
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model ("map", Current)
 		deferred
 		ensure
@@ -119,7 +119,7 @@ feature -- Removal
 	wipe_out
 			-- Remove all elements.
 		require
-			no_iterators: observers <= [lock]
+			no_iterators: observers.is_empty
 			modify_model ("map", Current)
 		deferred
 		ensure

@@ -27,7 +27,7 @@ feature -- Replacement
 			not_off: not off
 			target_wrapped: target.is_wrapped
 			lock_wrapped: target.lock.is_wrapped
-			only_iterator: target.observers = [target.lock, Current]
+			only_iterator: target.observers = [Current]
 			modify_model (["value_sequence", "box"], Current)
 			modify_model ("map", target)
 		deferred
@@ -44,7 +44,7 @@ feature -- Removal
 			not_off: not off
 			target_wrapped: target.is_wrapped
 			lock_wrapped: target.lock.is_wrapped
-			only_iterator: target.observers = [target.lock, Current]
+			only_iterator: target.observers = [Current]
 			modify_model (["sequence", "box"], Current)
 			modify_model ("map", target)
 		deferred

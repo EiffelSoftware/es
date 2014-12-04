@@ -15,22 +15,29 @@ frozen class
 inherit
 	V_SET [G]
 		redefine
-			default_create,
 			lock,
 			forget_iterator
 		end
 
+create
+	make
+
 feature {NONE} -- Initialization
 
-	default_create
-			-- Create an empty set without a lock.
+	make (l: V_HASH_LOCK [G])
+			-- Create an empty set with lock `l'.
 		note
 			status: creator
+		require
+			l_wrapped: l.is_wrapped
+			modify (Current)
+			modify_model ("observers", l)
 		do
-			create table
+			create table.make (l)
+			l.add_client (Current)
 		ensure then
 			set_empty: set.is_empty
-			no_lock: lock = Void
+			lock_set: lock = l
 			observers_empty: observers.is_empty
 		end
 
@@ -43,14 +50,13 @@ feature -- Initialization
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		do
 			if other /= Current then
 				unwrap
 				other.unwrap
-				check table.inv_only ("observers_constraint") end
 				table.copy_ (other.table)
 				other.wrap
 				wrap
@@ -112,9 +118,10 @@ feature -- Extension
 	extend (v: G)
 			-- Add `v' to the set.
 		do
-			check table.inv_only ("observers_constraint") end
-			check lock.inv_only ("owns_items") end
+			check table.inv_only ("items_locked", "locked_definition") end
+			check lock.inv_only ("owns_definition") end
 			table.force (Void, v)
+			check table.inv_only ("locked_definition", "no_duplicates") end
 			if not table.domain_has (v).old_ then
 				check table.map.domain [v] end
 			else
@@ -127,7 +134,6 @@ feature -- Removal
 	wipe_out
 			-- Remove all elements.
 		do
-			check table.inv_only ("observers_constraint") end
 			table.lemma_domain
 			table.wipe_out
 		end
@@ -139,7 +145,7 @@ feature -- Implementation
 
 feature -- Specification
 
-	lock: V_HASH_LOCK [G, ANY]
+	lock: V_HASH_LOCK [G]
 			-- Helper object for keeping items consistent.
 		note
 			status: ghost
@@ -163,32 +169,12 @@ feature -- Specification
 			end
 		end
 
-feature {V_CONTAINER, V_ITERATOR, V_LOCK}
-
-	set_lock (l: V_HASH_LOCK [G, ANY])
-			-- Set `lock' to `l'.
-		note
-			status: ghost, setter
-		require
-			open: is_open
-			no_observers: observers.is_empty
-			modify_field (["lock", "subjects", "observers"], Current)
-		do
-			lock := l
-			Current.subjects := [lock]
-			Current.observers := [lock]
-		ensure
-			lock = l
-			subjects = [l]
-			observers = [l]
-		end
-
 invariant
 	table_exists: table /= Void
 	owns_definition: owns = [table]
 	set_implementation: set = table.map.domain
 	same_lock: lock = table.lock
-	observers_type: across observers as o all o /= lock implies attached {V_HASH_SET_ITERATOR [G]} o.item end
+	observers_type: across observers as o all attached {V_HASH_SET_ITERATOR [G]} o.item end
 	observers_correspond: table.observers.count <= observers.count
 
 note

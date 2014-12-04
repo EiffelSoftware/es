@@ -1,7 +1,7 @@
 note
 	description: "Finite maps."
 	author: "Nadia Polikarpova"
-	theory: "map.bpl", "sequence.bpl", "bag.bpl", "relation.bpl", "set.bpl"
+	theory: "map.bpl", "sequence.bpl", "bag.bpl", "relation.bpl", "set.bpl", "pair.bpl"
 	maps_to: "Map"
 	type_properties: "Map#DomainType", "Map#RangeType"
 

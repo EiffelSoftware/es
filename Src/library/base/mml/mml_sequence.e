@@ -1,7 +1,7 @@
 note
 	description: "Finite sequence."
 	author: "Nadia Polikarpova"
-	theory: "sequence.bpl", "map.bpl", "relation.bpl", "bag.bpl", "set.bpl"
+	theory: "sequence.bpl", "map.bpl", "relation.bpl", "bag.bpl", "set.bpl", "pair.bpl"
 	maps_to: "Seq"
 	type_properties: "Seq#ItemsType"
 

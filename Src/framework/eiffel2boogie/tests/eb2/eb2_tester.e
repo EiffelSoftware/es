@@ -11,14 +11,13 @@ feature -- Hash tables
 		local
 			t1: V_HASH_TABLE [EB2_KEY, B_BASIC]
 			i, j, k: EB2_KEY
-			lock: V_HASH_LOCK [EB2_KEY, B_BASIC]
+			lock: V_HASH_LOCK [EB2_KEY]
 			x, y: B_BASIC
 		do
 			create lock
 
-			create t1
+			create t1.make (lock)
 			check t1.map.is_empty end
-			lock.add_table (t1)
 
 			create i.set_value (1)
 			create j.set_value (2)

@@ -37,6 +37,7 @@ classes = [
   'V_ARRAYED_LIST',
   'V_ARRAYED_LIST_ITERATOR',
   'V_ARRAY2',
+  'V_LOCKER',
   'V_LOCK',
   'V_MAP',
   'V_MAP_ITERATOR',  

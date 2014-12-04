@@ -41,7 +41,7 @@ feature -- Cursor movement
 		require
 			target_closed: target.closed
 			lock_wrapped: target.lock.is_wrapped
-			k_locked: target.lock.owns [k]
+			k_locked: target.lock.locked [k]
 			modify_model ("index_", Current)
 		deferred
 		ensure

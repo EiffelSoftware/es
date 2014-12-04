@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 				across 1 |..| t.lists.count as j all t.lists [j.item].is_wrapped end
 				across 1 |..| (i_ - 1) as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ & list_iterator end
 				across i_ |..| t.lists.count as j all t.lists [j.item].observers = t.lists [j.item].observers.old_ end
-				t.lock /= Void implies t.lock.tables [t] and t.lock.observers [t]
+				t.inv_only ("A2", "items_locked", "no_duplicates", "valid_buckets")
 				modify_field (["observers", "closed"], t.lists.range)
 			until
 				i_ > t.lists.count
@@ -186,9 +186,9 @@ feature -- Cursor movement
 		local
 			c: V_LINKABLE [MML_PAIR [K, V]]
 		do
-			check target.inv_only ("registered", "buckets_non_empty", "buckets_lower", "buckets_count", "lists_definition",
-				"owns_definition", "list_observers_same", "domain_non_void", "domain_not_too_small", "lists_counts", "buckets_content") end
-			check target.lock.inv_only ("owns_keys", "valid_buckets", "no_duplicates") end
+			check target.inv_only ("items_locked", "locked_non_void", "locked_definition", "buckets_non_empty", "buckets_lower", "buckets_count", "lists_definition",
+				"owns_definition", "list_observers_same", "domain_not_too_small", "lists_counts", "buckets_content", "no_duplicates", "valid_buckets") end
+			check target.lock.inv end
 			bucket_index := target.index (k)
 			c := target.cell_equal (target.buckets [bucket_index], k)
 			check across 1 |..| target.buckets_ [bucket_index].count as j all (target.buckets_ [bucket_index]) [j.item] =
@@ -320,7 +320,7 @@ feature -- Replacement
 	put (v: V)
 			-- Replace item at current position with `v'.
 		do
-			check target.inv_only ("registered", "buckets_count", "lists_counts") end
+			check target.inv_only ("buckets_count", "lists_counts") end
 			lemma_single_out (target.buckets_, bucket_index)
 
 			target.replace_at (Current, v)
@@ -338,7 +338,7 @@ feature -- Removal
 			explicit: wrapping
 		do
 			unwrap
-			check target.inv_only ("registered", "buckets_count", "lists_counts") end
+			check target.inv_only ("buckets_count", "lists_counts") end
 			lemma_single_out (target.buckets_, bucket_index)
 
 			target.remove_at (Current)
@@ -586,25 +586,23 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 
 	lemma_content (bs: like target.buckets_; m: like target.map)
 			-- If `m.domain' is the set of elements in `bs', then it is also the set elements in `concat (bs)';
-			-- and the values in `m' are the same as the values in the `m'-imgae of `concat (bs)'.
+			-- and the values in `m' are the same as the values in the `m'-image of `concat (bs)'.
 		note
 			status: lemma
 		require
 			target /= Void
 			domain_non_void: m.domain.non_void
 			domain_not_too_small: across 1 |..| bs.count as i all across 1 |..| bs [i.item].count as j all m.domain [(bs [i.item])[j.item]] end end
-			domain_not_too_large: target.set_not_too_large (m.domain, bs)
+			domain_not_too_large: across m.domain as x all across 1 |..| bs.count as i some bs [i.item].has (x.item) end end
 			no_precise_duplicates: across 1 |..| bs.count as i all across 1 |..| bs.count as j all
 					across 1 |..| bs [i.item].count as k all across 1 |..| bs [j.item].count as l all
 							i.item /= j.item or k.item /= l.item implies (bs [i.item])[k.item] /= (bs [j.item])[l.item] end end end end
 		do
 			use_definition (concat (bs))
-			use_definition (target.set_not_too_large (m.domain, bs))
 			use_definition (value_sequence_from (concat (bs), m))
 			use_definition (target.bag_from (m))
 			if not bs.is_empty then
 				check across 1 |..| (bs.count - 1) as i all bs [i.item] = bs.but_last [i.item] end end
-				use_definition (target.set_not_too_large (m.domain - bs.last.range, bs.but_last))
 				check  (m | (m.domain - bs.last.range)).domain = m.domain - bs.last.range end
 				lemma_content (bs.but_last, m | (m.domain - bs.last.range))
 				bs.last.lemma_no_duplicates

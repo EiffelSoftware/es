@@ -1,7 +1,7 @@
 note
 	description: "Finite relations."
 	author: "Nadia Polikarpova"
-	theory: "relation.bpl", "set.bpl"
+	theory: "relation.bpl", "set.bpl", "pair.bpl"
 	maps_to: "Rel"
 	type_properties: "Rel#DomainType", "Rel#RangeType"
 
@@ -9,7 +9,7 @@ class
 	MML_RELATION [G, H]
 
 inherit
-	ITERABLE [G]
+	ITERABLE [MML_PAIR [G, H]]
 		redefine
 			default_create,
 			is_equal
@@ -58,6 +58,12 @@ feature -- Sets
 			-- The set of right components.
 		do
 		end
+
+	to_set: MML_SET [MML_PAIR [G, H]]
+			-- Relation as a set of pairs.
+		do
+		end
+
 
 	image_of (x: G): MML_SET [H]
 			-- Set of values related to `x'.
@@ -131,10 +137,10 @@ feature -- Modification
 
 feature -- Iterable implementation
 
-	new_cursor: ITERATION_CURSOR [G]
+	new_cursor: ITERATION_CURSOR [MML_PAIR [G, H]]
 			-- <Precursor>
 		note
-			maps_to: "Rel#Domain"
+			maps_to: "Rel#ToSet"
 		do
 		end
 

@@ -18,6 +18,8 @@ inherit
 			is_empty
 		end
 
+	V_LOCKER [K]
+
 feature -- Measurement
 
 	count: INTEGER
@@ -91,7 +93,7 @@ feature -- Iteration
 			status: impure
 		require
 			lock_wrapped: lock.is_wrapped
-			v_locked: lock.owns [k]
+			v_locked: lock.locked [k]
 			modify_field (["observers", "closed"], Current)
 		deferred
 		ensure
@@ -109,21 +111,12 @@ feature -- Specification
 			-- Map of keys to values.
 		note
 			status: ghost
-			replaces: bag
-			guard: is_valid_map
-		attribute
-		end
-
-	lock: V_LOCK [K, V]
-			-- Helper object for keeping items consistent.
-		note
-			status: ghost
-			guard: True
+			replaces: bag, locked
 		attribute
 		end
 
 	domain_has (k: K): BOOLEAN
-			-- Does `set' contain an element equal to `v' under object equality?
+			-- Does `map.domain' contain an element equal to `k' under object equality?
 		note
 			status: ghost, functional, nonvariant
 		require
@@ -161,28 +154,8 @@ feature -- Specification
 			Result := m.to_bag
 		end
 
-	is_valid_map (new: like map; o: ANY): BOOLEAN
-			-- Is the `new' map consistent with the invariant of the `lock'? (Update guard)
-		note
-			status: functional, ghost
-		require
-			lock /= Void
-		do
-			Result := o = lock and
-				(new.domain <= map.domain or
-				(new.domain.non_void and then
-				lock.no_duplicates (new.domain) and then
-				across new.domain as x all lock.owns [x.item] end))
-		end
-
 invariant
-	domain_non_void: map.domain.non_void
-	non_empty_has_lock: not map.is_empty implies lock /= Void
-	lock_non_current: lock /= Current
-	lock_non_iterator: not attached {V_ITERATOR [V]} lock
-	subjects_definition: if lock = Void then subjects.is_empty else subjects = [lock] end
-	registered: lock /= Void implies lock.tables [Current]
-	observers_constraint: lock /= Void implies observers [lock]
+	locked_definition: locked ~ map.domain
 	bag_definition: bag ~ bag_from (map)
 
 note

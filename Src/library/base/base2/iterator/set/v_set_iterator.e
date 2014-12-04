@@ -28,7 +28,7 @@ feature -- Cursor movement
 		require
 			target_closed: target.closed
 			lock_wrapped: target.lock.is_wrapped
-			v_locked: target.lock.owns [v]
+			v_locked: target.lock.locked [v]
 			modify_model ("index_", Current)
 		deferred
 		ensure
@@ -44,7 +44,7 @@ feature -- Removal
 			not_off: not off
 			target_wrapped: target.is_wrapped
 			lock_wrapped: target.lock.is_wrapped
-			only_iterator: target.observers = [target.lock, Current]
+			only_iterator: target.observers = [Current]
 			modify_model (["sequence", "box"], Current)
 			modify_model ("set", target)
 		deferred

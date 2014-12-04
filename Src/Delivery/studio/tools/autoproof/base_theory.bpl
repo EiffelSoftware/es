@@ -12,7 +12,7 @@ function ref_rank_leq(r1, r2: ref): bool
 // Heap and allocation
 
 type Field _; // Type of a field (with open subtype)
-function IsGhostField<alpha>(field: Field alpha): bool; // Is this field a ghost field?
+// function IsGhostField<alpha>(field: Field alpha): bool; // Is this field a ghost field?
 function FieldId<alpha>(field: Field alpha, t: Type): int; // ID of field within t; used to express that all fields of the same class are distinct.
 
 // Default field value

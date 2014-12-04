@@ -222,7 +222,7 @@ feature -- Feature status helpers
 	is_ghost (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' a ghost feature?
 		do
-			Result := is_feature_status (a_feature, "ghost")
+			Result := is_feature_status (a_feature, "ghost") or is_class_status (a_feature.written_class, "ghost")
 		end
 
 	is_impure (a_feature: FEATURE_I): BOOLEAN

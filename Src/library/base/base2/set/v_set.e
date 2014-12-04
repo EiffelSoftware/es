@@ -22,6 +22,14 @@ inherit
 			is_model_equal
 		end
 
+	V_LOCKER [G]
+		rename
+			locked as set
+		redefine
+			set,
+			is_model_equal
+		end
+
 feature -- Measurement
 
 	count: INTEGER
@@ -95,7 +103,7 @@ feature -- Iteration
 			status: impure
 		require
 			lock_wrapped: lock.is_wrapped
-			v_locked: lock.owns [v]
+			v_locked: lock.locked [v]
 			modify_field (["observers", "closed"], Current)
 		deferred
 		ensure
@@ -121,8 +129,6 @@ feature -- Comparison
 		local
 			it: V_SET_ITERATOR [G]
 		do
-			check inv_only ("set_non_void", "registered") end
-			check other.inv_only ("registered") end
 			Result := True
 			if other /= Current then
 				from
@@ -131,8 +137,9 @@ feature -- Comparison
 					is_wrapped
 					other.is_wrapped
 					it.is_wrapped
-					inv_only ("lock_non_current")
-					lock.inv_only ("owns_items")
+					inv_only ("lock_non_current", "items_locked")
+					other.inv_only ("items_locked")
+					lock.inv_only ("owns_definition")
 					1 <= it.index_ and it.index_ <= it.sequence.count + 1
 					Result implies across 1 |..| (it.index_ - 1) as i all other.set_has (it.sequence [i.item]) end
 					not Result implies not other.set_has (it.sequence [it.index_ - 1])
@@ -146,8 +153,8 @@ feature -- Comparison
 					it.sequence.count - it.index_
 				end
 				forget_iterator (it)
-				check inv_only ("set_non_void") end
 			end
+			check inv_only ("locked_non_void") end
 		ensure
 			definition: Result = across set as x all other.set_has (x.item) end
 			observers_restored: observers ~ old observers
@@ -183,8 +190,6 @@ feature -- Comparison
 		local
 			it: V_SET_ITERATOR [G]
 		do
-			check inv_only ("set_non_void", "registered") end
-			check other.inv_only ("registered") end
 			if other.is_empty then
 				Result := True
 			elseif other /= Current then
@@ -195,8 +200,9 @@ feature -- Comparison
 					is_wrapped
 					other.is_wrapped
 					it.is_wrapped
-					inv_only ("lock_non_current")
-					lock.inv_only ("owns_items")
+					inv_only ("lock_non_current", "items_locked")
+					other.inv_only ("items_locked")
+					lock.inv_only ("owns_definition")
 					1 <= it.index_ and it.index_ <= it.sequence.count + 1
 					Result implies across 1 |..| (it.index_ - 1) as i all not other.set_has (it.sequence [i.item]) end
 					not Result implies other.set_has (it.sequence [it.index_ - 1])
@@ -210,8 +216,8 @@ feature -- Comparison
 					it.sequence.count - it.index_
 				end
 				forget_iterator (it)
-				check inv_only ("set_non_void") end
 			end
+			check inv_only ("locked_non_void") end
 		ensure
 			definition: Result = across set as x all not other.set_has (x.item) end
 			observers_restored: observers ~ old observers
@@ -223,9 +229,9 @@ feature -- Extension
 	extend (v: G)
 			-- Add `v' to the set.
 		require
-			v_locked: lock.owns [v]
+			v_locked: lock.locked [v]
 			lock_wrapped: lock.is_wrapped
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model ("set", Current)
 		deferred
 		ensure
@@ -241,14 +247,13 @@ feature -- Extension
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: other.lock = lock
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
 		do
-			check inv_only ("set_non_void", "registered") end
-			check other.inv_only ("registered") end
+			check inv_only ("locked_non_void") end
 			if other /= Current then
 				from
 					it := other.new_cursor
@@ -256,9 +261,9 @@ feature -- Extension
 					is_wrapped
 					other.is_wrapped
 					it.is_wrapped
-					inv_only ("lock_non_current")
-					other.inv_only ("set_non_void", "lock_non_current")
-					lock.inv_only ("owns_items")
+					inv_only ("lock_non_current", "items_locked")
+					other.inv_only ("lock_non_current", "items_locked")
+					lock.inv_only ("owns_definition")
 					1 <= it.index_ and it.index_ <= it.sequence.count + 1
 					set.old_ <= set
 					across 1 |..| (it.index_ - 1) as i all set_has (it.sequence [i.item]) end
@@ -291,22 +296,21 @@ feature -- Removal
 		note
 			status: nonvariant
 		require
-			v_locked: lock.owns [v]
+			v_locked: lock.locked [v]
 			lock_wrapped: lock.is_wrapped
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model (["set", "observers"], Current)
 		local
 			it: V_SET_ITERATOR [G]
 		do
-			check inv_only ("registered", "set_non_void", "lock_non_current") end
-			check lock.inv_only ("owns_items", "sets_no_duplicates") end
+			check inv_only ("lock_non_current", "items_locked", "no_duplicates") end
+			check lock.inv_only ("owns_definition", "equivalence_definition") end
 			it := at (v)
 			if not it.after then
 				v.lemma_transitive (it.sequence [it.index_], set / it.sequence [it.index_])
 				it.remove
 				check it.inv end
 			end
-			check lock.inv_only ("owns_items", "sets_no_duplicates") end
 			forget_iterator (it)
 		ensure
 			abstract_effect: not set_has (v)
@@ -322,14 +326,13 @@ feature -- Removal
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
 		do
-			check inv_only ("set_non_void", "registered", "lock_non_current") end
-			check other.inv_only ("registered") end
+			check inv_only ("locked_non_void") end
 			if other /= Current then
 				from
 					it := new_cursor
@@ -337,9 +340,10 @@ feature -- Removal
 					is_wrapped
 					other.is_wrapped
 					it.is_wrapped
-					inv_only ("set_non_void")
 					it.inv
-					lock.inv_only ("owns_items", "sets_no_duplicates")
+					inv_only ("lock_non_current", "items_locked", "no_duplicates")
+					other.inv_only ("lock_non_current", "items_locked")
+					lock.inv_only ("owns_definition", "equivalence_definition")
 					1 <= it.index_ and it.index_ <= it.sequence.count + 1
 					set <= set.old_
 					across 1 |..| (it.index_ - 1) as i all other.set_has (it.sequence [i.item]) end
@@ -373,14 +377,13 @@ feature -- Removal
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
 		do
-			check inv_only ("set_non_void", "registered", "lock_non_current") end
-			check other.inv_only ("registered") end
+			check inv_only ("locked_non_void") end
 			if other /= Current then
 				from
 					it := other.new_cursor
@@ -388,9 +391,9 @@ feature -- Removal
 					is_wrapped
 					other.is_wrapped
 					it.is_wrapped
-					inv_only ("lock_non_current")
-					other.inv_only ("set_non_void", "lock_non_current")
-					lock.inv_only ("owns_items", "sets_no_duplicates")
+					inv_only ("lock_non_current", "items_locked", "no_duplicates")
+					other.inv_only ("lock_non_current", "items_locked")
+					lock.inv_only ("owns_definition", "equivalence_definition")
 					1 <= it.index_ and it.index_ <= it.sequence.count + 1
 					set <= set.old_
 					across 1 |..| (it.index_ - 1) as i all not set_has (it.sequence [i.item]) end
@@ -424,24 +427,25 @@ feature -- Removal
 		require
 			lock_wrapped: lock.is_wrapped
 			same_lock: lock = other.lock
-			no_iterators: observers = [lock]
+			no_iterators: observers.is_empty
 			modify_model ("set", Current)
 			modify_model ("observers", [Current, other])
 		local
 			it: V_SET_ITERATOR [G]
 			seq: MML_SEQUENCE [G]
 		do
-			check inv_only ("set_non_void", "registered", "lock_non_current") end
-			check other.inv_only ("registered") end
+			check inv_only ("locked_non_void", "lock_non_current") end
 			if other /= Current then
 				from
 					it := other.new_cursor
 					seq := it.sequence
-					check other.inv_only ("set_non_void", "lock_non_current", "bag_definition") end
+					check other.inv_only ("locked_non_void", "lock_non_current", "bag_definition") end
 				invariant
 					is_wrapped
 					it.is_wrapped
-					lock.inv_only ("owns_items", "sets_no_duplicates")
+					inv_only ("items_locked")
+					other.inv_only ("items_locked")
+					lock.inv_only ("owns_definition")
 					1 <= it.index_ and it.index_ <= seq.count + 1
 					across set.old_ as x all other.set_has (x.item).old_ or set [x.item]  end
 					across 1 |..| (it.index_ - 1) as j all lock.set_has (set.old_, seq [j.item]) or set [seq [j.item]] end
@@ -455,6 +459,9 @@ feature -- Removal
 					if has (it.item) then
 						check it.inv_only ("target_bag_constraint") end
 						seq.lemma_no_duplicates
+						check other.inv_only ("items_locked", "no_duplicates") end
+						check inv_only ("items_locked", "no_duplicates") end
+						check lock.inv_only ("equivalence_definition") end
 						remove (it.item)
 					else
 						extend (it.item)
@@ -478,7 +485,7 @@ feature -- Removal
 	wipe_out
 			-- Remove all elements.
 		require
-			no_iterators: observers <= [lock]
+			no_iterators: observers.is_empty
 			modify_model ("set", Current)
 		deferred
 		ensure
@@ -492,15 +499,6 @@ feature -- Specification
 		note
 			status: ghost
 			replaces: bag
-			guard: inv
-		attribute
-		end
-
-	lock: V_LOCK [G, ANY]
-			-- Helper object for keeping items consistent.
-		note
-			status: ghost
-			guard: True
 		attribute
 		end
 
@@ -574,13 +572,6 @@ feature -- Specification
 		end
 
 invariant
-	set_non_void: set.non_void
-	non_empty_has_lock: not set.is_empty implies lock /= Void
-	lock_non_current: lock /= Current
-	lock_non_iterator: not attached {V_ITERATOR [G]} lock
-	subjects_definition: if lock = Void then subjects.is_empty else subjects = [lock] end
-	registered: lock /= Void implies lock.sets [Current]
-	observers_constraint: (lock /= Void) = observers [lock]
 	bag_definition: bag = bag_from (set)
 
 note
