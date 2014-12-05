@@ -136,7 +136,43 @@ feature -- Basic operations
 		local
 			l_type: CL_TYPE_A
 			l_name: STRING
+			l_ownership_handler: E2B_CUSTOM_OWNERSHIP_HANDLER
+			l_feature: FEATURE_I
+			l_expr_translator: E2B_BODY_EXPRESSION_TRANSLATOR
+			l_call: IV_PROCEDURE_CALL
 		do
+
+			create l_ownership_handler
+			create l_expr_translator.make
+			l_expr_translator.set_context (a_feature, a_type)
+			l_expr_translator.set_context_implementation (current_implementation)
+
+				-- OWNERSHIP: start of routine body
+			if options.is_ownership_enabled then
+					-- Public procedures unwrap Current in the beginning, unless lemma or marked with explicit wrapping
+				if helper.is_public (a_feature) and not a_feature.has_return_value and
+					not helper.is_explicit (a_feature, "wrapping") and not helper.is_lemma (a_feature) and not helper.is_nonvariant (a_feature) then
+					l_feature := system.any_type.base_class.feature_named_32 ("unwrap")
+					l_expr_translator.set_context_line_number (a_feature.body.start_location.line)
+
+					l_ownership_handler.pre_builtin_call (l_expr_translator, l_feature)
+					current_block.statements.append (l_expr_translator.side_effect)
+					l_expr_translator.side_effect.wipe_out
+
+					l_call := factory.procedure_call ("unwrap", << entity_mapping.current_expression >>)
+					l_call.node_info.set_attribute ("default", "wrapping")
+					l_call.node_info.set_attribute ("cid", system.any_id.out)
+					l_call.node_info.set_attribute ("rid", l_feature.rout_id_set.first.out)
+					l_call.node_info.set_line (a_feature.body.start_location.line)
+					current_block.add_statement (l_call)
+
+					l_ownership_handler.post_builtin_call (l_expr_translator, l_feature)
+					current_block.statements.append (l_expr_translator.side_effect)
+					l_expr_translator.side_effect.wipe_out
+				end
+			end
+
+
 			helper.set_up_byte_context (a_feature, a_type)
 			if attached Context.byte_code as l_byte_code then
 				if l_byte_code.compound /= Void and then not l_byte_code.compound.is_empty then
@@ -151,6 +187,32 @@ feature -- Basic operations
 					process_compound (l_byte_code.compound)
 				end
 			end
+
+				-- OWNERSHIP: end of routine body
+			if options.is_ownership_enabled then
+				if not helper.is_explicit (a_feature, "wrapping") and not helper.is_lemma (a_feature) and not helper.is_nonvariant (a_feature) then
+					if helper.is_public (a_feature) and not a_feature.has_return_value then
+						l_feature := system.any_type.base_class.feature_named_32 ("wrap")
+						l_expr_translator.set_context_line_number (a_feature.body.end_location.line)
+
+						l_ownership_handler.pre_builtin_call (l_expr_translator, l_feature)
+						current_block.statements.append (l_expr_translator.side_effect)
+						l_expr_translator.side_effect.wipe_out
+
+						l_call := factory.procedure_call ("wrap", << entity_mapping.current_expression >>)
+						l_call.node_info.set_attribute ("default", "wrapping")
+						l_call.node_info.set_attribute ("cid", system.any_id.out)
+						l_call.node_info.set_attribute ("rid", l_feature.rout_id_set.first.out)
+						l_call.node_info.set_line (a_feature.body.end_location.line)
+						current_block.add_statement (l_call)
+
+						l_ownership_handler.post_builtin_call (l_expr_translator, l_feature)
+						current_block.statements.append (l_expr_translator.side_effect)
+						l_expr_translator.side_effect.wipe_out
+					end
+				end
+			end
+
 		end
 
 	process_compound (a_compound: BYTE_LIST [BYTE_NODE])

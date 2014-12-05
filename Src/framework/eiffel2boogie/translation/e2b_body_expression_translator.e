@@ -261,8 +261,8 @@ feature -- Translation
 					-- Using subsumption here, since in a query call chains it can trigger for the followings checks
 				add_safety_check_with_subsumption (factory.frame_access (context_readable, current_target, l_field), "access", "attribute_readable", context_line_number)
 				last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
-				last_safety_check.node_info.set_attribute ("fid", a_feature.feature_id.out)
-				check system.class_of_id (a_feature.written_class.class_id).feature_of_feature_id (a_feature.feature_id).feature_name_id = a_feature.feature_name_id end
+				last_safety_check.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
+				check system.class_of_id (a_feature.written_class.class_id).feature_of_rout_id (a_feature.rout_id_set.first).feature_name_id = a_feature.feature_name_id end
 			end
 
 			last_expression := factory.heap_access (entity_mapping.heap, current_target, l_field.name, l_content_type)

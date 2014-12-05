@@ -2,7 +2,7 @@ note
 	description: "Version of STRING for use in verification."
 	model: sequence
 
-class
+frozen class
 	V_STRING
 
 inherit
@@ -33,10 +33,14 @@ feature {NONE} -- Initialization
 		note
 			status: creator
 			status: skip
+			explicit: contracts
+		require
+			a_string_not_void: a_string /= Void
 		do
 			internal_string := a_string.out
 		ensure
 			same_string: sequence = a_string.sequence
+			default_is_wrapped: is_wrapped
 		end
 
 	init (a_sequence: MML_SEQUENCE [CHARACTER])

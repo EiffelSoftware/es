@@ -876,6 +876,11 @@ feature -- Byte context helpers
 			end
 			check a_type.has_associated_class_type (Void) end
 			Context.init (a_type.associated_class_type (Void))
+--			if a_feature /= Void then
+--				Context.set_class_type (a_feature.written_type (a_type.associated_class_type (Void)))
+--			else
+--				-- TODO: Investiage why it is Void.
+--			end
 
 				-- Set up feature data
 			if a_feature /= Void then
@@ -886,39 +891,6 @@ feature -- Byte context helpers
 				end
 			end
 		end
-
-	set_up_byte_context_type (a_type: TYPE_A; a_context: TYPE_A)
-			-- Set up byte context.
-		do
-				-- Set up class type
-			if not a_type.has_associated_class_type (Void) then
-				if attached {CL_TYPE_A} a_type as l_cl_type_a then
-					a_type.associated_class.update_types (l_cl_type_a)
-				else
-					check False end
-				end
-			end
-			check a_type.has_associated_class_type (Void) end
-			Context.init (a_type.associated_class_type (Void))
-
-				-- Set up context type
-			if not a_context.has_associated_class_type (Void) then
-				if attached {CL_TYPE_A} a_context as l_cl_type_a then
-					a_context.associated_class.update_types (l_cl_type_a)
-				else
-					check False end
-				end
-			end
-			check a_context.has_associated_class_type (Void) end
-			Context.change_class_type_context (
-				a_type.associated_class_type (Void), a_type.associated_class_type (Void).type,
-				a_context.associated_class_type (Void), a_context.associated_class_type (Void).type)
-		end
-
-feature -- IV nodes helper
-
-
-
 
 feature -- Other
 
