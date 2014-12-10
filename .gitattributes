@@ -5358,7 +5358,6 @@ Src/web/eiffel-lang.org/site/themes/eiffel-lang-review/assets/images/sep.png -te
 Src/web/eiffel-lang.org/site/themes/eiffel-lang-review/assets/images/sep2.png -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang-review/theme.info -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/css/all.css -text
-Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/css/doc.css -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/fonts/museosans_500-webfont.eot -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/fonts/museosans_500-webfont.svg -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/fonts/museosans_500-webfont.ttf -text
@@ -5389,11 +5388,15 @@ Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/images/logo.png -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/images/sep.png -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/images/sep2.png -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/960.scss -text
-Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/all.css -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/all.css.map -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/all.scss -text
+Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/base/base-reset.css -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/base/base-reset.scss -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/markup-mixins.scss -text
+Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/site/codeboard.scss -text
+Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/site/custom.scss -text
+Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/site/docs.scss -text
+Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/site/download_product.scss -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/variables.scss -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/theme.info -text
 Src/web/eiffel-lang.org/tools/docs2svn/docs2svn-safe.ecf svneol=native#text/xml
