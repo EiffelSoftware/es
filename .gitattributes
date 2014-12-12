@@ -5398,6 +5398,7 @@ Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/site/codeboard.scss 
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/site/custom.scss -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/site/docs.scss -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/site/download_product.scss -text
+Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/site/variables.scss -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/assets/scss/variables.scss -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang/theme.info -text
 Src/web/eiffel-lang.org/tools/docs2svn/docs2svn-safe.ecf svneol=native#text/xml
