@@ -79,6 +79,7 @@ Src/.git-svn/users.txt -text
 Src/C/CONFIGS/iphone-arm-64 -text
 Src/C/eif_config_h.SH eol=lf
 Src/C/run-time/eif_size_h.SH eol=lf
+Src/C/run-time/scoop/unordered_map.hpp -text
 Src/C/shell/bin/cat.exe -text
 Src/C/shell/bin/chmod.exe -text
 Src/C/shell/bin/mkdir.exe -text
