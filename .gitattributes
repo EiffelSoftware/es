@@ -5347,6 +5347,7 @@ Src/web/eiffel-lang.org/site/config/cms.ini -text
 Src/web/eiffel-lang.org/site/config/eiffel-lang-app.ini -text
 Src/web/eiffel-lang.org/site/config/eiffel-lang.ini -text
 Src/web/eiffel-lang.org/site/config/modules/download/downloads_configuration.json -text
+Src/web/eiffel-lang.org/site/config/modules/eiffel_lang_about/about_configuration.json -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang-review/assets/images/bg-head.jpg -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang-review/assets/images/bg-head2.jpg -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang-review/assets/images/bg-header.jpg -text
