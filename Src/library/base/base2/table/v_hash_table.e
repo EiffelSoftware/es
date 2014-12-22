@@ -152,6 +152,51 @@ feature -- Iteration
 			Result.search_key (k)
 		end
 
+feature -- Comparison
+
+	is_equal2 (other: like Current): BOOLEAN
+			-- Is the abstract state of Current equal to that of `other'?
+		require
+			subjects_closed: lock.closed
+			other_subjects_closed: other.lock.closed
+		local
+			i: INTEGER
+			l: V_LINKED_LIST [MML_PAIR [K, V]]
+		do
+			check inv_only ("count_definition") end
+			check other.inv_only ("count_definition") end
+			if count_ = other.count_ then
+				from
+					Result := True
+					i := 1
+				invariant
+					inv
+					1 <= i and i <= lists.count + 1
+					Result implies across 1 |..| (i - 1) as j all
+						across 1 |..| lists [j.item].sequence.count as k all
+							other.map.domain [(lists [j.item].sequence) [k.item].left] and then
+							other.map [(lists [j.item].sequence) [k.item].left] = (lists [j.item].sequence) [k.item].right end end
+					not Result implies i > 1 and then not
+						(across 1 |..| lists [i - 1].sequence.count as k all
+							other.map.domain [(lists [i - 1].sequence) [k.item].left] and then
+							other.map [(lists [i - 1].sequence) [k.item].left] = (lists [i - 1].sequence) [k.item].right end)
+				until
+					i > buckets.count or not Result
+				loop
+					l := buckets [i]
+					Result := has_list (l, other)
+					i := i + 1
+				variant
+					lists.count - i
+				end
+			end
+			if Result then
+				other.map.domain.lemma_subset (map.domain)
+			end
+		ensure
+			definition: Result = is_model_equal (other)
+		end
+
 feature -- Extension
 
 	extend (v: V; k: K)
@@ -607,6 +652,52 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			wrapped: is_wrapped
 			capacity_effect: lists.count = c
 			map_unchanged: map = old map
+		end
+
+	has_list (list: V_LINKED_LIST [MML_PAIR [K, V]]; other: like Current): BOOLEAN
+			-- Does `other' contain all elements stored in the bucket `list'?
+		require
+			lock_closed: lock.closed
+			other_lock_closed: other.lock.closed
+			list_items_locked: across 1 |..| list.sequence.count as j all lock.locked [list.sequence [j.item].left] end
+		local
+			c: V_LINKABLE [MML_PAIR [K, V]]
+			i_: INTEGER
+		do
+			check list.inv_only ("cells_domain", "first_cell_empty", "cells_first", "cells_last", "cells_exist", "cells_linked", "sequence_implementation") end
+			check lock.inv_only ("owns_definition") end
+			check other.lock.inv_only ("owns_definition") end
+			from
+				Result := True
+				c := list.first_cell
+				i_ := 1
+			invariant
+				other.inv_only ("items_locked", "locked_definition")
+				1 <= i_ and i_ <= list.sequence.count + 1
+				i_ <= list.sequence.count implies c = list.cells [i_]
+				i_ = list.sequence.count + 1 implies c = Void
+				Result implies across 1 |..| (i_ - 1) as j all
+					other.map.domain [list.sequence [j.item].left] and then other.map [list.sequence [j.item].left] = list.sequence [j.item].right end
+				not Result implies i_ > 1 and then
+					(not other.map.domain [list.sequence [i_ - 1].left] or else other.map [list.sequence [i_ - 1].left] /= list.sequence [i_ - 1].right)
+			until
+				c = Void or not Result
+			loop
+				Result := other.has_key (c.item.left) and then
+					(other.key (c.item.left) = c.item.left and other.item (c.item.left) = c.item.right)
+				if other.domain_has (c.item.left) and not Result then
+					check other.inv_only ("no_duplicates") end
+					check other.lock.inv_only ("equivalence_definition") end
+					c.item.left.lemma_transitive (other.key (c.item.left), other.map.domain / other.key (c.item.left))
+				end
+				c := c.right
+				i_ := i_ + 1
+			variant
+				list.sequence.count - i_
+			end
+		ensure
+			definition: Result = across 1 |..| list.sequence.count as j all
+				other.map.domain [list.sequence [j.item].left] and then other.map [list.sequence [j.item].left] = list.sequence [j.item].right end
 		end
 
 feature -- Specification

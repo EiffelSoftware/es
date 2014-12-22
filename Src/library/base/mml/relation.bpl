@@ -29,10 +29,10 @@ axiom (forall<U, V> u: U, v: V :: { Rel#Empty()[u, v] } !Rel#Empty()[u, v]);
 // axiom (forall<U, V> r: Rel U V :: { Rel#Card(r) }
   // (Rel#Card(r) == 0 <==> r == Rel#Empty()) &&
   // (Rel#Card(r) != 0 ==> (exists u: U, v: V :: r[u, v])));
-// axiom (forall<U, V> r: Rel U V :: { Rel#Domain(r) }
-  // (Set#IsEmpty(Rel#Domain(r)) <==> r == Rel#Empty()));
-// axiom (forall<U, V> r: Rel U V :: { Rel#Range(r) }
-  // (Set#IsEmpty(Rel#Range(r)) <==> r == Rel#Empty()));  
+axiom (forall<U, V> r: Rel U V :: { Rel#Domain(r) }
+  (Set#IsEmpty(Rel#Domain(r)) <==> r == Rel#Empty()));
+axiom (forall<U, V> r: Rel U V :: { Rel#Range(r) }
+  (Set#IsEmpty(Rel#Range(r)) <==> r == Rel#Empty()));  
 axiom (forall<U, V> r: Rel U V :: { Rel#ToSet(r) }
   (Set#IsEmpty(Rel#ToSet(r)) <==> r == Rel#Empty()));  
 axiom (forall<U, V> f: Field (Rel U V) :: { Default(f) } Default(f) == Rel#Empty() : Rel U V);    
@@ -70,8 +70,8 @@ axiom (forall<U, V> r: Rel U V, s: Set U :: { Rel#Image(r, s) }
   
 // Are two relation equal?  
 function Rel#Equal<U, V>(Rel U V, Rel U V): bool;
-// axiom(forall<U, V> a: Rel U V, b: Rel U V :: { Rel#Equal(a, b) }
-  // Rel#Equal(a, b) <==> (forall u: U, v: V :: {a[u, v]} {b[u, v]} a[u, v] <==> b[u, v]));
+axiom(forall<U, V> a: Rel U V, b: Rel U V :: { Rel#Equal(a, b) }
+  Rel#Equal(a, b) <==> (forall u: U, v: V :: {a[u, v]} {b[u, v]} a[u, v] <==> b[u, v]));
 axiom(forall<U, V> a: Rel U V, b: Rel U V :: { Rel#Equal(a, b) }
   Rel#Equal(a, b) <==> Set#Equal(Rel#ToSet(a), Rel#ToSet(b)));  
 axiom(forall<U, V> a: Rel U V, b: Rel U V :: { Rel#Equal(a, b) }  // extensionality axiom for relation

@@ -15,10 +15,14 @@ deferred class
 inherit
 	V_CONTAINER [V]
 		redefine
-			is_empty
+			is_empty,
+			is_model_equal
 		end
 
 	V_LOCKER [K]
+		redefine
+			is_model_equal
+		end
 
 feature -- Measurement
 
@@ -152,6 +156,14 @@ feature -- Specification
 			reads ([])
 		do
 			Result := m.to_bag
+		end
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is the abstract state of `Current' equal to that of `other'?
+		note
+			status: ghost, functional, nonvariant
+		do
+			Result := map ~ other.map
 		end
 
 invariant

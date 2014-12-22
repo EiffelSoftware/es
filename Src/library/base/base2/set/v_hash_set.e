@@ -113,6 +113,20 @@ feature -- Iteration
 			Result.search (v)
 		end
 
+feature -- Comparison
+
+	is_equal2 (other: like Current): BOOLEAN
+			-- Is the abstract state of Current equal to that of `other'?
+		require
+			subjects_closed: lock.closed
+			other_subjects_closed: other.lock.closed
+		do
+			check inv; other.inv end
+			Result := table.is_equal2 (other.table)
+		ensure
+			definition: Result = is_model_equal (other)
+		end
+
 feature -- Extension
 
 	extend (v: G)
@@ -173,6 +187,7 @@ invariant
 	table_exists: table /= Void
 	owns_definition: owns = [table]
 	set_implementation: set = table.map.domain
+	table_values_definition: across set as x all table.map [x.item] = Void end
 	same_lock: lock = table.lock
 	observers_type: across observers as o all attached {V_HASH_SET_ITERATOR [G]} o.item end
 	observers_correspond: table.observers.count <= observers.count
