@@ -45,8 +45,7 @@ feature
 	good1 (r: MML_RELATION [A_RELATIONS, A_RELATIONS])
 		require
 			not r.is_empty
-			across r as x all x.item /= Void end
-			across r.range as y all y.item /= Void end
+			across r as x all x.item.left /= Void and x.item.right /= Void end
 		local
 			u: A_RELATIONS
 		do

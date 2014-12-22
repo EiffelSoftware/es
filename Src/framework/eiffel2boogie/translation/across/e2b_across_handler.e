@@ -84,9 +84,9 @@ feature -- Basic operations
 							not binop.right.has_free_var_named (l_bound_var.name) then
 								-- It is an implication where the consequent does not contain the bound variable; do not include antecedents that do.
 							if assert.is_free then
-								create l_assert.make_assume (binop.right)
+								create l_assert.make_assume (factory.implies_ (bound_conjuncts_removed (binop.left, l_bound_var), binop.right))
 							else
-								create l_assert.make (binop.right)
+								create l_assert.make (factory.implies_ (bound_conjuncts_removed (binop.left, l_bound_var), binop.right))
 							end
 						else
 							if assert.is_free then
@@ -163,5 +163,17 @@ feature {NONE} -- Implementation
 		require
 			single_variable: a_quantifier.bound_variables.count = 1
 		deferred
+		end
+
+	bound_conjuncts_removed (a_expr: IV_EXPRESSION; a_bound_var: IV_ENTITY): IV_EXPRESSION
+			-- Conjunction `a_expr' with all conjuncts that contain `a_bound_var' removed.
+		do
+			if attached {IV_BINARY_OPERATION} a_expr as binop and then binop.operator ~ "&&" then
+				Result := factory.and_clean (bound_conjuncts_removed (binop.left, a_bound_var), bound_conjuncts_removed (binop.right, a_bound_var))
+			elseif a_expr.has_free_var_named (a_bound_var.name) then
+				Result := factory.true_
+			else
+				Result := a_expr
+			end
 		end
 end
