@@ -17,16 +17,14 @@ inherit
 			search as search_forth
 		redefine
 			item,
-			search_forth,
-			is_model_equal
+			search_forth
 		end
 
 	ITERATION_CURSOR [G]
 		rename
 			after as off
 		redefine
-			item,
-			is_model_equal
+			item
 		end
 
 feature -- Access
@@ -294,14 +292,6 @@ feature -- Specification
 			status: ghost
 			replaces: box
 		attribute
-		end
-
-	is_model_equal (other: like Current): BOOLEAN
-			-- Is the abstract state of `Current' equal to that of `other'?
-		note
-			status: ghost, functional, nonvariant
-		do
-			Result := target = other.target and sequence ~ other.sequence and index_ = other.index_
 		end
 
 invariant

@@ -11,7 +11,8 @@ deferred class
 inherit
 	V_ITERATOR [G]
 		redefine
-			target
+			target,
+			is_model_equal
 		end
 
 feature -- Access
@@ -53,6 +54,16 @@ feature -- Removal
 			target_set_effect: target.set ~ old (target.set / sequence [index_])
 			target_wrapped: target.is_wrapped
 			index_ = old index_
+		end
+
+feature -- Specification
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is iterator traversing the same container in the same order and is at the same position at `other'?		
+		note
+			status: ghost, functional, nonvariant
+		do
+			Result := target = other.target and sequence = other.sequence and index_ = other.index_
 		end
 
 invariant

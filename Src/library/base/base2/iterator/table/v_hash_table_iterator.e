@@ -177,6 +177,32 @@ feature -- Status report
 			end
 		end
 
+feature -- Comparison
+
+	is_equal2 (other: like Current): BOOLEAN
+			-- Is iterator traversing the same container and is at the same position at `other'?
+		require
+			subjects_closed: target.closed
+			other_subjects_closed: other.target.closed
+		do
+			check inv; other.inv end
+			if target = other.target then
+				check target.inv end
+				check list_iterator.inv; other.list_iterator.inv end
+				if bucket_index = other.bucket_index then
+					Result := not target.buckets.has_index (bucket_index) or list_iterator.is_equal_ (other.list_iterator)
+				elseif 1 <= other.bucket_index and other.bucket_index < bucket_index then
+					lemma_single_out (target.buckets_.front (bucket_index - 1), other.bucket_index)
+					check target.buckets_.front (bucket_index - 1).front (other.bucket_index - 1) = target.buckets_.front (other.bucket_index - 1) end
+				elseif 1 <= bucket_index and bucket_index < other.bucket_index then
+					lemma_single_out (target.buckets_.front (other.bucket_index - 1), bucket_index)
+					check target.buckets_.front (other.bucket_index - 1).front (bucket_index - 1) = target.buckets_.front (bucket_index - 1) end
+				end
+			end
+		ensure
+			definition: Result = is_model_equal (other)
+		end
+
 feature -- Cursor movement
 
 	search_key (k: K)

@@ -13,7 +13,8 @@ inherit
 		rename
 			sequence as value_sequence
 		redefine
-			target
+			target,
+			is_model_equal
 		end
 
 feature -- Access
@@ -70,6 +71,14 @@ feature -- Specification
 			Result := m.sequence_image (seq)
 		ensure
 			same_count: Result.count = seq.count
+		end
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is iterator traversing the same container in the same order and is at the same position at `other'?		
+		note
+			status: ghost, functional, nonvariant
+		do
+			Result := target = other.target and sequence = other.sequence and index_ = other.index_
 		end
 
 	lemma_sequence_no_duplicates

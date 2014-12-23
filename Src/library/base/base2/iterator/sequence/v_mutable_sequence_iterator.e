@@ -17,6 +17,8 @@ inherit
 		end
 
 	V_IO_ITERATOR [G]
+		undefine
+			is_model_equal
 		redefine
 			target,
 			sequence,

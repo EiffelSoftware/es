@@ -12,7 +12,8 @@ inherit
 	V_ITERATOR [G]
 		redefine
 			target,
-			is_equal_
+			is_equal_,
+			is_model_equal
 		end
 
 create {V_CONTAINER}
@@ -220,6 +221,16 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 		ensure
 			is_wrapped
 			index_effect: index_ = old other.index_
+		end
+
+feature -- Specification
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is the abstract state of `Current' equal to that of `other'?
+		note
+			status: ghost, functional, nonvariant
+		do
+			Result := target = other.target and index_ = other.index_
 		end
 
 invariant

@@ -11,7 +11,8 @@ deferred class
 inherit
 	V_ITERATOR [G]
 		redefine
-			target
+			target,
+			is_model_equal
 		end
 
 feature -- Access
@@ -32,6 +33,16 @@ feature -- Access
 
 	target: V_SEQUENCE [G]
 			-- Sequence to iterate over.
+
+feature -- Specification
+
+	is_model_equal (other: like Current): BOOLEAN
+			-- Is the abstract state of `Current' equal to that of `other'?
+		note
+			status: ghost, functional, nonvariant
+		do
+			Result := target = other.target and index_ = other.index_
+		end
 
 invariant
 	sequence_definition: sequence ~ target.sequence
