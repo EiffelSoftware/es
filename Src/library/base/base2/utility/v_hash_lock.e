@@ -38,7 +38,7 @@ feature -- Basic operations
 			add_equivalences (item)
 			hash := hash.updated (item, item.hash_code_)
 			locked := locked & item
-			set_owns (owns & item)
+			set_owns (owns & item + item.subjects)
 			wrap
 		end
 

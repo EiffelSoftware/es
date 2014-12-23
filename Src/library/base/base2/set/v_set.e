@@ -58,7 +58,7 @@ feature -- Search
 			-- Is `v' contained?
 			-- (Uses object equality.)
 		require
-			v_closed: v.closed
+			v_closed_with_subjects: v.is_closed_with_subjects
 			lock_closed: lock.closed
 		deferred
 		ensure
@@ -68,7 +68,7 @@ feature -- Search
 	item (v: G): G
 			-- Element of `set' equivalent to `v' according to object equality.
 		require
-			v_closed: v.closed
+			v_closed_with_subjects: v.is_closed_with_subjects
 			has: set_has (v)
 			lock_closed: lock.closed
 		deferred

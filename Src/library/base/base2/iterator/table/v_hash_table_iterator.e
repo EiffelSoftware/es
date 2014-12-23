@@ -11,6 +11,7 @@ class
 inherit
 	V_TABLE_ITERATOR [K, V]
 		redefine
+			is_equal_,
 			target
 		end
 
@@ -179,11 +180,8 @@ feature -- Status report
 
 feature -- Comparison
 
-	is_equal2 (other: like Current): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is iterator traversing the same container and is at the same position at `other'?
-		require
-			subjects_closed: target.closed
-			other_subjects_closed: other.target.closed
 		do
 			check inv; other.inv end
 			if target = other.target then
@@ -199,8 +197,6 @@ feature -- Comparison
 					check target.buckets_.front (other.bucket_index - 1).front (bucket_index - 1) = target.buckets_.front (bucket_index - 1) end
 				end
 			end
-		ensure
-			definition: Result = is_model_equal (other)
 		end
 
 feature -- Cursor movement

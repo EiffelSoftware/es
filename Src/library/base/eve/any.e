@@ -75,9 +75,8 @@ feature -- Comparison
 		note
 			explicit: contracts
 		require
---			same_type: generating_type = other.generating_type
-			closed: closed
-			other_closed: other.closed
+			closed_with_subjects: is_closed_with_subjects
+			other_closed_with_subjects: other.is_closed_with_subjects
 		do
 			Result := True
 		ensure
@@ -653,6 +652,14 @@ feature -- Verification: ownership fields
 			status: functional, ghost
 		do
 			Result := new_observers [o]
+		end
+
+	is_closed_with_subjects: BOOLEAN
+			-- Are `Current' and its `subjects' closed?
+		note
+			status: functional, ghost, inv_unfriendly
+		do
+			Result := closed and across subjects as s all s.item.closed end
 		end
 
 feature -- Verification: auxiliary

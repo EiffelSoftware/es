@@ -137,7 +137,8 @@ feature -- Comparison
 			-- Is iterator traversing the same container and is at the same position at `other'?
 		do
 			check inv; other.inv; iterator.inv; other.iterator.inv end
-			Result := target = other.target and iterator.is_equal_ (other.iterator)
+			check target.inv_only ("owns_definition"); other.target.inv_only ("owns_definition") end
+			Result := iterator.is_equal_ (other.iterator)
 		end
 
 feature -- Cursor movement

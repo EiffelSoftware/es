@@ -15,6 +15,7 @@ frozen class
 inherit
 	V_SET [G]
 		redefine
+			is_equal_,
 			lock,
 			forget_iterator
 		end
@@ -115,16 +116,12 @@ feature -- Iteration
 
 feature -- Comparison
 
-	is_equal2 (other: like Current): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is the abstract state of Current equal to that of `other'?
-		require
-			subjects_closed: lock.closed
-			other_subjects_closed: other.lock.closed
 		do
 			check inv; other.inv end
-			Result := table.is_equal2 (other.table)
-		ensure
-			definition: Result = is_model_equal (other)
+			check table.inv_only ("subjects_definition"); other.table.inv_only ("subjects_definition") end
+			Result := table.is_equal_ (other.table)
 		end
 
 feature -- Extension

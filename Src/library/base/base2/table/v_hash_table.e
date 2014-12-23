@@ -15,6 +15,7 @@ frozen class
 inherit
 	V_TABLE [K, V]
 		redefine
+			is_equal_,
 			map,
 			lock,
 			forget_iterator
@@ -154,17 +155,14 @@ feature -- Iteration
 
 feature -- Comparison
 
-	is_equal2 (other: like Current): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is the abstract state of Current equal to that of `other'?
-		require
-			subjects_closed: lock.closed
-			other_subjects_closed: other.lock.closed
 		local
 			i: INTEGER
 			l: V_LINKED_LIST [MML_PAIR [K, V]]
 		do
-			check inv_only ("count_definition") end
-			check other.inv_only ("count_definition") end
+			check inv_only ("count_definition", "subjects_definition") end
+			check other.inv_only ("count_definition", "subjects_definition") end
 			if count_ = other.count_ then
 				from
 					Result := True
@@ -193,8 +191,6 @@ feature -- Comparison
 			if Result then
 				other.map.domain.lemma_subset (map.domain)
 			end
-		ensure
-			definition: Result = is_model_equal (other)
 		end
 
 feature -- Extension
@@ -306,7 +302,7 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			-- Void if the list has no such cell.
 		require
 			closed: closed
-			k_closed: k.closed
+			k_closed_with_subjects: k.is_closed_with_subjects
 			lock_closed: lock.closed
 		do
 			check inv_only ("locked_definition", "owns_definition", "buckets_non_empty", "buckets_lower", "buckets_count",
@@ -329,8 +325,8 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			-- Void if the list has no such cell.
 		require
 			list_closed: list.closed
-			k_closed: k.closed
-			list_keys_closed: across 1 |..| list.sequence.count as i all list.sequence [i.item].left.closed end
+			k_closed_with_subjects: k.is_closed_with_subjects
+			list_keys_closed_with_subjects: across 1 |..| list.sequence.count as i all list.sequence [i.item].left.is_closed_with_subjects end
 		do
 			check list.inv_only ("cells_domain", "cells_exist", "cells_linked", "cells_first", "first_cell_empty", "sequence_implementation") end
 			if not list.is_empty then
@@ -353,8 +349,8 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 		require
 			list_closed: list.closed
 			not_empty: not list.sequence.is_empty
-			k_closed: k.closed
-			list_keys_closed: across 1 |..| list.sequence.count as i all list.sequence [i.item].left.closed end
+			k_closed_with_subjects: k.is_closed_with_subjects
+			list_keys_closed_with_subjects: across 1 |..| list.sequence.count as i all list.sequence [i.item].left.is_closed_with_subjects end
 		local
 			j_: INTEGER
 		do
@@ -478,14 +474,15 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 			list_wrapped: list.is_wrapped
 			not_empty: not list.sequence.is_empty
 			lock_wrapped: lock.is_wrapped
-			key_owned: lock.owns [k]
-			list_keys_owned: across 1 |..| list.sequence.count as i all lock.owns [list.sequence [i.item].left] end
+			key_locked: lock.locked [k]
+			list_keys_owned: across 1 |..| list.sequence.count as i all lock.locked [list.sequence [i.item].left] end
 			has_equal: across 1 |..| list.sequence.count as i some k.is_model_equal (list.sequence [i.item].left) end
 			no_observers: list.observers.is_empty
 			modify_model ("sequence", list)
 		local
 			c: V_LINKABLE [MML_PAIR [K, V]]
 		do
+			check lock.inv_only ("owns_definition") end
 			c := cell_before (list, k)
 			if c = Void then
 				Result := 1
@@ -657,6 +654,8 @@ feature {V_CONTAINER, V_ITERATOR, V_LOCK} -- Implementation
 	has_list (list: V_LINKED_LIST [MML_PAIR [K, V]]; other: like Current): BOOLEAN
 			-- Does `other' contain all elements stored in the bucket `list'?
 		require
+			list_closed: list.closed
+			other_closed: other.closed
 			lock_closed: lock.closed
 			other_lock_closed: other.lock.closed
 			list_items_locked: across 1 |..| list.sequence.count as j all lock.locked [list.sequence [j.item].left] end

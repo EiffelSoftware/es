@@ -11,6 +11,7 @@ class
 inherit
 	V_SET_ITERATOR [G]
 		redefine
+			is_equal_,
 			target
 		end
 
@@ -143,17 +144,12 @@ feature -- Status report
 
 feature -- Comparison
 
-	is_equal2 (other: like Current): BOOLEAN
+	is_equal_ (other: like Current): BOOLEAN
 			-- Is iterator traversing the same container and is at the same position at `other'?
-		require
-			subjects_closed: target.closed
-			other_subjects_closed: other.target.closed
 		do
 			check inv; other.inv; iterator.inv; other.iterator.inv end
 			check target.inv_only ("owns_definition"); other.target.inv_only ("owns_definition") end
-			Result := iterator.is_equal2 (other.iterator)
-		ensure
-			definition: Result = is_model_equal (other)
+			Result := iterator.is_equal_ (other.iterator)
 		end
 
 feature -- Cursor movement

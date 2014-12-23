@@ -31,45 +31,47 @@ feature -- Access
 feature -- Basic operations
 
 	lock (item: G)
-			-- Add `item' to `locked'.
+			-- Add `item' and its subjects to `locked'.
 		note
 			status: setter
 		require
 			wrapped: is_wrapped
 			item_wrapped: item.is_wrapped
-			not_current: item /= Current
+			subjects_wrapped: across item.subjects as s all s.item.is_wrapped end
+			not_current: item /= Current and not item.subjects [Current]
 			modify (Current)
-			modify_field ("owner", [item, owns])
+			modify_field ("owner", [item, item.subjects, owns])
 		do
 			unwrap
 			add_equivalences (item)
 			locked := locked & item
-			set_owns (owns & item)
+			set_owns (owns & item + item.subjects)
 			wrap
 		ensure
 			locked_effect: locked = old locked & item
-			owns_effect: owns = old owns & item
+			owns_effect: owns = old owns & item + item.subjects
 			wrapped: is_wrapped
 		end
 
 	unlock (item: G)
-			-- Remove `item' that is not in use from `locked'.
+			-- Remove `item' that is not in use and its subjects from `locked'.
 		note
 			status: setter
 		require
 			wrapped: is_wrapped
-			item_locked: owns [item]
+			item_locked: locked [item]
 			not_in_use: across observers as o all attached {V_LOCKER [G]} o.item as c and then not c.locked [item] end
+			not_subject: across locked as o all not o.item.subjects [item] and o.item.subjects.is_disjoint (item.subjects) end
 			modify (Current)
 			modify_field ("owner", [item, owns])
 		do
 			unwrap
 			locked := locked / item
-			set_owns (owns / item)
+			set_owns (owns / item - item.subjects)
 			wrap
 		ensure
 			locked_effect: locked = old locked / item
-			owns_effect: owns = old owns / item
+			owns_effect: owns = old owns / item - item.subjects
 			item_wrapped: item.is_wrapped
 			wrapped: is_wrapped
 		end
@@ -200,7 +202,7 @@ feature {NONE} -- Implementation
 
 invariant
 	locked_non_void: locked.non_void
-	owns_definition: owns = locked
+	owns_definition: across locked as x all owns [x.item] and x.item.subjects <= owns end
 	equivalence_definition: across locked as x all across locked as y all equivalence [x.item, y.item] = (x.item.is_model_equal (y.item)) end end
 	default_subjects: subjects = []
 	observrs_are_lockers: across observers as o all attached {V_LOCKER [G]} o.item end

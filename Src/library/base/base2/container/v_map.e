@@ -52,7 +52,7 @@ feature -- Search
 			-- Is key `k' contained?
 			-- (Uses object equality.)
 		require
-			k_closed: k.closed
+			k_closed_with_subjects: k.is_closed_with_subjects
 			lock_closed: lock.closed
 		deferred
 		ensure
@@ -62,7 +62,7 @@ feature -- Search
 	key (k: K): K
 			-- Element of `map.domain' equivalent to `v' according to object equality.
 		require
-			k_closed: k.closed
+			k_closed_with_subjects: k.is_closed_with_subjects
 			has: domain_has (k)
 			lock_closed: lock.closed
 		deferred
@@ -73,7 +73,7 @@ feature -- Search
 	item alias "[]" (k: K): V
 			-- Value associated with `k'.
 		require
-			k_closed: k.closed
+			k_closed_with_subjects: k.is_closed_with_subjects
 			has_key: domain_has (k)
 			lock_closed: lock.closed
 		deferred

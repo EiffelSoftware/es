@@ -22,6 +22,7 @@ feature -- Hash tables
 			create i.set_value (1)
 			create j.set_value (2)
 			create k.set_value (1)
+			check i.inv; j.inv; k.inv end
 			lock.lock (i)
 			lock.lock (j)
 			lock.lock (k)
