@@ -5477,7 +5477,6 @@ Src/web/eiffel-lang.org/tools/docs2svn/docs2svn.rc -text
 Src/web/eiffel_download/IIRF.ini -text
 Src/web/eiffel_download/download_tables.sql -text
 Src/web/eiffel_download/ewf_download.ecf svneol=native#text/xml
-Src/web/eiffel_download/site/config/downloads_configuration.xml svneol=native#text/xml
 Src/web/eiffel_download/sp_download_script.sql -text
 Src/web/support/api/IIRF.ini -text
 Src/web/support/api/ecf-target-any_connector -text
