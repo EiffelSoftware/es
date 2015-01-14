@@ -5328,7 +5328,6 @@ Src/web/eiffel-lang.org/data/documentation/current/_images/LogoRule.png -text
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoUpdateNeeded.png -text
 Src/web/eiffel-lang.org/data/documentation/current/_images/LogoWarning.png -text
 Src/web/eiffel-lang.org/eiffel-lang-safe.ecf svneol=native#text/xml
-Src/web/eiffel-lang.org/eiffel-lang.json -text
 Src/web/eiffel-lang.org/eiffel-lang_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/ewf.ini -text
 Src/web/eiffel-lang.org/library/recaptcha/license.lic -text
@@ -5338,6 +5337,8 @@ Src/web/eiffel-lang.org/library/wikidocs/testing/testing.ecf svneol=native#text/
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/codeboard/codeboard-safe.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/modules/contact/contact-safe.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/modules/contact/contact.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/eiffel_download/eiffel_download-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/eiffel_lang_about/eiffel_lang_about-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/modules/eiffel_lang_misc/eiffel_lang_misc-safe.ecf svneol=native#text/xml
@@ -5346,6 +5347,7 @@ Src/web/eiffel-lang.org/site/config/application_configuration.json -text
 Src/web/eiffel-lang.org/site/config/cms.ini -text
 Src/web/eiffel-lang.org/site/config/eiffel-lang-app.ini -text
 Src/web/eiffel-lang.org/site/config/eiffel-lang.ini -text
+Src/web/eiffel-lang.org/site/config/modules/contact/contact.json -text
 Src/web/eiffel-lang.org/site/config/modules/download/downloads_configuration.json -text
 Src/web/eiffel-lang.org/site/config/modules/eiffel_lang_about/about_configuration.json -text
 Src/web/eiffel-lang.org/site/themes/eiffel-lang-review/assets/images/bg-head.jpg -text
