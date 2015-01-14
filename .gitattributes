@@ -5332,6 +5332,7 @@ Src/web/eiffel-lang.org/eiffel-lang_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/ewf.ini -text
 Src/web/eiffel-lang.org/library/recaptcha/license.lic -text
 Src/web/eiffel-lang.org/library/recaptcha/recaptcha.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/library/recaptcha/test/test.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/testing/testing-safe.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/testing/testing.ecf svneol=native#text/xml
 Src/web/eiffel-lang.org/library/wikidocs/wikidocs-safe.ecf svneol=native#text/xml
