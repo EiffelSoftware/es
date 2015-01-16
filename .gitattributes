@@ -5331,7 +5331,7 @@ Src/web/eiffel-org/eiffel_community_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/eiffel_community_site-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/ewf.ini -text
 Src/web/eiffel-org/library/recaptcha/license.lic -text
-Src/web/eiffel-org/library/recaptcha/recaptcha.ecf svneol=native#text/xml
+Src/web/eiffel-org/library/recaptcha/recaptcha-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/library/recaptcha/test/test.ecf svneol=native#text/xml
 Src/web/eiffel-org/library/wikidocs/testing/testing-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/library/wikidocs/testing/testing.ecf svneol=native#text/xml
