@@ -1644,7 +1644,7 @@ feature -- Basic Operations
 			log.write_information (generator + ".add_temporary_contacts_to_contacts")
 			create l_parameters.make (1)
 			l_parameters.put (string_parameter (a_email, 150), {DATA_PARAMETERS_NAMES}.Email_param)
-			db_handler.set_store (create {DATABASE_STORE_PROCEDURE}.data_writer ("CommitContact2", l_parameters))
+			db_handler.set_store (create {DATABASE_STORE_PROCEDURE}.data_writer ("CommitContact", l_parameters))
 			db_handler.execute_writer
 			post_execution
 		end
@@ -2352,7 +2352,8 @@ feature -- Queries
 										    from ProblemReportResponsibles prr, ProblemReports pr
 										    where prr.ReportID = pr.ReportID and pr.ReportID = ProblemReports.ReportID)
 						LEFT JOIN LastActivityDates ON LastActivityDates.ReportID = ProblemReports.ReportID
-						WHERE ProblemReports.StatusID in $StatusSet
+						WHERE $Submitter 
+						ProblemReports.StatusID in $StatusSet
 						$queryFilter
 						$SearchBySynopsisAndOrDescription
 						ORDER BY $Column $ORD1
