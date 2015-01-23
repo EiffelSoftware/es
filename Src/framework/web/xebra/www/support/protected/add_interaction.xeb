@@ -1,0 +1,80 @@
+<page:include template="support_side">
+<page:define_region id="main_content">
+	<div>
+		<div id="title_box"><h1>Problem Report Interaction Submission</h1></div>		
+		<div id="main_id">
+			<p>
+				Fill in the description for the new interaction for the
+				<b><xeb:display css_class="field_name" text="synopsis_status_label" />
+			</b> problem report .
+	</p>
+	<xeb:display text="NoText" />
+	<table class="standard_padding">
+		<tr>
+			<td class="field_name">
+				Description:
+			</td>
+			<td>
+				<f:validator class="RequiredFieldValidator" />
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<f:validator class="textBox" />
+			</td> 
+		</tr>
+		<tr id="private_interaction">
+			<td colspan="2">			
+				<div id="private_change">
+				<a id="private_link"><img alt="" class="info_icon" src="<%=information_icon_url %>" /></a>
+				<f:check_box 
+					label="Private" value="private" name="a_private"/>				
+				</div>
+				
+			    <div id="close_report_change">
+				<a id="close_report_link"><img alt="" class="info_icon" src="<%=information_icon_url %>" /></a>
+				<f:check_box label="Close report" value="close_report_box" name="a_close_report_box" />				
+				</div>
+				
+				<div id="reopen_report_change">
+				<a id="reopen_report_link"><img alt="" class="info_icon" src="<%=information_icon_url %>" /></a>
+				<f:check_box label="Reopen report" value="reopen_report_box" name="a_reopen_report_box"/>				
+				</div>
+			</td>
+		</tr>
+		<tr id="status_change">
+			<td colspan="2">
+				Change status from
+				<xeb:display text="noText"/>
+				to
+
+			</td>
+		</tr>
+		<tr id="category_change">
+			<td colspan="2">
+				Change category from
+				<xeb:display text="NoText" />
+				to
+
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="field_name">
+				Attachments:
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="last_field_name">
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="submit_column">
+				
+			</td>
+		</tr>
+	</table>
+	</div>
+	<xeb:display text="message_label" />
+</div>
+</page:define_region>
+</page:include>

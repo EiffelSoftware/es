@@ -1,0 +1,15 @@
+package pcre
+
+project
+	pcre = "pcre-safe.ecf"
+	pcre = "pcre.ecf"
+
+note
+--	title: 
+--	description: 
+--	tags: 
+--	license: 
+--	copyright: 
+--	link[doc]: "Documentation" http:// 
+
+end

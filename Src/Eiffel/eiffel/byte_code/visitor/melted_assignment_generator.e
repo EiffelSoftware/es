@@ -1,0 +1,108 @@
+note
+	description: "Visitor for performing assignments."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	MELTED_ASSIGNMENT_GENERATOR
+
+inherit
+	ASSIGNMENT_GENERATOR
+		redefine
+			process_attribute_b,
+			process_local_b,
+			process_object_test_local_b,
+			process_result_b
+		end
+
+	SHARED_BYTE_CONTEXT
+		export
+			{NONE} all
+		end
+
+	SHARED_WORKBENCH
+		export
+			{NONE} all
+		end
+
+feature -- Byte code generation
+
+	generate_assignment (a_ba: BYTE_ARRAY; a_node: BYTE_NODE)
+			-- Generate assignment on `a_node'.
+		require
+			is_valid: is_valid
+			a_ba_not_void: a_ba /= Void
+			a_node_not_void: a_node /= Void
+			a_node_valid: is_node_valid (a_node)
+		do
+			ba := a_ba
+			a_node.process (Current)
+			ba := Void
+		end
+
+feature -- Access
+
+	ba: BYTE_ARRAY
+			-- Byte array where melted code is stored.
+
+feature {NONE} -- Implementation
+
+	process_attribute_b (a_node: ATTRIBUTE_B)
+			-- Process `a_node'.
+		do
+			ba.append_integer (a_node.routine_id)
+			ba.append_natural_32 (context.real_type (a_node.type).sk_value (context.context_class_type.type))
+		end
+
+	process_local_b (a_node: LOCAL_B)
+			-- Process `a_node'.
+		do
+			ba.append_short_integer (a_node.position)
+		end
+
+	process_object_test_local_b (a_node: OBJECT_TEST_LOCAL_B)
+		do
+			ba.append_short_integer (context.object_test_local_position (a_node))
+		end
+
+	process_result_b (a_node: RESULT_B)
+			-- Process `a_node'.
+		do
+			-- Nothing to be done.
+		end
+
+note
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+
+end

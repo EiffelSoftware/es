@@ -1,0 +1,5 @@
+note
+	version: $VERSION
+
+class TEST2
+end

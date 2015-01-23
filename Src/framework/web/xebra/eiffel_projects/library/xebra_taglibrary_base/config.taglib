@@ -1,0 +1,38 @@
+<taglib id="xeb">
+	<tag id="call" class="XTAG_XEB_CALL_TAG">
+		<attribute id="feature" />
+	</tag>
+	<tag id="loop" class="XTAG_XEB_LOOP_TAG">
+		<attribute id="times" />
+		<attribute id="variable" optional="True" />
+	</tag>
+	<tag id="display" class="XTAG_XEB_DISPLAY_TAG">
+		<attribute id="text" />
+	</tag>
+	<tag id ="redirect" class="XTAG_XEB_REDIRECT_TAG">
+		<attribute id="url" />
+	</tag>
+	<tag id="iterate" class="XTAG_XEB_ITERATE_TAG">
+		<attribute id="list" />
+		<attribute id="variable" />
+		<attribute id="type" />
+	</tag>
+	<tag id="container" class="XTAG_XEB_CONTAINER_TAG">
+	</tag>
+	<tag id="template_field" class="XTAG_XEB_TEMPLATE_FIELD_TAG">
+		<attribute id="header_text"/>
+		<attribute id="header_style_width"/>
+		<attribute id="header_style_css_class"/>
+		<attribute id="sort_expression"/>
+	</tag>
+	<tag id="set_variable" class="XTAG_XEB_SET_VARIABLE_TAG">
+		<attribute id="variable" />
+		<attribute id="value" />
+		<attribute id="type" optional="True"/>
+	</tag>
+	<tag id="concat" class="XTAG_XEB_CONCAT_TAG">
+		<attribute id="variable" />
+		<attribute id="left" optional="True" />
+		<attribute id="right" optional="True"/>
+	</tag>
+</taglib>

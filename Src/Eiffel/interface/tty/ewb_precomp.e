@@ -1,0 +1,115 @@
+note
+
+	description:
+		"Command to build a precomplie eiffel system."
+	legal: "See notice at end of class."
+	status: "See notice at end of class.";
+	date: "$Date$";
+	revision: "$Revision $"
+
+class EWB_PRECOMP
+
+inherit
+	EWB_COMP
+		redefine
+			name, help_message, abbreviation,
+			execute, perform_compilation,
+			save_project_again
+		end
+
+feature -- Properties
+
+	name: STRING
+		do
+			Result := precompile_cmd_name
+		end;
+
+	help_message: STRING_32
+		do
+			Result := precompile_help
+		end;
+
+	abbreviation: CHARACTER
+		do
+			Result := precompile_abb
+		end;
+
+feature {NONE} -- Execution
+
+	execute
+		do
+			print_header;
+			if Eiffel_project.is_new and then Eiffel_project.able_to_compile then
+				compile;
+				if Eiffel_project.successful then
+					print_tail;
+					process_finish_freezing (False)
+				end
+			else
+				localized_print_error (ewb_names.there_is_already_project_compiled_in (eiffel_project.name))
+			end
+		end;
+
+	perform_compilation
+		do
+			Eiffel_project.precompile (False)
+		end;
+
+	save_project_again
+			-- Try to save the project again.
+		local
+			finished: BOOLEAN
+		do
+			from
+			until
+				finished
+			loop
+				if Eiffel_project.precomp_save_error then
+					localized_print_error (ewb_names.error_could_not_write_to (project_location.precompilation_file_name.name))
+					io.error.put_new_line
+					finished := stop_on_error or else
+						command_line_io.termination_requested
+					if finished then
+						lic_die (-1)
+					else
+						Eiffel_project.save_precomp
+					end;
+				else
+					Precursor {EWB_COMP}
+				end
+			end
+		end;
+
+note
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+
+end -- class EWB_PRECOMP

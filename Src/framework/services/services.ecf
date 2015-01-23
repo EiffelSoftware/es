@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="services" uuid="F7149529-584C-43CF-A9C3-9D29D4D04740" library_target="services">
+	<target name="services">
+		<root all_classes="true"/>
+		<description>Service framework library for building service-based applicatsion.</description>
+		<option>
+			<assertions/>
+		</option>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\gobo_regexp.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
+		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
+		<library name="patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf"/>
+		<library name="string_expander" location="$EIFFEL_SRC\framework\string_expander\string_expander.ecf"/>
+		<library name="uri_launcher" location="$EIFFEL_SRC\framework\uri_launcher\uri_launcher.ecf"/>
+		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
+		<cluster name="services" location=".\" recursive="true">
+			<file_rule>
+				<exclude>\.svn$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

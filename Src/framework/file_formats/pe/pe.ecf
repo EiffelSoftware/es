@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-10-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-10-0 http://www.eiffel.com/developers/xml/configuration-1-10-0.xsd" name="pe_reader" uuid="6AF84AC5-5BBE-4BBD-8E19-75B035EA77EB" library_target="pe_reader">
+	<target name="pe_reader">
+		<root all_classes="true"/>
+		<file_rule>
+			<exclude>/.svn$</exclude>
+		</file_rule>
+		<option warning="true" is_attached_by_default="false" syntax="transitional">
+		</option>
+		<external_include location="$EIFFEL_SRC\framework\file_formats\pe\windows\include">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="dotnet_loader" location="$EIFFEL_SRC\framework\dotnet_loader\dotnet_loader.ecf"/>
+		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</library>
+		<cluster name="pe_reader" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/include$</exclude>
+				<exclude>/unix$</exclude>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/windows$</exclude>
+				<condition>
+					<platform excluded_value="windows"/>
+				</condition>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

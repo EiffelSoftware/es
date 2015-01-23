@@ -1,0 +1,15 @@
+package wikitext
+
+project
+	wikitext = "wikitext-safe.ecf"
+	wikitext = "wikitext.ecf"
+
+note
+--	title: 
+--	description: 
+--	tags: 
+--	license: 
+--	copyright: 
+--	link[doc]: "Documentation" http:// 
+
+end

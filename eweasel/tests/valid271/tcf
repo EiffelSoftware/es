@@ -1,0 +1,23 @@
+test_name	 spurious-vweq-warning
+test_description A comparison {G} ~ {TYPE} yields a spurious VWEQ warning.
+
+copy_sub 	Ace $TEST Ace
+copy_raw 	test.e $CLUSTER test.e
+copy_raw 	test1.e $CLUSTER test1.e
+
+compile_melted
+compile_result 	validity_warning TEST1 VWEQ VWEQ
+
+execute_work 	NONE 	exec_output_1
+execute_result 	ok
+compare		exec_output_1 output
+
+compile_frozen
+compile_result	ok
+
+execute_work 	NONE 	exec_output_2
+execute_result 	ok
+compare		exec_output_2 output
+
+
+test_end

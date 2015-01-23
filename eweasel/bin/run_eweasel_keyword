@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ $# -le 0 ]; then
+	echo Usage: run_eweasel_keyword test_name
+	exit 1
+fi
+
+. $(dirname $0)/set_eweasel_env
+
+eweasel-mt $EWEASEL_ARGS -keep failed -filter "kw $1" -catalog $EWEASEL/control/catalog

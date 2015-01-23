@@ -1,0 +1,9 @@
+#!/bin/sh
+
+cd `dirname $0`/..
+sudo sh ./eiffeldoc_restore.sh latest ../drupal_backup eiffeldoc_backup
+
+THEFILE=../drupal_backup/drupal/.htaccess
+sed "s|RewriteBase /p|RewriteBase /b|" < $THEFILE > $THEFILE.tmp
+cat $THEFILE.tmp > $THEFILE
+rm $THEFILE.tmp

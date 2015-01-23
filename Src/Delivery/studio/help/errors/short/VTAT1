@@ -1,0 +1,2 @@
+Error: improper anchor for `like' declaration.
+What to do: make sure that anchor type is a query, and that there is no anchor cycle.

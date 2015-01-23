@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-12-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-12-0 http://www.eiffel.com/developers/xml/configuration-1-12-0.xsd" name="rb" uuid="A72D5A62-3DBA-4492-B060-56D691FA4D40">
+	<target name="rb">
+		<root class="APPLICATION" feature="make"/>
+		<option trace="false" profile="false" debug="false" full_class_checking="false" is_attached_by_default="false" void_safety="none" syntax="transitional">
+			<assertions precondition="true" postcondition="true" check="true"/>
+		</option>
+		<setting name="console_application" value="False"/>
+		<setting name="dead_code_removal" value="True"/>
+		<setting name="exception_trace" value="True"/>
+		<setting name="inlining" value="True"/>
+		<setting name="inlining_size" value="0"/>
+		<setting name="platform" value="windows"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="lex" location="$ISE_LIBRARY\library\lex\lex.ecf" readonly="false"/>
+		<library name="parse" location="$ISE_LIBRARY\library\parse\parse.ecf" readonly="false"/>
+		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf" readonly="false"/>
+		<cluster name="interface" location=".\interface\"/>
+		<cluster name="lexical" location=".\lexical\"/>
+		<cluster name="sem_expression" location=".\semantic\expression\"/>
+		<cluster name="sem_resource" location=".\semantic\resource\"/>
+		<cluster name="synt_expression" location=".\syntactic\expression\"/>
+		<cluster name="synt_resource" location=".\syntactic\resource\"/>
+		<cluster name="table_of_symbols" location=".\tos\"/>
+	</target>
+</system>

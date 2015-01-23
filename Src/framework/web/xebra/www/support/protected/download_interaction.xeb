@@ -1,0 +1,8 @@
+<page:include template="support_side">
+<page:define_region id="main_content">
+	<div id="title_box"><h1>Interaction Download</h1></div>	
+	<div id="main_div">
+		<xeb:display text="NoText"/>
+	</div>
+</page:define_region>
+</page:include>

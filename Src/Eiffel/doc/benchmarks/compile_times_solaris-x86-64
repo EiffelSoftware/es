@@ -1,0 +1,139 @@
+Solaris 10 x86-64 with dual AMD64 248 (2.2GHz)
+
+6.2
+===
+
+6.2.7.3416 RTEA:
+604.58u 37.49s 20:54.51 51.1% (with ecb, no thread, no RTEA)
+851.81u 41.11s 27:14.25 54.6% (multithreaded with __thread TLS, exe size: 50136232)
+1026.33u 40.35s 29:38.85 59.9% (multithreaded without __thread TLS, exe size: )
+
+6.2.7.2874 RTEA with new EiffelBase rewrite for void safety:
+933.49u 39.44s 26:06.14 62.1%
+931.07u 36.52s 28:39.01 56.2%
+
+6.2.7.2839 RTEA with removal of object creation at runtime for return value of polymorphic calls:
+945.62u 35.73s 28:09.63 58.0% (before bootstrap, exe size: 47897264)
+921.22u 34.71s 24:16.58 65.6% (after bootstrap, exe size: 47932832)
+914.03u 34.68s 25:26.11 62.1%  "
+564.57u 33.65s 20:05.93 49.6% (after bootstrap compiled with new ecb)
+
+6.2.7.2839 RTEA with removal of object creation at runtime for arguments of polymorphic calls (5109 classes):
+1028.84u 39.38s 26:38.59 66.8% (before bootstrap, exe size: 47989456)
+945.43u 39.28s 27:38.25 59.3% (after bootstrap, exe size: 47887696)
+583.70u 35.90s 18:33.25 55.6% (after bootstrap compiled with new ecb)
+
+6.2.7.2838 RTEA with some new code optimization (exec size: 48059536):
+624.00u 36.78s 19:09.65 57.4% (with ecb compiler)
+1061.11u 39.68s 28:30.24 64.3%
+1065.37u 36.65s 29:08.12 63.0%
+
+6.2.7.2702 RTEA with Dead Code Removal optimization (exe size: 48782664):
+607.88u 33.02s 18:14.30 58.5% (with ecb compiler)
+1008.73u 38.91s 24:44.48 70.5%
+1016.36u 35.87s 25:01.79 70.0%
+
+6.2.7.2661 RTEA with new code generation for less dynamic calls (exe size: 49551952):
+639.87u 33.29s 18:40.09 60.0% (with old ecb compiler exe size: 48753432)
+1113.67u 36.52s 26:32.87 72.2% (before bootstrap)
+1107.45u 37.14s 27:05.47 70.4% (after bootstrap)
+1106.35u 36.64s 27:01.39 70.4%
+
+6.2.7.2437 RTEA without Kpic (exe size: 48212320, EIFGEN size: 354MB):
+986.32u 38.37s 24:38.47 69.3%
+985.44u 38.17s 24:37.58 69.2%
+
+6.2.7.2422 RTEA with ec compiler without Kpic (exe size: 48233160):
+988.96u 40.03s 28:42.46 59.7%
+990.89u 36.57s 28:36.14 59.8%
+
+6.2.7.2422 non-RTEA with ecb compiler without Kpic (EIFGEN size: 393MB):
+586.29u 37.03s 20:45.30 50.0%
+598.31u 34.30s 21:40.99 48.6%
+610.72u 34.10s 21:42.11 49.5%
+
+6.2.7.2080 RTEA without Kpic and no buffer for {POLY_TABLE}.is_polymorphic:
+1124.19u 37.48s 28:28.27 68.0%
+
+6.2.7.2080 RTEA without Kpic (exe size: 47750912):
+968.00u 35.42s 27:25.09 60.9%
+
+6.2.7.2080 RTEA with Kpic (exe size: 48919352):
+985.46u 36.07s 27:54.65 60.9%
+
+6.2.7.1994 RTEA same_as optimization + hash_code on GEN_TYPE_I with ecb compiler:
+679.07u 33.02s 23:12.17 51.1%
+
+6.2.7.1994 RTEA same_as optimization + hash_code on GEN_TYPE_I:
+972.95u 36.67s 26:23.81 63.7%
+977.00u 34.86s 27:02.65 62.3%
+977.50u 36.60s 26:30.06 63.7%
+979.62u 33.89s 23:31.29 71.8%
+
+6.2.7.1786 RTEA FILTER_LIST optimization (5036 classes, EIFGEN size: 400MB, exe size: 49919528):
+1013.16u 36.45s 23:21.58 74.8%
+1024.39u 35.29s 26:21.93 66.9%
+1012.34u 37.70s 28:09.09 62.1%
+1018.80u 34.88s 26:09.49 67.1%
+
+6.2.7.1786 RTEA normal (5036 classes, EIFGEN size: 400MB, exe size: 49890904):
+1153.64u 36.60s 29:33.54 67.1%
+1133.75u 36.60s 27:44.58 70.3%
+
+6.2.7.1786 compiled with FILTER_LIST optimized ecb compiler (5036 classes):
+670.13u 33.18s 18:57.99 61.8%
+
+6.2.7.1786 compiled with ecb compiler (5036 classes):
+722.27u 34.97s 21:42.54 58.1%
+
+6.0
+===
+
+#New expanded generic reattachment:
+6.0.6.8702 RTEA (4773 classes, EIFGEN size: 333MB, exe size: 47432808 bytes):
+962.27u 27.11s 21:45.42 75.7%
+954.39u 26.94s 21:24.48 76.3%
+
+intermediate bootstrap:
+920.08u 26.09s 20:16.07 77.8%
+902.98u 26.19s 20:30.43 75.5%
+
+6.0.6.8277 RTEA (4773 classes, EIFGEN size 1.2GB, exe size: 46221128 bytes ):
+883.88u 26.65s 24:27.95 62.0%
+866.44u 26.02s 20:55.18 71.1%
+
+5.7
+===
+
+5.7.1328 RTEA (4243 classes):
+589.05u 19.81s 14:32.67 69.7%
+595.36u 18.70s 14:27.55 70.7%
+591.82u 18.74s 14:40.54 69.3%
+
+5.7.1228 RTEA (4234 classes):
+634.92u 19.50s 14:31.33 75.1%
+624.01u 19.65s 14:19.31 74.9%
+620.62u 19.60s 14:20.38 74.4%
+
+5.7.1205 RTEA:
+619.74u 18.75s 14:21.77 74.0%
+607.03u 18.80s 13:58.90 74.6%
+609.98u 18.74s 13:37.75 76.8%
+
+5.7.1031 RTEA with improved inline code:
+497.19u 15.91s 12:14.78 69.8%
+
+5.7.1031 RTEA with new configuration:
+508.94u 16.10s 12:33.43 69.6%
+509.98u 15.84s 12:13.58 71.6%
+508.21u 15.97s 12:27.61 70.1%
+
+5.7.1031 RTEA with old configuration:
+592.92u 16.13s 14:02.71 72.2%
+597.43u 16.04s 14:03.20 72.7%
+
+5.7.0924 RTEA:
+557.55u 14.90s 11:54.63 80.1%
+549.22u 13.83s 12:20.99 75.9%
+554.52u 14.92s 11:48.08 80.4%
+

@@ -1,0 +1,10 @@
+test_name 	 inference-untyped-call-target
+test_description A call on a target of an unknown type should not cause any issues.
+
+copy_sub 	 Ace $TEST Ace
+copy_raw 	 test.e  $CLUSTER test.e
+
+compile_melted
+compile_result   validity_error TEST Syntax Syntax Syntax Syntax Syntax
+
+test_end
