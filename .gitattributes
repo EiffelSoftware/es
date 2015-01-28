@@ -6479,6 +6479,9 @@ eweasel/tests/replication002/Ace -text
 eweasel/tests/runtime018/Ace svneol=native#text/xml
 eweasel/tests/scoop010/tcf -text
 eweasel/tests/scoop037/main.in -text
+eweasel/tests/scoop038/Ace svneol=native#text/xml
+eweasel/tests/scoop039/Ace svneol=native#text/xml
+eweasel/tests/scoop040/Ace svneol=native#text/xml
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
 eweasel/tests/store002/notes -text
