@@ -5344,7 +5344,6 @@ Src/web/eiffel-org/modules/wiki_docs/wiki_docs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/site/config/application_configuration.json -text
 Src/web/eiffel-org/site/config/cms.ini -text
 Src/web/eiffel-org/site/config/modules/contact/contact.json -text
-Src/web/eiffel-org/site/config/modules/download/downloads_configuration.json -text
 Src/web/eiffel-org/site/config/modules/eiffel_lang_about/about_configuration.json -text
 Src/web/eiffel-org/site/config/wdocs.ini -text
 Src/web/eiffel-org/site/themes/eiffel-lang-review/assets/images/bg-head.jpg -text
