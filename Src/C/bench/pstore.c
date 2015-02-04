@@ -54,6 +54,7 @@
 #include "rt_compress.h"
 #include "rt_gen_types.h"
 #include "rt_globals.h"
+#include "rt_globals_access.h"
 #include "rt_assert.h"
 
 #ifdef EIF_WINDOWS
@@ -72,10 +73,11 @@ rt_private char *parsing_buffer = (char *) 0;
 rt_private long parsing_position = 0;
 rt_private long parsing_buffer_size = 0;
 rt_private int file_descriptor;
+rt_private struct rt_store_context parsing_context;
 
-rt_private uint32 pst_store(char *object, uint32 a_object_count);	/* Recursive store */
+rt_private uint32 pst_store(struct rt_store_context *a_context, char *object, uint32 a_object_count);	/* Recursive store */
 rt_private void parsing_store_write(size_t);
-rt_private void parsing_store_append(char *object, fnptr mid, fnptr nid);
+rt_private void parsing_store_append(struct rt_store_context *a_context, char *object, fnptr mid, fnptr nid);
 rt_private int compiler_char_write(char *pointer, int size);
 
 /* Memory writing function */
@@ -85,15 +87,14 @@ rt_private void parsing_compiler_write(size_t);
 #define EIF_BUFFER_SIZE 262144L
 
 rt_public void parsing_store_initialize (void) {
-	rt_init_store(
-		parsing_store_write,
-		parsing_char_write,
-		flush_st_buffer,
-		st_write,
-		NULL,
-		0);
-	
+	RT_GET_CONTEXT
+	parsing_context.write_function = parsing_char_write;
+	parsing_context.write_buffer_function = parsing_store_write;
+
 	if (parsing_buffer == (char *) 0) {
+			/* We need to initialize `buffer_size' now as otherwise `allocate_gen_buffer'
+			 * will initialize a zero-sized buffer. */
+		buffer_size = EIF_BUFFER_SIZE;
 		allocate_gen_buffer ();
 		parsing_buffer = (char *) malloc (sizeof (char) * EIF_BUFFER_SIZE);
 	}
@@ -107,20 +108,14 @@ rt_public void parsing_store_dispose (void) {
 
 rt_public void parsing_store (EIF_INTEGER file_desc, EIF_REFERENCE object)
 {
+	struct rt_store_context a_context;
+
 	file_descriptor = (int) file_desc;
+	memset(&a_context, 0, sizeof(struct rt_store_context));
+	a_context.write_function = compiler_char_write;
+	a_context.write_buffer_function = parsing_compiler_write;
 
-	rt_init_store (
-		parsing_compiler_write,
-		compiler_char_write,
-		flush_st_buffer,
-		st_write,
-		make_header,
-		0);
-
-	allocate_gen_buffer();
-	internal_store(object);
-
-	rt_reset_store ();
+	rt_store_object (&a_context, object, BASIC_STORE);
 }
 
 rt_public long store_append(EIF_INTEGER f_desc, char *object, fnptr mid, fnptr nid, EIF_REFERENCE s)
@@ -135,7 +130,10 @@ rt_public long store_append(EIF_INTEGER f_desc, char *object, fnptr mid, fnptr n
 	if ((file_position = lseek ((int) f_desc, 0, SEEK_END)) == -1)
 		eraise ("Unable to seek on internal data files", EN_SYS);
 
-	parsing_store_append(object, mid, nid);
+		/* Initialize store context used to store objects for appending. */
+	rt_setup_store (&parsing_context, BASIC_STORE);
+
+	parsing_store_append(&parsing_context, object, mid, nid);
 
 	write (f_desc, parsing_buffer, parsing_position);
 	parsing_position = 0;
@@ -143,9 +141,10 @@ rt_public long store_append(EIF_INTEGER f_desc, char *object, fnptr mid, fnptr n
 	return file_position;
 }
 
-rt_private void parsing_store_append(EIF_REFERENCE object, fnptr mid, fnptr nid)
+rt_private void parsing_store_append(struct rt_store_context *a_context, EIF_REFERENCE object, fnptr mid, fnptr nid)
 {
 	RT_GET_CONTEXT
+	struct rt_traversal_context traversal_context;
 	int gc_stopped;
 
 	make_index = mid;
@@ -161,31 +160,33 @@ rt_private void parsing_store_append(EIF_REFERENCE object, fnptr mid, fnptr nid)
 	(void) nomark(object);
 #endif
 	/* Do the traversal: mark and count the objects to store */
-	obj_nb = 0;
-	traversal(object, 1, 0);
+	traversal_context.obj_nb = 0;
+	traversal_context.accounting = 0;
+	traversal_context.is_for_persistence = 1;
+	traversal(&traversal_context, object);
 
 	current_position = 0;
 	end_of_buffer = 0;
 
 	/* Write in file `file_descriptor' the count of stored objects */
-	buffer_write((char *) (&obj_nb), sizeof(uint32));
+	buffer_write((char *) (&traversal_context.obj_nb), sizeof(uint32));
 
 #ifndef DEBUG
-	(void) pst_store(object,0L);		/* Recursive store process */
+	(void) pst_store(a_context, object,0L);		/* Recursive store process */
 #else
 	{
-		uint32 nb_stored = pst_store(object,0L);
+		uint32 nb_stored = pst_store(a_context, object,0L);
 
-		if (obj_nb != nb_stored) {
-			printf("obj_nb = %d nb_stored = %d\n", obj_nb, nb_stored);
+		if (traversal_context.obj_nb != nb_stored) {
+			printf("obj_nb = %d nb_stored = %d\n", traversal_context.obj_nb, nb_stored);
 			eraise ("Eiffel partial store", EN_IO);
 		}
 	}
-	if (obj_nb != nomark(object))
+	if (traversal_context.obj_nb != nomark(object))
 		eraise ("Partial store inconsistency", EN_IO);
 #endif
 
-	flush_st_buffer();				/* Flush the buffer */
+	a_context->flush_buffer_function();				/* Flush the buffer */
 
 	EIF_EO_STORE_UNLOCK;	/* Unlock our mutex. */
 	if (!gc_stopped)
@@ -193,7 +194,7 @@ rt_private void parsing_store_append(EIF_REFERENCE object, fnptr mid, fnptr nid)
 
 }
 
-rt_private uint32 pst_store(EIF_REFERENCE object, uint32 a_object_count)
+rt_private uint32 pst_store(struct rt_store_context *a_context, EIF_REFERENCE object, uint32 a_object_count)
 {
 	/* Second pass of the store mechanism: writing on the disk. */
 	EIF_REFERENCE o_ref;
@@ -216,7 +217,7 @@ rt_private uint32 pst_store(EIF_REFERENCE object, uint32 a_object_count)
 				 * a new compression header is stored just before the object
 				 * thus the decompression will work when starting the retrieve
 				 * there */
-			flush_st_buffer();
+			a_context->flush_buffer_function();
 			saved_file_pos = file_position + parsing_position;
 		}
 	} else {
@@ -253,7 +254,7 @@ rt_private uint32 pst_store(EIF_REFERENCE object, uint32 a_object_count)
 					if (eif_is_reference_tuple_item(l_item)) {
 						o_ref = eif_reference_tuple_item(l_item);
 						if (o_ref) {
-							a_object_count = pst_store (o_ref, a_object_count);
+							a_object_count = pst_store (a_context, o_ref, a_object_count);
 						}
 					}
 				}
@@ -262,13 +263,13 @@ rt_private uint32 pst_store(EIF_REFERENCE object, uint32 a_object_count)
 						ref = (EIF_REFERENCE) ((EIF_REFERENCE *) ref + 1)) {
 					o_ref = *(EIF_REFERENCE *) ref;
 					if (o_ref != (EIF_REFERENCE) 0)
-						a_object_count = pst_store(o_ref,a_object_count);
+						a_object_count = pst_store (a_context, o_ref,a_object_count);
 				}
 			} else {						/* Special of composites */
 				elem_size = RT_SPECIAL_ELEM_SIZE(object);
 				for (ref = object + OVERHEAD; count > 0;
 					count --, ref += elem_size) {
-					a_object_count = pst_store(ref,a_object_count);
+					a_object_count = pst_store (a_context, ref,a_object_count);
 				}
 			}
 		}
@@ -284,7 +285,7 @@ rt_private uint32 pst_store(EIF_REFERENCE object, uint32 a_object_count)
 			o_ref = *(EIF_REFERENCE *)o_ptr;
 			if (o_ref) {
 				if (!EIF_IS_TRANSIENT_ATTRIBUTE(System(zone->ov_dtype), i)) {
-					a_object_count = pst_store(o_ref, a_object_count);
+					a_object_count = pst_store (a_context, o_ref, a_object_count);
 				} else {
 					has_volatile_attributes = 1;
 				}
@@ -293,7 +294,7 @@ rt_private uint32 pst_store(EIF_REFERENCE object, uint32 a_object_count)
 	}
 
 	if (!is_expanded) {
-		st_write(object, has_volatile_attributes);		/* write the object */
+		a_context->object_write_function(object, has_volatile_attributes);		/* write the object */
 	}
 
 	/* Call `make_index' on `server' with `object' */
@@ -321,7 +322,7 @@ rt_private void parsing_store_write(size_t size)
 	lzo_uint cmps_out_size = (lzo_uint) cmp_buffer_size;
 	int signed_cmps_out_size;
 	
-	REQUIRE("buffer_size not too big", cmp_buffer_size <= 0x7FFFFFFF);
+	REQUIRE("cmp_buffer_size not too big", cmp_buffer_size <= 0x7FFFFFFF);
 	REQUIRE("size not too big", size <= 0x7FFFFFFF);
 
 	lzo1x_1_compress (
@@ -362,7 +363,7 @@ rt_private void parsing_compiler_write(size_t size)
 	int signed_cmps_out_size;
 	int number_written;
 
-	REQUIRE("buffer_size not too big", cmp_buffer_size <= 0x7FFFFFFF);
+	REQUIRE("cmp_buffer_size not too big", cmp_buffer_size <= 0x7FFFFFFF);
 	REQUIRE("size not too big", size <= 0x7FFFFFFF);
 	
 	lzo1x_1_compress (

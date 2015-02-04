@@ -488,11 +488,11 @@ feature {NONE} -- Byte code generation
 			l_byte_code.set_body_index (l_feature.body_index)
 			l_byte_code.set_feature_name_id (l_feature.feature_name_id)
 			l_byte_code.set_pattern_id (l_feature.pattern_id)
-			l_byte_code.set_real_body_id (l_feature.real_body_id (interpreter_root_class.types.first))
+			l_byte_code.set_real_body_id (l_feature.real_body_index (interpreter_root_class.types.first))
 			l_byte_code.set_result_type (l_feature.type)
 			l_byte_code.set_rout_id (l_feature.rout_id_set.first)
 			l_byte_code.set_written_class_id (l_feature.written_in)
-			l_byte_code.set_real_body_id (feature_for_byte_code_injection.real_body_id (interpreter_root_class.types.first))
+			l_byte_code.set_real_body_id (feature_for_byte_code_injection.real_body_index (interpreter_root_class.types.first))
 			if a_locals /= Void then
 				l_local_count := a_locals.count
 			end

@@ -118,6 +118,14 @@ feature -- Processing
 			visit_composite (a_section)
 		end
 
+	visit_indentation (a_indentation: WIKI_INDENTATION)
+		do
+			a_indentation.get_structure
+			if attached a_indentation.structure as struct then
+				visit_structure (struct)
+			end
+		end
+
 	visit_paragraph (a_paragraph: WIKI_PARAGRAPH)
 		do
 --			output("%N")
@@ -287,13 +295,21 @@ feature -- Strings
 feature -- Template
 
 	visit_template (a_template: WIKI_TEMPLATE)
+		local
+			l_key: STRING
 		do
 			output ("{{TEMPLATE %"" + a_template.name + "%"")
 			set_next_output_appended
-			if attached a_template.parameters_string as str then
+			if attached a_template.parameters as lst then
 				output (" => ")
 				set_next_output_appended
-				str.process (Current)
+				across
+					lst as ic
+				loop
+					l_key := ic.key.as_string_8
+					visit_raw_string (create {WIKI_RAW_STRING}.make (l_key + "="))
+					visit_string (create {WIKI_STRING}.make (ic.item))
+				end
 				set_next_output_appended
 			end
 			output ("}}")
@@ -375,6 +391,16 @@ feature -- Links
 			end
 		end
 
+	visit_file_link (a_link: WIKI_FILE_LINK)
+		do
+			output ("FILE("+ a_link.name + ", %"")
+			set_next_output_appended
+			a_link.text.process (Current)
+			set_next_output_appended
+			output ("%")")
+			set_next_output_appended
+		end
+
 	visit_category_link (a_link: WIKI_CATEGORY_LINK)
 		do
 			if a_link.inlined then
@@ -394,6 +420,18 @@ feature -- Links
 			output ("MEDIA("+ a_link.name + ", %"")
 			set_next_output_appended
 			a_link.text.process (Current)
+			set_next_output_appended
+			output ("%")")
+			set_next_output_appended
+		end
+
+feature -- Property
+
+	visit_property (a_prop: WIKI_PROPERTY)
+		do
+			output ("Property("+ a_prop.name + ", %"")
+			set_next_output_appended
+			a_prop.text.process (Current)
 			set_next_output_appended
 			output ("%")")
 			set_next_output_appended

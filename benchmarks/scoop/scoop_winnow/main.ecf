@@ -10,7 +10,4 @@
 		<library name="gobo_time" location="$ISE_LIBRARY\library\gobo\gobo_time.ecf"/>
 		<cluster name="main" location=".\"/>
 	</target>
-	<target name="main-qs" extends="main">
-		<setting name="eveqs" value="true"/>
-	</target>
 </system>

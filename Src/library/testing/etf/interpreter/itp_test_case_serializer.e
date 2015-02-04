@@ -611,7 +611,7 @@ feature{NONE} -- Implementation
 				-- Insert [Void, v_1], becuase AutoTest will always set v_1 to Void.
 			l_tbl.put ([Void, "NONE"], 1)
 
-			l_store := interpreter.store
+			l_store := interpreter.object_store
 			l_traversor := object_graph_traversor
 
 				-- Iterate through all root objects.
@@ -648,80 +648,80 @@ feature{NONE} -- Implementation
 		do
 			l_interpreter := interpreter
 			if attached {INTEGER} a_object as l_int then
-				l_index := l_interpreter.store.variable_index (l_int)
+				l_index := l_interpreter.object_store.variable_index (l_int)
 				if l_index > 0 then
 --					interpreter.log_message ("Serialization: Found an integer%N")
 					a_object_table.put ([l_int.item, l_int.generating_type.out], l_index)
 				end
 			elseif attached {BOOLEAN} a_object as l_bool then
-				l_index := l_interpreter.store.variable_index (l_bool)
+				l_index := l_interpreter.object_store.variable_index (l_bool)
 				if l_index > 0 then
 --					interpreter.log_message ("Serialization: Found boolean%N")
 					a_object_table.put ([l_bool.item, l_bool.generating_type.out], l_index)
 				end
 			elseif attached{INTEGER_8} a_object as l_int8 then
-				l_index := l_interpreter.store.variable_index (l_int8)
+				l_index := l_interpreter.object_store.variable_index (l_int8)
 				if l_index > 0 then
 					a_object_table.put ([l_int8.item, l_int8.generating_type.out], l_index)
 				end
 			elseif attached{INTEGER_16} a_object as l_int16 then
-				l_index := l_interpreter.store.variable_index (l_int16)
+				l_index := l_interpreter.object_store.variable_index (l_int16)
 				if l_index > 0 then
 					a_object_table.put ([l_int16.item, l_int16.generating_type.out], l_index)
 				end
 			elseif attached{INTEGER_64} a_object as l_int64 then
-				l_index := l_interpreter.store.variable_index (l_int64)
+				l_index := l_interpreter.object_store.variable_index (l_int64)
 				if l_index > 0 then
 					a_object_table.put ([l_int64.item, l_int64.generating_type.out], l_index)
 				end
 			elseif attached{NATURAL_8} a_object as l_nat8 then
-				l_index := l_interpreter.store.variable_index (l_nat8)
+				l_index := l_interpreter.object_store.variable_index (l_nat8)
 				if l_index > 0 then
 					a_object_table.put ([l_nat8.item, l_nat8.generating_type.out], l_index)
 				end
 			elseif attached{NATURAL_16} a_object as l_nat16 then
-				l_index := l_interpreter.store.variable_index (l_nat16)
+				l_index := l_interpreter.object_store.variable_index (l_nat16)
 				if l_index > 0 then
 					a_object_table.put ([l_nat16.item, l_nat16.generating_type.out], l_index)
 				end
 			elseif attached{NATURAL_32} a_object as l_nat32 then
-				l_index := l_interpreter.store.variable_index (l_nat32)
+				l_index := l_interpreter.object_store.variable_index (l_nat32)
 				if l_index > 0 then
 					a_object_table.put ([l_nat32.item, l_nat32.generating_type.out], l_index)
 				end
 			elseif attached{NATURAL_64} a_object as l_nat64 then
-				l_index := l_interpreter.store.variable_index (l_nat64)
+				l_index := l_interpreter.object_store.variable_index (l_nat64)
 				if l_index > 0 then
 					a_object_table.put ([l_nat64.item, l_nat64.generating_type.out], l_index)
 				end
 			elseif attached{CHARACTER_8} a_object as l_char8 then
-				l_index := l_interpreter.store.variable_index (l_char8)
+				l_index := l_interpreter.object_store.variable_index (l_char8)
 				if l_index > 0 then
 					a_object_table.put ([l_char8.item, l_char8.generating_type.out], l_index)
 				end
 			elseif attached{CHARACTER_32} a_object as l_char32 then
-				l_index := l_interpreter.store.variable_index (l_char32)
+				l_index := l_interpreter.object_store.variable_index (l_char32)
 				if l_index > 0 then
 					a_object_table.put ([l_char32.item, l_char32.generating_type.out], l_index)
 				end
 			elseif attached{REAL_32} a_object as l_real32 then
-				l_index := l_interpreter.store.variable_index (l_real32)
+				l_index := l_interpreter.object_store.variable_index (l_real32)
 				if l_index > 0 then
 					a_object_table.put ([l_real32.item, l_real32.generating_type.out], l_index)
 				end
 			elseif attached{REAL_64} a_object as l_real64 then
-				l_index := l_interpreter.store.variable_index (l_real64)
+				l_index := l_interpreter.object_store.variable_index (l_real64)
 				if l_index > 0 then
 					a_object_table.put ([l_real64.item, l_real64.generating_type.out], l_index)
 				end
 --			elseif attached{POINTER} a_object as l_ptr then
---				l_index := l_interpreter.store.variable_index (l_ptr)
+--				l_index := l_interpreter.object_store.variable_index (l_ptr)
 --				if l_index > 0 then
 --					a_object_table.put ([l_ptr.item, l_ptr.generating_type.out], l_index)
 --				end
 
 			else
-				l_index := l_interpreter.store.variable_index (a_object)
+				l_index := l_interpreter.object_store.variable_index (a_object)
 				if l_index > 0 then
 					if a_object = Void then
 						a_object_table.put ([Void, "NONE"], l_index)
@@ -958,7 +958,7 @@ invariant
 	interpreter_attached: interpreter /= Void
 
 note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

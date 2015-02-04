@@ -64,6 +64,7 @@
 #include "rt_gen_types.h"
 #include "rt_struct.h"
 #include "rt_globals.h"
+#include "rt_globals_access.h"
 #include "rt_main.h" 	/* For debug_mode. */
 #include "eif_local.h"	/* For epop() */
 #include "eif_debug.h"	/* For rt addons */
@@ -1211,6 +1212,7 @@ rt_private void rec_sinspect(EIF_REFERENCE object, EIF_BOOLEAN skip_items)
 	int32 sp_start, sp_end;		/* Bounds for inspection */
 	uint32 dtype;
 	static char buffer[BUFSIZ]; 	/* Buffer used for converting integers into a string */
+	int32 scp_pid = 0;
 
 		/* Send address of Current object */
 	app_twrite (&object, sizeof (EIF_POINTER));
@@ -1268,7 +1270,12 @@ rt_private void rec_sinspect(EIF_REFERENCE object, EIF_BOOLEAN skip_items)
 					app_twrite (&sk_type, sizeof(uint32));
 					dtype = Dtype(o_ref);
 					app_twrite (&dtype, sizeof(int32));
-/* For SPECIAL object containing expanded objects
+
+						/* Send SCOOP pid */
+					scp_pid = (int32)RTS_PID(o_ref);
+					app_twrite(&scp_pid, sizeof(int32));
+
+					/* For SPECIAL object containing expanded objects
  * we need to send the data right away, since there is no (hector) address associated with
  * the expanded objects, there are known from the SPECIAL object + index,
  * and that's it. So there is no sense to send this "fake" address
@@ -1339,7 +1346,6 @@ rt_private void rec_sinspect(EIF_REFERENCE object, EIF_BOOLEAN skip_items)
 				EIF_BOOLEAN is_void = EIF_FALSE;
 				EIF_BOOLEAN is_special = EIF_FALSE;
 				EIF_BOOLEAN is_tuple = EIF_FALSE;
-				int32 scp_pid = 0;
 				sk_type = SK_REF;
 				for (o_ref = (char *) ((char **)object + sp_start),
 							sp_index = sp_start; sp_index <= sp_end;
@@ -1788,9 +1794,9 @@ rt_private EIF_REFERENCE rt_boxed_expanded_item_at_index (EIF_REFERENCE a_obj, i
 	/*
 	 * boxed expanded item referenced by hector address `a_obj' and `a_index' as offset
 	 */
+	rt_uint_ptr elem_size;
 
 	REQUIRE("is_special", RT_IS_SPECIAL(a_obj));
-	rt_uint_ptr elem_size;
 	if (a_index < 0) {
 		eraise ("index_large_enough", EN_RT_CHECK);
 	}

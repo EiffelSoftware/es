@@ -60,6 +60,14 @@ feature -- Processing
 			visit_composite (a_section)
 		end
 
+	visit_indentation (a_indent: WIKI_INDENTATION)
+		do
+			a_indent.get_structure
+			if attached a_indent.structure as struct then
+				visit_structure (struct)
+			end
+		end
+
 	visit_paragraph (a_paragraph: WIKI_PARAGRAPH)
 		do
 			visit_composite (a_paragraph)
@@ -124,9 +132,6 @@ feature -- Template
 
 	visit_template (a_template: WIKI_TEMPLATE)
 		do
-			if attached a_template.parameters_string as pstr then
-				pstr.process (Current)
-			end
 		end
 
 feature -- Tag
@@ -164,6 +169,11 @@ feature -- Links
 			a_link.text.process (Current)
 		end
 
+	visit_file_link (a_link: WIKI_FILE_LINK)
+		do
+			a_link.text.process (Current)
+		end
+
 	visit_category_link (a_link: WIKI_CATEGORY_LINK)
 		do
 			a_link.text.process (Current)
@@ -172,6 +182,11 @@ feature -- Links
 	visit_media_link (a_link: WIKI_MEDIA_LINK)
 		do
 			a_link.text.process (Current)
+		end
+
+	visit_property (a_prop: WIKI_PROPERTY)
+		do
+			a_prop.text.process (Current)
 		end
 
 feature -- Table

@@ -104,30 +104,55 @@ feature -- Workflow
 		local
 			l_form: DOWNLOAD_FORM
 			l_token: STRING
+			l_security: SECURITY_PROVIDER
+			l_encode: URL_ENCODER
 		do
 			l_form := extract_data_form (req)
-			l_token := (create {SECURITY_PROVIDER}).token
-			if attached database_service as l_service then
-					-- The email exist (membership or contact).
-				if l_service.is_membership (l_form.email) or else l_service.is_contact (l_form.email) then
-					if l_form.newsletter then
-						l_service.register_newsletter (l_form.email)
+			create l_security
+			l_token := l_security.token
+			create l_encode
+			from until l_token.same_string (l_encode.encoded_string (l_token)) loop
+				-- Loop ensure that we have a security token that does not contain characters that need encoding.
+			    -- We cannot simply to an encode-decode because the email sent to the user will contain an encoded token
+				-- but the user will need to use an unencoded token if activation has to be done manually.
+				l_token := l_security.token
+			end
+
+			if
+				attached database_service as l_service
+			then
+				if l_service.is_available then
+						-- The email exist (membership or contact).
+					if l_service.is_membership (l_form.email) or else l_service.is_contact (l_form.email) then
+						if l_form.newsletter then
+							l_service.register_newsletter (l_form.email)
+						end
+						l_service.initialize_download (l_token, l_form)
+					else
+						   -- The email does not exist in the database.
+						check
+							l_service.is_new_contact (l_form.email)
+						end
+							l_service.add_temporary_contact (l_form.first_name, l_form.last_name, l_form.email, l_form.newsletter.to_integer)
+							l_service.initialize_download (l_token, l_form)
 					end
-					l_service.initialize_download (l_form.email, l_token, l_form.platform )
+					send_email (req, l_form, l_token, req.absolute_script_url (""))
+					if
+						attached email_service as l_email_service and then
+						attached l_email_service.last_error as l_error
+					then
+						send_internal_server_error ("Database service unavailable")
+						internal_server_error (req, res, {HTTP_STATUS_CODE}.service_unavailable)
+					else
+						compute_response_redirect (req, res, "https://www.eiffel.com/forms/thank_you")
+					end
 				else
-					   -- The email does not exist in the database.
-					check
-						l_service.is_new_contact (l_form.email)
-					end
-						l_service.add_temporary_contact (l_form.first_name, l_form.last_name, l_form.email, l_form.newsletter.to_integer)
-						l_service.initialize_download (l_form.email, l_token, l_form.platform )
+					send_internal_server_error ("Database service unavailable")
+					internal_server_error (req, res, {HTTP_STATUS_CODE}.service_unavailable)
 				end
-				send_email (req, l_form, l_token, req.absolute_script_url (""))
-				compute_response_redirect (req, res, "https://www.eiffel.com/forms/thank_you")
 			else
-				if attached read_file ("500.html") as l_output then
-					compute_response_500 (req, res, l_output)
-				end
+				send_internal_server_error ("Uknown error")
+				internal_server_error (req, res, {HTTP_STATUS_CODE}.internal_server_error)
 			end
 		end
 
@@ -140,7 +165,8 @@ feature -- Workflow
 			--email is not in our database, we create a Contact user and add the interaction
 			--Once this is done, we associated a unique URL to the Contact and send that link to the user. In this Eiffel, we will also have links to Eiffel resources such as videos, documentation, etc (ex: How to install video, How to create your first Eiffel application ….)
 		do
-			if attached database_service as l_service then
+			if attached database_service as l_service  and then
+				l_service.is_available then
 				if
 					attached {WSF_STRING} req.query_parameter ("token") as l_token and then
 					attached {DOWNLOAD_INFORMATION} l_service.retrieve_download_details (l_token.value) as l_info and then
@@ -150,52 +176,84 @@ feature -- Workflow
 					l_info.set_platform (platform)
 					l_info.set_product ("EiffelStudio enterprise")
 					l_info.set_filename (downloaded_file (platform))
-					l_info.set_email_date (create {DATE_TIME}.make_now_utc)
+					l_info.set_download_date (create {DATE_TIME}.make_now_utc)
 					if l_service.is_membership (email) then
 						log.write_debug (generator + "process_workflow:" + email +  " Membership")
 						if 	l_service.is_download_active (l_token.value) then
 							log.write_debug (generator + "process_workflow:" + email +  " Download active")
-							l_service.add_download_interaction_membership (email, "EiffelStudio", platform, "", l_token.value)
+							l_service.add_download_interaction_membership (email, "EiffelStudio", platform, downloaded_file (platform), l_token.value)
 							enterprise_download_options (req, res, link (platform))
 							send_email_download_notification (l_info)
 						else
-							log.write_debug (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
-							bad_request (req, res, "")
+							if l_service.is_available then
+								log.write_debug (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
+								send_bad_request (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
+								bad_request (req, res, "")
+							else
+								log.write_debug (generator + ".process_workflow The service unavailable")
+								send_internal_server_error ("Database service unavailable")
+								internal_server_error (req, res, {HTTP_STATUS_CODE}.service_unavailable)
+							end
 						end
 					elseif l_service.is_contact (email) then
 						log.write_debug (generator + "process_workflow:" + email +  " Contact")
 						if 	l_service.is_download_active (l_token.value) then
 							log.write_debug (generator + "process_workflow:" + email +  " Download active")
-							l_service.add_download_interaction_contact (email, "EiffelStudio", platform, "", l_token.value)
+							l_service.add_download_interaction_contact (email, "EiffelStudio", platform, downloaded_file (platform), l_token.value)
 							enterprise_download_options (req, res, link (platform))
 							send_email_download_notification (l_info)
 						else
-							log.write_debug (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
-							bad_request (req, res, "")
+							if l_service.is_available then
+								log.write_debug (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
+								send_bad_request (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
+								bad_request (req, res, "")
+							else
+								log.write_debug (generator + ".process_workflow The database service is unavailable")
+								send_internal_server_error ("Database service unavailable")
+								internal_server_error (req, res, {HTTP_STATUS_CODE}.service_unavailable)
+							end
 						end
 					else
 						check
 							l_service.is_new_contact (email)
 						end
-						log.write_debug (generator + "process_workflow:" + email +  " New Contact")
+						log.write_debug (generator + ".process_workflow:" + email +  " New Contact")
 						if 	l_service.is_download_active (l_token.value ) then
-							log.write_debug (generator + "process_workflow:" + email +  " Download active")
+							log.write_debug (generator + ".process_workflow:" + email +  " Download active")
 							l_service.validate_contact (email) --(add a new contact, remove temporary contact)
-							l_service.add_download_interaction_contact (email, "EiffelStudio", platform, "", l_token.value)
+							l_service.add_download_interaction_contact (email, "EiffelStudio", platform, downloaded_file (platform), l_token.value)
 							enterprise_download_options (req, res, link (platform))
 							send_email_download_notification (l_info)
 						else
-							log.write_debug (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
-							bad_request (req, res, "")
+						    if l_service.is_available then
+								log.write_debug (generator + ".process_workflow:" + email +  " Download not active using token:" + l_token.value )
+								send_bad_request (generator + "process_workflow:" + email +  " Download not active using token:" + l_token.value )
+								bad_request (req, res, "")
+							else
+								log.write_debug (generator + ".process_workflow: The database service is unavailable")
+								send_internal_server_error ("Database service unavailable")
+								internal_server_error (req, res, {HTTP_STATUS_CODE}.service_unavailable)
+							end
 						end
 					end
 				else
-					bad_request (req, res, "")
+					if l_service.is_available then
+						log.write_debug (generator + ".process_workflow: The request was invalid " + req.path_info)
+						send_bad_request (generator + ".process_workflow: The request was invalid " + req.path_info)
+						bad_request (req, res, "")
+					else
+						log.write_debug (generator + ".process_workflow The database service is unavailable")
+						send_internal_server_error ("Database service unavailable")
+						internal_server_error (req, res, {HTTP_STATUS_CODE}.service_unavailable)
+					end
 				end
 			else
-				internal_server_error (req, res, "")
+				log.write_debug (generator + ".process_workflow: The database service is unavailable")
+				send_internal_server_error ("Database service unavailable")
+				internal_server_error (req, res, {HTTP_STATUS_CODE}.internal_server_error)
 			end
 		end
+
 
 feature -- Response
 
@@ -217,14 +275,14 @@ feature -- Response
 			end
 		end
 
-	internal_server_error (req: WSF_REQUEST; res: WSF_RESPONSE; a_description: STRING)
+	internal_server_error (req: WSF_REQUEST; res: WSF_RESPONSE; a_status: INTEGER)
 		local
 			l_hp: HTML_500
 		do
 			if attached req.http_host as l_host then
-				create l_hp.make (layout.html_template_path, req.absolute_script_url (""))
+				create l_hp.make (layout.html_template_path, req.absolute_script_url (""), a_status)
 				if attached l_hp.representation as l_html_500 then
-					compute_response_500 (req, res, l_html_500)
+					compute_response_500 (req, res, l_html_500, a_status)
 				end
 			end
 		end
@@ -260,7 +318,7 @@ feature -- Response
 		end
 
 
-	compute_response_500 (req: WSF_REQUEST; res: WSF_RESPONSE; output: STRING)
+	compute_response_500 (req: WSF_REQUEST; res: WSF_RESPONSE; output: STRING; a_status:INTEGER)
 		local
 			h: HTTP_HEADER
 			l_msg: STRING
@@ -270,7 +328,7 @@ feature -- Response
 			h.put_content_type_text_html
 			h.put_content_length (l_msg.count)
 			h.put_current_date
-			res.set_status_code ({HTTP_STATUS_CODE}.internal_server_error)
+			res.set_status_code (a_status)
 			res.put_header_text (h.string)
 			res.put_string (l_msg)
 		end
@@ -318,6 +376,9 @@ feature {NONE} -- Implementation
 			end
 			if attached {WSF_STRING} req.form_parameter ("email") as l_user_email then
 				Result.set_email (l_user_email.value)
+			end
+			if attached {WSF_STRING} req.form_parameter ("company") as l_user_company then
+				Result.set_company (l_user_company.value)
 			end
 			if attached {WSF_STRING} req.form_parameter ("platform") as l_platform then
 				Result.set_platform (l_platform.value)
@@ -370,15 +431,16 @@ feature -- Send Email
 			l_hp: EMAIL_DOWNLOAD_OPTIONS
 		do
 
-			if attached email_service as l_email_service and then
-				attached download_service as l_service then
-					create l_hp.make (layout.html_template_path, req.absolute_script_url (""), a_form,a_token, l_service)
-					if attached l_hp.representation as l_html_download_options then
-						l_email_service.send_download_email (a_form.email, l_html_download_options, a_host)
-					else
-						l_email_service.send_download_email (a_form.email, "Internal Server Error", a_host)
-					end
-
+			if
+				attached email_service as l_email_service and then
+				attached download_service as l_service
+			then
+				create l_hp.make (layout.html_template_path, req.absolute_script_url (""), a_form,a_token, l_service)
+				if attached l_hp.representation as l_html_download_options then
+					l_email_service.send_download_email (a_form.email, l_html_download_options, a_host)
+				else
+					l_email_service.send_download_email (a_form.email, "Internal Server Error", a_host)
+				end
 			end
 		end
 
@@ -386,17 +448,36 @@ feature -- Send Email
 		local
 			l_hp: EMAIL_NOTIFICATION_DOWNLOAD
 		do
-			if attached email_service as l_email_service and then
-					attached download_service as l_service then
-						create l_hp.make (layout.html_template_path, a_download_information)
-						if attached l_hp.representation as l_html_download_info then
-							l_email_service.send_email_download_notification (l_html_download_info)
-						else
-							l_email_service.send_email_download_notification ("Internal Server Error")
-						end
-
+			if
+				attached email_service as l_email_service and then
+				attached download_service as l_service
+			then
+				create l_hp.make (layout.html_template_path, a_download_information)
+				if attached l_hp.representation as l_html_download_info then
+					l_email_service.send_email_download_notification (l_html_download_info)
+				else
+					l_email_service.send_email_download_notification ("Internal Server Error")
+				end
 			end
+		end
 
+
+	send_internal_server_error (a_description: READABLE_STRING_32)
+		local
+			l_hp: EMAIL_NOTIFICATION_DOWNLOAD
+		do
+			if attached email_service as l_email_service then
+				l_email_service.send_email_internal_server_error (a_description)
+			end
+		end
+
+	send_bad_request (a_description: READABLE_STRING_32)
+		local
+			l_hp: EMAIL_NOTIFICATION_DOWNLOAD
+		do
+			if attached email_service as l_email_service then
+				l_email_service.send_email_internal_server_error (a_description)
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -433,15 +514,13 @@ feature {NONE} -- Implementation
 			l_result: STRING_32
 		do
 			l_result := "";
-			if attached download_service as l_download_service then
-				if
-					attached l_download_service.retrieve_product_enterprise as l_product
+			if  attached download_service as l_download_service and then
+				attached l_download_service.retrieve_product_enterprise as l_product
+			then
+				if attached selected_platform (l_product.downloads, a_platform) as l_options  and then
+				   attached l_options.filename as l_filename
 				then
-					if attached selected_platform (l_product.downloads, a_platform) as l_options  and then
-					   attached l_options.filename as l_filename
-					then
-						l_result := l_filename
-					end
+					l_result := l_filename
 				end
 			end
 			Result := l_result

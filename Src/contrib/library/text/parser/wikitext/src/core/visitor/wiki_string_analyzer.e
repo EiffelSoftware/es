@@ -16,7 +16,7 @@ inherit
 			visit_string
 		end
 
-	WIKI_HELPER
+	WIKI_ANALYZER_HELPER
 
 create
 	make
@@ -116,7 +116,7 @@ feature -- Processing
 								flush_buffer (a_parts, s)
 								w_item := new_wiki_link (a_text.substring (i, p + 2), safe_character (a_text, p + 2 + 1) = '%N')
 								a_parts.add_element (w_item)
-								w_item.process (Current) -- Check recursion...							
+								w_item.process (Current) -- Check recursion...
 								w_item := Void
 							else
 								s.append (a_text.substring (i, p + 2))
@@ -146,7 +146,9 @@ feature -- Processing
 						end
 					end
 				when ']' then
-					check no_link_closure: False end
+					debug ("wikitext")
+						check no_link_closure: False end
+					end
 					s.extend (c)
 				when '<' then
 					if
@@ -174,32 +176,57 @@ feature -- Processing
 						if p > 0 then
 							t := tag_name_from (a_text.substring (i, p))
 								-- FIXME: do not ignore params ...
-							q := next_closing_tag (a_text, t, p + 1)
-							if q > 0 then
-								r := next_end_of_tag_character (a_text, q + 1)
-								if r > 0 then
-									flush_buffer (a_parts, s)
-									if in_items.is_empty then
-										if t.is_case_insensitive_equal_general ("code") then
-											create {WIKI_CODE} w_item.make (a_text.substring (i, p), a_text.substring (p + 1, q - 1))
-										elseif t.is_case_insensitive_equal_general ("nowiki") then
-											create {WIKI_RAW_STRING} w_item.make (a_text.substring (p + 1, q - 1))
-										else
-											create {WIKI_TAG} w_item.make (a_text.substring (i, p), a_text.substring (p + 1, q - 1))
-										end
-										a_parts.add_element (w_item)
-										w_item.process (Current) -- Check recursion...							
-										w_item := Void
-										create s.make_empty
+
+							if a_text [p - 1] = '/' then
+									-- <tag/>
+								q := p
+								r := p
+
+								flush_buffer (a_parts, s)
+								if in_items.is_empty then
+									if t.is_case_insensitive_equal_general ("code") then
+										create {WIKI_CODE} w_item.make (a_text.substring (i, p), "")
+									elseif t.is_case_insensitive_equal_general ("nowiki") then
+										create {WIKI_RAW_STRING} w_item.make ("")
 									else
-										s.append (a_text.substring (i, r))
+										create {WIKI_TAG} w_item.make (a_text.substring (i, p), "")
 									end
-									i := r
+									a_parts.add_element (w_item)
+									w_item.process (Current) -- Check recursion...							
+									w_item := Void
+									create s.make_empty
+								else
+									s.append (a_text.substring (i, r))
+								end
+								i := r
+							else
+								q := next_closing_tag (a_text, t, p + 1)
+								if q > 0 then
+									r := next_end_of_tag_character (a_text, q + 1)
+									if r > 0 then
+										flush_buffer (a_parts, s)
+										if in_items.is_empty then
+											if t.is_case_insensitive_equal_general ("code") then
+												create {WIKI_CODE} w_item.make_from_source (a_text.substring (i, r))
+											elseif t.is_case_insensitive_equal_general ("nowiki") then
+												create {WIKI_RAW_STRING} w_item.make (a_text.substring (p + 1, q - 1))
+											else
+												create {WIKI_TAG} w_item.make_from_source (a_text.substring (i, r))
+											end
+											a_parts.add_element (w_item)
+											w_item.process (Current) -- Check recursion...							
+											w_item := Void
+											create s.make_empty
+										else
+											s.append (a_text.substring (i, r))
+										end
+										i := r
+									else
+										s.extend (c)
+									end
 								else
 									s.extend (c)
 								end
-							else
-								s.extend (c)
 							end
 						else
 							s.extend (c)
@@ -336,127 +363,6 @@ feature -- Processing
 			end
 		end
 
-	next_closing_link (s: STRING; a_start: INTEGER): INTEGER
-		local
-			i,n: INTEGER
-			v: INTEGER
-		do
-			from
-				i := a_start
-				n := s.count
-			until
-				Result > a_start or i > n
-			loop
-				inspect s[i]
-				when '[' then
-					if safe_character (s, i + 1) = '[' then
-						v := v + 1
-					end
-				when ']' then
-					if safe_character (s, i + 1) = ']' then
-						if v = 0 then
-							Result := i - 1
-						else
-							v := v - 1
-						end
-					end
-				else
-				end
-				i := i + 1
-			end
-		end
-
-	next_closing_template (s: STRING; a_start: INTEGER): INTEGER
-		local
-			i,n: INTEGER
-			v: INTEGER
-		do
-			from
-				i := a_start
-				n := s.count
-			until
-				Result > a_start or i > n
-			loop
-				inspect s[i]
-				when '{' then
-					if safe_character (s, i + 1) = '{' then
-						v := v + 1
-					end
-				when '}' then
-					if safe_character (s, i + 1) = '}' then
-						if v = 0 then
-							Result := i - 1
-						else
-							v := v - 1
-						end
-					end
-				else
-				end
-				i := i + 1
-			end
-		end
-
-	next_closing_table (s: STRING; a_start: INTEGER): INTEGER
-		local
-			i,n: INTEGER
-			v: INTEGER
-		do
-			from
-				i := a_start
-				n := s.count
-			until
-				Result > a_start or i > n
-			loop
-				inspect s[i]
-				when '{' then
-					if safe_character (s, i + 1) = '|' then
-						v := v + 1
-					end
-				when '|' then
-					if safe_character (s, i + 1) = '}' then
-						if v = 0 then
-							Result := i - 1
-						else
-							v := v - 1
-						end
-					end
-				else
-				end
-				i := i + 1
-			end
-		end
-
-	next_end_of_tag_character (s: STRING; a_start: INTEGER): INTEGER
-		local
-			i,n: INTEGER
-			v: INTEGER
-		do
-			from
-				i := a_start
-				n := s.count
-			until
-				Result > a_start or i > n
-			loop
-				inspect s[i]
-				when '<' then
-					v := v + 1
-				when '>' then
-					if v = 0 then
-						Result := i
-					else
-						v := v - 1
-					end
-				else
-				end
-				i := i + 1
-			end
-		end
-
-	next_closing_tag (s: STRING; a_tag_name: READABLE_STRING_8; a_start: INTEGER): INTEGER
-		do
-			Result := s.substring_index ("</" + a_tag_name + ">", a_start)
-		end
-
 	wiki_style_kind (n: INTEGER): INTEGER
 		do
 			inspect n
@@ -468,84 +374,6 @@ feature -- Processing
 				Result := {WIKI_STYLE}.italic_bold_kind
 			else
 			end
-		end
-
-	new_wiki_link (s: STRING; is_followed_by_new_line: BOOLEAN): WIKI_LINK
-			-- [[name|title]]
-			-- [[:image:name|title]]
-			-- ..
-		require
-			s_not_empty: s.count > 0
-			starts_with_double_bracket: s.starts_with ("[[")
-			ends_with_double_bracket: s.ends_with ("]]")
-		local
-			n,b: INTEGER
-			t: detachable STRING
-			l_inlined: BOOLEAN
-			p,pp: INTEGER
-		do
-			n := s.count
-			if n > 2 then
-				if s[3] = ':' then
-					l_inlined := True
-					b := 3
-					p := s.index_of (':', b + 1)
-					if p > 0 then
-						t := s.substring (b, p)
-					end
-				else
-					b := 3
-					p := s.index_of (':', 2)
-					pp := s.index_of ('|', 2)
-					if p > 0 and (pp = 0 or else p < pp) then
-						t := s.substring (b, p)
-					end
-				end
-			end
-			if t = Void then
-				create Result.make (s)
-			elseif     t.is_case_insensitive_equal ("image:") then
-				if is_followed_by_new_line then
-					create {WIKI_IMAGE_LINK} Result.make (s)
-				else
-					create {WIKI_IMAGE_LINK} Result.make_inlined (s)
-				end
-			elseif t.is_case_insensitive_equal (":category:") then
-				create {WIKI_CATEGORY_LINK} Result.make (s)
-			elseif t.is_case_insensitive_equal (":media:") then
-				create {WIKI_MEDIA_LINK} Result.make (s)
-			elseif t.is_case_insensitive_equal ("category:") then
-					-- Not a link ... this categories the article !!!
-					-- FIXME
-				create {WIKI_LINK} Result.make (s)
-			else
-					-- Unknown
-				create Result.make (s)
-			end
-		end
-
-feature {NONE} -- Implementation
-
-	tag_name_from (s: READABLE_STRING_8): STRING_8
-			-- Tag name from  inside of <...>
-			--| for instance ' abc def="geh"' will return abc
-		local
-			i,n: INTEGER
-		do
-			i := s.index_of (' ', 2)
-			n := s.index_of ('%T', 2)
-			if i = 0 then
-				i := n
-			elseif n /= 0 then
-				i := i.min (n)
-			end
-			if i > 0 then
-				create Result.make_from_string (s.substring (2, i - 1))
-			else
-				create Result.make_from_string (s.substring (2, s.count - 1))
-			end
-			Result.left_adjust
-			Result.right_adjust
 		end
 
 note

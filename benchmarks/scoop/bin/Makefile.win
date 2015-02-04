@@ -1,0 +1,28 @@
+DEFAULT_OUTPUT=scoop_benchmark.csv
+!IFNDEF OUTPUT
+OUTPUT=$(DEFAULT_OUTPUT)
+!ENDIF
+
+DO_MAKE=$(MAKE) -nologo -f Makefile.win
+
+EXE=.exe
+RM=del
+RD=rmdir /S/Q
+
+.SILENT:
+
+all:
+	"echo" Available targets:
+	"echo".
+	"echo"	^ ^ ^ benchmark - run benchmarks and record measurements to '$(OUTPUT)'
+	"echo"	^ ^ ^ build^ ^ ^ ^ ^ - compile benchmarks
+	"echo"	^ ^ ^ clean^ ^ ^ ^ ^ - remove all generated files, including benchmark executables
+	"echo".
+	"echo" Available settings:
+	"echo".
+	"echo"	^ ^ ^ OUTPUT=file_name - output file name for benchmarks (default: '$(DEFAULT_OUTPUT)')
+
+action.echo:
+	echo $(MESSAGE)> "$(OUTPUT)"
+
+!INCLUDE makefile.common

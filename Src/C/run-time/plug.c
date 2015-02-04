@@ -60,6 +60,7 @@ doc:<file name="plug.c" header="eif_plug.h" version="$Id$" summary="Set of routi
 #include "rt_gen_types.h"
 #include "rt_garcol.h"
 #include "rt_globals.h"
+#include "rt_globals_access.h"
 #include "eif_argv.h"
 #include "rt_macros.h"
 
@@ -735,7 +736,7 @@ void init_exp (EIF_REFERENCE obj)
 
 	int32 routine_id = System(dtype).cn_creation_id;
 	if (routine_id) {					/* Call creation routine */
-		wexp(routine_id, dtype, obj);
+		rt_wexp(routine_id, dtype, obj);
 	}
 #endif
 }
@@ -830,7 +831,7 @@ void wstdinit(EIF_REFERENCE obj, EIF_REFERENCE parent)
 
 			routine_id = exp_desc->cn_creation_id;
 			if (routine_id)	{			/* Call creation routine */
-				wexp(routine_id, orig_exp_dtype, obj + exp_offset);
+				rt_wexp(routine_id, orig_exp_dtype, obj + exp_offset);
 			}
 			}
 			break;

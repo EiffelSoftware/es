@@ -40,7 +40,7 @@ feature -- Intialization
 					has_error := True
 					error_message := proc.error_message_32
 					error_code := proc.error_code
-					log.write_error (generator + ".data_witer message:" + proc.error_message_32 + " code:" + proc.error_code.out)
+					log.write_error (generator + ".data_reader message:" + proc.error_message_32 + " code:" + proc.error_code.out)
 				end
 			else
 				stored_procedure := a_sp
@@ -59,14 +59,16 @@ feature -- Intialization
 		local
 			l_retried: BOOLEAN
 		do
-			log.write_information (generator + ".data_reader" + " execute store procedure: " + a_sp)
-			log.write_debug (generator + ".data_reader" + " arguments:" + log_parameters (a_parameters))
+			log.write_information (generator + ".data_writer" + " execute store procedure: " + a_sp)
+			log.write_debug (generator + ".data_writer" + " arguments:" + log_parameters (a_parameters))
 			if not l_retried then
 				stored_procedure := a_sp
 				parameters := a_parameters
 				create proc.make (stored_procedure)
 				proc.load
-				proc.set_arguments_32 (a_parameters.current_keys, a_parameters.linear_representation.to_array)
+				if not a_parameters.is_empty then
+					proc.set_arguments_32 (a_parameters.current_keys, a_parameters.linear_representation.to_array)
+				end
 				if proc.exists then
 					if proc.text_32 /= Void then
 						debug
@@ -86,7 +88,7 @@ feature -- Intialization
 			end
 		rescue
 			set_last_error_from_exception ("SQL execution")
-			log.write_critical (generator+ ".data_reader " + last_error_message)
+			log.write_critical (generator+ ".data_writer " + last_error_message)
 			l_retried := True
 			retry
 		end
@@ -102,6 +104,7 @@ feature -- Intialization
 			a_base_selection.load_result
 			Result := a_base_selection.container
 			unset_map_name (a_base_selection)
+			a_base_selection.terminate
 		end
 
 	execute_writer (a_base_change: DB_CHANGE)

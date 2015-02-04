@@ -23,7 +23,7 @@
 				<li><strong>CD key</strong>: {$selected_platform.key/}</li>
 				<li><strong>Platform</strong>: {$selected_platform.platform/}</li>
 				<li><strong>Size</strong>: {$selected_platform.size/}</li> 
-				<li><strong>MD5</strong>: {$selected_platform.md5/}</li>
+				<li><strong>SHA-256</strong>: {$selected_platform.hash/}</li>
 			</ul>
 
 			<p>
@@ -75,7 +75,7 @@
 		</section>
 		<footer>
 			<br/>
-			<p style="text-align: center;margin-top:50px;">Copyright &copy; 2014 Eiffel Software - 
+			<p style="text-align: center;margin-top:50px;">Copyright &copy; 2015 Eiffel Software - 
 				<a title="Privacy policy" href="https://www.eiffel.com/privacy-policy/">Privacy Policy</a>
 			</p>
 			<p style="text-align: center; font-size: x-small">

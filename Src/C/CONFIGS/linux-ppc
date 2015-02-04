@@ -216,7 +216,7 @@ else
 fi
 lintflags=''
 ldflags=""
-ldsharedflags="$ldflags -shared -o"
+ldsharedflags="$ccldflags -shared -o"
 libs='-lm'
 ln='/bin/ln'
 if [ -n "$MAKE" ]; then
@@ -228,7 +228,7 @@ mkdep='\$(EIFFEL_SRC)/C/mkdep'
 mkdir='mkdir'
 mtldflags="$ldflags"
 mtldsharedflags="$ldsharedflags"
-mtlibs="$libs -lpthread"
+mtlibs="$libs -lpthread -lstdc++"
 mt_prefix='mt'
 mv='/bin/mv'
 prefix='lib'
@@ -237,9 +237,9 @@ shared_prefix='lib'
 shared_suffix='.so'
 shared_rt_suffix='.so'
 sharedlibs='-lm'
-mtsharedlibs='-lm -lpthread'
-sharedlibversion='.14.11'
-sharedlink='ld'
+mtsharedlibs='-lm -lpthread -lstdc++'
+sharedlibversion='.15.01'
+sharedlink="$cc"
 suffix='.a'
 wkeiflib='wkbench'
 

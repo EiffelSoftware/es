@@ -53,6 +53,7 @@ doc:<file name="wbench.c" header="eif_wbench.h" version="$Id$" summary="Workbenc
 #include "eif_plug.h"
 #include "rt_gen_conf.h"
 #include "rt_assert.h"
+#include "rt_globals_access.h"
 
 /* The following functions implement the access to object features and 
  * attributes in workbench mode. */
@@ -215,16 +216,24 @@ rt_public EIF_TYPE_INDEX wtype_gen(int routine_id, EIF_TYPE_INDEX dtype, EIF_TYP
 	}
 }
 
-rt_public void wexp(int routine_id, int dyn_type, EIF_REFERENCE object)
+/*
+doc:	<routine name="rt_wexp" export="shared">
+doc:		<summary>Call the creation procedure of routine ID `routine_id' for expanded object `object' of dynamic type `dyn_type'.</summary>
+doc:		<param name="routine_id" type="int">Routine ID of creation procedure.</param>
+doc:		<param name="dyn_type" type="EIF_TYPE_INDEX">Dynamic type ID of `object'.</param>
+doc:		<param name="object" type="EIF_REFERENCE">Object on which creation procedure will be called.</param>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>Uses per thread data.</synchronization>
+doc:	</routine>
+*/
+
+rt_shared void rt_wexp(int routine_id, EIF_TYPE_INDEX dyn_type, EIF_REFERENCE object)
 {
-	/* Call the creation of the expanded.
-	 * with static type `stype', dynamic type `dtype' and
-	 * feature id `fid'. Apply the function to `object'
-	 */
 	EIF_GET_CONTEXT
 	unsigned char *OLD_IC;
 
-	CHECK("Not called by non-GC thread", rt_is_call_allowed());
+	REQUIRE("Not called by non-GC thread", rt_is_call_allowed());
+	REQUIRE("Consistent object", Dtype(object) == dyn_type);
 
 	nstcall = 0;					/* No invariant check */
 

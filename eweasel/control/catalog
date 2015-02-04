@@ -1177,6 +1177,7 @@ test	melted-on-character-32	melt103  tcf fail used_to_pass melting execution
 test	melted-address-expression	melt104  tcf pass melting execution
 test	melted-address-current	melt105  tcf pass melting execution
 test	object-test-on-expanded-crash melt106  tcf fail melting execution object_test expanded
+test	type-invalid-in-melted-mode		melt107 tcf pass execution melting
 
 -- Freezing
 
@@ -1331,6 +1332,7 @@ test	finalize-once-strings-in-invariant	final118 tcf fail finalizing
 test	equation-evaluation-sequence	final119 tcf fail finalizing
 test	comparison-involving-allocation	final120 tcf fail finalizing
 test	bracket-wrong-dispatch			final121 tcf pass finalizing bracket_expression
+test	wrong-boolean-branch-optimization	final122 tcf pass finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1379,8 +1381,54 @@ if UNIX test	thread-hangs-on-fork	thread022	tcf pass multithreaded
 test	root-thread-exit-continues		thread023	tcf pass multithreaded
 test	multiple-thread-gc-crash		thread024	tcf pass multithreaded
 
--- Execution
+-- SCOOP
+test	scoop-access-smoke				scoop001 tcf pass scoop multithreaded execution
+test	scoop-argument-validity				scoop002 tcf pass scoop multithreaded validity expanded
+test	scoop-hanging-1					scoop003 tcf pass scoop multithreaded execution
+test	scoop-basic-argument-formal-nested		scoop004 tcf pass scoop multithreaded execution
+test	scoop-separate-like-current			scoop005 tcf pass scoop multithreaded execution
+test	scoop-result-validity				scoop006 tcf pass scoop multithreaded validity expanded attribute
+test	scoop-external-call				scoop007 tcf pass scoop multithreaded execution
+test	scoop-freeze-condition				scoop008 tcf pass scoop multithreaded execution incrementality
+test	scoop-wait-condition				scoop009 tcf pass scoop multithreaded execution assertion
+test	scoop-request-chain-exception			scoop011 tcf pass scoop multithreaded execution exception
+test	scoop-false-wait-condition			scoop012 tcf pass scoop multithreaded execution assertion exception manual
+test	scoop-inline-separate-call			scoop013 tcf pass scoop multithreaded finalizing inlining
+test	scoop-separate-expanded				scoop014 tcf pass scoop multithreaded expanded
+test	scoop-separate-patterns-crash			scoop015 tcf pass scoop multithreaded finalizing stable attribute
+test	scoop-finalize-c-failure			scoop016 tcf pass scoop multithreaded finalizing c_compilation
+test	scoop-separate-call-to-constant			scoop017 tcf pass scoop multithreaded execution
+test	scoop-once-per-object				scoop018 tcf pass scoop multithreaded execution incrementality once
+test	scoop-top-exception				scoop019 tcf fail used_to_pass scoop multithreaded
+test	scoop-separate-formal				scoop020 tcf pass scoop multithreaded formal generic conformance validity
+test	scoop-object-test				scoop021 tcf fail used_to_pass scoop multithreaded formal generic conformance object_test execution
+test	scoop-undetected-vuer				scoop022 tcf fail scoop multithreaded validity incrementality
+test	scoop-expanded-class-constrained-generic	scoop023 tcf fail scoop multithreaded termination expanded generic
+test	scoop-multi-dot-call-chain			scoop024 tcf pass scoop multithreaded execution
+test	scoop-expanded-separate				scoop025 tcf fail used_to_pass scoop multithreaded expanded execution
+test	scoop-unnested-logging				scoop026 tcf fail used_to_pass scoop multithreaded execution
+test	scoop-lock-passing-on-separate-creation		scoop027 tcf pass scoop multithreaded execution lock_passing
+test	scoop-sequential-processor-creation		scoop028 tcf pass scoop multithreaded execution
+test	scoop-recursive-processor-creation		scoop029 tcf pass scoop multithreaded execution
+test	scoop-agent-validity				scoop030 tcf pass scoop multithreaded validity expanded agents conformance
+test	scoop-agent-call				scoop031 tcf pass scoop multithreaded agents execution
+test	scoop-corrupted-string				scoop032 tcf fail used_to_pass scoop multithreaded execution
+test	scoop-lock-passing-same-target			scoop033 tcf pass scoop multithreaded execution lock_passing
+test	scoop-corrupted-polymorphic-call		scoop034 tcf fail used_to_pass scoop multithreaded execution
+test	scoop-null-reference-call			scoop035 tcf pass scoop multithreaded execution
+test	scoop-nested-chain-uncontrolled-check		scoop036 tcf pass scoop multithreaded execution
+test	scoop-run-time-crash				scoop037 tcf fail scoop multithreaded execution
+test	scoop-agent-creation-rule			scoop038 tcf pass scoop multithreaded agents
+test	scoop-agent-expression-uncontrolled		scoop039 tcf pass scoop multithreaded agents
+test	scoop-agent-expression-controlled	scoop040 tcf pass scoop multithreaded agents
 
+test	deadlock-simple-symmetric-cycle			deadlock001 tcf manual scoop multithreaded deadlock
+test	deadlock-simple-asymmetric-cycle		deadlock002 tcf manual scoop multithreaded deadlock
+test	deadlock-synchronous-2-cycle			deadlock003 tcf manual scoop multithreaded deadlock lock_passing
+test	deadlock-synchronous-3-cycle			deadlock004 tcf manual scoop multithreaded deadlock lock_passing
+test	deadlock-synchronous-n-cycle			deadlock005 tcf manual scoop multithreaded deadlock
+
+-- Execution
 test	print-double			exec001  tcf pass execution
 test	real-conform-double		exec003  tcf pass execution
 test	power-operator			exec004  tcf pass execution
@@ -1722,6 +1770,7 @@ test	parenthesis-alias-smoke-test		exec356 tcf pass execution expression parenth
 test	parenthesis-alias-tuple-convention	exec357 tcf pass execution expression parenthesis_alias conversion tuple conformance
 test	conditional-expression-constant		exec358 tcf pass execution conditional expression conformance
 test	invalid-conversion-to-tuple		exec359 tcf pass execution parenthesis_alias conversion tuple conformance
+test	expanded-hash-table				exec360 tcf pass execution expanded
 
 -- Once specific
 
@@ -1948,6 +1997,7 @@ test	root-class-none				term211 tcf fail termination
 test	bad-library-class			term212 tcf fail termination
 test	across-on-tuple				term213 tcf pass termination across iteration
 test	qat-greater-number-of-formal	term214 tcf pass validity anchored_type system-validity
+test	large-integer-64-crash			term215 tcf pass syntax
 
 -- Config
 
@@ -2137,7 +2187,8 @@ test	correct-mismatch-memory-corruption store036 tcf pass storable
 test	store-retrieve-non-void-safe	store037 tcf pass storable attached_types
 test	storable-performance-testing	store038 tcf pass storable performance
 test	storable-with-long-nested-generics	store039 tcf pass storable
-test	storable-with-qualified-anchors	store040 tcf fail storable
+test	storable-with-qualified-anchors	store040 tcf pass storable
+test	storable-with-qualified-anchors-reject	store041 tcf pass storable
 
 -- Library class tests
 
@@ -2838,50 +2889,6 @@ test	inference-agent-expression	inference011 tcf fail inference agents
 test	inference-untyped-agent-target	inference012 tcf pass inference agents
 test	inference-inspect-instruction	inference013 tcf pass inference inspect
 test	inference-integer-plus-untyped	inference014 tcf pass used_to_pass inference
-
--- SCOOP
-test	scoop-access-smoke				scoop001 tcf pass scoop multithreaded execution
-test	scoop-argument-validity				scoop002 tcf pass scoop multithreaded validity expanded
-test	scoop-hanging-1					scoop003 tcf pass scoop multithreaded execution
-test	scoop-basic-argument-formal-nested		scoop004 tcf pass scoop multithreaded execution
-test	scoop-separate-like-current			scoop005 tcf pass scoop multithreaded execution
-test	scoop-result-validity				scoop006 tcf pass scoop multithreaded validity expanded attribute
-test	scoop-external-call				scoop007 tcf pass scoop multithreaded execution
-test	scoop-freeze-condition				scoop008 tcf pass scoop multithreaded execution incrementality
-test	scoop-wait-condition				scoop009 tcf pass scoop multithreaded execution assertion
-test	scoop-request-chain-exception			scoop011 tcf pass scoop multithreaded execution exception
-test	scoop-false-wait-condition			scoop012 tcf pass scoop multithreaded execution assertion exception
-test	scoop-inline-separate-call			scoop013 tcf pass scoop multithreaded finalizing inlining
-test	scoop-separate-expanded				scoop014 tcf pass scoop multithreaded expanded
-test	scoop-separate-patterns-crash			scoop015 tcf pass scoop multithreaded finalizing stable attribute
-test	scoop-finalize-c-failure			scoop016 tcf pass scoop multithreaded finalizing c_compilation
-test	scoop-separate-call-to-constant			scoop017 tcf pass scoop multithreaded execution
-test	scoop-once-per-object				scoop018 tcf pass scoop multithreaded execution incrementality once
-test	scoop-top-exception				scoop019 tcf fail used_to_pass scoop multithreaded
-test	scoop-separate-formal				scoop020 tcf pass scoop multithreaded formal generic conformance validity
-test	scoop-object-test				scoop021 tcf fail used_to_pass scoop multithreaded formal generic conformance object_test execution
-test	scoop-undetected-vuer				scoop022 tcf fail scoop multithreaded validity incrementality
-test	scoop-expanded-class-constrained-generic	scoop023 tcf fail scoop multithreaded termination expanded generic
-test	scoop-multi-dot-call-chain			scoop024 tcf pass scoop multithreaded execution
-test	scoop-expanded-separate				scoop025 tcf fail used_to_pass scoop multithreaded expanded execution
-test	scoop-unnested-logging				scoop026 tcf fail used_to_pass scoop multithreaded execution
-test	scoop-lock-passing-on-separate-creation		scoop027 tcf pass scoop multithreaded execution lock_passing
-test	scoop-sequential-processor-creation		scoop028 tcf pass scoop multithreaded execution
-test	scoop-recursive-processor-creation		scoop029 tcf pass scoop multithreaded execution
-test	scoop-agent-validity				scoop030 tcf pass scoop multithreaded validity expanded agents conformance
-test	scoop-agent-call				scoop031 tcf pass scoop multithreaded agents execution
-test	scoop-corrupted-string				scoop032 tcf fail used_to_pass scoop multithreaded execution
-test	scoop-lock-passing-same-target			scoop033 tcf pass scoop multithreaded execution lock_passing
-test	scoop-corrupted-polymorphic-call		scoop034 tcf fail used_to_pass scoop multithreaded execution
-test	scoop-null-reference-call			scoop035 tcf pass scoop multithreaded execution
-test	scoop-nested-chain-uncontrolled-check		scoop036 tcf pass scoop multithreaded execution
-test	scoop-run-time-crash				scoop037 tcf fail scoop multithreaded execution
-
-test	deadlock-simple-symmetric-cycle			deadlock001 tcf manual scoop multithreaded deadlock
-test	deadlock-simple-asymmetric-cycle		deadlock002 tcf manual scoop multithreaded deadlock
-test	deadlock-synchronous-2-cycle			deadlock003 tcf manual scoop multithreaded deadlock lock_passing
-test	deadlock-synchronous-3-cycle			deadlock004 tcf manual scoop multithreaded deadlock lock_passing
-test	deadlock-synchronous-n-cycle			deadlock005 tcf manual scoop multithreaded deadlock
 
 -- Prettify
 test	pretty-smoke-test			pretty001 tcf pass pretty

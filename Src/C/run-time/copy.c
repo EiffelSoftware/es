@@ -55,6 +55,7 @@ doc:<file name="copy.c" header="eif_copy.h" version="$Id$" summary="Various obje
 #include "rt_macros.h"
 #include "rt_gen_types.h"
 #include "rt_globals.h"
+#include "rt_globals_access.h"
 #include <string.h>
 #include "rt_assert.h"
 #include "rt_interp.h"		/* For routine call_copy */
@@ -257,6 +258,7 @@ rt_public EIF_REFERENCE edclone(EIF_CONTEXT EIF_REFERENCE source)
 		union overhead discard;		/* Pseudo object header */
 		EIF_REFERENCE boot;					/* Anchor point for cloning process */
 	} anchor;
+	struct rt_traversal_context traversal_context;
 
 #ifdef DEBUG
 	int xobjs;
@@ -304,13 +306,15 @@ rt_public EIF_REFERENCE edclone(EIF_CONTEXT EIF_REFERENCE source)
 		 * cloning process.
 		 */
 
-		obj_nb = 0;						/* Mark objects */
-		traversal(source, 0, TR_MAP);		/* Object traversal, mark with EO_STORE */
-		hash_malloc(&hclone, obj_nb);	/* Hash table allocation */
+		traversal_context.obj_nb = 0;
+		traversal_context.accounting = TR_MAP;
+		traversal_context.is_for_persistence = 0;
+		traversal(&traversal_context, source);		/* Object traversal, mark with EO_STORE */
+		hash_malloc(&hclone, traversal_context.obj_nb);	/* Hash table allocation */
 		map_start();					/* Restart at bottom of FIFO stack */
 
 #ifdef DEBUG
-		printf("Computed %x %d objects\n\n", source, obj_nb);
+		printf("Computed %x %d objects\n\n", source, traversal_context.obj_nb);
 #endif
 
 		/* Throughout the deep cloning process, we need to maintain the notion of
@@ -331,7 +335,7 @@ rt_public EIF_REFERENCE edclone(EIF_CONTEXT EIF_REFERENCE source)
 		map_reset(0);							/* And eif_free maping table */
 			/* Release all the hector pointers asked for during the map table
 			 * construction (obj_nb exactly) */
-		epop(&hec_stack, obj_nb);
+		epop(&hec_stack, traversal_context.obj_nb);
 
 #ifdef DEBUG
 		xobjs= nomark(source);

@@ -30,6 +30,11 @@ inherit
 			{NONE} all
 		end
 
+	SED_STORABLE_FACILITIES
+		export
+			{NONE} all
+		end
+
 	EQA_EXTERNALS
 
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
@@ -87,8 +92,8 @@ feature {NONE} -- Initialization
 			create error_buffer.make (buffer_size)
 
 				-- Create object pool
-			create store.make
-			store.set_is_typed_search_enabled (is_test_case_serialization_enabled)
+			create object_store.make
+			object_store.set_is_typed_search_enabled (is_test_case_serialization_enabled)
 
 				-- Create agent creation information book-keeper.
 			create agent_creation_info.make (200)
@@ -239,7 +244,7 @@ feature -- Access
 		local
 			b: BOOLEAN
 		do
-			Result := store.variable_value (a_index)
+			Result := object_store.variable_value (a_index)
 
 debug("AutoTest")
 	b := {ISE_RUNTIME}.check_assert (False)
@@ -358,16 +363,16 @@ end
 			b: BOOLEAN
 			l_index: INTEGER
 			l_value: detachable ANY
-			l_store: like store
+			l_object_store: like object_store
 			l_type: STRING
 			l_generating_type: STRING
 		do
 			if attached {STRING} last_request as l_obj_index then
 				log_message (once "report_type_request start%N")
 				l_index := l_obj_index.to_integer
-				l_store := store
-				if l_store.is_variable_defined (l_index) then
-					l_value := l_store.variable_value (l_index)
+				l_object_store := object_store
+				if l_object_store.is_variable_defined (l_index) then
+					l_value := l_object_store.variable_value (l_index)
 					if l_value = Void then
 						create l_type.make (4)
 						l_generating_type := none_type_name
@@ -726,7 +731,7 @@ feature {NONE} -- Socket IPC
 				socket.read_natural_32
 				last_request_type := socket.last_natural_32
 
-				if attached {like last_request} socket.retrieved as l_request then
+				if attached {like last_request} retrieved_from_medium (socket) as l_request then
 					last_request := l_request
 				end
 			end
@@ -749,7 +754,7 @@ feature {NONE} -- Socket IPC
 				socket.put_natural_32 (last_response_flag)
 				log_message("%TResponse_flag: " + last_response_flag.out + "%N")
 				if attached last_response as l_last_response then
-					socket.independent_store (l_last_response)
+					store_in_medium (l_last_response, socket)
 				end
 			end
 		rescue
@@ -817,7 +822,7 @@ feature {NONE} -- Parsing
 
 feature {ITP_TEST_CASE_SERIALIZER} -- Object pool
 
-	store: ITP_STORE
+	object_store: ITP_STORE
 			-- Object store
 
 feature {NONE} -- Byte code
@@ -876,9 +881,9 @@ feature {NONE} -- Byte code
 		end
 
 	store_variable_at_index	(a_object: ANY; a_index: INTEGER)
-			-- Store `a_object' at `a_index' in `store'.
+			-- Store `a_object' at `a_index' in `object_store'.
 		do
-			store.assign_value (a_object, a_index)
+			object_store.assign_value (a_object, a_index)
 		end
 
 	main_loop
@@ -1797,13 +1802,13 @@ feature -- Semantic search
 
 invariant
 	log_file_open_write: log_file.is_open_write
-	store_not_void: store /= Void
+	store_not_void: object_store /= Void
 	output_buffer_attached: output_buffer /= Void
 	error_buffer_attached: error_buffer /= Void
 	socket_attached: socket /= Void
 
 note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

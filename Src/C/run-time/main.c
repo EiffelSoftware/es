@@ -42,7 +42,7 @@ doc:<file name="main.c" header="eif_main.h" version="$Id$" summary="Initializati
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
+#include "rt_sig.h"
 #include "rt_assert.h"
 
 #include "eif_project.h"
@@ -80,6 +80,8 @@ doc:<file name="main.c" header="eif_main.h" version="$Id$" summary="Initializati
 #ifdef BOEHM_GC
 #include "rt_boehm.h"
 #endif
+
+#include "rt_globals_access.h"
 
 /*
 doc:	<attribute name="eif_real_32_nan" return_type="EIF_REAL_32" export="public">
@@ -503,6 +505,18 @@ doc:	</attribute>
 */
 rt_shared int catcall_detection_mode = default_catcall_detection_mode;	/* Assume we detect catcall at runtime */
 
+#if defined(EIF_WINDOWS) && !defined(EIF_THREADS)
+/*
+doc:	<attribute name="rt_root_thread_id" return_type="DWORD" export="shared">
+doc:		<summary>Thread ID of the root thread in a monothreaded environment. It is used in the signal handler to see if the signal handler is called in a different thread in which case it will not execute and exit the whole program.</summary>
+doc:		<access>Read/Write</access>
+doc:		<thread_safety>Safe</thread_safety>
+doc:	</attribute>
+*/
+
+rt_shared DWORD rt_root_thread_id;
+#endif
+
 /*
 doc:	<routine name="ieee_init" return_type="void" export="private">
 doc:		<summary>Initialized the various IEEE values.</summary>
@@ -548,7 +562,9 @@ rt_public void once_init (void)
 #endif
 
 	ALLOC_ONCE_INDEXES; 	/* Allocate array of once indexes. */
-	egc_system_mod_init (); /* Assign once indexes. */
+	if (egc_system_mod_init) {
+		egc_system_mod_init(); /* Assign once indexes. */
+	}
 
 #if !defined(WORKBENCH) && !defined (EIF_THREADS)
 	egc_prof_enabled = old_egc_prof_enabled; /* Restore profiler status. */
@@ -866,6 +882,10 @@ rt_public void eif_rtinit(int argc, EIF_NATIVE_CHAR **argv, EIF_NATIVE_CHAR **en
 	eif_retrieve_root(&argc, argv);
 
 #ifdef EIF_WINDOWS
+#ifndef EIF_THREADS
+	rt_root_thread_id = GetCurrentThreadId();
+#endif
+
 	set_windows_exception_filter();
 
 #if defined(_MSC_VER) && _MSC_VER >= 1400 /* version 14.0+ (MSVC 8.0+)  */

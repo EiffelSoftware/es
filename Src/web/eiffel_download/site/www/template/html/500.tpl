@@ -14,7 +14,7 @@
 	<li id="menu-item-3461" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3461"><a href="https://www.eiffel.com/eiffelstudio/screenshots/">Screenshots</a></li>
 	<li id="menu-item-3367" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3367"><a href="https://www.eiffel.com/eiffelstudio/system-requirements/">System Requirements</a></li>
 	<li id="menu-item-5203" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5203"><a href="https://www.eiffel.com/eiffelstudio/licensing/">Licensing</a></li>
-	<li id="menu-item-4897" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4897"><a href="http://www2.eiffel.com/download/">Downloads</a></li>
+	<li id="menu-item-4897" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4897"><a href="http://www.eiffel.com/downloads">Downloads</a></li>
 	<li id="menu-item-3366" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3366"><a href="https://www.eiffel.com/eiffelstudio/purchase/">Purchase</a></li>
 </ul>
 </li>
@@ -90,26 +90,21 @@
 			<div class="widget-area widget-sidebar">			
 				<!-- class="execphpwidget"-->
 						<div class="box2 ">
-							<h3>Internal Server Error <strong>500</strong> </h3>
-							<p>The page you requested could not be served because the server is down, either contact your webmaster or try again. Use your browser's <b>Back</b> button to navigate to the page you came from.</p>
-				    	</div>
+							{assign name="error_500" value="500"/}
+							{assign name="error_503" value="503"/}
+							{if condition="$status ~ $error_500"}
+								<h3>Internal Server Error <strong>500</strong> </h3>
+								<p>The page you requested could not be served because the server is down, either contact your webmaster or try again. Use your browser's <b>Back</b> button to navigate to the page you came from.</p>
+
+							{/if}
+							{if condition="$status ~ $error_503"}
+								<h3>Service Unavailable <strong>503</strong> </h3>
+							<p>The page you requested could not be served because the service is unavailable, either contact your webmaster or try again. Use your browser's <b>Back</b> button to navigate to the page you came from.</p>
+							{/if}
+						</div>	
 				<!--/div-->
 			</div>
-				<div class="widget-area widget-sidebar"><div class="execphpwidget"><section class="news_sec">
-<h3><a href="https://www.eiffel.com/posts/news/">News &amp; Events</a></h3>			<div class="news ">
-				
-<a href="https://www.eiffel.com/2014/eiffelstudio-14-05/">EiffelStudio 14.05 released: Automatic Fixing and Eiffel Inspector</a><p>Eiffel Inspector and Automatic fixing, two new gems to make your Eiffel systems even better.</p>
-			</div>
-			<div class="news ">
-				
-<a href="https://www.eiffel.com/2014/iron-facility-easily-share-eiffel-libraries/">With the IRON facility, easily use and share Eiffel Libraries</a><p>Empowering teams of developers.</p>
-			</div>
-			<div class="news last">
-				
-<a href="https://www.eiffel.com/2014/zero-install-eiffelstudio/">Zero-Install Version available: evaluating EiffelStudio quickly</a><p>Skip the downloading and installation part and get going in a matter of minutes.</p>
-			</div>
-</section></div>
-		</div>		</section><!-- body_container -->
+		</section><!-- body_container -->
 	</div><!-- wrapper -->
 </section><!-- body_outer -->
 
@@ -207,7 +202,7 @@
 <li id="menu-item-3507" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3507"><a href="https://www.eiffel.com/eiffelstudio/screenshots/">Screenshots</a></li>
 <li id="menu-item-3508" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3508"><a href="https://www.eiffel.com/eiffelstudio/system-requirements/">System Requirements</a></li>
 <li id="menu-item-5202" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5202"><a href="https://www.eiffel.com/eiffelstudio/licensing/">Licensing</a></li>
-<li id="menu-item-4915" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4915"><a href="http://www2.eiffel.com/download/">Downloads</a></li>
+<li id="menu-item-4915" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-4915"><a href="http://www.eiffel.com/downloads">Downloads</a></li>
 <li id="menu-item-3511" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3511"><a href="https://www.eiffel.com/eiffelstudio/purchase/">Purchase</a></li>
 </ul></div></div><div class="widget-area widget-footer-menu col"><h3>Values</h3><div class="menu-values-footer-menu-container"><ul id="menu-values-footer-menu" class="menu"><li id="menu-item-3512" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3512"><a href="https://www.eiffel.com/values/design-by-contract/">Design By Contract™</a></li>
 <li id="menu-item-3513" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3513"><a href="https://www.eiffel.com/values/seamless-development/">Seamless Development</a></li>
@@ -240,7 +235,7 @@
 <div class="copyright">
 	<div class="footer_copyright">
 					<div class="execphpwidget"><br/>
-<p style="text-align: center;line-height:50px;">Copyright © 2014 Eiffel Software - <a title="Privacy policy" href="https://www.eiffel.com/privacy-policy/">Privacy Policy</a></p>
+<p style="text-align: center;line-height:50px;">Copyright © 2015 Eiffel Software - <a title="Privacy policy" href="https://www.eiffel.com/privacy-policy/">Privacy Policy</a></p>
 </div>
 			</div>
 </div>

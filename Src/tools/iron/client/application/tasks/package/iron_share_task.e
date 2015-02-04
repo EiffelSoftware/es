@@ -171,10 +171,10 @@ feature -- Execute
 								else
 									print ({STRING_32} "Create new package %N")
 								end
-								remote_node.publish_package (l_id, l_name, l_title, l_data.description, l_package, u, p)
+								remote_node.publish_package (l_id, l_name, l_title, l_data.description, l_package, Void, u, p)
 							else
 								print ({STRING_32} "Update package " + l_package.human_identifier + {STRING_32} " %N")
-								remote_node.publish_package (l_id, l_name, l_title, l_data.description, l_package, u, p)
+								remote_node.publish_package (l_id, l_name, l_title, l_data.description, l_package, Void, u, p)
 							end
 							if remote_node.last_operation_succeed then
 								if l_package /= Void then
@@ -267,7 +267,7 @@ feature -- Execute
 											if
 												l_package.has_archive_uri and then
 												l_package.archive_size = l_iron_archive.file_size and then
-												(attached l_package.archive_hash as l_package_archive_hash and
+												(attached l_package.archive_hash_string as l_package_archive_hash and
 												 attached l_iron_archive.hash as l_iron_hash) and then l_package_archive_hash.is_case_insensitive_equal_general (l_iron_hash)
 											then
 													-- Same archive .. no need to upload
@@ -284,7 +284,7 @@ feature -- Execute
 												print ("...%N")
 												if l_package.has_archive_uri then
 													print (" -> replacing previous archive [size=" + l_package.archive_size.out)
-													if attached l_package.archive_hash as l_hash then
+													if attached l_package.archive_hash_string as l_hash then
 														print (" hash=" + l_hash)
 													end
 													print (" ].")
@@ -467,7 +467,7 @@ feature -- Execute
 		end
 
 note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

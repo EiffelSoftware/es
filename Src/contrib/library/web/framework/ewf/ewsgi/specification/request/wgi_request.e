@@ -88,6 +88,14 @@ feature -- Access: Input
 
 feature -- Access: CGI meta variables
 
+	cgi_variables: WGI_REQUEST_CGI_VARIABLES
+			-- Object containing the CGI variables
+			--| note: a new instance is created on each call!
+			--| this is mainly for debugging purpose.
+		do
+			create Result.make (Current)
+		end
+
 	meta_variable (a_name: READABLE_STRING_GENERAL): detachable READABLE_STRING_8
 			-- Environment variable related to `a_name'
 		require
@@ -297,6 +305,8 @@ feature -- Common Gateway Interface - 1.1       8 January 1996
 			-- The PATH_INFO value is case-sensitive, and the server MUST
 			-- preserve the case of the PATH_INFO element of the URI when
 			-- making it available to scripts.
+			--
+			-- Note: it is UTF-8 encoded, and percent decoded.
 		deferred
 		end
 
@@ -636,6 +646,16 @@ feature -- HTTP_*
 
 	http_range: detachable READABLE_STRING_8
 			-- Requested byte-range of resource
+		deferred
+		end
+
+	http_content_range: detachable READABLE_STRING_8
+			-- Partial range of selected representation enclosed in message payload
+		deferred
+		end
+
+	http_content_encoding: detachable READABLE_STRING_8
+			-- Encoding (usually compression) of message payload
 		deferred
 		end
 

@@ -1,7 +1,7 @@
 #!/usr/local/bin/python
 
 def version():
-	return "14.05"
+	return "15.01"
 
 def repository():
 	return "https://iron.eiffel.com"

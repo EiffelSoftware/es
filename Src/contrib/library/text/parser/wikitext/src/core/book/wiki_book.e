@@ -8,7 +8,12 @@ class
 	WIKI_BOOK
 
 inherit
+	COMPARABLE
+
 	DEBUG_OUTPUT
+		undefine
+			is_equal
+		end
 
 create
 	make
@@ -38,69 +43,120 @@ feature -- Visitor
 			end
 		end
 
+feature -- Comparison
+
+	is_less alias "<" (other: like Current): BOOLEAN
+			-- Is current object less than `other'?
+		do
+			if weight = other.weight then
+				Result := name < other.name
+			else
+				Result := weight < other.weight
+			end
+		end
+
+feature -- Sorting operation		
+
+	sort
+			-- Sort `pages' and sub pages.
+		local
+			l_sorter: QUICK_SORTER [WIKI_BOOK_PAGE]
+		do
+			create l_sorter.make (create {COMPARABLE_COMPARATOR [WIKI_BOOK_PAGE]})
+			l_sorter.sort (pages)
+			across
+				pages as ic
+			loop
+				ic.item.sort
+			end
+			if attached root_page as rp then
+				check root_page_sorted: rp.pages_sorted end
+			end
+		end
+
 feature -- Access
 
 	path: PATH
 
 	name: READABLE_STRING_8
 
-	pages: ARRAYED_LIST [WIKI_PAGE]
+	pages: ARRAYED_LIST [WIKI_BOOK_PAGE]
 
-	root_page: detachable WIKI_PAGE
+	weight: INTEGER
+		do
+			if attached root_page as rp then
+				Result := rp.weight
+			end
+		end
+
+	root_page: detachable WIKI_BOOK_PAGE
 			-- Page representing the book if any.
 		local
-			wp: WIKI_PAGE
-			l_book_name: like name
-			l_index_page,l_book_page: detachable WIKI_PAGE
+			wp: WIKI_BOOK_PAGE
+			l_book_name: READABLE_STRING_8
+			l_index_page,l_book_page: detachable WIKI_BOOK_PAGE
 		do
-			l_book_name := name
-			across
-				pages as ic
-			until
-				Result /= Void
-			loop
-				wp := ic.item
-				if wp.key.is_case_insensitive_equal_general ("index") then
-					l_index_page := wp
-					Result := wp
-				elseif wp.key.is_case_insensitive_equal_general (l_book_name) then
-					l_book_page := wp
-				end
-			end
+			Result := internal_root_page
 			if Result = Void then
-				Result := l_book_page
+				l_book_name := name
+				across
+					pages as ic
+				until
+					Result /= Void
+				loop
+					wp := ic.item
+					if wp.key.is_case_insensitive_equal_general ("index") then
+						l_index_page := wp
+						Result := wp
+					elseif wp.key.is_case_insensitive_equal_general (l_book_name) then
+						l_book_page := wp
+					end
+				end
+				if Result = Void then
+					Result := l_book_page
+				end
+				internal_root_page := Result
 			end
-		end		
+		end
 
-	top_pages: ARRAYED_LIST [WIKI_PAGE]
+	top_pages: ARRAYED_LIST [WIKI_BOOK_PAGE]
 			-- Top pages of the book, or the immediate children of the root_page.
 			-- The root_page is not a top page.
 		local
-			wp: WIKI_PAGE
+			wp: WIKI_BOOK_PAGE
 			l_key: READABLE_STRING_8
 			l_book_name: like name
-			l_index_page,l_book_page: detachable WIKI_PAGE
+			l_index_page,l_book_page: detachable WIKI_BOOK_PAGE
 		do
-			create Result.make (0)
-			l_book_name := name
-			across
-				pages as ic
-			loop
-				wp := ic.item
-				l_key := wp.key
-				if l_key.is_case_insensitive_equal_general (l_book_name) then
-					l_book_page := wp
-					--Result.force (wp)
-				elseif l_key.is_case_insensitive_equal_general ("index") then
-					l_index_page := wp
-					--Result.force (wp)
-				elseif wp.parent_key.is_case_insensitive_equal_general (l_book_name) then
-					Result.force (wp)
+			if attached root_page as rp and then attached rp.pages as rp_pages then
+				create Result.make (rp_pages.count)
+				across
+					rp_pages as ic
+				loop
+					Result.force (ic.item)
+				end
+			else
+				l_book_name := name
+				create Result.make (0)
+				across
+					pages as ic
+				loop
+					wp := ic.item
+					l_key := wp.key
+					if l_key.is_case_insensitive_equal_general (l_book_name) then
+						l_book_page := wp
+						--Result.force (wp)
+					elseif l_key.is_case_insensitive_equal_general ("index") then
+						l_index_page := wp
+						--Result.force (wp)
+					elseif wp.parent_key.is_case_insensitive_equal_general (l_book_name) then
+						Result.force (wp)
+					end
 				end
 			end
 		end
 
-	page (a_title: READABLE_STRING_GENERAL): detachable WIKI_PAGE
+	page (a_title: READABLE_STRING_GENERAL): detachable WIKI_BOOK_PAGE
 			-- Page with title `a_title'.
 		do
 			across
@@ -115,7 +171,30 @@ feature -- Access
 			end
 		end
 
-	page_by_key (a_key: READABLE_STRING_GENERAL): detachable WIKI_PAGE
+	page_by_metadata (a_metadata_name: READABLE_STRING_GENERAL; a_metadata_value: READABLE_STRING_GENERAL; is_caseless: BOOLEAN): detachable like page
+			-- Page with metadata `a_metadata_name' matching value `a_metadata_value'.
+		do
+			across
+				pages as ic
+			until
+				Result /= Void
+			loop
+				Result := ic.item
+				if attached Result.metadata (a_metadata_name) as md then
+					if is_caseless and a_metadata_value.same_string (md) then
+							-- Found
+					elseif not is_caseless and a_metadata_value.is_case_insensitive_equal (md) then
+							-- Found caseless
+					else
+						Result := Void
+					end
+				else
+					Result := Void
+				end
+			end
+		end
+
+	page_by_key (a_key: READABLE_STRING_GENERAL): detachable like page
 			-- Page identified with key `a_key'.
 		do
 			across
@@ -128,19 +207,21 @@ feature -- Access
 					Result := Void
 				end
 			end
-		end		
+		end
 
-	page_path (a_page: WIKI_PAGE): PATH
+	page_path (a_page: WIKI_BOOK_PAGE): PATH
 		local
 			lst: LIST [READABLE_STRING_8]
+			l_name: READABLE_STRING_8
 		do
+			l_name := name
 			Result := path
 			lst := a_page.src.split ('/')
 			from
 				lst.start
 				if
 					not lst.off and then
-					lst.item.same_string (name)
+					l_name.same_string_general (lst.item) -- FIXME: #unicode  url decoded ?
 				then
 					lst.forth
 				end
@@ -153,11 +234,16 @@ feature -- Access
 			Result := Result.appended_with_extension ("wiki")
 		end
 
+feature {NONE} -- Internal
+
+	internal_root_page: detachable like root_page
+
 feature -- Element change
 
-	add_page (a_page: WIKI_PAGE)
+	add_page (a_page: WIKI_BOOK_PAGE)
 			-- Add page `a_page' to current book.
 		do
+			internal_root_page := Void
 			pages.extend (a_page)
 		end
 
@@ -171,6 +257,8 @@ feature -- Status report
 			Result.append_character (' ')
 			Result.append_integer (pages.count)
 			Result.append_string (" pages")
+			Result.append_string (" #")
+			Result.append_integer (weight)
 		end
 
 note

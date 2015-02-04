@@ -59,6 +59,7 @@ doc:<file name="store.c" header="eif_store.h" version="$Id$" summary="Storing me
 #ifdef VXWORKS
 #include <unistd.h>	/* For write () */
 #endif
+#include "rt_globals_access.h"
 #include "rt_assert.h"
 
 #ifdef DARREN		/* for doing in-editor compilation for errors */
@@ -89,8 +90,6 @@ rt_private long object_count;
 
 #include <string.h>				/* For strlen() */
 
-/*#define DEBUG_GENERAL_STORE */	/**/
-
 /*#define DEBUG 1 */	/**/
 
 /* compression */
@@ -102,6 +101,16 @@ rt_private long object_count;
 #define Merged_flags_dtype(flags,dtype)	((((uint32) flags) << 16) | (uint32) dtype)
 
 #ifndef EIF_THREADS
+/*
+doc:	<attribute name="info_tag" return_type="char [TAG_SIZE]" export="shared">
+doc:		<summary>Buffer in which we write the reason of a store failure.</summary>
+doc:		<access>Read/Write</access>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>Private per thread data</synchronization>
+doc:	</attribute>
+*/
+rt_shared char info_tag[TAG_SIZE];
+
 /*
 doc:	<attribute name="cmps_general_buffer" return_type="char *" export="shared">
 doc:		<summary>Buffer in which result of compression in `store_write' is stored. Apply only for basic and general store.</summary>
@@ -143,16 +152,6 @@ doc:	</attribute>
 rt_shared size_t buffer_size = 0;
 
 /*
-doc:	<attribute name="old_store_buffer_size" return_type="size_t" export="private">
-doc:		<summary>Store default version of `buffer_size'.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private size_t old_store_buffer_size = 0;
-
-/*
 doc:	<attribute name="cmp_buffer_size" return_type="size_t" export="shared">
 doc:		<summary>Size of compression buffer `cmps_general_buffer', computed from `buffer_size'</summary>
 doc:		<access>Read/Write</access>
@@ -176,19 +175,18 @@ rt_private int s_fides;
 /*
  * Function declarations
  */
-rt_shared void internal_store(char *object);
-rt_private void st_store(char *object);				/* Second pass of the store */
-rt_public void make_header(void);				/* Make header */
-rt_public void rmake_header(void);
+rt_private void internal_store(struct rt_store_context *a_context, char *object);
+rt_private void st_store(struct rt_store_context *a_context, char *object);				/* Second pass of the store */
+rt_public void rmake_header(struct rt_store_context *a_context);
 rt_private void object_write (char *object, uint16, EIF_TYPE_INDEX);
-rt_private void gen_object_write (char *object, uint16, EIF_TYPE_INDEX);
+rt_private void flush_st_buffer (void);
+rt_private void store_write(size_t cmps_in_size);
+rt_private void ist_write(EIF_REFERENCE object, int has_transient_attributes);
+rt_private void st_write(EIF_REFERENCE object, int has_transient_attributes);
 rt_private void st_write_cid (EIF_TYPE_INDEX);
 rt_private void ist_write_cid (EIF_TYPE_INDEX);
-rt_public void free_sorted_attributes(void);
 rt_public void allocate_gen_buffer(void);
 rt_shared void buffer_write(const char *data, size_t size);
-
-rt_public void rt_reset_store (void);
 
 rt_private struct cecil_info * cecil_info_for_dynamic_type (EIF_TYPE_INDEX dtype);
 
@@ -204,36 +202,6 @@ doc:	</attribute>
 rt_private void (*store_write_func)(size_t);
 
 /*
-doc:	<attribute name="flush_buffer_func" return_type="void (*)()" export="private">
-doc:		<summary>Action called at the end of a store to flush remaining in-memory data.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private void (*flush_buffer_func)(void);
-
-/*
-doc:	<attribute name="st_write_func" return_type="void (*)(EIF_REFERENCE, int)" export="private">
-doc:		<summary>Action called to store an Eiffel object.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private void (*st_write_func)(EIF_REFERENCE, int);
-
-/*
-doc:	<attribute name="make_header_func" return_type="void (*)(void)" export="private">
-doc:		<summary>Action called to write storable header.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private void (*make_header_func)(void);
-
-/*
 doc:	<attribute name="char_write_func" return_type="int (*)(char *, int)" export="shared">
 doc:		<summary>Action called to write a sequence of characters of a given length to disk. It returns number of bytes written. Only used by `run_idr' which explains why it is `shared' and not `private' to current C module.</summary>
 doc:		<access>Read/Write</access>
@@ -244,77 +212,7 @@ doc:	</attribute>
 rt_shared int (*char_write_func)(char *, int);
 
 /*
-doc:	<attribute name="old_store_write_func" return_type="void (*)(size_t)" export="private">
-doc:		<summary>Store default version of `store_write_func'.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private void (*old_store_write_func)(size_t);
-
-/*
-doc:	<attribute name="old_char_write_func" return_type="int (*)(char *, int)" export="private">
-doc:		<summary>Store default version of `char_write_func'.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private int (*old_char_write_func)(char *, int);
-
-/*
-doc:	<attribute name="old_flush_buffer_func" return_type="void (*)()" export="private">
-doc:		<summary>Store default version of `buffer_write_func'.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private void (*old_flush_buffer_func)(void);
-
-/*
-doc:	<attribute name="old_st_write_func" return_type="void (*)(EIF_REFERENCE, int)" export="private">
-doc:		<summary>Store default version of `st_write_func'.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private void (*old_st_write_func)(EIF_REFERENCE, int);
-
-/*
-doc:	<attribute name="old_make_header_func" return_type="void (*)()" export="private">
-doc:		<summary>Store default version of `make_header_func'.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private void (*old_make_header_func)(void);
-
-/*
-doc:	<attribute name="accounting" return_type="int" export="private">
-doc:		<summary>Do we account for something while traversing first set of objects to be stored? If so, its value tells us what to do (See `eif_traverse.h' for explanation of possible values)</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private int accounting = 0;
-
-/*
-doc:	<attribute name="old_accounting" return_type="int" export="private">
-doc:		<summary>Store default version of `accounting'.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_private int old_accounting = 0;
-
-/*
-doc:	<attribute name="account" return_type="char *" export="shared">
+doc:	<attribute name="account" return_type="struct rt_traversal_info *" export="shared">
 doc:		<summary>Array of traversed dynamic types during accounting.</summary>
 doc:		<access>Read/Write</access>
 doc:		<indexing>Dynamic type</indexing>
@@ -322,18 +220,8 @@ doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>Private per thread data</synchronization>
 doc:	</attribute>
 */
-rt_shared char *account = NULL;
-
-/*
-doc:	<attribute name="sorted_attributes" return_type="unsigned int **" export="shared">
-doc:		<summary>Array of sorted attributes</summary>
-doc:		<access>Read/Write</access>
-doc:		<indexing>[Dynamic type, attribute number]</indexing>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:	</attribute>
-*/
-rt_shared unsigned int **sorted_attributes = NULL;
+rt_shared struct rt_traversal_info *account = NULL;
+rt_shared size_t account_count = 0;
 
 /* Declarations to work with streams */
 /*
@@ -392,57 +280,91 @@ rt_shared void eif_store_thread_init (void)
 }
 #endif
 
-/* Initialize store function pointers and globals */
-/* reset buffer size if argument is non null */
-rt_public void rt_init_store(
-	void (*store_function) (size_t),
-	int (*char_write_function)(char *, int),
-	void (*flush_buffer_function) (void),
-	void (*st_write_function) (EIF_REFERENCE, int),
-	void (*make_header_function) (void),
-	int accounting_type)
+/*
+doc:	<routine name="eif_store_object" export="public">
+doc:		<summary>Store object `object' using `char_write' to write data using storable type `store_type'.</summary>
+doc:		<param name="char_write" type="int(*)(char *, int)">Function used to write data.</param>
+doc:		<param name="object" type="EIF_REFERENCE">Object to store.</param>
+doc:		<param name="store_type" type="char">Type of storable used. It can be either of BASIC_STORE, GENERAL_STORE or INDEPENDENT_STORE.</param>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>None required</synchronization>
+doc:	</routine>
+*/
+rt_public void eif_store_object(int(*char_write)(char *, int), EIF_REFERENCE object, char store_type)
 {
-	RT_GET_CONTEXT
-	old_store_write_func = store_write_func;
-	old_char_write_func = char_write_func;
-	old_flush_buffer_func = flush_buffer_func;
-	old_st_write_func = st_write_func;
-	old_make_header_func = make_header_func;
-	old_accounting = accounting;
-	old_store_buffer_size = buffer_size;
-
-	store_write_func = store_function;
-	char_write_func = char_write_function;
-	flush_buffer_func = flush_buffer_function;
-	st_write_func = st_write_function;
-	make_header_func = make_header_function;
-	accounting = accounting_type;
-	buffer_size = EIF_BUFFER_SIZE;
+	struct rt_store_context store_context;
+	memset(&store_context, 0, sizeof(struct rt_store_context));
+	store_context.write_function = char_write;
+	rt_store_object (&store_context, object, store_type);
 }
 
-/* Reset store function pointers and globals to their default values */
-
-rt_public void rt_reset_store(void) {
+/*
+doc:	<routine name="rt_store_object" export="shared">
+doc:		<summary>Store object `object' using `a_context' and storable type `store_type'.</summary>
+doc:		<param name="a_context" type="struct rt_store_context *a_context">Context used to perform the store operation.</param>
+doc:		<param name="object" type="EIF_REFERENCE">Object to store.</param>
+doc:		<param name="store_type" type="char">Type of storable used. It can be either of BASIC_STORE, GENERAL_STORE or INDEPENDENT_STORE.</param>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>None required</synchronization>
+doc:	</routine>
+*/
+rt_shared void rt_store_object(struct rt_store_context *a_context, EIF_REFERENCE object, char store_type)
+{
 	RT_GET_CONTEXT
-	store_write_func = old_store_write_func;
-	char_write_func = old_char_write_func;
-	flush_buffer_func = old_flush_buffer_func;
-	st_write_func = old_st_write_func;
-	make_header_func = old_make_header_func;
-	accounting = old_accounting;
-	buffer_size = old_store_buffer_size;
 
-	if (account != (char *) 0) {
-		eif_rt_xfree(account);
-		account = (char *) 0;
+	REQUIRE("Has write_function", a_context->write_function);
+
+	rt_setup_store (a_context, store_type);
+
+	buffer_size = EIF_BUFFER_SIZE;
+
+	if ((store_type == BASIC_STORE) || (store_type == GENERAL_STORE)) {
+		allocate_gen_buffer();
+	} else if (store_type == INDEPENDENT_STORE) {
+			/* Initialize serialization streams for writting (1 stands for write) */
+		run_idr_init (buffer_size, 1);
+		idr_temp_buf = (char *) eif_rt_xmalloc (48, C_T, GC_OFF);
+		if (!idr_temp_buf) {
+			xraise (EN_MEM);
+		}
 	}
 
-	free_sorted_attributes();
+	internal_store(a_context, object);
 
-	if (idr_temp_buf != (char *) 0) {
-		eif_rt_xfree(idr_temp_buf);
-		idr_temp_buf = (char *) 0;
+	if (a_context->traversal_context.account) {
+		eif_rt_xfree(a_context->traversal_context.account);
+		a_context->traversal_context.account = NULL;
+		a_context->traversal_context.account_count = 0;
 	}
+
+	if (store_type == INDEPENDENT_STORE) {
+		run_idr_destroy ();
+		eif_rt_xfree (idr_temp_buf);
+		idr_temp_buf = NULL;
+	}
+}
+rt_shared void rt_setup_store (struct rt_store_context *a_context, char store_type)
+{
+	RT_GET_CONTEXT
+	if (store_type == INDEPENDENT_STORE) {
+		a_context->traversal_context.accounting = TR_STORE_ACCOUNT;
+		a_context->write_buffer_function = NULL;
+		a_context->flush_buffer_function = idr_flush;
+		a_context->object_write_function = ist_write;
+		a_context->header_function = rmake_header;
+	} else {
+			/* If callers did not set up the write buffer function, we use the default `store_write'. */
+		if (!a_context->write_buffer_function) {
+			a_context->write_buffer_function = store_write;
+		}
+		a_context->flush_buffer_function = flush_st_buffer;
+		a_context->object_write_function = st_write;
+		a_context->header_function = NULL;
+	}
+	a_context->traversal_context.is_for_persistence = 1;
+
+	store_write_func = a_context->write_buffer_function;
+	char_write_func = a_context->write_function;
 }
 
 /* Functions definitions */
@@ -453,103 +375,40 @@ rt_public void estore(EIF_INTEGER file_desc, EIF_REFERENCE object)
 {
 	RT_GET_CONTEXT
 	s_fides = (int) file_desc;
-
-	rt_init_store (
-		store_write,
-		char_write,
-		flush_st_buffer,
-		st_write,
-		NULL,
-		0);
-
-	allocate_gen_buffer();
-	internal_store(object);
-
-	rt_reset_store ();
+	eif_store_object (char_write, object, BASIC_STORE);
 }
 
 rt_public EIF_INTEGER stream_estore(EIF_POINTER *buffer, EIF_INTEGER size, EIF_REFERENCE object, EIF_INTEGER *real_size)
 {
 	RT_GET_CONTEXT
-	rt_init_store (
-		store_write,
-		stream_write,
-		flush_st_buffer,
-		st_write,
-		NULL,
-		0);
 
 	store_stream_buffer = *buffer;
 	store_stream_buffer_size = size;
 	store_stream_buffer_position = 0;
 
-	allocate_gen_buffer();
-	internal_store(object);
+	eif_store_object (stream_write, object, BASIC_STORE);
 
 	*buffer = store_stream_buffer;
-	rt_reset_store ();
 	*real_size = (EIF_INTEGER) store_stream_buffer_position;
 	CHECK("not too big", store_stream_buffer_size <= 0x7FFFFFFF);
 	return (EIF_INTEGER) store_stream_buffer_size;
 }
 
-/* General store */
-/* Store object hierarchy of root `object' and produce a header
- * so it can be retrieved by other systems. */
+/* General store. Obsolete, it will internally use independent store. */
 rt_public void eestore(EIF_INTEGER file_desc, EIF_REFERENCE object)
 {
-	RT_GET_CONTEXT
-	s_fides = (int) file_desc;
-
-	rt_init_store (
-		store_write,
-		char_write,
-		flush_st_buffer,
-		gst_write,
-		make_header,
-		TR_ACCOUNT);
-
-	allocate_gen_buffer();
-	internal_store(object);
-
-	rt_reset_store ();
+	sstore(file_desc, object);
 }
 
 rt_public EIF_INTEGER stream_eestore(EIF_POINTER *buffer, EIF_INTEGER size, EIF_REFERENCE object, EIF_INTEGER *real_size)
 {
-	RT_GET_CONTEXT
-	rt_init_store (
-		store_write,
-		stream_write,
-		flush_st_buffer,
-		gst_write,
-		make_header,
-		TR_ACCOUNT);
-
-	store_stream_buffer = *buffer;
-	store_stream_buffer_size = size;
-	store_stream_buffer_position = 0;
-
-	allocate_gen_buffer();
-	internal_store(object);
-	*buffer = store_stream_buffer;
-
-	rt_reset_store ();
-	*real_size = (EIF_INTEGER) store_stream_buffer_position;
-	CHECK("not too big", store_stream_buffer_size <= 0x7FFFFFFF);
-	return (EIF_INTEGER) store_stream_buffer_size;
-}
-
-rt_public void basic_general_free_store (EIF_REFERENCE object)
-{
-	allocate_gen_buffer();
-	internal_store(object);
+	return stream_sstore(buffer, size, object, real_size);
 }
 
 #ifndef EIF_THREADS
 /*
 doc:	<attribute name="eif_is_discarding_attachment_marks" return_type="EIF_BOOLEAN" export="private">
-doc:		<summary>Does `independent_store' discard the attachment marks if found during store operation? Default False.</summary>
+doc:		<summary>Does `independent_store' discard the attachment marks if found during store operation? Default False?</summary>
 doc:		<access>Read/Write</access>
 doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>Private per thread data</synchronization>
@@ -578,81 +437,23 @@ rt_public void sstore (EIF_INTEGER file_desc, EIF_REFERENCE object)
 {
 	RT_GET_CONTEXT
 	s_fides = (int) file_desc;
-
-	rt_init_store (
-		NULL,
-		char_write,
-		idr_flush,
-		ist_write,
-		rmake_header,
-		RECOVER_ACCOUNT);
-
-		/* Initialize serialization streams for writting (1 stands for write) */
-	run_idr_init (buffer_size, 1);
-	idr_temp_buf = (char *) eif_rt_xmalloc (48, C_T, GC_OFF);
-	if (!idr_temp_buf) {
-		xraise (EN_MEM);
-	}
-
-	internal_store(object);
-
-	run_idr_destroy ();
-	eif_rt_xfree (idr_temp_buf);
-	idr_temp_buf = (char *)0;
-
-	rt_reset_store ();
+	eif_store_object (char_write, object, INDEPENDENT_STORE);
 }
 
 rt_public EIF_INTEGER stream_sstore (EIF_POINTER *buffer, EIF_INTEGER size, EIF_REFERENCE object, EIF_INTEGER *real_size)
 {
 	RT_GET_CONTEXT
-	rt_init_store (
-		NULL,
-		stream_write,
-		idr_flush,
-		ist_write,
-		rmake_header,
-		RECOVER_ACCOUNT);
 
 	store_stream_buffer = *buffer;
 	store_stream_buffer_size = size;
 	store_stream_buffer_position = 0;
 
-		/* Initialize serialization streams for writting (1 stands for write) */
-	run_idr_init (buffer_size, 1);
-	idr_temp_buf = (char *) eif_rt_xmalloc (48, C_T, GC_OFF);
-	if (!idr_temp_buf) {
-		xraise (EN_MEM);
-	}
-
-	internal_store(object);
-
-	run_idr_destroy ();
-	eif_rt_xfree (idr_temp_buf);
-	idr_temp_buf = (char *)0;
+	eif_store_object (stream_write, object, INDEPENDENT_STORE);
 
 	*buffer = store_stream_buffer;
-	rt_reset_store ();
 	*real_size = (EIF_INTEGER) store_stream_buffer_position;
 	CHECK("not too big", store_stream_buffer_size <= 0x7FFFFFFF);
 	return (EIF_INTEGER) store_stream_buffer_size;
-}
-
-rt_public void independent_free_store (EIF_REFERENCE object)
-{
-	RT_GET_CONTEXT
-		/* Initialize serialization streams for writting (1 stands for write) */
-	run_idr_init (buffer_size, 1);
-	idr_temp_buf = (char *) eif_rt_xmalloc (48, C_T, GC_OFF);
-	if (!idr_temp_buf) {
-		xraise (EN_MEM);
-	}
-
-	internal_store(object);
-
-	run_idr_destroy ();
-	eif_rt_xfree (idr_temp_buf);
-	idr_temp_buf = (char *)0;
 }
 
 /* Stream allocation */
@@ -710,7 +511,7 @@ rt_public void allocate_gen_buffer (void)
 	end_of_buffer = 0;
 }
 
-rt_shared void internal_store(char *object)
+rt_private void internal_store(struct rt_store_context *a_context, char *object)
 {
 	EIF_GET_CONTEXT
 	RT_GET_CONTEXT
@@ -727,55 +528,27 @@ rt_shared void internal_store(char *object)
 	if (setjmp(exenv)) {
 		RTXSC;					/* Restore stack contexts */
 		EIF_EO_STORE_UNLOCK;	/* Unlock mutex which was locked in `internal_store'. */
-		rt_reset_store ();				/* Reset data structure */
 		ereturn(MTC_NOARG);				/* Propagate exception */
 	}
 
-	if (accounting) {		/* Prepare character array */
-		account = (char *) eif_rt_xmalloc(scount * sizeof(char), C_T, GC_OFF);
-		if (account == (char *) 0)
+	if (a_context->traversal_context.accounting) {		/* Prepare character array */
+		a_context->traversal_context.account_count = eif_next_gen_id;
+		a_context->traversal_context.account = (struct rt_traversal_info *) eif_rt_xmalloc(a_context->traversal_context.account_count * sizeof(struct rt_traversal_info), C_T, GC_OFF);
+		if (!a_context->traversal_context.account) {
 			xraise(EN_MEM);
-		memset (account, 0, scount * sizeof(char));
-		if (accounting == RECOVER_ACCOUNT) {
-#ifdef RECOVERABLE_DEBUG
-			printf ("Storing in new recoverable format\n");
-#endif
-				/* To help a better transition for the storable changes in 6.6, if the code is compiled
-				 * in compatible mode, then we use the old storable format which does not store the version
-				 * of the class. */
-			if (egc_has_old_special_semantic) {
-					/* As in version 6.5 and 6.4, when we are in compatible mode,
-					 * we generate the previous, format. */
-				c = INDEPENDENT_STORE_6_3;
-			} else {
-				c = INDEPENDENT_STORE_6_6;
-			}
-			rt_kind_version = c;
 		}
-		else {
-				/* To help a better transition for the storable changes in 6.6, if the code is compiled
-				 * in compatible mode, then we use the old storable format which does not store the version
-				 * of the class. */
-			if (egc_has_old_special_semantic) {
-					/* As in version 6.5 and 6.4, when we are in compatible mode,
-					 * we generate the previous format. */
-				c = GENERAL_STORE_4_0;
-			} else {
-				c = GENERAL_STORE_6_6;
-			}
-			rt_kind_version = c;
-
-				/* Allocate the array to store the sorted attributes */
-			sorted_attributes = (unsigned int **) eif_rt_xmalloc(scount * sizeof(unsigned int *), C_T, GC_OFF);
-#ifdef DEBUG_GENERAL_STORE
-printf ("Malloc on sorted_attributes %d %d %lx\n", scount, scount * sizeof(unsigned int *), sorted_attributes);
-#endif
-			if (sorted_attributes == (unsigned int **) 0){
-				eif_rt_xfree(account);
-				xraise(EN_MEM);
-			}
-			memset (sorted_attributes, 0, scount * sizeof(unsigned int *));
+		memset (a_context->traversal_context.account, 0, a_context->traversal_context.account_count * sizeof(struct rt_traversal_info));
+			/* To help a better transition for the storable changes in 6.6, if the code is compiled
+			 * in compatible mode, then we use the old storable format which does not store the version
+			 * of the class. */
+		if (egc_has_old_special_semantic) {
+				/* As in version 6.5 and 6.4, when we are in compatible mode,
+				 * we generate the previous, format. */
+			c = INDEPENDENT_STORE_6_3;
+		} else {
+			c = INDEPENDENT_STORE_6_6;
 		}
+		rt_kind_version = c;
 	} else {
 		c = BASIC_STORE_6_6;
 	}
@@ -788,45 +561,41 @@ printf ("Malloc on sorted_attributes %d %d %lx\n", scount, scount * sizeof(unsig
 	}
 
 	/* Write the kind of store */
-	l_failure = (char_write_func(&c, sizeof(char)) < 0);
-	if ((c != INDEPENDENT_STORE_6_3) && (c != GENERAL_STORE_4_0) && (!l_failure)) {
+	l_failure = (a_context->write_function(&c, sizeof(char)) < 0);
+	if ((c != INDEPENDENT_STORE_6_3) && (!l_failure)) {
 			/* Then write the storable properties. */
-		l_failure = (char_write_func(&l_store_properties, sizeof(char)) < 0);
+		l_failure = (a_context->write_function(&l_store_properties, sizeof(char)) < 0);
 	}
 	if (l_failure) {
-		if (accounting) {
-			eif_rt_xfree(account);
-			if (c==GENERAL_STORE_4_0)
-					/* sorted_attributes is empty so a basic free is enough */
-				eif_rt_xfree((char *)sorted_attributes);
-				sorted_attributes = (unsigned int **) 0;
-			}
+		if (a_context->traversal_context.account) {
+			eif_rt_xfree(a_context->traversal_context.account);
+			a_context->traversal_context.account = NULL;
+		}
 		eise_io("Store: unable to write the kind of storable.");
 	} else {
 		EIF_EO_STORE_LOCK;
-		obj_nb = 0;
-		traversal(object, 1, accounting);
+		a_context->traversal_context.obj_nb = 0;
+		traversal(&a_context->traversal_context, object);
 
-		if (accounting) {
-			make_header_func();			/* Make header */
-			eif_rt_xfree(account);			/* Free accouting character array */
-
-			account = (char *) 0;
+		if (a_context->traversal_context.account) {
+			a_context->header_function (a_context);			/* Make header */
+			eif_rt_xfree(a_context->traversal_context.account);			/* Free accouting character array */
+			a_context->traversal_context.account = NULL;
 		}
-		/* Write the count of stored objects */
-		if (accounting == RECOVER_ACCOUNT) {
-			widr_multi_uint32 (&obj_nb, 1);
+			/* Write the count of stored objects */
+		if (a_context->traversal_context.accounting) {
+			widr_multi_uint32 (&a_context->traversal_context.obj_nb, 1);
 		} else {
-			buffer_write((char *)(&obj_nb), sizeof(uint32));
+			buffer_write((char *)(&a_context->traversal_context.obj_nb), sizeof(uint32));
 		}
 
 #if DEBUG & 3
-			printf (" %x", obj_nb);
+			printf (" %x", a_context->traversal_context.obj_nb);
 #endif
 
-		st_store(object);		/* Write objects to be stored */
+		st_store(a_context, object);		/* Write objects to be stored */
 
-		flush_buffer_func();	/* flush the buffer */
+		a_context->flush_buffer_function ();	/* flush the buffer */
 
 		EIF_EO_STORE_UNLOCK;
 #if DEBUG & 3
@@ -839,10 +608,9 @@ printf ("Malloc on sorted_attributes %d %d %lx\n", scount, scount * sizeof(unsig
 	}
 }
 
-rt_private void st_store(EIF_REFERENCE object)
+rt_private void st_store(struct rt_store_context *a_context, EIF_REFERENCE object)
 {
 	/* Second pass of the store mecahnism: writing on the disk. */
-	RT_GET_CONTEXT
 	EIF_REFERENCE o_ref;
 	EIF_REFERENCE o_ptr;
 	long i, nb_references;
@@ -875,7 +643,7 @@ rt_private void st_store(EIF_REFERENCE object)
 					if (eif_is_reference_tuple_item(l_item)) {
 						o_ref = eif_reference_tuple_item(l_item);
 						if (o_ref) {
-							st_store(o_ref);
+							st_store(a_context, o_ref);
 						}
 					}
 				}
@@ -884,13 +652,13 @@ rt_private void st_store(EIF_REFERENCE object)
 						ref = (EIF_REFERENCE) ((EIF_REFERENCE *) ref + 1)) {
 					o_ref = *(EIF_REFERENCE *) ref;
 					if (o_ref != (EIF_REFERENCE) 0)
-						st_store(o_ref);
+						st_store(a_context, o_ref);
 				}
 			} else {						/* Special of composites */
 				elem_size = RT_SPECIAL_ELEM_SIZE(object);
 				for (ref = object + OVERHEAD; count > 0;
 					count --, ref += elem_size) {
-					st_store(ref);
+					st_store(a_context, ref);
 				}
 			}
 		}
@@ -906,7 +674,7 @@ rt_private void st_store(EIF_REFERENCE object)
 			o_ref = *(EIF_REFERENCE *)o_ptr;
 			if (o_ref) {
 				if (!EIF_IS_TRANSIENT_ATTRIBUTE(System(zone->ov_dtype), i)) {
-					st_store(o_ref);
+					st_store(a_context, o_ref);
 				} else {
 					has_transient_attributes = 1;
 				}
@@ -915,11 +683,11 @@ rt_private void st_store(EIF_REFERENCE object)
 	}
 
 	if (!is_expanded) {
-		st_write_func(object, has_transient_attributes);		/* write the object */
+		a_context->object_write_function (object, has_transient_attributes);		/* write the object */
 	}
 }
 
-rt_public void st_write(EIF_REFERENCE object, int has_transient_attributes)
+rt_private void st_write(EIF_REFERENCE object, int has_transient_attributes)
 {
 	/* Write an object'.
 	 * Use for basic and general (before 3.3) store
@@ -1025,55 +793,7 @@ rt_public void st_write(EIF_REFERENCE object, int has_transient_attributes)
 
 }
 
-rt_public void gst_write(EIF_REFERENCE object, int has_transient_attributes)
-{
-	/* Write an object.
-	 * used for general store
-	 */
-
-	union overhead *zone;
-	uint32 store_flags;
-	uint16 flags;
-
-	zone = HEADER(object);
-	flags = zone->ov_flags;
-
-	/* Write address */
-
-	buffer_write((char *)(&object), sizeof(char *));
-
-	store_flags = Merged_flags_dtype(flags,zone->ov_dtype);
-	buffer_write((char *)(&store_flags), sizeof(uint32));
-	st_write_cid (Dftype(object));
-
-#if DEBUG & 1
-		printf ("\n %lx", object);
-		printf (" %lx", flags);
-#endif
-
-	if (flags & EO_SPEC) {
-#ifdef EIF_ASSERTIONS
-		RT_GET_CONTEXT
-#endif
-		uint32 count, l_extra_data;
-		count = (uint32) RT_SPECIAL_COUNT(object);
-		if (egc_has_old_special_semantic) {
-				/* We do not care about element size since it is computed on retrieval. */
-			CHECK("Proper version", rt_kind_version < GENERAL_STORE_6_4);
-			l_extra_data = (uint32)(RT_SPECIAL_ELEM_SIZE(object));
-		} else {
-				/* We need to write the capacity with the new semantic. */
-			l_extra_data = (uint32)(RT_SPECIAL_CAPACITY(object));
-		}
-		buffer_write((char *)(&count), sizeof(uint32));
-		buffer_write((char *)(&l_extra_data), sizeof(uint32));
-	}
-	/* Write the body of the object */
-	gen_object_write(object, flags, Dftype(object));
-
-}
-
-rt_public void ist_write(EIF_REFERENCE object, int has_transient_attributes)
+rt_private void ist_write(EIF_REFERENCE object, int has_transient_attributes)
 {
 	/* Write an object.
 	 * used for independent store
@@ -1136,188 +856,6 @@ rt_shared rt_uint_ptr get_offset(EIF_TYPE_INDEX dtype, rt_uint_ptr attrib_num)
 	return offset;
 #endif
 }
-
-rt_shared rt_uint_ptr get_alpha_offset(EIF_TYPE_INDEX dtype, rt_uint_ptr attrib_num)
-{
-	/* Get the offset for attribute number `attrib_num' (after alphabetical sort) */
-	RT_GET_CONTEXT
-#ifdef WORKBENCH
-	int32 rout_id;				/* Attribute routine id */
-	BODY_INDEX offset;
-#endif
-	rt_uint_ptr alpha_attrib_num;
-
-	unsigned int *attr_types = sorted_attributes[dtype];
-
-	if (attr_types == (unsigned int *)0) {
-		alpha_attrib_num = attrib_num;
-	} else {
-		alpha_attrib_num = attr_types[attrib_num];
-	}
-#ifndef WORKBENCH
-	return (System(dtype).cn_offsets[alpha_attrib_num]);
-#else
-	rout_id = System(dtype).cn_attr[alpha_attrib_num];
-	CAttrOffs(offset,rout_id,dtype);
-	return offset;
-#endif
-}
-
-/*
-doc:	<routine name="gen_object_write" export="private">
-doc:		<summary>Store object using platform general format.</summary>
-doc:		<param name="object" type="char *">Pointer to the object being stored. It is a `char *' and not an `EIF_REFERENCE' because some time `object' may not have an object header (case of an expanded without references in a SPECIAL instance.</param>
-doc:		<param name="flags" type="uint16">Flags associated to the type of object pointed by `object'.</param>
-doc:		<param name="dftype" type="EIF_TYPE_INDEX">Full dynamic type of `object'.</param>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>eif_eo_store_mutex</synchronization>
-doc:	</routine>
-*/
-
-rt_private void gen_object_write(char *object, uint16 flags, EIF_TYPE_INDEX dftype)
-{
-		/* Writes an object to disk (used by the new (3.3) general store)
-		 * It uses the same algorithm as `object_write' and should be updated
-		 * at the same time.
-		 */
-
-	rt_uint_ptr attrib_offset, elem_size;
-	EIF_TYPE_INDEX dtype = To_dtype(dftype);
-	EIF_TYPE_INDEX exp_dftype;
-	rt_uint_ptr num_attrib;
-	uint32 store_flags;
-	uint32 sk_type;
-
-	num_attrib = System(dtype).cn_nbattr;
-
-	if (num_attrib > 0) {
-		for (; num_attrib > 0;) {
-			num_attrib--;
-			if (!EIF_IS_TRANSIENT_ATTRIBUTE(System(dtype), num_attrib)) {
-				attrib_offset = get_alpha_offset(dtype, num_attrib);
-				sk_type = *(System(dtype).cn_types + num_attrib) & SK_HEAD;
-				switch (sk_type) {
-					case SK_UINT8: elem_size = sizeof(EIF_NATURAL_8); break;
-					case SK_UINT16: elem_size = sizeof(EIF_NATURAL_16); break;
-					case SK_UINT32: elem_size = sizeof(EIF_NATURAL_32); break;
-					case SK_UINT64: elem_size = sizeof(EIF_NATURAL_64); break;
-					case SK_INT8: elem_size = sizeof(EIF_INTEGER_8); break;
-					case SK_INT16: elem_size = sizeof(EIF_INTEGER_16); break;
-					case SK_INT32: elem_size = sizeof(EIF_INTEGER_32); break;
-					case SK_INT64: elem_size = sizeof(EIF_INTEGER_64); break;
-					case SK_CHAR32: elem_size = sizeof(EIF_CHARACTER_32); break;
-					case SK_BOOL: elem_size = sizeof(EIF_BOOLEAN); break;
-					case SK_CHAR8: elem_size = sizeof(EIF_CHARACTER_8); break;
-					case SK_REAL32: elem_size = sizeof(EIF_REAL_32); break;
-					case SK_REAL64: elem_size = sizeof(EIF_REAL_64); break;
-					case SK_REF:
-					case SK_POINTER: elem_size = sizeof(EIF_REFERENCE); break;
-					case SK_EXP:
-								/* We don't actually need the size because per the validity rules they cannot be volatile. */
-							elem_size = 0; break;
-					default:
-						elem_size = 0;
-						eise_io("General store: not an Eiffel object.");
-				}
-				if (sk_type == SK_EXP) {
-						/* General store does not need a value for the second argument since
-						 * we do a field by field store. */
-					gst_write (object + attrib_offset, 0);
-				} else {
-					buffer_write (object + attrib_offset, elem_size);
-				}
-			}
-		}
-	} else {
-		if (flags & EO_SPEC) {		/* Special object */
-			EIF_INTEGER count;
-			EIF_REFERENCE ref;
-
-			count = RT_SPECIAL_COUNT(object);
-
-			if (flags & EO_TUPLE) {
-				buffer_write (object, (rt_uint_ptr) count * sizeof(EIF_TYPED_VALUE));
-			} else {
-				uint32 dgen;
-				EIF_TYPE_INDEX *dynamic_types;
-				uint32 *patterns;
-				uint16 nb_gen;
-				struct cecil_info *info;
-
-				info = cecil_info_for_dynamic_type (dtype);
-				CHECK ("Must be a generic type", (info != NULL) && (info->nb_param > 0));
-
-				/* Generic type, write in file:
-				 *	"dtype visible_name size nb_generics {meta_type}+"
-				 */
-				dynamic_types = info->dynamic_types;
-				nb_gen = info->nb_param;
-
-				for (;;) {
-					if ((*dynamic_types++) == dtype)
-						break;
-				}
-				dynamic_types--;
-				patterns = info->patterns + nb_gen * (dynamic_types - info->dynamic_types);
-				dgen = *patterns;
-
-
-				if (!(flags & EO_REF)) {		/* Special of simple types */
-					switch (dgen & SK_HEAD) {
-						case SK_UINT8: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_NATURAL_8)); break;
-						case SK_UINT16: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_NATURAL_16)); break;
-						case SK_UINT32: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_NATURAL_32)); break;
-						case SK_UINT64: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_NATURAL_64)); break;
-						case SK_INT8: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_INTEGER_8)); break;
-						case SK_INT16: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_INTEGER_16)); break;
-						case SK_INT32: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_INTEGER_32)); break;
-						case SK_INT64: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_INTEGER_64)); break;
-						case SK_CHAR32: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_CHARACTER_32)); break;
-						case SK_BOOL: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_BOOLEAN)); break;
-						case SK_CHAR8: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_CHARACTER_8)); break;
-						case SK_REAL32: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_REAL_32)); break;
-						case SK_REAL64: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_REAL_64)); break;
-						case SK_POINTER: buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_POINTER)); break;
-						case SK_EXP:
-							elem_size = RT_SPECIAL_ELEM_SIZE(object);
-							exp_dftype = eif_gen_param_id(dftype, 1);
-							store_flags = Merged_flags_dtype(EO_EXP,To_dtype(exp_dftype));
-							buffer_write((char *) (&store_flags), sizeof(uint32));
-							st_write_cid (exp_dftype);
-#ifdef WORKBENCH
-							ref = object + OVERHEAD;
-#else
-								/* In finalized mode, there is no header in a special which
-								 * does not have the EO_REF flag. */
-							ref = object;
-#endif
-							for (; count > 0; count --, ref += elem_size) {
-								gen_object_write(ref, EO_EXP, exp_dftype);
-							}
-							break;
-						default:
-							eise_io("General store: not an Eiffel object.");
-							break;
-					}
-				} else {
-					if (!(flags & EO_COMP)) {	/* Special of references */
-						buffer_write(object, (rt_uint_ptr) count*sizeof(EIF_REFERENCE));
-					} else {			/* Special of composites */
-						elem_size = RT_SPECIAL_ELEM_SIZE(object);
-						exp_dftype = eif_gen_param_id(dftype, 1);
-						store_flags = Merged_flags_dtype(EO_EXP,To_dtype(exp_dftype));
-						buffer_write((char *)(&store_flags), sizeof(uint32));
-						st_write_cid (exp_dftype);
-						for (ref = object + OVERHEAD; count > 0; count --, ref += elem_size) {
-							gen_object_write(ref, EO_EXP, exp_dftype);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
 
 rt_private void object_tuple_write (EIF_REFERENCE object)
 	/* Storing TUPLE. Version for independent store */
@@ -1524,196 +1062,6 @@ rt_private void object_write(char *object, uint16 flags, EIF_TYPE_INDEX dftype)
 	}
 }
 
-
-
-rt_public void make_header(EIF_CONTEXT_NOARG)
-{
-	/* Generate header for stored hiearchy retrivable by other systems. */
-	RT_GET_CONTEXT
-	EIF_GET_CONTEXT
-	EIF_TYPE_INDEX i;
-	const char *vis_name;			/* Visible name of a class */
-	int l_is_version_required = rt_kind_version >= GENERAL_STORE_6_6;
-	const char *l_storable_version;
-	char *s_buffer = NULL;
-	uint32 l_length;
-	struct cecil_info *info;
-	volatile int nb_line = 0;
-	volatile size_t bsize = 80;
-	jmp_buf exenv;
-	RTYD;
-
-	excatch(&exenv);	/* Record pseudo execution vector */
-	if (setjmp(exenv)) {
-		if (s_buffer) {
-			eif_rt_xfree(s_buffer);
-		}
-		RTXSC;					/* Restore stack contexts */
-		ereturn(MTC_NOARG);				/* Propagate exception */
-	}
-
-	s_buffer = (char *) eif_rt_xmalloc (bsize * sizeof( char), C_T, GC_OFF);
-	if (!s_buffer) {
-		xraise(EN_MEM);
-	}
-	/* Write maximum dynamic type */
-	if (0 > sprintf(s_buffer,"%d\n", scount)) {
-		eise_io("General store: unable to write number of different Eiffel types.");
-	}
-	buffer_write(s_buffer, (strlen (s_buffer)));
-
-
-	for (i=0; i<scount; i++)
-		if (account[i])
-			nb_line++;
-	/* Write number of header lines */
-	if (0 > sprintf(s_buffer,"%d\n", nb_line)) {
-		eise_io("General store: unable to write number of header lines.");
-	}
-	buffer_write(s_buffer, (strlen (s_buffer)));
-
-	for (i=0; i<scount; i++) {
-		if (!account[i])
-			continue;				/* No object of dyn. type `i'. */
-
-		sort_attributes(i);
-
-		/* vis_name = Visible(i) */;/* Visible name of the dyn. type */
-		vis_name = System(i).cn_generator;
-
-		if (bsize < (strlen (vis_name) + sizeof (long) + 2 * sizeof (int) + 6))
-			{
-				bsize = (strlen (vis_name) + sizeof (long) + 2 * sizeof (int) + 6);
-				s_buffer = (char *) xrealloc (s_buffer, bsize, GC_OFF);
-		}
-
-		info = cecil_info_for_dynamic_type (i);
-		if ((info != NULL) && (info->nb_param > 0)) {	/* Is the type a generic one ? */
-			/* Generic type, write in file:
-			 *	"dtype visible_name size nb_generics {meta_type}+"
-			 */
-			EIF_TYPE_INDEX *dynamic_types = info->dynamic_types;
-			uint32 *patterns;
-			uint16 nb_gen = info->nb_param;
-			int j;
-
-			if (0 > sprintf(s_buffer, "%d %s %ld %d", i, vis_name, EIF_Size(i), nb_gen)) {
-				eise_io("General store: unable to write the generic type name.");
-			}
-
-			buffer_write(s_buffer, (strlen (s_buffer)));
-
-			for (;;) {
-				if ((*dynamic_types++) == i)
-					break;
-			}
-			dynamic_types--;
-			patterns = info->patterns + nb_gen * (dynamic_types - info->dynamic_types);
-			for (j=0; j<nb_gen; j++) {
-				long dgen;
-
-				dgen = (long) *(patterns++);
-				if (0 > sprintf(s_buffer, " %ld", dgen)) {
-					eise_io("General store: unable to write the generic type description.");
-				}
-				buffer_write(s_buffer, (strlen (s_buffer)));
-			}
-		} else {
-			/* Non-generic type, write in file:
-			 *	"dtype visible_name size 0"
-			 */
-			if (0 > sprintf(s_buffer, "%d %s %ld 0", i, vis_name, EIF_Size(i))) {
-				eise_io("General store: unable to write type description.");
-			}
-			buffer_write(s_buffer, (strlen (s_buffer)));
-		}
-
-		s_buffer [0] = '\n';
-		buffer_write(s_buffer, 1);
-
-			/* Store the version number for the current type. */
-		if (l_is_version_required) {
-			l_storable_version = System(i).cn_version;
-			if (l_storable_version) {
-				l_length = (uint32) strlen(l_storable_version);
-				buffer_write((char *)&l_length, sizeof(uint32));
-				buffer_write(l_storable_version, l_length);
-			} else {
-				l_length = 0;
-				buffer_write((char *)&l_length, sizeof(uint32));
-			}
-		}
-	}
-	eif_rt_xfree (s_buffer);
-	s_buffer = (char *) 0;
-	expop(&eif_stack);
-}
-
-rt_public void sort_attributes(int dtype)
-{
-	/* Sort the attributes alphabeticaly by type */
-	RT_GET_CONTEXT
-	const struct cnode *class_info;		/* Info on the current type */
-	unsigned int *s_attr;			/* Sorted attributes for the type */
-	const char **attr_names;
-	const uint32 *attr_types;
-	unsigned int no_swap, swapped, tmp;
-
-	unsigned long attr_nb;
-	unsigned long j;
-
-	class_info = &(System(dtype));
-	attr_nb = class_info->cn_nbattr;
-
-	if (attr_nb){
-		attr_names = class_info->cn_names;
-		attr_types = class_info->cn_types;
-
-#ifdef DEBUG_GENERAL_STORE
-printf ("attr_nb: %d class name: %s\n", attr_nb, class_info->cn_generator);
-printf ("Dtype: %d \n", dtype);
-#endif
-		s_attr = (unsigned int*) eif_rt_xmalloc (attr_nb * sizeof(unsigned int), C_T, GC_OFF);
-#ifdef DEBUG_GENERAL_STORE
-printf ("alloc s_attr (%d) %lx\n", dtype, s_attr);
-#endif
-		if (s_attr == (unsigned int*) 0)
-			xraise(EN_MEM);
-
-		sorted_attributes[dtype] = s_attr;
-
-		for (j=0; j < attr_nb; j++)
-			s_attr[j] = j;
-
-		swapped = no_swap = 1;
-
-		while (swapped)
-			for (j = swapped = 0; j < attr_nb-1; j ++)
-				if ((attr_types[s_attr[j]]==attr_types[s_attr[j+1]])&&
-					(strcmp (attr_names[s_attr[j]], attr_names[s_attr[j+1]]) > 0)) {
-#ifdef DEBUG
-printf ("Swapping %s and %s\n", attr_names[s_attr[j]], attr_names[s_attr[j+1]]);
-printf ("%d %d\n", s_attr[j], s_attr[j+1]);
-printf ("%d %d\n", attr_types[s_attr[j]], attr_types[s_attr[j+1]]);
-#endif
-						swapped = 1;
-						no_swap = 0;
-						tmp = s_attr[j];
-						s_attr[j] = s_attr[j+1];
-						s_attr[j+1] = tmp;
-					}
-
-			/* if the skeleton is already sorted, bcopy will work both for store and retrieve */
-		if (no_swap){
-#ifdef DEBUG_GENERAL_STORE
-printf ("Freeing s_attr %lx\n", s_attr);
-#endif
-			eif_rt_xfree((char *)s_attr);
-			sorted_attributes[dtype] = (unsigned int*)0;
-			}
-		}
-}
-
 /*
 doc:	<routine name="cecil_info_for_dynamic_type" export="private">
 doc:		<summary>Find CECIL information about a class given by its dynamic type.</summary>
@@ -1737,84 +1085,175 @@ rt_private struct cecil_info * cecil_info_for_dynamic_type (EIF_TYPE_INDEX dtype
 	return result;
 }
 
+/*
+doc:	<routine name="rt_canonical_types" return_type="const EIF_TYPE_INDEX *" export="private">
+doc:		<summary>Given a types array `gtypes' filter it to compute how many entries will be actually needed to get just what we need and reconstruct the type properly. This is mostly used to remove attachment marks and qualified anchored type qualification.</summary>
+doc:		<param name="gtypes" type="const EIF_TYPE_INDEX *">Types array containing the type description.</param>
+doc:		<param name="is_discarding_attachment_marks" type="int">Are we ignoring attachment marks?</param>
+doc:		<param name="num_gtypes" type="int16 *">Number of entries that will be effectively in use in the returned types array.</param>
+doc:		<return>NULL if it cannot produce a types array (case where it involves some formal generic parameter), otherwise a types array that is either `gtypes' or a new one (case where it involved some qualified anchored type).</param>
+doc:		<thread_safety>Safe</thread_safety>
+doc:	</routine>
+*/
+rt_shared const EIF_TYPE_INDEX *rt_canonical_types (const EIF_TYPE_INDEX *gtypes, int is_discarding_attachment_marks, int16 *num_gtypes)
+{
+	int l_done = 0;
+	int16 l_num_gtypes;
+	size_t i;
+	EIF_TYPE_INDEX gtype, l_attr_type;
+	struct rt_id_of_context gen_conf_context;
+
+	while (!l_done) {
+			/* We assume we will be done in one iteration. Unless we meet some
+			 * qualified anchored types. */
+		l_done = 1;
+		l_num_gtypes = 0;
+		for (i = 0; gtypes[i] != TERMINATOR; i++) {
+			gtype = gtypes[i];
+				/* If we are storing for INDEPENDENT_STORE_6_6 then we
+				 * should remove all attachment marks. */
+			if (is_discarding_attachment_marks) {
+				while (RT_HAS_ANNOTATION_TYPE (gtype)) {
+					i++;
+					gtype = gtypes [i];
+				}
+			}
+			switch (gtype) {
+				case TUPLE_TYPE:
+					i += TUPLE_OFFSET - 1;
+					l_num_gtypes += TUPLE_OFFSET;
+					break;
+				case FORMAL_TYPE:
+						/* Formal + position */	
+					l_num_gtypes += 2;
+					i += 1;
+					break;
+				case QUALIFIED_FEATURE_TYPE:
+					gen_conf_context.has_no_context = 1;
+					gen_conf_context.is_invalid = 0;
+					gen_conf_context.next_address_requested = 1;
+					l_attr_type = rt_compound_id_with_context (&gen_conf_context, 0, &gtypes[i]);
+						/* If resolution of the type of the qualified anchored type uses
+						 * a formal or a type that is not accounted for, we cannot process
+						 * the type. */
+					if (gen_conf_context.is_invalid) {
+						return NULL;
+					} else {
+							/* We have to repeat the whole thing, but this time we 
+							 * will be using the decoded type. */
+						l_done = 0;
+						i += (gen_conf_context.next_address - &gtypes[i]) - 1;
+					}
+					gen_conf_context.next_address_requested = 0;
+					break;
+				default:
+						/* No need to handle special type since they should not appear in an object type.
+						 * This can be attachment marks or actual types. */
+					CHECK("No special type",
+						(gtype != LIKE_CURRENT_TYPE) &&
+						(gtype != LIKE_ARG_TYPE) &&
+						(gtype != LIKE_FEATURE_TYPE));
+
+					l_num_gtypes++;
+			}
+		}
+		if (!l_done) {
+				/* We had some qualified anchored type that did not depend on the
+				 * dynamic type (i.e. they had no formal. So we repeat the above
+				 * but this time we remove the qualified anchored type and resolve
+				 * the attribute type into a type array sequence. */
+			l_attr_type = eif_compound_id (0, gtypes);
+			gtypes = eif_gen_cid (l_attr_type);
+				/* In the above array, the first entry contains the count. */
+			gtypes++;
+		} else if (num_gtypes) {
+				/* We are done, so let's update `num_gtypes'. */
+			*num_gtypes = l_num_gtypes;
+		}
+	}
+	return gtypes;
+}
+
 rt_private void widr_type_attribute (int16 dtype, int16 attrib_index)
 {
 	RT_GET_CONTEXT
-	const char *name = System (dtype).cn_names[attrib_index];
-	int16 name_length = (int16) strlen (name);
+	const char *attr_name = System (dtype).cn_names[attrib_index];
+	int16 attr_name_length = (int16) strlen (attr_name);
 	const EIF_TYPE_INDEX *gtypes = System (dtype).cn_gtypes[attrib_index];
 	int16 num_gtypes;
-	int16 i;
+	size_t i;
 	unsigned char basic_type;
-#ifdef RECOVERABLE_DEBUG
-	int16 *typearr = gtypes;
-#endif
+	EIF_TYPE_INDEX gtype;
 
-	REQUIRE("valid name_length", (size_t) name_length == strlen (name));
+	REQUIRE("valid name_length", (size_t) attr_name_length == strlen (attr_name));
 
-	num_gtypes = 0;
-	for (i=0; gtypes[i] != TERMINATOR; i++) {
-		 	/* count types, and ignore attachment marks if any and requested. */
-		if (eif_is_discarding_attachment_marks) {
-			while (RT_HAS_ANNOTATION_TYPE (gtypes[i])) {
-				i++;
+		/* Old INDEPENDENT_STORE_6_6 format. */
+
+		/* Compute the actual type of the attribute and then extract its decomposition
+		 * which will we store. 
+		 * We cannot store its original typearr because it may involve qualified
+		 * anchored types (see test#store040).
+		 */
+	gtypes = rt_canonical_types (gtypes, eif_is_discarding_attachment_marks, &num_gtypes);
+	if (gtypes) {
+			/* Write attribute name information: "attr_name_length attr_name" */
+		widr_multi_int16 (&attr_name_length, 1);
+		widr_multi_char ((EIF_CHARACTER_8 *) attr_name, strlen (attr_name));
+		basic_type = (unsigned char) (((System(dtype).cn_types[attrib_index] & SK_HEAD) >> 24) & 0x000000FF);
+		widr_multi_char (&basic_type, 1);
+
+			/* Write type information: "num_gtypes attribute_type {gen_types}*" */
+		widr_multi_int16 (&num_gtypes, 1);
+
+			/* Write type array for INDEPENDENT_STORE_6_6 format */
+		for (i=0; gtypes[i] != TERMINATOR; i++) {
+			gtype = gtypes[i];
+			if (eif_is_discarding_attachment_marks) {
+				while (RT_HAS_ANNOTATION_TYPE (gtype)) {
+					i++;
+					gtype = gtypes [i];
+				}
+			} else {
+				while (RT_HAS_ANNOTATION_TYPE (gtype)) {
+						/* Write annotation mark. */
+					widr_multi_uint16 (&gtype, 1);
+					i++;
+					gtype = gtypes [i];
+				}
 			}
-		}
-		num_gtypes++;
-	}
-
-#ifdef RECOVERABLE_DEBUG
-	printf ("        %s:", name);
-#endif
-	/* Write name information: "name_length name" */
-	widr_multi_int16 (&name_length, 1);
-	widr_multi_char ((EIF_CHARACTER_8 *) name, strlen (name));
-	basic_type = (unsigned char) (((System(dtype).cn_types[attrib_index] & SK_HEAD) >> 24) & 0x000000FF);
-	widr_multi_char (&basic_type, 1);
-
-	/* Write type information: "num_gtypes attribute_type {gen_types}*" */
-	widr_multi_int16 (&num_gtypes, 1);
-	/* Write type array */
-	for (i=0; gtypes[i] != TERMINATOR; i++) {
-		EIF_TYPE_INDEX gtype = gtypes[i];
-#ifdef RECOVERABLE_DEBUG
-		rt_shared char *name_of_attribute_type (int16 **type);
-		printf ("%s%s", i==0 ? " " : i==1 ? " [" : ", ", name_of_attribute_type (&typearr));
-		typearr++;
-#endif
-		if (eif_is_discarding_attachment_marks) {
-			while (RT_HAS_ANNOTATION_TYPE (gtype)) {
-				i++;
+			if (gtype == TUPLE_TYPE) {
+					/* Write TUPLE_TYPE, nb generic parames */
+				widr_multi_uint16 (gtypes + i, TUPLE_OFFSET);
+				i += TUPLE_OFFSET;
 				gtype = gtypes [i];
 			}
-		} else {
-			while (RT_HAS_ANNOTATION_TYPE (gtype)) {
-					/* Write annotation mark. */
+			if (gtype == FORMAL_TYPE) {
+					/* Write FORMAL_TYPE and formal position */
+				widr_multi_uint16 (gtypes + i, 2);
+				i += 1;
+			} else {
+					/* No need to handle special type since they should not appear in an object type. */
+				CHECK("No special type",
+					(gtype != LIKE_CURRENT_TYPE) &&
+					(gtype != LIKE_ARG_TYPE) &&
+					(gtype != LIKE_FEATURE_TYPE) &&
+					(gtype != QUALIFIED_FEATURE_TYPE));
+
 				widr_multi_uint16 (&gtype, 1);
-				i++;
-				gtype = gtypes [i];
 			}
 		}
-		if (gtype == TUPLE_TYPE) {
-				/* Write TUPLE_TYPE, nb generic parames */
-			widr_multi_uint16 (gtypes + i, TUPLE_OFFSET);
-			i += TUPLE_OFFSET;
-			gtype = gtypes [i];
-		}
-		if (gtype == FORMAL_TYPE) {
-				/* Write FORMAL_TYPE and formal position */
-			widr_multi_uint16 (gtypes + i, 2);
-			i += 1;
-		} else {
-			widr_multi_uint16 (&gtype, 1);
-		}
+	} else {
+		info_tag[0]= (char) 0;
+			/* Buffer should be large enough, the manifest string is 116 characters plus
+			 * 100 for attribute name and class name. */
+		CHECK("info_tag large enough", sizeof(info_tag) >= 256);
+		sprintf(info_tag, "Not supported: Attribute `{%.50s}.%.50s' involves a qualified anchored type referring to a formal generic parameter",
+			System(dtype).cn_generator, attr_name);
+		eise_io(info_tag);
 	}
-#ifdef RECOVERABLE_DEBUG
-	printf ("%s\n", num_gtypes > 1 ? "]" : "");
-#endif
 }
 
-rt_private void widr_type_attributes (int16 dtype)
+rt_private void widr_type_attributes (EIF_TYPE_INDEX dtype)
 {
 	int16 num_attrib = (int16) System(dtype).cn_nbattr;
 	int16 persistent_num_attrib = (int16) System(dtype).cn_persistent_nbattr;
@@ -1873,11 +1312,8 @@ rt_private void widr_type (int16 dtype, int is_version_required)
 	uint32 l_length;
 	int32 flags = (int32) System(dtype).cn_flags;
 
-	REQUIRE("valid name_length", (size_t) name_length == strlen (class_name));
+	CHECK("valid name_length", (size_t) name_length == strlen (class_name));
 
-#ifdef RECOVERABLE_DEBUG
-	printf ("Type %d %s", dtype, class_name);
-#endif
 	/* Write type information: "name_length name flags dynamic_type" */
 	widr_multi_int16 (&name_length, 1);
 	widr_multi_char ((EIF_CHARACTER_8 *) class_name, name_length);
@@ -1904,7 +1340,7 @@ rt_private void widr_type (int16 dtype, int is_version_required)
 	widr_type_attributes (dtype);
 }
 
-rt_public void rmake_header(EIF_CONTEXT_NOARG)
+rt_public void rmake_header(struct rt_store_context *a_context)
 {
 	/* Generate header for stored hiearchy retrivable by other systems. */
 	RT_GET_CONTEXT
@@ -1916,7 +1352,7 @@ rt_public void rmake_header(EIF_CONTEXT_NOARG)
 
 	/* count number of types actually present in objects to be stored */
 	for (type_count=0, i=0; i<scount; i++) {
-		if (account[i])
+		if (a_context->traversal_context.account[i].processed)
 			type_count++;
 	}
 
@@ -1932,31 +1368,8 @@ rt_public void rmake_header(EIF_CONTEXT_NOARG)
 	widr_multi_int16 (&type_count, 1);
 
 	for (i=0; i<scount; i++) {
-		if (account[i])
+		if (a_context->traversal_context.account[i].processed)
 			widr_type (i, l_is_version_required);
-	}
-}
-
-rt_public void free_sorted_attributes(void)
-	/* Free the memory allocated for `sorted_attributes'. */
-{
-	RT_GET_CONTEXT
-	int i;
-	unsigned int *s_attr;
-
-	if (sorted_attributes != (unsigned int **)0) {
-#ifdef DEBUG_GENERAL_STORE
-printf ("free_sorted_attributes %lx\n", sorted_attributes);
-#endif
-		for (i=0; i < scount; i++)
-			if ((s_attr = sorted_attributes[i])!= (unsigned int *) 0) {
-				eif_rt_xfree((char *) s_attr);
-#ifdef DEBUG_GENERAL_STORE
-printf ("Free s_attr (%d) %lx\n", i, s_attr);
-#endif
-			}
-		eif_rt_xfree((char *) sorted_attributes);
-		sorted_attributes = (unsigned int **)0;
 	}
 }
 
@@ -1992,7 +1405,7 @@ rt_shared void buffer_write(const char *data, size_t size)
 	current_position = l_cur_pos;
 }
 
-rt_public void flush_st_buffer (void)
+rt_private void flush_st_buffer (void)
 {
 	RT_GET_CONTEXT
 	size_t l_pos = current_position;
@@ -2025,7 +1438,7 @@ rt_private int stream_write (char *pointer, int size)
 	return size;
 }
 
-void store_write(size_t cmps_in_size)
+rt_private void store_write(size_t cmps_in_size)
 {
 	RT_GET_CONTEXT
 	char* cmps_in_ptr = general_buffer;

@@ -63,6 +63,7 @@ doc:<file name="malloc.c" header="eif_malloc.h" version="$Id$" summary="Memory a
 #include "rt_sig.h"
 #include "rt_err_msg.h"
 #include "rt_globals.h"
+#include "rt_globals_access.h"
 #include "rt_struct.h"
 #if ! defined CUSTOM || defined NEED_OBJECT_ID_H
 #include "rt_object_id.h"	/* For the object id and separate stacks */
@@ -3974,7 +3975,7 @@ rt_private EIF_REFERENCE eif_set(EIF_REFERENCE object, uint16 flags, EIF_TYPE_IN
 
 	// Set SCOOP Processor if available.
 #ifdef EIF_THREADS
-	zone->ov_pid = (EIF_SCP_PID)(eif_thr_context->logical_id != -1 ? eif_thr_context->logical_id : 0);
+	zone->ov_pid = (eif_thr_context->logical_id != (EIF_SCP_PID) -1 ? eif_thr_context->logical_id : 0);
 #else
 	zone->ov_pid = (EIF_SCP_PID)0;
 #endif
@@ -4064,7 +4065,7 @@ rt_private EIF_REFERENCE eif_spset(EIF_REFERENCE object, EIF_BOOLEAN in_scavenge
 
 	// Set SCOOP Processor if available.
 #ifdef EIF_THREADS
-	zone->ov_pid = (EIF_SCP_PID)(eif_thr_context->logical_id != -1 ? eif_thr_context->logical_id : 0);
+	zone->ov_pid = (eif_thr_context->logical_id != (EIF_SCP_PID) -1 ? eif_thr_context->logical_id : 0);
 #else
 	zone->ov_pid = (EIF_SCP_PID)0;
 #endif

@@ -37,6 +37,12 @@ feature -- Processing
 		deferred
 		end
 
+	visit_indentation (a_indent: WIKI_INDENTATION)
+		require
+			a_indent_attached: a_indent /= Void
+		deferred
+		end
+
 	visit_paragraph (a_paragraph: WIKI_PARAGRAPH)
 		require
 			a_paragraph_attached: a_paragraph /= Void
@@ -155,6 +161,12 @@ feature -- Links
 		deferred
 		end
 
+	visit_file_link (a_file: WIKI_FILE_LINK)
+		require
+			a_file_attached: a_file /= Void
+		deferred
+		end
+
 	visit_category_link (a_link: WIKI_CATEGORY_LINK)
 		require
 			a_link_attached: a_link /= Void
@@ -164,6 +176,12 @@ feature -- Links
 	visit_media_link (a_link: WIKI_MEDIA_LINK)
 		require
 			a_link_attached: a_link /= Void
+		deferred
+		end
+
+	visit_property (a_prop: WIKI_PROPERTY)
+		require
+			a_prop_attached: a_prop /= Void
 		deferred
 		end
 

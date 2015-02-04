@@ -50,6 +50,7 @@ doc:<file name="local.c" header="eif_local.h" version="$Id$" summary="Handling o
 #include "rt_debug.h"
 #endif
 #include "rt_globals.h"
+#include "rt_globals_access.h"
 #include "rt_assert.h"
 
 #include <string.h>
@@ -217,7 +218,7 @@ rt_public char **eget(register size_t num)
 			} else {
 				top = loc_set.st_top;					/* New top of chunk */
 			}
-			CHECK("Enough room", num <= (loc_set.st_end - top));
+			CHECK("Enough room", (top + num) <= loc_set.st_end);
 			loc_set.st_top += num;						/* Reserve room for variables */
 		} else {
 			loc_set.st_cur = (struct stchunk *) top;	/* Current = next chunk */

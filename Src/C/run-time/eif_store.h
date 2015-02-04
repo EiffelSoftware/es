@@ -49,6 +49,7 @@
 #include "eif_globals.h"
 #include "eif_malloc.h"				/* For macros HEADER */
 #include "eif_garcol.h"				/* For flags manipulation */
+#include "eif_traverse.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,8 +78,11 @@ extern "C" {
 #define BASIC_STORE_6_6			0x13
 #define GENERAL_STORE_6_6		0x14
 #define INDEPENDENT_STORE_6_6	0x15
+	/* SED_STORE is a reserved value so that from C we use the SED mechanisms to store/retrieve objects. */
+#define SED_STORE				0x17
 
 RT_LNK void eif_set_is_discarding_attachment_marks (EIF_BOOLEAN);
+RT_LNK void eif_set_is_discarding_qat (EIF_BOOLEAN);
 
 /*
  * Eiffel calls
@@ -96,24 +100,9 @@ RT_LNK void set_buffer_size (EIF_INTEGER);
 RT_LNK EIF_POINTER *stream_malloc (EIF_INTEGER stream_size);
 RT_LNK void stream_free (EIF_POINTER *stream);
 
-/* Features needed for EiffelNet */
-RT_LNK void basic_general_free_store(EIF_REFERENCE);
-RT_LNK void independent_free_store (EIF_REFERENCE);
-RT_LNK void rt_init_store(
-	void (*store_function) (size_t),
-	int (*char_write_function)(char *, int),
-	void (*flush_buffer_function) (void),
-	void (*st_write_function) (EIF_REFERENCE, int),
-	void (*make_header_function) (void),
-	int accounting_type);
-RT_LNK void rt_reset_store(void);
-RT_LNK void flush_st_buffer(void);
-RT_LNK void st_write(EIF_REFERENCE object, int);		/* Write an object in file */
-RT_LNK void ist_write(EIF_REFERENCE object, int);
-RT_LNK void gst_write(EIF_REFERENCE object, int);
-RT_LNK void store_write(size_t);
-RT_LNK void make_header(void);				/* Make header */
-RT_LNK void rmake_header(void);				/* Make header */
+/* Features needed for EiffelNet or any other libraries that wants to use some storable compatible storage. */
+
+RT_LNK void eif_store_object(int(*char_write)(char *, int), EIF_REFERENCE object, char store_type);
 
 #ifdef __cplusplus
 }

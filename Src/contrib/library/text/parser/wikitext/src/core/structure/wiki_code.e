@@ -8,39 +8,51 @@ class
 	WIKI_CODE
 
 inherit
-	WIKI_STRING_ITEM
+	WIKI_TAG
+		redefine
+			make,
+			make_from_source,
+			default_tag_name,
+			process
+		end
 
 create
-	make
+	make,
+	make_from_source
 
 feature {NONE} -- Initialization
 
-	make (a_tag: READABLE_STRING_8; s: STRING)
+	make (a_tag, s: STRING_8)
+			-- <Precursor>
 		do
-			tag_name := "code"
-			tag := a_tag
-			text := s
+			Precursor (a_tag, s)
+			set_is_inline (text.is_single_line and not s.has ('%N'))
+		end
+
+	make_from_source (s: STRING)
+			-- <Precursor>
+		do
+			Precursor (s)
+			set_is_inline (text.is_single_line and not s.has ('%N'))
 		end
 
 feature -- Access
 
-	is_inline: BOOLEAN
+	default_tag_name: STRING
 		do
-			Result := text.is_single_line
+			Result := "code"
 		end
-
-	tag: READABLE_STRING_8
-
-	tag_name: READABLE_STRING_8
-
-	text: WIKI_STRING
 
 feature -- Status report
 
-	is_empty: BOOLEAN
-			-- Is empty text?
+	is_inline: BOOLEAN
+
+feature -- Element change
+
+	set_is_inline (b: BOOLEAN)
+			-- Set `is_inline' to `b'.
 		do
-			Result := tag.is_empty and text.is_empty
+			is_inline := b
 		end
 
 feature -- Visitor
@@ -48,14 +60,6 @@ feature -- Visitor
 	process (a_visitor: WIKI_VISITOR)
 		do
 			a_visitor.visit_code (Current)
-		end
-
-feature -- Status report
-
-	debug_output: STRING
-			-- String that should be displayed in debugger to represent `Current'.
-		do
-			Result := tag + "</" + tag_name + ">"
 		end
 
 note

@@ -55,6 +55,8 @@ inherit
 
 	AUT_SHARED_CONSTANTS
 
+	SED_STORABLE_FACILITIES
+
 	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
 		undefine
 			system
@@ -115,7 +117,7 @@ feature {NONE} -- Initialization
 				-- You can only do this after the compilation of the interpreter.
 			check attached feature_for_byte_code_injection as l_feature then
 				l_itp_class := l_feature.written_class
-				injected_feature_body_id := l_feature.real_body_id (l_itp_class.types.first)
+				injected_feature_body_id := l_feature.real_body_index (l_itp_class.types.first)
 				injected_feature_pattern_id := l_feature.real_pattern_id (l_itp_class.types.first)
 			end
 
@@ -1049,6 +1051,7 @@ feature{NONE} -- Process scheduling
 			failed: BOOLEAN
 			l_last_request: like last_request
 			l_last_bc_request: TUPLE [flag: NATURAL_8; data: detachable ANY]
+			l_socket_writer: SED_MEDIUM_READER_WRITER
 		do
 			if not failed then
 					-- Log request
@@ -1063,7 +1066,8 @@ feature{NONE} -- Process scheduling
 					if socket /= Void and then socket.is_open_write and socket.extendible then
 						l_last_bc_request := socket_data_printer.last_request
 						socket.put_natural_32 (l_last_bc_request.flag)
-						socket.independent_store (l_last_bc_request.data)
+						create l_socket_writer.make_for_writing (socket)
+						store (l_last_bc_request.data, l_socket_writer)
 					end
 				else
 					log_line ("-- Error: could not send instruction to interpreter due its input stream being closed.")
@@ -1173,7 +1177,7 @@ feature -- Socket IPC
 				l_socket := socket
 				l_socket.read_natural_32
 				l_response_flag := l_socket.last_natural_32
-				l_raw_data ?= l_socket.retrieved
+				l_raw_data ?= retrieved_from_medium (l_socket)
 				l_data ?= l_raw_data
 				process.set_timeout (0)
 				if l_data /= Void then

@@ -34,6 +34,10 @@ feature -- Processing
 		do
 		end
 
+	visit_indentation (a_indentation: WIKI_INDENTATION)
+		do
+		end
+
 	visit_paragraph (a_paragraph: WIKI_PARAGRAPH)
 		do
 		end
@@ -116,11 +120,21 @@ feature -- Links
 		do
 		end
 
+	visit_file_link (a_link: WIKI_FILE_LINK)
+		do
+		end
+
 	visit_category_link (a_link: WIKI_CATEGORY_LINK)
 		do
 		end
 
 	visit_media_link (a_link: WIKI_MEDIA_LINK)
+		do
+		end
+
+feature -- Property
+
+	visit_property (a_prop: WIKI_PROPERTY)
 		do
 		end
 
@@ -137,7 +151,7 @@ feature -- Table
 	visit_table_header_cell (a_cell: WIKI_TABLE_HEADER_CELL)
 		do
 		end
-		
+
 	visit_table_cell (a_cell: WIKI_TABLE_CELL)
 		do
 		end

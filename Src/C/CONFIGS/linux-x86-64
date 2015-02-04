@@ -197,7 +197,7 @@ mtcppflags="$cppflags -DEIF_THREADS -DEIF_LINUXTHREADS"
 optimize="-O3 -g"
 voidflags='15'
 #Check value for next 1
-warning_level='-Wall -Wextra -Wno-unused-parameter -pedantic -std=gnu99'
+warning_level='-Wall -Wextra -Wno-unused-parameter -Wno-long-long -pedantic -std=gnu99'
 wkoptimize="-O0 -g"
 
 #Makefiles
@@ -214,7 +214,7 @@ else
 fi
 lintflags=''
 ldflags="-m elf_x86_64"
-ldsharedflags="$ldflags -shared -o"
+ldsharedflags="$ccldflags -shared -o"
 
 libs='-lm'
 
@@ -228,10 +228,9 @@ mkdep='\$(EIFFEL_SRC)/C/mkdep'
 mkdir='mkdir'
 mtldflags="$ldflags"
 mtldsharedflags="$ldsharedflags"
-mtlibs="$libs -pthread"
+mtlibs="$libs -lpthread -lstdc++"
 
 mt_prefix='mt'
-qs_prefix='mtqs'
 mv='/bin/mv'
 prefix='lib'
 ranlib=':'
@@ -239,9 +238,9 @@ shared_prefix='lib'
 shared_suffix='.so'
 shared_rt_suffix='.so'
 sharedlibs='-lm'
-mtsharedlibs='-lm -lpthread'
-sharedlibversion='.14.11'
-sharedlink='ld'
+mtsharedlibs='-lm -lpthread -lstdc++'
+sharedlibversion='.15.01'
+sharedlink="$cc"
 suffix='.a'
 wkeiflib='wkbench'
 
