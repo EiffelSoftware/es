@@ -69,6 +69,7 @@ inherit
 			process_un_minus_b,
 			process_un_not_b,
 			process_un_old_b,
+			process_un_plus_b,
 			process_void_b
 		end
 
@@ -1045,6 +1046,13 @@ feature -- Visitors
 		do
 			check False end
 			last_expression := dummy_node (a_node.type)
+		end
+
+	process_un_plus_b (a_node: UN_PLUS_B)
+			-- <Precursor>
+		do
+			safe_process (a_node.expr)
+			-- Nothing to do, there is no unary plus in Boogie
 		end
 
 	process_void_b (a_node: VOID_B)

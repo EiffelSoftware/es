@@ -14,15 +14,15 @@ Successfully verified.
 A_SEQUENCES.bad
 Verification failed.
 
-Line: 56. Precondition may be violated on invocation of item.
+Line: 56. Precondition may be violated on invocation of {MML_SEQUENCE}.item.
 --------------------------------------
-Line: 58. Precondition may be violated on invocation of but_last.
+Line: 58. Precondition may be violated on invocation of {MML_SEQUENCE}.but_last.
 --------------------------------------
-Line: 60. Precondition may be violated on invocation of but_last.
+Line: 60. Precondition may be violated on invocation of {MML_SEQUENCE}.but_last.
 --------------------------------------
-Line: 60. Precondition may be violated on invocation of item.
+Line: 60. Precondition may be violated on invocation of {MML_SEQUENCE}.item.
 --------------------------------------
-Line: 62. Precondition may be violated on invocation of item.
+Line: 62. Precondition may be violated on invocation of {MML_SEQUENCE}.item.
 ======================================
 A_SEQUENCES.triv
 Successfully verified.

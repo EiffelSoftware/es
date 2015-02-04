@@ -14,8 +14,8 @@ Successfully verified.
 A_MAPS.bad
 Verification failed.
 
-Line: 94. Precondition may be violated on invocation of item.
+Line: 94. Precondition may be violated on invocation of {MML_MAP}.item.
 --------------------------------------
-Line: 97. Precondition may be violated on invocation of image.
+Line: 97. Precondition may be violated on invocation of {MML_MAP}.image.
 --------------------------------------
-Line: 101. Precondition may be violated on invocation of sequence_image.
+Line: 101. Precondition may be violated on invocation of {MML_MAP}.sequence_image.

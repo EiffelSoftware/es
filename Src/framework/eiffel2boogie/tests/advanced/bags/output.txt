@@ -17,8 +17,8 @@ Successfully verified.
 A_BAGS.bad
 Verification failed.
 
-Line: 81. Precondition may be violated on invocation of multiple.
+Line: 81. Precondition may be violated on invocation of {MML_BAG}.multiple.
 --------------------------------------
-Line: 83. Precondition may be violated on invocation of extended_multiple.
+Line: 83. Precondition may be violated on invocation of {MML_BAG}.extended_multiple.
 --------------------------------------
-Line: 85. Precondition may be violated on invocation of removed_multiple.
+Line: 85. Precondition may be violated on invocation of {MML_BAG}.removed_multiple.

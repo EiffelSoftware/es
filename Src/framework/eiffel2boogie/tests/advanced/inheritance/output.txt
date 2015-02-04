@@ -39,18 +39,18 @@ Successfully verified.
 ANY.default_create (creator, inherited by A_B)
 Verification failed.
 
-Line: 45. Invariant next_exists might not hold on call to wrap.
+Line: 45. Invariant next_exists might not hold on call to {ANY}.wrap.
 --------------------------------------
-Line: 45. Invariant prev_exists might not hold on call to wrap.
+Line: 45. Invariant prev_exists might not hold on call to {ANY}.wrap.
 --------------------------------------
-Line: 45. Invariant next_is_b might not hold on call to wrap.
+Line: 45. Invariant next_is_b might not hold on call to {ANY}.wrap.
 --------------------------------------
-Line: 45. Invariant x_positive might not hold on call to wrap.
+Line: 45. Invariant x_positive might not hold on call to {ANY}.wrap.
 ======================================
 A_A.set_x (inherited by A_B)
 Verification failed.
 
-Line: 45. Invariant x_positive might not hold on call to wrap.
+Line: 45. Invariant x_positive might not hold on call to {ANY}.wrap.
 ======================================
 A_A.set_to_next_public (inherited by A_B)
 Successfully verified.
@@ -71,7 +71,7 @@ Verification failed.
 
 Line: 46. Check new_property may be violated.
 --------------------------------------
-Line: 48. Invariant unknown_invariant might not hold on call to wrap.
+Line: 48. Invariant unknown_invariant might not hold on call to {ANY}.wrap.
 ======================================
 A_B.break
 Verification failed.

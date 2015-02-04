@@ -140,40 +140,40 @@ feature {NONE} -- Implementation
 				check False end
 			end
 
-			if {PLATFORM}.is_windows then
-				if input.context /= Void then
-					create l_output_file.make ("C:\temp\autoproof-" + input.context + ".bpl")
-				else
-					create l_output_file.make ("C:\temp\autoproof.bpl")
-				end
-				l_output_file.recursive_open_write
-				if l_output_file.is_open_write then
-					append_header (l_output_file)
-					from
-						input.boogie_files.start
-					until
-						input.boogie_files.after
-					loop
-						append_file_content (l_output_file, input.boogie_files.item)
-						input.boogie_files.forth
-					end
-					l_output_file.put_string ("// Custom content")
-					l_output_file.put_new_line
-					l_output_file.put_new_line
-					from
-						input.custom_content.start
-					until
-						input.custom_content.after
-					loop
-						l_output_file.put_string (input.custom_content.item)
-						input.custom_content.forth
-					end
-					l_output_file.close
-				else
-						-- TODO: error handling
-					check False end
-				end
-			end
+			-- if {PLATFORM}.is_windows then
+				-- if input.context /= Void then
+					-- create l_output_file.make ("C:\temp\autoproof-" + input.context + ".bpl")
+				-- else
+					-- create l_output_file.make ("C:\temp\autoproof.bpl")
+				-- end
+				-- l_output_file.recursive_open_write
+				-- if l_output_file.is_open_write then
+					-- append_header (l_output_file)
+					-- from
+						-- input.boogie_files.start
+					-- until
+						-- input.boogie_files.after
+					-- loop
+						-- append_file_content (l_output_file, input.boogie_files.item)
+						-- input.boogie_files.forth
+					-- end
+					-- l_output_file.put_string ("// Custom content")
+					-- l_output_file.put_new_line
+					-- l_output_file.put_new_line
+					-- from
+						-- input.custom_content.start
+					-- until
+						-- input.custom_content.after
+					-- loop
+						-- l_output_file.put_string (input.custom_content.item)
+						-- input.custom_content.forth
+					-- end
+					-- l_output_file.close
+				-- else
+						-- -- TODO: error handling
+					-- check False end
+				-- end
+			-- end
 		end
 
 	launch_boogie (a_wait_for_exit: BOOLEAN)
@@ -243,25 +243,25 @@ feature {NONE} -- Implementation
 		local
 			l_f1, l_f2: PLAIN_TEXT_FILE
 		do
-			if {PLATFORM}.is_windows then
-				create l_f1.make_open_read (boogie_output_file_name)
-				if input.context /= Void then
-					create l_f2.make_open_write ("C:\temp\ap_output-" + input.context + ".txt")
-				else
-					create l_f2.make_open_write ("C:\temp\ap_output.txt")
-				end
-				from
-					l_f1.start
-				until
-					l_f1.after
-				loop
-					l_f1.read_line
-					l_f2.put_string (l_f1.last_string)
-					l_f2.put_character ('%N')
-				end
-				l_f1.close
-				l_f2.close
-			end
+			-- if {PLATFORM}.is_windows then
+				-- create l_f1.make_open_read (boogie_output_file_name)
+				-- if input.context /= Void then
+					-- create l_f2.make_open_write ("C:\temp\ap_output-" + input.context + ".txt")
+				-- else
+					-- create l_f2.make_open_write ("C:\temp\ap_output.txt")
+				-- end
+				-- from
+					-- l_f1.start
+				-- until
+					-- l_f1.after
+				-- loop
+					-- l_f1.read_line
+					-- l_f2.put_string (l_f1.last_string)
+					-- l_f2.put_character ('%N')
+				-- end
+				-- l_f1.close
+				-- l_f2.close
+			-- end
 		end
 
 	append_header (a_file: KL_TEXT_OUTPUT_FILE)

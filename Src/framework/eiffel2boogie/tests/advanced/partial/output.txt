@@ -2,7 +2,7 @@
 A_PARTIAL (invariant admissibility)
 Verification failed.
 
-Line: 154. Precondition may be violated on invocation of nasty.
+Line: 154. Precondition may be violated on invocation of {A_PARTIAL}.nasty.
 ======================================
 ANY.default_create (creator, inherited by A_PARTIAL)
 Successfully verified.
@@ -13,7 +13,7 @@ Successfully verified.
 A_PARTIAL.client1
 Verification failed.
 
-Line: 29. Precondition may be violated on invocation of nasty.
+Line: 29. Precondition may be violated on invocation of {A_PARTIAL}.nasty.
 ======================================
 A_PARTIAL.nasty1
 Successfully verified.
@@ -21,7 +21,7 @@ Successfully verified.
 A_PARTIAL.client4
 Verification failed.
 
-Line: 49. Precondition may be violated on call to nasty1 (untagged).
+Line: 49. Precondition may be violated on call to {A_PARTIAL}.nasty1 (untagged).
 ======================================
 A_PARTIAL.client5
 Successfully verified.
@@ -50,7 +50,7 @@ Successfully verified.
 A_PARTIAL.client3
 Verification failed.
 
-Line: 138. Precondition may be violated on invocation of nasty2.
+Line: 138. Precondition may be violated on invocation of {A_PARTIAL}.nasty2.
 ======================================
 A_PARTIAL.method
 Verification failed.

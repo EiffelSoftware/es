@@ -1252,6 +1252,8 @@ feature {NONE} -- Loop processing
 				a_variant_exprs.wipe_out
 			end
 
+				-- In case an empty decreases clause is added in addition to a loop variant
+			a_variant_exprs.prune_all (Void)
 
 			across
 				a_variant_exprs as i

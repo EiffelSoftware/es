@@ -14,7 +14,7 @@ Successfully verified.
 A_SETS.bad
 Verification failed.
 
-Line: 48. Precondition may be violated on invocation of any_item.
+Line: 48. Precondition may be violated on invocation of {MML_SET}.any_item.
 --------------------------------------
 Line: 50. Check bad_disjoint may be violated.
 --------------------------------------

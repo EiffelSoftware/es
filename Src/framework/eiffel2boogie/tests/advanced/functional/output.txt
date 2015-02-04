@@ -34,12 +34,12 @@ Successfully verified.
 A_FUNCTIONAL.caller1
 Verification failed.
 
-Line: 79. Precondition may be violated on invocation of functional4.
+Line: 79. Precondition may be violated on invocation of {A_FUNCTIONAL}.functional4.
 ======================================
 A_FUNCTIONAL.caller2
 Verification failed.
 
-Line: 86. Precondition may be violated on invocation of functional4.
+Line: 86. Precondition may be violated on invocation of {A_FUNCTIONAL}.functional4.
 ======================================
 A_FUNCTIONAL.factorial
 Successfully verified.

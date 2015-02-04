@@ -122,11 +122,19 @@ feature {NONE} -- Implementation
 					l_cid := l_attributes["cid"].to_integer
 					l_rid := l_attributes["rid"].to_integer
 					l_feature := system.class_of_id (l_cid).feature_of_rout_id (l_rid)
+					a_formatter.add_char ('{')
+					a_formatter.add_class (system.class_of_id (l_cid).original_class)
+					a_formatter.add_char ('}')
+					a_formatter.add_char ('.')
 					a_formatter.add_feature (l_feature.api_feature (l_cid), l_feature.feature_name_32)
 				elseif l_attributes.has_key ("cid") and l_attributes.has_key ("fid") then
 					l_cid := l_attributes["cid"].to_integer
 					l_fid := l_attributes["fid"].to_integer
 					l_feature := system.class_of_id (l_cid).feature_of_feature_id (l_fid)
+					a_formatter.add_char ('{')
+					a_formatter.add_class (system.class_of_id (l_cid).original_class)
+					a_formatter.add_char ('}')
+					a_formatter.add_char ('.')
 					a_formatter.add_feature (l_feature.api_feature (l_cid), l_feature.feature_name_32)
 				else
 					a_formatter.add_comment ("?called_feature")
