@@ -6483,6 +6483,14 @@ eweasel/tests/scoop037/main.in -text
 eweasel/tests/scoop038/Ace svneol=native#text/xml
 eweasel/tests/scoop039/Ace svneol=native#text/xml
 eweasel/tests/scoop040/Ace svneol=native#text/xml
+eweasel/tests/scoop041/Ace svneol=native#text/xml
+eweasel/tests/scoop042/Ace svneol=native#text/xml
+eweasel/tests/scoop043/Ace svneol=native#text/xml
+eweasel/tests/scoop044/Ace svneol=native#text/xml
+eweasel/tests/scoop045/Ace svneol=native#text/xml
+eweasel/tests/scoop046/Ace svneol=native#text/xml
+eweasel/tests/scoop047/Ace svneol=native#text/xml
+eweasel/tests/scoop048/Ace svneol=native#text/xml
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
 eweasel/tests/store002/notes -text
