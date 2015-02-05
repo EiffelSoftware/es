@@ -23,12 +23,12 @@ feature {NONE} -- Initialization
 			make (ca_names.inherit_from_any_fix, a_class)
 		end
 
-feature {NONE} -- Visitor
+feature {NONE} -- Implementation
 
 	process_parent_as (a_parent: PARENT_AS)
 		do
 			if a_parent.type.class_name.name_32.is_equal ("ANY") then
-				matchlist.remove_region (a_parent.token_region (matchlist))
+				a_parent.remove_text (matchlist)
 			end
 		end
 

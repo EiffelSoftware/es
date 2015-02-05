@@ -79,7 +79,7 @@ feature {NONE} -- Visitor
 				l_feature_names.replace_text (l_new_feature_names, matchlist)
 			else
 				if a_feature.is_equivalent (feature_to_remove) then
-					a_feature.replace_text ("", matchlist)
+					a_feature.remove_text (matchlist)
 				end
 			end
 		end

@@ -99,6 +99,12 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	generic_param_too_long_violation_1: STRING_32
+		do Result := translation_in_context ("The formal generic parameter '", once "code_analyzer.violation") end
+		
+	generic_param_too_long_violation_2: STRING_32
+		do Result := translation_in_context ("'%Nhas more than one character in its name.%NIt should only have one.", once "code_analyzer.violation") end
+
 	mergeable_conditionals_violation_1: STRING_32
 		do Result := translation_in_context ("There are two conditionals with semantically equal conditionals.%N%
 									% Thus the conditional instructions can be merged into one", once "code_analyzer.violation") end

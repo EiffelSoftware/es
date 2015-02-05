@@ -10,7 +10,7 @@ class
 inherit
 	CA_FIX
 		redefine
-			process_eiffel_list
+			execute
 		end
 
 create
@@ -34,22 +34,16 @@ feature {NONE} -- Implementation
 	index_of_first_instruction_to_remove: INTEGER
 		-- The first instruction to be moved.
 
-feature {NONE} -- Visitor
-
-	process_eiffel_list (a_list: EIFFEL_LIST [AST_EIFFEL])
+	execute (a_class: CLASS_AS)
 		do
-			if attached {EIFFEL_LIST [INSTRUCTION_AS]} a_list as l_list and then l_list.is_equivalent (list_to_change) then
-				from
-					list_to_change.go_i_th (index_of_first_instruction_to_remove)
-				until
-					list_to_change.after
-				loop
-					list_to_change.item.replace_text ("", matchlist)
-					list_to_change.forth
-				end
+			from
+				list_to_change.go_i_th (index_of_first_instruction_to_remove)
+			until
+				list_to_change.after
+			loop
+				list_to_change.item.remove_text (matchlist)
+				list_to_change.forth
 			end
-			
-			Precursor (a_list)
 		end
-
+		
 end

@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 		end
 
 feature {NONE} -- Implementation
+
 	execute (a_class: CLASS_AS)
 		local
 			l_new: STRING
@@ -32,7 +33,7 @@ feature {NONE} -- Implementation
 			if attached if_to_change.else_part as l_else then
 				l_new.append (l_else.text_32 (matchlist))
 			end
-
+				-- TODO: Add indentation.
 			if_to_change.replace_text (l_new, matchlist)
 		end
 

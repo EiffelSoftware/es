@@ -10,7 +10,7 @@ class
 inherit
 	CA_FIX
 		redefine
-			process_feature_as,
+			execute,
 			process_assign_as
 		end
 
@@ -37,20 +37,20 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Visitor
 
-	process_feature_as (a_feature: FEATURE_AS)
-			-- Changes the attribute to a constant.
+	execute (a_class: attached CLASS_AS)
 		do
-			Precursor(a_feature)
-			if attribute_to_change.is_equivalent (a_feature) then
-				a_feature.body.append_text(" = " + constant_value, matchlist)
-			end
+			attribute_to_change.body.append_text(" = " + constant_value, matchlist)
+			process_ast_node (a_class)
 		end
 
 	process_assign_as (a_assign: ASSIGN_AS)
 			-- Removes all the assignments to the attribute.
 		do
-			if attached {ACCESS_ID_AS} a_assign.target as l_access_id and then l_access_id.access_name_32.is_equal (attribute_to_change.feature_name.name_32) then
-				a_assign.replace_text ("", matchlist)
+			if
+				attached {ACCESS_ID_AS} a_assign.target as l_access_id
+				and then l_access_id.access_name_32.is_equal (attribute_to_change.feature_name.name_32)
+			then
+				a_assign.remove_text (matchlist)
 			end
 		end
 

@@ -10,7 +10,7 @@ class
 inherit
 	CA_FIX
 		redefine
-			process_un_not_as
+			execute
 		end
 
 create
@@ -28,28 +28,21 @@ feature {NONE} -- Initialization
 feature {NONE} -- Implementation
 
 	unary: UN_NOT_AS
-		-- The unary expression this fix will remove the double negation from.
+			-- The unary expression this fix will remove the double negation from.
 
 	get_expression (a_expr: EXPR_AS): STRING_32
-		-- Returns the expression of a double negation
+			-- Returns the expression of a double negation
 		do
 			if attached {PARAN_AS} a_expr as l_paran then
 				Result := get_expression (l_paran.expr)
-			else
-				if attached {UN_NOT_AS} a_expr as l_un_not then
-					Result := l_un_not.expr.text_32 (matchlist)
-				end
+			elseif attached {UN_NOT_AS} a_expr as l_un_not then
+				Result := l_un_not.expr.text_32 (matchlist)
 			end
 		end
 
-feature {NONE} -- Visitor
-
-	process_un_not_as (a_un_not_as: UN_NOT_AS)
+	execute (a_class: attached CLASS_AS)
 		do
-			Precursor (a_un_not_as)
-			if unary.index = a_un_not_as.index then
-				a_un_not_as.replace_text (get_expression(a_un_not_as.expr), matchlist)
-			end
+			unary.replace_text (get_expression(unary.expr), matchlist)
 		end
 
 end

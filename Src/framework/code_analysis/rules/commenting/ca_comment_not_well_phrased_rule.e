@@ -107,28 +107,28 @@ feature {NONE} -- Implementation
 			if attached current_context.matchlist.current_trunk as l_trunk then
 				if attached {BREAK_AS} l_trunk.at (a_index + 1) as l_break then
 					if current_context.matchlist.has_comment (l_break.token_region (current_context.matchlist)) then
-						-- Case 1: feature -- Comment
+							-- Case 1: feature -- Comment
 						Result := current_context.matchlist.extract_comment (l_break.token_region (current_context.matchlist)).first
 					elseif attached {SYMBOL_STUB_AS} l_trunk.at (a_index + 2) as l_symbol and then l_symbol.code = 297 then
-						-- Case 2: feature {SOME_CLASS} (code 297 = '{')
+							-- Case 2: feature {SOME_CLASS} (code 297 = '{')
 						if current_context.matchlist.has_comment (l_trunk.at (a_index + 5).token_region (current_context.matchlist)) then
-							-- Case 3: feature {SOME_CLASS} -- Comment (index + 5 because { and SOME_CLASS and } are all LEAF_AS' themselves.
+								-- Case 3: feature {SOME_CLASS} -- Comment (index + 5 because { and SOME_CLASS and } are all LEAF_AS' themselves.
 							Result := current_context.matchlist.extract_comment (l_trunk.at (a_index + 5).token_region (current_context.matchlist)).first
 						else
-							-- Case 4: feature {SOME_CLASS} (no comment)
+								-- Case 4: feature {SOME_CLASS} (no comment)
 							Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")
 						end
 					else
-						-- Case 5: feature (no comment)
+							-- Case 5: feature (no comment)
 						Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")
 					end
 				elseif attached {SYMBOL_STUB_AS} l_trunk.at (a_index + 1) as l_symbol and then l_symbol.code = 297 then
-					-- Case 6: feature{SOME_CLASS} (without space between feature and '{')
+						-- Case 6: feature{SOME_CLASS} (without space between feature and '{')
 					if current_context.matchlist.has_comment (l_trunk.at (a_index + 4).token_region (current_context.matchlist)) then
-						-- Case 7: feature{SOME_CLASS} -- Comment (index + 5 because { and SOME_CLASS and } are all LEAF_AS' themselves.
+							-- Case 7: feature{SOME_CLASS} -- Comment (index + 5 because { and SOME_CLASS and } are all LEAF_AS' themselves.
 						Result := current_context.matchlist.extract_comment (l_trunk.at (a_index + 4).token_region (current_context.matchlist)).first
 					else
-						-- Case 8: feature{SOME_CLASS} (no comment)
+							-- Case 8: feature{SOME_CLASS} (no comment)
 						Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")
 					end
 				end

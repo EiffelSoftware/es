@@ -26,7 +26,7 @@ feature {NONE} -- Implementation
 
 	execute (a_class: attached CLASS_AS)
 		do
-
+			-- TODO: Implement me.
+			check False end
 		end
-
 end

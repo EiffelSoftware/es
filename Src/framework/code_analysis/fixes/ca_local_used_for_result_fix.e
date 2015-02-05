@@ -10,14 +10,15 @@ inherit
 	CA_FIX
 		redefine
 			execute,
-			process_access_id_as
+			process_access_id_as,
+			process_assign_as
 		end
 
 create
-	make_with_feature_and_name
+	make_with_feature_type_and_index
 
 feature {NONE} -- Initialization
-	make_with_feature_and_name (a_class: attached CLASS_C; a_feature: attached FEATURE_AS; a_local_type: attached TYPE_A; a_local_index: attached INTEGER)
+	make_with_feature_type_and_index (a_class: attached CLASS_C; a_feature: attached FEATURE_AS; a_local_type: attached TYPE_A; a_local_index: attached INTEGER; a_access: attached ACCESS_ID_AS)
 			-- Initializes `Current' with class `a_class'. `a_local_type' is the type of the local variable which violates the rule.
 			-- `a_feature' is the feature in which the rule was violated. `a_local_index' is the internal index of the local from its local_dec_list_as.
 		do
@@ -25,6 +26,7 @@ feature {NONE} -- Initialization
 			local_type := a_local_type
 			feature_as := a_feature
 			local_index := a_local_index
+			access_id_as := a_access
 		end
 
 feature {NONE} -- Implementation
@@ -32,36 +34,14 @@ feature {NONE} -- Implementation
 	execute (a_class: attached CLASS_AS)
 		local
 			l_index: INTEGER
+			l_list: LINKED_LIST[TUPLE[INTEGER, TYPE_A]]
 		do
-				-- Remove local
+				-- Remove local.
 
-			--(create {FIX_UNUSED_LOCAL_APPLICATION}.make ([local_index, local_type], feature_as, matchlist)).do_nothing
+			create l_list.make
+			l_list.extend ([local_index, local_type])
 
---			if
---				attached feature_as.body.as_routine as l_routine
---				and then attached l_routine.locals as l_locals
---			then
---				across l_locals as l_local_dec loop
---					across l_local_dec.item.id_list as l_id loop
---						l_index := l_local_dec.item.id_list.index_of(l_id.item, 1)
---						if l_local_dec.item.item_name(l_index).is_equal(local_name) then
---								-- Found the local variable to be removed.
---							if l_local_dec.item.id_list.count > 1 then
---								if l_local_dec.item.id_list.i_th(l_index) = l_local_dec.item.id_list.last then
---										-- The local is the last in the list of same-typed locals.
---									l_locals.replace_subtext (", " + local_name, "", True, matchlist)
---								else
---										-- The local is somewhere in between in the list of same-typed locals.
---									l_locals.replace_subtext (local_name + ",", "", True, matchlist)
---								end
---							else
---								-- The local is the only one of its type.
---								l_local_dec.item.replace_text("", matchlist)
---							end
---						end
---					end
---				end
---			end
+			(create {CA_FIX_UNUSED_LOCAL_APPLICATION}.make (l_list, feature_as, matchlist)).do_nothing
 
 				-- Process the feature to replace the local with Result.
 			process_feature_as (feature_as)
@@ -69,7 +49,23 @@ feature {NONE} -- Implementation
 
 	process_access_id_as (a_access_id: attached ACCESS_ID_AS)
 		do
-			do_nothing
+			if a_access_id.is_equivalent (access_id_as) then
+				a_access_id.replace_text ("Result", matchlist)
+			end
+		end
+
+	process_assign_as (a_assign: attached ASSIGN_AS)
+		do
+			Precursor (a_assign)
+
+			if
+				attached {RESULT_AS} a_assign.target
+				and then attached {EXPR_CALL_AS} a_assign.source as l_expr_call
+				and then attached {ACCESS_ID_AS} l_expr_call.call as l_access
+				and then l_access.is_equivalent (access_id_as)
+			then
+				a_assign.remove_text (matchlist)
+			end
 		end
 
 	local_type: TYPE_A
@@ -77,6 +73,9 @@ feature {NONE} -- Implementation
 
 	local_index: INTEGER
 		-- The internal index of the local variable to be replaced and removed.
+
+	access_id_as: ACCESS_ID_AS
+		-- One of the accesses to the local variable to be replaced and removed.
 
 	feature_as: FEATURE_AS
 		-- The ast node of the feature in wich the rule was violated.

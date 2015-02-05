@@ -10,8 +10,7 @@ class
 inherit
 	CA_FIX
 		redefine
-			process_create_as,
-			process_feature_as
+			execute
 		end
 
 create
@@ -30,16 +29,16 @@ feature {NONE} -- Implementation
 	feature_to_remove: FEATURE_AS
 		-- The creation procedure this fix will remove.
 
-feature {NONE} -- Visitor
-
-	process_feature_as (a_feature_as: FEATURE_AS)
+	execute (a_class: attached CLASS_AS)
 		do
-			if feature_to_remove.is_equivalent (a_feature_as) then
-				a_feature_as.replace_text ("", matchlist)
+			feature_to_remove.remove_text (matchlist)
+
+			across a_class.creators as l_create_as loop
+				process_create(l_create_as.item)
 			end
 		end
 
-	process_create_as (a_create_as: CREATE_AS)
+	process_create (a_create_as: CREATE_AS)
 		local
 			l_new_feature_names: STRING_32
 		do
@@ -51,9 +50,9 @@ feature {NONE} -- Visitor
 				end
 			end
 
-			-- Remove last comma and newline
+				-- Remove last comma and newline.
 			l_new_feature_names.remove_tail (2)
-			-- Remove first tab
+				-- Remove first tab.
 			l_new_feature_names.remove_head (1)
 
 			if l_new_feature_names.is_empty then

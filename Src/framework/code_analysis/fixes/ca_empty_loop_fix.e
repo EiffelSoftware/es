@@ -10,7 +10,7 @@ class
 inherit
 	CA_FIX
 		redefine
-			process_loop_as
+			execute
 		end
 
 create
@@ -32,12 +32,9 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Visitor
 
-	process_loop_as (a_loop_as: LOOP_AS)
+	execute (a_class: CLASS_AS)
 		do
-			Precursor (a_loop_as)
-			if loop_to_be_removed.is_equivalent (a_loop_as) then
-				a_loop_as.replace_text ("", matchlist)
-			end
+			loop_to_be_removed.remove_text (matchlist)
 		end
 
 end

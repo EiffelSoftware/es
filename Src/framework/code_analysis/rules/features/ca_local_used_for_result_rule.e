@@ -16,7 +16,8 @@ inherit
 
 	AST_ITERATOR
 		redefine
-			process_assign_as
+			process_assign_as,
+			process_create_creation_as
 		end
 
 create
@@ -60,33 +61,36 @@ feature {NONE} -- Implementation
 				and then attached a_feature.body.as_routine as l_routine
 				and then attached l_routine.locals as l_locals
 			then
-				-- Get all locals.
+					-- Get all locals.
 				across l_locals as l_local_dec loop
 					across l_local_dec.item.id_list as l_id loop
-						all_locals.extend (l_local_dec.item.item_name (l_local_dec.item.id_list.index_of (l_id.item, 1)))
+						all_locals.extend (l_id.item, l_local_dec.item.item_name (l_local_dec.item.id_list.index_of (l_id.item, 1)))
 					end
 				end
 
-				is_checking_assigns := True
 				process_routine_as (l_routine)
-				is_checking_assigns := False
 
-				if can_have_violations and attached violating_assignment then
+				if
+					can_have_violations
+					and attached violating_assignment
+					and not (a_feature.index_of_instruction (violating_assignment) = 0) -- The violating assignment must not be nested.
+				then
 					create_violation (a_feature)
 				end
 
-				-- Reset the access id and booleans for the next feature.
+					-- Reset the access id and booleans for the next feature.
 				violating_assignment := Void
 				can_have_violations := True
 				has_found_result_assignment := False
+				all_locals.wipe_out
 			end
 		end
 
-	all_locals: ARRAYED_LIST [STRING]
+	all_locals: HASH_TABLE [INTEGER, STRING]
 
 	process_assign_as (a_assign: attached ASSIGN_AS)
 		do
-			if is_checking_assigns and can_have_violations then
+			if can_have_violations then
 				if attached {RESULT_AS} a_assign.target then
 					if has_found_result_assignment then
 							-- We cannot create any violations when there is more than 1 assignment to Result from a local variable.
@@ -109,14 +113,23 @@ feature {NONE} -- Implementation
 			Precursor (a_assign)
 		end
 
-	is_checking_assigns: BOOLEAN
-		-- Is the rule currently checking assign statements?
+	process_create_creation_as (a_create: attached CREATE_CREATION_AS)
+		do
+			if can_have_violations then
+				if attached {RESULT_AS} a_create.target then
+						-- We cannot create any violations when there is a creation instruction for Result.
+					can_have_violations := False
+				end
+			end
+
+			Precursor (a_create)
+		end
 
 	has_found_result_assignment: BOOLEAN
 		-- Has the rule already found an assignment to Result?
 
 	can_have_violations: BOOLEAN
-		-- Can the rule have valid violations?
+		-- Can the rule still have valid violations?
 
 	violating_assignment: ASSIGN_AS
 		-- The assignment which violates this rule.
@@ -136,7 +149,10 @@ feature {NONE} -- Implementation
 			then
 				l_violation.long_description_info.extend (l_access.access_name_32)
 
-				--create l_fix.make_with_feature_and_name (current_context.checking_class, a_feature, l_access.access_name_32)
+				if attached {FEATURE_I} current_context.checking_class.feature_named_32 (a_feature.feature_name.name_32) as l_feature_i then
+					create l_fix.make_with_feature_type_and_index (current_context.checking_class, a_feature, current_context.node_type (l_access, l_feature_i), all_locals.at (l_access.access_name_32), l_access)
+				end
+
 			end
 
 			l_violation.fixes.extend (l_fix)

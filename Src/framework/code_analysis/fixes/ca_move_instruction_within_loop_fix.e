@@ -10,7 +10,7 @@ class
 inherit
 	CA_FIX
 		redefine
-			process_loop_as
+			execute
 		end
 
 create
@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Implementation
 
 	loop_to_change: LOOP_AS
-		-- The loop to remove the creation instruction from.
+		-- The loop to remove the instruction from.
 
 	instruction_to_move: INSTRUCTION_AS
 		-- The instruction to be moved.
@@ -38,37 +38,32 @@ feature {NONE} -- Implementation
 	move_to_front: BOOLEAN
 		-- Will the instruction be moved in front of the loop? (Instead of after the loop)
 
-feature {NONE} -- Visitor
-
-	process_loop_as (a_loop: LOOP_AS)
+	execute (a_class: CLASS_AS)
 		local
 			l_body: EIFFEL_LIST[INSTRUCTION_AS]
 			l_new_string, l_indent, l_temp: STRING_32
 		do
-			if a_loop.is_equivalent (loop_to_change) then
-				l_body := a_loop.compound
-				l_temp := a_loop.text_32 (matchlist)
+			l_body := loop_to_change.compound
+			l_temp := loop_to_change.text_32 (matchlist)
 
-				-- Calculate the indentation of the loop. TODO Refactor.
-				l_temp := l_temp.substring (l_temp.substring_index (l_body.last.text_32 (matchlist), 1), l_temp.count - 3)
-				l_indent := l_temp.substring (l_temp.index_of ('%T', 1), l_temp.count)
+			-- Calculate the indentation of the loop. TODO: Refactor.
+			l_temp := l_temp.substring (l_temp.substring_index (l_body.last.text_32 (matchlist), 1), l_temp.count - 3)
+			l_indent := l_temp.substring (l_temp.index_of ('%T', 1), l_temp.count)
 
-				create l_new_string.make_empty
+			create l_new_string.make_empty
 
-				l_temp := instruction_to_move.text_32 (matchlist)
-				instruction_to_move.replace_text ("", matchlist)
+			l_temp := instruction_to_move.text_32 (matchlist)
+			instruction_to_move.remove_text (matchlist)
 
-				if move_to_front then
-					l_new_string.append (l_temp + "%N")
-					l_new_string.append (l_indent + a_loop.text_32 (matchlist) + "%N")
-				else
-					l_new_string.append (a_loop.text_32 (matchlist) + "%N")
-					l_new_string.append (l_indent + l_temp + "%N")
-				end
-
-				a_loop.replace_text (l_new_string, matchlist)
-
+			if move_to_front then
+				l_new_string.append (l_temp + "%N")
+				l_new_string.append (l_indent + loop_to_change.text_32 (matchlist) + "%N")
+			else
+				l_new_string.append (loop_to_change.text_32 (matchlist) + "%N")
+				l_new_string.append (l_indent + l_temp + "%N")
 			end
+
+			loop_to_change.replace_text (l_new_string, matchlist)
 		end
 
 end

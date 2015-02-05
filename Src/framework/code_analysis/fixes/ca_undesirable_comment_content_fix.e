@@ -10,7 +10,7 @@ class
 inherit
 	CA_FIX
 		redefine
-			process_break_as
+			execute
 		end
 
 create
@@ -68,22 +68,18 @@ feature {NONE} -- Implementation
 			Result.at (6) := '$'
 		end
 
-feature {NONE} -- Visitor
-
-	process_break_as (a_break: BREAK_AS)
+	execute (a_class: CLASS_AS)
 		local
 			l_comment: STRING_32
 		do
-			if a_break.is_equivalent (break) then
-				l_comment := a_break.text_32 (matchlist)
-				from
-				until
-					not r.matches (l_comment)
-				loop
-					l_comment := r.replace (get_new_string (r.captured_substring_count (0) + 1))
-				end
-				a_break.replace_text (l_comment, matchlist)
+			l_comment := break.text_32 (matchlist)
+			from
+			until
+				not r.matches (l_comment)
+			loop
+				l_comment := r.replace (get_new_string (r.captured_substring_count (0) + 1))
 			end
+			break.replace_text (l_comment, matchlist)
 		end
 
 end
