@@ -36,7 +36,7 @@ feature {NONE} -- Implementation
 			l_regex.set_case_insensitive (False)
 
 				-- Match the classtext.
-			l_regex.match (a_class.text (matchlist)
+			l_regex.match (a_class.text (matchlist))
 
 				-- Replace all occurences with the first character and then replace the classtext with the new string.
 			a_class.replace_text (l_regex.replace_all (param_to_change.at (1).out), matchlist)
