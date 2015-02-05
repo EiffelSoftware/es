@@ -924,11 +924,11 @@ feature -- Other
 			Result := a_name + "_" + internal_counter.item.out
 		end
 
-	add_unsupported_error (a_class: CLASS_C; a_feature: FEATURE_I; a_message: STRING)
+	add_unsupported_error (a_class_or_feature: ANY; a_message: STRING; a_line_number: INTEGER)
 			-- Add AutoProof error about unsupported construct concerning `a_class_or_feature' with message `a_message'.
 			-- Verification will not proceed.
 		require
-			not_class_and_feature: a_class = Void or a_feature = Void
+			class_or_feature_or_void: a_class_or_feature = Void or else (attached {CLASS_C} a_class_or_feature or attached {FEATURE_I} a_class_or_feature)
 			message_set: a_message /= Void and then not a_message.is_empty
 		local
 			l_error: E2B_AUTOPROOF_ERROR
@@ -936,11 +936,12 @@ feature -- Other
 			create l_error
 			l_error.set_type ("Unsupported")
 			l_error.set_message (a_message)
-			if a_feature /= Void then
-				l_error.set_feature (a_feature)
-			elseif a_class /= Void then
-				l_error.set_class (a_class)
+			if attached {FEATURE_I} a_class_or_feature as x then
+				l_error.set_feature (x)
+			elseif attached {CLASS_C} a_class_or_feature as x then
+				l_error.set_class (x)
 			end
+			l_error.set_line_number (a_line_number)
 			autoproof_errors.extend (l_error)
 		end
 

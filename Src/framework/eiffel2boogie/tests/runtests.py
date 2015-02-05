@@ -208,6 +208,7 @@ def run_test(path, test_name, args_prefix=[]):
 parser = argparse.ArgumentParser()
 parser.add_argument('--clean', '-c', action='store_true')
 parser.add_argument('--store', '-s', action='store_true')
+parser.add_argument('--finalized', '-f', action='finalized_true')
 parser.add_argument('--dir', '-d', default=None)
 parser.add_argument('tests', nargs=argparse.REMAINDER)
 
@@ -217,6 +218,8 @@ test_dir = None
 if not arguments.dir is None:
 	test_dir = os.path.join(base_path, arguments.dir)
 
+if arguments.finalized:
+	eve_exe = os.path.realpath(os.path.join(os.getenv("EIFFEL_SRC"), "Eiffel", "Ace", "EIFGENs", "bench", "F_code", "ec.exe"))
 if arguments.clean:
 	compile_tests()
 if arguments.store:

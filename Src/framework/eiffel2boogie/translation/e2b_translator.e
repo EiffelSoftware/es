@@ -106,12 +106,32 @@ feature -- Basic operations
 			has_next_step: has_next_step
 		local
 			l_unit: E2B_TRANSLATION_UNIT
+			l_failed: BOOLEAN
+			l_error: E2B_AUTOPROOF_ERROR
 		do
-			check translation_pool.has_untranslated_elements end
-
-			l_unit := translation_pool.next_untranslated_element
-			l_unit.translate
-			translation_pool.mark_translated (l_unit)
+			if l_failed then
+				if l_unit /= Void then
+					translation_pool.mark_translated (l_unit)
+					create l_error
+					l_error.set_type ("Internal Error")
+					if attached {E2B_TU_CLASS} l_unit as x then
+						l_error.set_class (x.class_type.base_class)
+					elseif attached {E2B_TU_FEATURE} l_unit as x then
+						l_error.set_class (x.type.base_class)
+						l_error.set_feature (x.feat)
+					end
+					l_error.set_message (messages.internal_translation_error (l_unit.id))
+					autoproof_errors.extend (l_error)
+				end
+			else
+				check translation_pool.has_untranslated_elements end
+				l_unit := translation_pool.next_untranslated_element
+				l_unit.translate
+				translation_pool.mark_translated (l_unit)
+			end
+		rescue
+			l_failed := True
+			retry
 		end
 
 end

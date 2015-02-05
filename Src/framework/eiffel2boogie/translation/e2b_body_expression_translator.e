@@ -174,7 +174,7 @@ feature -- Visitors
 			-- <Precursor>
 		do
 			if a_node.is_inline_agent then
-				helper.add_unsupported_error (Void, context_feature, "Inline agents are not supported")
+				helper.add_unsupported_error (context_feature, "Inline agents are not supported", context_line_number)
 				last_expression := dummy_node (a_node.type)
 			else
 				(create {E2B_CUSTOM_AGENT_CALL_HANDLER}).handle_agent_creation (Current, a_node)

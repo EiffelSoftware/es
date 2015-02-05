@@ -16,7 +16,7 @@ feature -- Validity error messages
 		do Result := "Functional feature has to be a pure function." end
 
 	functional_feature_not_single_assignment: STRING_32
-		do Result := "A functional feature has to consist of exactly one assignment to the Result." end
+		do Result := "A functional feature has to consist of exactly one assignment to the Result (and optional check instructions before the assignment)." end
 
 	functional_feature_redefined: STRING_32
 		do Result := "Functional feature cannot be redefined." end
@@ -203,6 +203,9 @@ feature -- Other
 
 	boogie_launch_failed (a_executable: STRING_32): STRING_32
 		do Result := locale.formatted_string ("Launching Boogie failed (command was '$1').", a_executable) end
+
+	internal_translation_error (a_unit_id: STRING_32): STRING_32
+		do Result := locale.formatted_string ("Translation of '$1' failed due to an internal error.", a_unit_id) end
 
 feature -- GUI
 
