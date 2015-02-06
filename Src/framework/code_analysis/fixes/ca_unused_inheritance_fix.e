@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 			-- Initializes `Current' with class `a_class'.
 			-- `a_name' is the name of the formal generic parameter to be changed.
 		do
-			make (ca_names.generic_param_too_long_fix, a_class)
+			make (ca_names.generic_param_too_long_fix_1 + a_name + ca_names.generic_param_too_long_fix_2 + "'" + a_name.at(1).out + "'", a_class)
 			param_to_change := a_name
 		end
 

@@ -27,8 +27,11 @@ feature -- Rules
 	exported_feature_never_called_title: STRING_32
 		do Result := translation_in_context ("Exported feature never called", once "code_analyzer") end
 
-	generic_param_too_long_fix: STRING_32
-		do Result := translation_in_context ("Replace parameter names with single characters", once "code_analyzer") end
+	generic_param_too_long_fix_1: STRING_32
+		do Result := translation_in_context ("Replace '", once "code_analyzer") end
+
+	generic_param_too_long_fix_2: STRING_32
+		do Result := translation_in_context ("' with ", once "code_analyzer") end
 
 	generic_param_too_long_description: STRING_32
 		do Result := translation_in_context ("Names of formal generic parameters in generic class declarations should%
