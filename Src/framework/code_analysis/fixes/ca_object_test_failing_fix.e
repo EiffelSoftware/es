@@ -13,31 +13,24 @@ inherit
 		end
 
 create
-	make_with_if
+	make_with_ot
 
 feature {NONE} -- Initialization
-	make_with_if (a_class: attached CLASS_C; a_if: attached IF_AS)
-		-- Initializes `Current' with class `a_class'. `a_if' is the if statement containing the violation.
+	make_with_ot (a_class: attached CLASS_C; a_ot: attached OBJECT_TEST_AS)
+		-- Initializes `Current' with class `a_class'. `a_ot' is the object test statement containing the violation.
 		do
 			make (ca_names.object_test_failing_fix, a_class)
-			if_to_change := a_if
+			ot_to_change := a_ot
 		end
 
 feature {NONE} -- Implementation
 
 	execute (a_class: CLASS_AS)
-		local
-			l_new: STRING
 		do
-			create l_new.make_empty
-			if attached if_to_change.else_part as l_else then
-				l_new.append (l_else.text_32 (matchlist))
-			end
-				-- TODO: Add indentation.
-			if_to_change.replace_text (l_new, matchlist)
+			do_nothing
 		end
 
-	if_to_change: IF_AS
+	ot_to_change: OBJECT_TEST_AS
 			-- The Object Test node this fix will change.
 
 end

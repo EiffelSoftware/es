@@ -41,7 +41,7 @@ feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
-			a_checker.add_if_pre_action (agent process_if)
+			a_checker.add_object_test_pre_action (agent process_ot)
 			a_checker.add_feature_pre_action (agent process_feature)
 		end
 
@@ -51,17 +51,16 @@ feature {NONE} -- Implementation
 			current_feature := current_context.checking_class.feature_named_32 (a_feature.feature_names.first.visual_name_32)
 		end
 
-	process_if (a_if: attached IF_AS)
+	process_ot (a_ot: attached OBJECT_TEST_AS)
 		local
 			l_type_1, l_type_2: TYPE_A
 		do
-			if attached {OBJECT_TEST_AS} a_if.condition as l_ot then
-				-- Check if object_test has type!
-				 l_type_1 := current_context.node_type (l_ot.expression, current_feature)
-				 l_type_2 := current_context.node_type (l_ot.type, current_feature)
+			if attached a_ot.type then
+				 l_type_1 := current_context.node_type (a_ot.expression, current_feature)
+				 l_type_2 := current_context.node_type (a_ot.type, current_feature)
 
 				 if not has_common_child (l_type_1, l_type_2) then
-				 	create_violation (a_if)
+				 	create_violation (a_ot)
 				 end
 			end
 		end
@@ -80,24 +79,23 @@ feature {NONE} -- Implementation
 
 	current_feature: FEATURE_I
 
-	create_violation (a_if: attached IF_AS)
+	create_violation (a_ot: attached OBJECT_TEST_AS)
 		local
 			l_violation: CA_RULE_VIOLATION
 			l_fix: CA_OBJECT_TEST_FAILING_FIX
 		do
 			create l_violation.make_with_rule (Current)
 
-			l_violation.set_location (a_if.start_location)
+			l_violation.set_location (a_ot.start_location)
 
 			if
-				attached {OBJECT_TEST_AS} a_if.condition as l_ot
-				and then attached {EXPR_CALL_AS} l_ot.expression as l_expr_call
+				attached {EXPR_CALL_AS} a_ot.expression as l_expr_call
 				and then attached {ACCESS_ID_AS} l_expr_call.call as l_access_id
 			then
 				l_violation.long_description_info.extend (l_access_id.access_name_32)
 			end
 
-			create l_fix.make_with_if (current_context.checking_class, a_if)
+			create l_fix.make_with_ot (current_context.checking_class, a_ot)
 			l_violation.fixes.extend (l_fix)
 
 			violations.extend (l_violation)

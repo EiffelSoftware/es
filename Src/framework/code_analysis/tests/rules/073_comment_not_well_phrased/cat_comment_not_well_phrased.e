@@ -4,14 +4,12 @@ note
 class
 	CAT_COMMENT_NOT_WELL_PHRASED
 
-feature{ANY} -- Testany
-
-feature {STRING} -- Teststring
-
-feature -- test no export
-
-feature --        
-
+feature -- Comment
+feature {ANY,
+ANY} -- Comment
+feature {ANY}
 feature
+feature{ANY} -- Comment
+feature{ANY}
 
 end

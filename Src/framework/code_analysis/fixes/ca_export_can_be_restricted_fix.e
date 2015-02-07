@@ -1,10 +1,10 @@
 note
-	description: "Fixes violations of rule #75 ('Exported feature never called outside class')."
+	description: "Fixes violations of rule #75 ('Feature export can be restricted')."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CA_EXPORTED_FEATURE_NEVER_CALLED_FIX
+	CA_EXPORT_CAN_BE_RESTRICTED_FIX
 
 inherit
 	CA_FIX
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make_ (a_class: attached CLASS_C)
 			-- Initializes `Current' with class `a_class'.
 		do
-			make (ca_names.exported_feature_never_called_fix, a_class)
+			make (ca_names.export_can_be_restricted_fix, a_class)
 		end
 
 feature {NONE} -- Implementation

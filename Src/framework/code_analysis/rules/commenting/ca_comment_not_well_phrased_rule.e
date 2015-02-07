@@ -40,7 +40,6 @@ feature {NONE} -- Implementation
 	check_feature_comments (a_feature: attached FEATURE_AS)
 		-- Checks for not well phrased feature comments in `a_feature'.
 		local
-			l_violation: CA_RULE_VIOLATION
 			l_violation_found, l_first, l_done: BOOLEAN
 			l_comments: EIFFEL_COMMENTS
 		do
@@ -58,12 +57,14 @@ feature {NONE} -- Implementation
 					l_first := False
 					l_violation_found := not starts_with_upper (l_comments.item.content_32)
 				else
-					if not is_empty_comment (l_comments.item.content_32) then
-						-- We only check until we found the first sentence.
+					if is_empty_comment (l_comments.item.content_32) then
+							-- The line above the empty line did not end with punctuation -> violation.
+						l_violation_found := True
+					else
+							-- We only check until we found the first sentence.
 						l_done := ends_with_punctuation (l_comments.item.content_32)
 					end
 				end
-
 				l_comments.forth
 			end
 
@@ -75,45 +76,36 @@ feature {NONE} -- Implementation
 	check_feature_clause_comments (a_class: attached CLASS_AS)
 		-- Checks for not well phrased feature clause comments in `a_class'.
 		local
-			l_violation: CA_RULE_VIOLATION
 			l_comment: EIFFEL_COMMENT_LINE
-			i: INTEGER
+			test: FEATURE_CLAUSE_AS
 		do
-
-			if current_context.matchlist /= Void then
-				i := 0 -- Indices of SPECIAL start at 0.
-				across
-					current_context.matchlist.current_trunk as l_leaf
-				loop
-					if
-						attached {KEYWORD_STUB_AS} l_leaf.item as l_keyword
-						and then l_keyword.text_32 (current_context.matchlist).is_equal ("feature")
-					then
-						l_comment := find_feature_clause_comment (i)
-
-						if not is_empty_comment (l_comment.content_32) and then not starts_with_upper (l_comment.content_32) then
-							create_violation (l_comment)
-						end
+			if attached a_class.features as l_features then
+				across l_features as l_feature loop
+					if attached l_feature.item.clients then
+						l_comment := find_feature_clause_comment (l_feature.item.feature_keyword.index, l_feature.item.clients.clients.count)
+					else
+						l_comment := find_feature_clause_comment (l_feature.item.feature_keyword.index, 0)
 					end
-					i := i + 1
+
+					if not is_empty_comment (l_comment.content_32) and then not starts_with_upper (l_comment.content_32) then
+						create_violation (l_comment)
+					end
 				end
 			end
 		end
 
-	find_feature_clause_comment (a_index: INTEGER): EIFFEL_COMMENT_LINE
-		local
-			i: INTEGER
+	find_feature_clause_comment (a_index: INTEGER; a_export_count: INTEGER): EIFFEL_COMMENT_LINE
 		do
 			if attached current_context.matchlist.current_trunk as l_trunk then
-				if attached {BREAK_AS} l_trunk.at (a_index + 1) as l_break then
+				if attached {BREAK_AS} l_trunk.at (a_index) as l_break then
 					if current_context.matchlist.has_comment (l_break.token_region (current_context.matchlist)) then
 							-- Case 1: feature -- Comment
 						Result := current_context.matchlist.extract_comment (l_break.token_region (current_context.matchlist)).first
-					elseif attached {SYMBOL_STUB_AS} l_trunk.at (a_index + 2) as l_symbol and then l_symbol.code = 297 then
+					elseif attached {SYMBOL_STUB_AS} l_trunk.at (a_index + 1) as l_symbol and then l_symbol.code = 297 then
 							-- Case 2: feature {SOME_CLASS} (code 297 = '{')
-						if current_context.matchlist.has_comment (l_trunk.at (a_index + 5).token_region (current_context.matchlist)) then
-								-- Case 3: feature {SOME_CLASS} -- Comment (index + 5 because { and SOME_CLASS and } are all LEAF_AS' themselves.
-							Result := current_context.matchlist.extract_comment (l_trunk.at (a_index + 5).token_region (current_context.matchlist)).first
+						if current_context.matchlist.has_comment (l_trunk.at (a_index + 2 + a_export_count).token_region (current_context.matchlist)) then
+								-- Case 3: feature {SOME_CLASS} -- Comment (index + 2 for the { and }.
+							Result := current_context.matchlist.extract_comment (l_trunk.at (a_index + 2 + a_export_count).token_region (current_context.matchlist)).first
 						else
 								-- Case 4: feature {SOME_CLASS} (no comment)
 							Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")
@@ -122,11 +114,11 @@ feature {NONE} -- Implementation
 							-- Case 5: feature (no comment)
 						Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")
 					end
-				elseif attached {SYMBOL_STUB_AS} l_trunk.at (a_index + 1) as l_symbol and then l_symbol.code = 297 then
+				elseif attached {SYMBOL_STUB_AS} l_trunk.at (a_index) as l_symbol and then l_symbol.code = 297 then
 						-- Case 6: feature{SOME_CLASS} (without space between feature and '{')
-					if current_context.matchlist.has_comment (l_trunk.at (a_index + 4).token_region (current_context.matchlist)) then
-							-- Case 7: feature{SOME_CLASS} -- Comment (index + 5 because { and SOME_CLASS and } are all LEAF_AS' themselves.
-						Result := current_context.matchlist.extract_comment (l_trunk.at (a_index + 4).token_region (current_context.matchlist)).first
+					if current_context.matchlist.has_comment (l_trunk.at (a_index + 1 + a_export_count).token_region (current_context.matchlist)) then
+							-- Case 7: feature{SOME_CLASS} -- Comment
+						Result := current_context.matchlist.extract_comment (l_trunk.at (a_index + 1 + a_export_count).token_region (current_context.matchlist)).first
 					else
 							-- Case 8: feature{SOME_CLASS} (no comment)
 						Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")

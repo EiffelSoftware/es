@@ -12,6 +12,7 @@ feature {NONE} -- Test
 			l_int: INTEGER
 			l_char: CHARACTER
 		do
+
 			if attached {CAT_EMPTY_LOOP} l_string then
 					-- Should fail.
 			else
@@ -24,7 +25,7 @@ feature {NONE} -- Test
 				attached {STRING} l_char
 			 	and attached {STRING} l_int
 			then
-					-- Should technically fail, but not caught by this rule.
+					-- Should fail.
 			end
 
 			if attached {STRING} l_string then
