@@ -23,7 +23,7 @@ inherit
 
 	REFACTORING_HELPER
 
-	ARGUMENTS
+	SHARED_EXECUTION_ENVIRONMENT
 
 	SHARED_LOGGER
 
@@ -102,14 +102,16 @@ feature {NONE} -- Launch operation
 feature -- CMS Initialization
 
 	cms_setup: CMS_DEFAULT_SETUP
+		local
+			utf: UTF_CONVERTER
 		do
-			if attached separate_character_option_value ('d') as  l_dir then
-				log.write_debug (generator + ".cms_setup using a command line argument -d " + l_dir )
-				create layout.make_with_path (create {PATH}.make_from_string (l_dir))
+			if attached execution_environment.arguments.separate_character_option_value ('d') as l_dir then
+				create layout.make_with_directory_name (l_dir)
 			else
-				log.write_debug (generator + ".cms_setup using current directory" )
 				create layout.make_default
 			end
+			initialize_logger (layout)
+			log.write_debug (generator + ".cms_setup based directory %"" + utf.escaped_utf_32_string_to_utf_8_string_8 (layout.path.name) + "%"")
 			create Result.make (layout)
 			setup_storage (Result)
 		end
@@ -134,8 +136,10 @@ feature -- CMS setup
 			m: CMS_MODULE
 		do
 			create {BASIC_AUTH_MODULE} m.make
-			m.enable
-			a_setup.register_module (m)
+			if not a_setup.module_with_same_type_registered (m) then
+				m.enable
+				a_setup.register_module (m)
+			end
 
 			create {CMS_DEMO_MODULE} m.make
 			m.enable

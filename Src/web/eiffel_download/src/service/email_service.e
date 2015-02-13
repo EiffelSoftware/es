@@ -70,10 +70,10 @@ feature -- Basic Operations
 
 	send_email_download_notification (a_content: READABLE_STRING_32)
 		local
-				l_email: EMAIL
+			l_email: EMAIL
 		do
 				-- Create our message.
-			create l_email.make_with_entry (admin_email, admin_email)
+			create l_email.make_with_entry (admin_email, download_email)
 			l_email.set_message (a_content)
 			l_email.add_header_entry ({EMAIL_CONSTANTS}.H_subject, "Notification EiffelStudio Download")
 			send_email (l_email)
@@ -82,7 +82,7 @@ feature -- Basic Operations
 
 	send_email_internal_server_error (a_content: READABLE_STRING_32)
 		local
-				l_email: EMAIL
+			l_email: EMAIL
 		do
 				-- Create our message.
 			create l_email.make_with_entry (admin_email, webmaster_email)
