@@ -2,7 +2,7 @@
 	description: "Miscellaneous Eiffel externals."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2012, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2015, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -100,15 +100,16 @@ rt_public EIF_INTEGER upintdiv(EIF_INTEGER n1, EIF_INTEGER n2)
 	return ((n1 >= 0) ^ (n2 > 0)) ? n1 / n2: ((n1 % n2) ? n1 / n2 + 1: n1 / n2);
 }
 
+#ifdef EIF_THREADS
 /*
-doc:	<routine name="init_scp_manager" export="public">
+doc:	<routine name="init_scoop_root_thread" export="public">
 doc:		<summary>Initialize SCOOP-specific data if required.</summary>
 doc:		<thread_safety>Unsafe</thread_safety>
 doc:		<synchronization>None required</synchronization>
 doc:	</routine>
 */
 
-rt_public void init_scp_manager (void)
+rt_public void init_scoop_root_thread (void)
 {
 	if (egc_is_scoop_capable)
 	{
@@ -116,6 +117,7 @@ rt_public void init_scp_manager (void)
 		eif_set_processor_id (0);
 	}
 }
+#endif /* EIF_THREADS */
 
 /*
 doc:	<routine name="eif_sleep" export="public">

@@ -1,9 +1,9 @@
-<div id="breadcumb">
-	<span class="ico"><img src="/theme/images/ico-documnet.png" width="21" height="21" alt="Image Description"></span>
+<div id="breadcrumb">
+	<span class="ico"><img src="/theme/images/ico-megaphone.png" width="21" height="21" alt="Image Description"></span>
 			  		<a href="{$site_url/}/about">About</a>
 			  		:: Purpose
 </div>
-
+<h1>Purpose</h1>
 <p>Eiffel.org a forum that brings together Eiffel developers around the world
 to build libraries, share experiences, and help each other on all matters
 related to open-source Eiffel.</p>

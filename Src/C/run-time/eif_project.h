@@ -5,7 +5,7 @@
 			]"
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2013, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2015, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -103,12 +103,6 @@ extern "C" {
 	RT_LNK void (*egc_free_preallocated_trace)(EIF_REFERENCE); /* EXCEPTION_MANAGER `free_preallocated_trace' feature */
 
 	RT_LNK int egc_is_scoop_capable; /* PLATFORM `is_scoop_capable' feature */
-	RT_LNK void (*egc_init_scoop_manager)(EIF_REFERENCE); /* SCOOP_MANAGER `init_scoop_manager' feature */
-#ifdef WORKBENCH
-	RT_LNK void (*egc_scoop_manager_task_callback)(EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE); /* ISE_SCOOP_MANAGER `scoop_task_manager_callback' feature */
-#else
-	RT_LNK void (*egc_scoop_manager_task_callback)(EIF_REFERENCE, EIF_NATURAL_8, EIF_INTEGER_32, EIF_INTEGER_32, EIF_POINTER); /* ISE_SCOOP_MANAGER `scoop_task_manager_callback' feature */
-#endif
 
 	RT_LNK void (*egc_correct_mismatch)(EIF_REFERENCE);	/* ANY `correct_mismatch' */
 
@@ -159,6 +153,7 @@ extern "C" {
 	RT_LNK EIF_TYPE_INDEX egc_except_emnger_dtype;	/* Dynamic type of EXCEPTION_MANAGER */
 	RT_LNK EIF_TYPE_INDEX egc_exception_dtype; /* Dynamic type of EXCEPTION. Could not be initialized if not exist. */
 
+/* To remove when 15.05 is about to be released. */
 	RT_LNK EIF_TYPE_INDEX egc_scp_mngr_dtype; /* Dynamic type of SCOOP_MANAGER */
 
 	RT_LNK struct ctable egc_ce_type;			/* Class name -> type ID */
