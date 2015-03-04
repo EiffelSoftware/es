@@ -5610,9 +5610,6 @@ benchmarks/scoop/scoop0006/queries.txt -text
 benchmarks/scoop/scoop0006/run.cmd -text
 benchmarks/scoop/scoop0006/test.cmd -text
 benchmarks/scoop/scoop_chain-original/Makefile -text
-benchmarks/scoop/scoop_outer/Makefile -text
-benchmarks/scoop/scoop_outer/main.gold -text
-benchmarks/scoop/scoop_outer/test.in -text
 benchmarks/scoop/scoop_product/Makefile -text
 benchmarks/scoop/scoop_randmat/Makefile -text
 benchmarks/scoop/scoop_thresh/Makefile -text
@@ -5671,6 +5668,9 @@ eweasel/tests/attach096/Ace -text
 eweasel/tests/attach097/Ace_rev2 -text
 eweasel/tests/attach103/Ace svneol=native#text/xml
 eweasel/tests/attach113/Ace svneol=native#text/xml
+eweasel/tests/bench008/Makefile -text
+eweasel/tests/bench008/main.gold -text
+eweasel/tests/bench008/test.in -text
 eweasel/tests/catcall013/Ace svneol=native#text/xml
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
