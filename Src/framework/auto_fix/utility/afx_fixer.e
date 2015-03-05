@@ -202,6 +202,7 @@ feature{NONE} -- Implementation
 		local
 			l_validator: AFX_FIX_VALIDATOR_NEW
 		do
+			create Result.make_equal (1)
 			if session.should_continue then
 				create l_validator.make (a_trace_repository, l_fixes)
 				progression_monitor.set_progression (progression_monitor.progression_fix_validation_start)
