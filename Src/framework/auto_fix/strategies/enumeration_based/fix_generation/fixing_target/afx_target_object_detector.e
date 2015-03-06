@@ -134,7 +134,7 @@ feature{NONE} -- Status report
 			l_expr_text := a_expression.text
 			if a_expression.type /= Void then
 				l_expr_type := explicit_type (a_expression.type, current_context_class, current_context_feature)
-				if l_expr_type.is_reference then
+				if l_expr_type.is_reference or a_expression.text.as_lower ~ "result" then
 					Result := True
 				elseif server_variables_in_scope.integer_or_boolean_locals_and_attributes_for_feature (current_context_class, current_context_feature).has (l_expr_text) then
 					Result := True

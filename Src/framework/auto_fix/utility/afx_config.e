@@ -106,6 +106,15 @@ feature -- Type of tasks: Set
 			is_not_fixing := a_flag
 		end
 
+	set_experimental_enabled (a_flag: BOOLEAN)
+		do
+			experimental_enabled := a_flag
+		end
+
+feature -- Experimental features
+
+	experimental_enabled: BOOLEAN
+
 feature -- Fix shared configurations: Access
 
 	maximum_session_length_in_minutes: NATURAL

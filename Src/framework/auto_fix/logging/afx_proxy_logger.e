@@ -204,8 +204,22 @@ feature -- Actions (implementation fix)
 
 	on_implementation_fix_generation_finished (a_fixes: DS_LIST [AFX_CODE_FIX_TO_FAULT])
 			-- <Precursor>
+		local
+			l_fix: AFX_CODE_FIX_TO_FAULT
 		do
 			log_message (True, notification_level_general, implementation_fix_generation_finished_message + section_separator + a_fixes.count.out + " implementation fixes generated.")
+
+			if session.config.experimental_enabled then
+				from
+					a_fixes.start
+				until
+					a_fixes.after
+				loop
+					l_fix := a_fixes.item_for_iteration
+					log_multi_line_message (l_fix.out)
+					a_fixes.forth
+				end
+			end
 		end
 
 	on_implementation_fix_validation_started (a_fixes: DS_LIST [AFX_CODE_FIX_TO_FAULT])

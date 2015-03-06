@@ -104,7 +104,7 @@ feature -- Directory structure
 	override_directory: PATH
 			--
 		do
-			Result := system.eiffel_project.project_directory.path.extended ("override")
+			Result := eiffel_system.eiffel_project.project_directory.path.extended ("override")
 		end
 
 	result_dir: PATH

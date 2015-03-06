@@ -69,6 +69,9 @@ feature -- Basic operations
 				-- Not fixing
 			l_postmortem_analysis_of_fixes: AP_STRING_OPTION
 			l_postmortem_analysis_output_dir: AP_STRING_OPTION
+
+				-- Enabling experimental features
+			l_enable_experimental: AP_FLAG
 		do
 			create l_args.make
 			arguments.do_all (agent l_args.force_last)
@@ -160,6 +163,11 @@ feature -- Basic operations
 			create l_postmortem_analysis_output_dir.make_with_long_form ("postmortem-analysis-output")
 			l_postmortem_analysis_output_dir.set_description ("Directory to store the results from postmortem analysis. %N%TOptional.")
 			l_parser.options.force_last (l_postmortem_analysis_output_dir)
+
+				-- Experimental.
+			create l_enable_experimental.make_with_long_form ("enable-experimental")
+			l_enable_experimental.set_description ("Enable experimental features.")
+			l_parser.options.force_last (l_enable_experimental)
 
 				-----------------------------------  Parse `arguments'.  -------------------------------------------
 
@@ -272,6 +280,8 @@ feature -- Basic operations
 					config.postmortem_analysis_output_dir := lt_postmortem_analysis_output_dir
 				end
 			end
+
+			config.set_experimental_enabled (l_enable_experimental.was_found)
 		end
 
 end
