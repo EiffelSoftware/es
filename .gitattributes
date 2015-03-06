@@ -3414,6 +3414,7 @@ Src/experimental/library/ribbon/test/src/ribbon_project.er -text
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.docx -text
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.pdf -text svneol=unset#application/pdf
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.vsd -text
+Src/experimental/library/store/all_store.ecf svneol=native#text/xml
 Src/experimental/library/store/test/test_results/oracle_results -text
 Src/experimental/library/text/parser/xml/parser/callbacks/README.TXT -text
 Src/experimental/library/text/parser/xml/tree/README.TXT -text
