@@ -2,13 +2,13 @@ note
 	ca_only: "CA067"
 
 class
-	CAT_GENERIC_PARAM_TOO_LONG [A, ALPHA, BOB, BLOB, BUBBLES]
+	CAT_GENERIC_PARAM_TOO_LONG [F, ALPHA, BOB, BLOB, BUBBLES]
 
 feature
 
 	foo
 		local
-			a: A
+			a: F
 			b: BOB
 		do
 

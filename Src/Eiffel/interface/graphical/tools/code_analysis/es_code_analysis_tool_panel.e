@@ -460,16 +460,10 @@ feature {NONE} -- Events
 
 	on_undo
 		do
-			undo_button.disable_sensitive
-
-			undo_actions.start
-			undo_actions.item.call (Void)
-			undo_actions.remove
-
-			if not undo_actions.is_empty then
-				undo_button.enable_sensitive
-			end
+			(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_question_prompt (
+				undo_fix_message, Void, agent perform_undo, Void)
 		end
+
 
 feature {NONE} -- Query
 
@@ -517,7 +511,7 @@ feature {NONE} -- Query
 			Result := attached {CA_NO_ISSUES_EVENT} a_event_item
 		end
 
-feature -- Basic operations
+feature {ES_CA_FIX_EXECUTOR} -- Basic operations
 
 	register_undo_action (a_procedure: PROCEDURE[ANY, TUPLE])
 		do
@@ -530,7 +524,21 @@ feature -- Basic operations
 			is_fix_in_progress := a_value
 		end
 
+
 feature {NONE} -- Basic operations
+
+	perform_undo
+		do
+			undo_button.disable_sensitive
+
+			undo_actions.start
+			undo_actions.item.call (Void)
+			undo_actions.remove
+
+			if not undo_actions.is_empty then
+				undo_button.enable_sensitive
+			end
+		end
 
 	do_default_action (a_row: EV_GRID_ROW)
 			-- <Precursor>
@@ -950,9 +958,10 @@ feature {NONE} -- Constants
 	rule_id_column: INTEGER = 6
 	severity_score_column: INTEGER = 7
 	last_column: INTEGER = 7
+	undo_fix_message: STRING = "Are you sure you want to undo the last applied fix?%NIf classes have been modified since the fix this can lead to corrupt classes and lost information!"
 
 note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

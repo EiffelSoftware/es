@@ -49,8 +49,8 @@ feature {NONE} -- Implementation
 	class_check (a_class: CLASS_AS)
 			-- Checks `a_class' for features that are exported but never called in a qualified way.
 		local
-			l_clients: ARRAYED_LIST [CLASS_C]
-			has_callers: BOOLEAN
+			l_clients: ARRAYED_LIST[CLASS_C]
+			l_has_clients_outside_hierarchy: BOOLEAN
 		do
 			l_clients := current_context.checking_class.clients
 
@@ -60,34 +60,60 @@ feature {NONE} -- Implementation
 					-- Only check features that are exported
 				if not l_feat.item.export_status.is_none then
 					from
-						has_callers := False
 						l_clients.start
+						l_has_clients_outside_hierarchy := False
 					until
-						has_callers or l_clients.after
+						l_clients.after
+						or l_has_clients_outside_hierarchy
 					loop
-						if l_feat.item.callers_32 (l_clients.item, 0) /= Void then
-							has_callers := True
+						if not l_clients.item.inherits_from (current_context.checking_class) then
+							if l_feat.item.callers_32 (l_clients.item, 0) /= Void then
+								l_has_clients_outside_hierarchy := True
+							end
+						else
+							if l_feat.item.callers_32 (l_clients.item, 0) /= Void then
+									-- Check whether all the calls to the feature are unqualified or not.
+								if has_qualified_calls (l_feat.item, l_clients.item) then
+									create_violation (l_feat.item.ast)
+								end
+							end
 						end
 						l_clients.forth
-					end
-
-					if not has_callers then
-						--create_violation (l_feat.item)
 					end
 				end
 			end
 		end
 
+	has_qualified_calls (a_feature: E_FEATURE; a_class: CLASS_C): BOOLEAN
+		local
+			l_feature_name: STRING
+		do
+			l_feature_name := a_feature.name_32
+
+				-- Check for renaming
+			across a_class.ast.parents as l_parent loop
+				if
+					l_parent.item.type.class_name.name_8.is_equal (current_context.checking_class.name)
+					and then attached l_parent.item.renaming as l_renames
+				then
+					across l_renames as l_rename loop
+						if l_rename.item.	old_name.visual_name_32.is_equal (l_feature_name) then
+							l_feature_name := l_rename.item.new_name.visual_name_32
+						end
+					end
+				end
+			end
+
+			Result := False
+		end
+
 	create_violation (a_feature: attached FEATURE_AS)
 		local
 			l_violation: CA_RULE_VIOLATION
-			l_fix: CA_EXPORT_CAN_BE_RESTRICTED_FIX
 		do
 			create l_violation.make_with_rule (Current)
 
 			l_violation.set_location (a_feature.start_location)
-
-			l_violation.fixes.extend (l_fix)
 
 			violations.extend (l_violation)
 		end
