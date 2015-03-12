@@ -210,6 +210,10 @@ feature -- ADB Actions
 					create l_label_item.make_with_text ("")
 					l_row_for_feature.set_item (column_info, l_label_item)
 				end
+					-- Update number of failing tests for the feature
+				check attached {EV_GRID_LABEL_ITEM} l_row_for_feature.item (column_failing) as lt_label_item then
+					lt_label_item.set_text ((lt_label_item.text.to_integer + 1).out)
+				end
 
 				if fault_to_row_table.has (l_fault) then
 					l_row_for_fault := fault_to_row_table.item (l_fault)
@@ -244,22 +248,18 @@ feature -- ADB Actions
 					l_info.replace_substring_all ("%N", "; ")
 					l_row_for_fault.set_item (column_info, create {EV_GRID_LABEL_ITEM}.make_with_text (l_info))
 
+						-- Update number of faults for the feature
+					check attached {EV_GRID_LABEL_ITEM} l_row_for_feature.item (column_fault) as lt_label_item then
+						lt_label_item.set_text ((lt_label_item.text.to_integer + 1).out)
+					end
 				end
-
 				check attached {EV_GRID_LABEL_ITEM} l_row_for_fault.item (column_failing) as lt_label_item then
 					lt_label_item.set_text ((lt_label_item.text.to_integer + 1).out)
 				end
+
 				if l_is_new_fault_row then
 					if is_fault_visible (l_fault) then
 						l_row_for_fault.show
-							-- #(failing tests) of the feature + 1
-						check attached {EV_GRID_LABEL_ITEM} l_row_for_feature.item (column_failing) as lt_label_item then
-							lt_label_item.set_text ((lt_label_item.text.to_integer + 1).out)
-						end
-							-- #(faults) of the feature + 1
-						check attached {EV_GRID_LABEL_ITEM} l_row_for_feature.item (column_fault) as lt_label_item then
-							lt_label_item.set_text ((lt_label_item.text.to_integer + 1).out)
-						end
 					else
 						l_row_for_fault.hide
 					end
@@ -793,7 +793,7 @@ feature{NONE} -- Cache
 
 
 ;note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
