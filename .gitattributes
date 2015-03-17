@@ -96,6 +96,7 @@ Src/C/shell/bin/sed.exe -text
 Src/C/shell/bin/sh.exe -text
 Src/C/shell/etc/config.site -text
 Src/C/shell/etc/fstab -text
+Src/C/shell/etc/inputrc.default -text
 Src/C/shell/etc/profile -text
 Src/C/shell/etc/termcap -text
 Src/C_library/curl/CHANGES -text
