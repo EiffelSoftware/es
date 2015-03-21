@@ -96,7 +96,8 @@ feature {NONE} -- Implementation
 
 	find_feature_clause_comment (a_index: INTEGER; a_export_count: INTEGER): EIFFEL_COMMENT_LINE
 		do
-			if attached current_context.matchlist.current_trunk as l_trunk then
+			Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")
+			if attached current_context.matchlist as l_trunk then
 				if attached {BREAK_AS} l_trunk.at (a_index) as l_break then
 					if current_context.matchlist.has_comment (l_break.token_region (current_context.matchlist)) then
 							-- Case 1: feature -- Comment
@@ -106,10 +107,9 @@ feature {NONE} -- Implementation
 						if current_context.matchlist.has_comment (l_trunk.at (a_index + 2 + a_export_count).token_region (current_context.matchlist)) then
 								-- Case 3: feature {SOME_CLASS} -- Comment (index + 2 for the { and }.
 							Result := current_context.matchlist.extract_comment (l_trunk.at (a_index + 2 + a_export_count).token_region (current_context.matchlist)).first
-						else
-								-- Case 4: feature {SOME_CLASS} (no comment)
-							Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")
+
 						end
+							-- Case 4: feature {SOME_CLASS} (no comment)
 					else
 							-- Case 5: feature (no comment)
 						Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")
@@ -119,10 +119,8 @@ feature {NONE} -- Implementation
 					if current_context.matchlist.has_comment (l_trunk.at (a_index + 1 + a_export_count).token_region (current_context.matchlist)) then
 							-- Case 7: feature{SOME_CLASS} -- Comment
 						Result := current_context.matchlist.extract_comment (l_trunk.at (a_index + 1 + a_export_count).token_region (current_context.matchlist)).first
-					else
-							-- Case 8: feature{SOME_CLASS} (no comment)
-						Result := create {EIFFEL_COMMENT_LINE}.make_from_string_32 ("")
 					end
+						-- Case 8: feature{SOME_CLASS} (no comment)
 				end
 			end
 		end

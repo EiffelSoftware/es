@@ -23,6 +23,7 @@ inherit
 			process_bin_gt_as,
 			process_bin_le_as,
 			process_bin_lt_as,
+			process_bin_ne_as,
 			process_body_as,
 			process_case_as,
 			process_converted_expr_as,
@@ -85,6 +86,8 @@ feature {NONE} -- Initialization
 			create bin_le_post_actions.make
 			create bin_lt_pre_actions.make
 			create bin_lt_post_actions.make
+			create bin_ne_pre_actions.make
+			create bin_ne_post_actions.make
 			create body_pre_actions.make
 			create body_post_actions.make
 			create case_pre_actions.make
@@ -229,6 +232,16 @@ feature {CA_STANDARD_RULE} -- Adding agents
 	add_bin_lt_post_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_LT_AS]])
 		do
 			bin_lt_post_actions.extend (a_action)
+		end
+
+	add_bin_ne_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_NE_AS]])
+		do
+			bin_ne_pre_actions.extend (a_action)
+		end
+
+	add_bin_ne_post_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_NE_AS]])
+		do
+			bin_ne_post_actions.extend (a_action)
 		end
 
 	add_body_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [BODY_AS]])
@@ -511,6 +524,8 @@ feature {NONE} -- Agent lists
 
 	bin_lt_pre_actions, bin_lt_post_actions: ACTION_SEQUENCE [TUPLE [BIN_LT_AS]]
 
+	bin_ne_pre_actions, bin_ne_post_actions: ACTION_SEQUENCE [TUPLE [BIN_NE_AS]]
+
 	body_pre_actions, body_post_actions: ACTION_SEQUENCE [TUPLE [BODY_AS]]
 
 	case_pre_actions, case_post_actions: ACTION_SEQUENCE [TUPLE [CASE_AS]]
@@ -619,28 +634,35 @@ feature {NONE} -- Processing
 		do
 			bin_ge_pre_actions.call ([a_bin_ge])
 			Precursor (a_bin_ge)
-			bin_ge_pre_actions.call ([a_bin_ge])
+			bin_ge_post_actions.call ([a_bin_ge])
 		end
 
 	process_bin_gt_as (a_bin_gt: BIN_GT_AS)
 		do
 			bin_gt_pre_actions.call ([a_bin_gt])
 			Precursor (a_bin_gt)
-			bin_gt_pre_actions.call ([a_bin_gt])
+			bin_gt_post_actions.call ([a_bin_gt])
 		end
 
 	process_bin_le_as (a_bin_le: BIN_LE_AS)
 		do
 			bin_le_pre_actions.call ([a_bin_le])
 			Precursor (a_bin_le)
-			bin_le_pre_actions.call ([a_bin_le])
+			bin_le_post_actions.call ([a_bin_le])
 		end
 
 	process_bin_lt_as (a_bin_lt: BIN_LT_AS)
 		do
 			bin_lt_pre_actions.call ([a_bin_lt])
 			Precursor (a_bin_lt)
-			bin_lt_pre_actions.call ([a_bin_lt])
+			bin_lt_post_actions.call ([a_bin_lt])
+		end
+
+	process_bin_ne_as (a_bin_ne: BIN_NE_AS)
+		do
+			bin_ne_pre_actions.call ([a_bin_ne])
+			Precursor (a_bin_ne)
+			bin_ne_post_actions.call ([a_bin_ne])
 		end
 
 	process_body_as (a_body: BODY_AS)

@@ -27,7 +27,7 @@ feature {NONE} -- Implementation
 
 	execute (a_class: CLASS_AS)
 		do
-			do_nothing
+			ot_to_change.replace_text ("False", matchlist)
 		end
 
 	ot_to_change: OBJECT_TEST_AS

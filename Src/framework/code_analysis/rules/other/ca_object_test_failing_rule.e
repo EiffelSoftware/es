@@ -70,7 +70,11 @@ feature {NONE} -- Implementation
 		do
 			across system.classes as l_class loop
 				if attached l_class.item then
-					if l_class.item.actual_type.conform_to(current_context.checking_class, a_t1) and l_class.item.actual_type.conform_to(current_context.checking_class, a_t2) then
+					if
+						not Result
+						and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t1)
+						and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t2)
+					then
 						Result := True
 					end
 				end

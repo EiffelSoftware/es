@@ -90,6 +90,7 @@ feature {NONE} -- Initialization
 			add_rule (create {CA_MERGEABLE_CONDITIONALS_RULE}.make)
 			add_rule (create {CA_GENERIC_PARAM_TOO_LONG_RULE}.make_with_defaults)
 			add_rule (create {CA_EXPORT_CAN_BE_RESTRICTED_RULE}.make)
+			add_rule (create {CA_OBJECT_TEST_ALWAYS_SUCCEEDS_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

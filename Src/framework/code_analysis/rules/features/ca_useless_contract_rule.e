@@ -18,7 +18,8 @@ inherit
 
 	AST_ITERATOR
 		redefine
-			process_bin_ne_as
+			process_bin_ne_as,
+			process_tagged_as
 		end
 
 create
@@ -27,11 +28,9 @@ create
 feature {NONE} -- Initialization
 
 	make
-		local
-			l_conf: CONF_OPTION
 		do
 			make_with_defaults
-			create void_checked_arguments.make
+			create void_checking_contracts.make (5)
 		end
 
 feature -- Access
@@ -53,35 +52,61 @@ feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
-			a_checker.add_feature_pre_action (agent pre_process_feature)
-			a_checker.add_feature_post_action (agent post_process_feature)
-		end
-
-	post_process_feature (a_feature: attached FEATURE_AS)
-		do
-			-- Clean up for the next feature.
-			void_checked_arguments.wipe_out
+				a_checker.add_feature_pre_action (agent pre_process_feature)
 		end
 
 	pre_process_feature (a_feature: attached FEATURE_AS)
 		do
-			if not is_project_setting_void_safety_complete then
-				if
-					attached {ROUTINE_AS} a_feature.body.content as l_routine
-					and then attached {REQUIRE_AS} l_routine.precondition as l_precondition
-				then
-					checking_tagged := True
-					l_precondition.process (Current)
-					checking_tagged := False
-				end
+			if
+					-- This rule only applies if the Void-Safety is set to "Complete".
+				is_project_setting_void_safety_complete
+				and then attached {ROUTINE_AS} a_feature.body.content as l_routine
+				and then attached {REQUIRE_AS} l_routine.precondition as l_precondition
+			then
+				checking_tagged := True
+				l_precondition.process (Current)
+				checking_tagged := False
 
-				if attached a_feature.body.arguments as l_args then
-					across l_args as l_arg loop
-						if l_arg.item.type.has_attached_mark then
-							across l_arg.item.id_list as l_id loop
-								if void_checked_arguments.has (l_id.item) then
-									create_violation(a_feature)
-								end
+				check_for_violations (a_feature, True)
+
+					-- Clean up for postcondition.
+				void_checking_contracts.wipe_out
+			end
+
+			if
+					-- This rule only applies if the Void-Safety is set to "Complete".
+				is_project_setting_void_safety_complete
+				and then attached {ROUTINE_AS} a_feature.body.content as l_routine
+				and then attached {ENSURE_AS} l_routine.postcondition as l_postcondition
+			then
+				checking_tagged := True
+				l_postcondition.process (Current)
+				checking_tagged := False
+
+				check_for_violations (a_feature, False)
+
+					-- Clean up for next feature.
+				void_checking_contracts.wipe_out
+			end
+		end
+
+	process_tagged_as (a_tagged: attached TAGGED_AS)
+		do
+			if checking_tagged then
+				current_tagged := a_tagged
+			end
+
+			Precursor(a_tagged)
+		end
+
+	check_for_violations (a_feature: attached FEATURE_AS; a_precondition: BOOLEAN)
+		do
+			if attached a_feature.body.arguments as l_args then
+				across l_args as l_arg loop
+					if l_arg.item.type.has_attached_mark then
+						across l_arg.item.id_list as l_id loop
+							if void_checking_contracts.has_key (l_id.item) then
+								create_violation(a_feature, void_checking_contracts.at (l_id.item), a_precondition)
 							end
 						end
 					end
@@ -89,45 +114,42 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_bin_ne_as (l_bin: BIN_NE_AS)
+	process_bin_ne_as (a_bin: BIN_NE_AS)
 		do
 			if checking_tagged then
 				if
-					attached {VOID_AS} l_bin.right
-					and then attached {EXPR_CALL_AS} l_bin.left as l_expr_call
+					attached {VOID_AS} a_bin.right
+					and then attached {EXPR_CALL_AS} a_bin.left as l_expr_call
 					and then attached {ACCESS_ASSERT_AS} l_expr_call.call as l_access_assert
 					and then attached {ID_AS} l_access_assert.feature_name as l_id_left
 				then
-					void_checked_arguments.extend(l_id_left.index)
+					void_checking_contracts.extend (current_tagged, l_id_left.name_id)
 				elseif
-					attached {VOID_AS} l_bin.left
-					and then attached {EXPR_CALL_AS} l_bin.right as l_expr_call
+					attached {VOID_AS} a_bin.left
+					and then attached {EXPR_CALL_AS} a_bin.right as l_expr_call
 					and then attached {ACCESS_ASSERT_AS} l_expr_call.call as l_access_assert
 					and then attached {ID_AS} l_access_assert.feature_name as l_id_right
 				then
-					void_checked_arguments.extend(l_id_right.index)
+					void_checking_contracts.extend (current_tagged, l_id_right.name_id)
 				end
 			end
 
-			Precursor (l_bin)
+			Precursor (a_bin)
 		end
 
-	create_violation (a_feature: attached FEATURE_AS)
+	create_violation (a_feature: attached FEATURE_AS; a_tagged: attached TAGGED_AS; a_precondition: BOOLEAN)
 		local
 			l_violation: CA_RULE_VIOLATION
-			--l_fix: CA_USELESS_CONTRACT_FIX TODO Implement.
+			l_fix: CA_USELESS_CONTRACT_FIX
 		do
 			create l_violation.make_with_rule (Current)
-			if attached {ROUTINE_AS} a_feature.body.content as l_rout then
-				l_violation.set_location (l_rout.precondition.start_location)
-			else
-				l_violation.set_location (a_feature.start_location)
-			end
+
+			l_violation.set_location (a_tagged.start_location)
 
 			l_violation.long_description_info.extend (a_feature.feature_names.first)
 
---			create l_fix.make
---			l_violation.fixes.extend (l_fix)
+			create l_fix.make_with_feature_and_tagged_as (current_context.checking_class, a_feature, a_tagged, a_precondition)
+			l_violation.fixes.extend (l_fix)
 
 			violations.extend (l_violation)
 		end
@@ -146,15 +168,16 @@ feature {NONE} -- Implementation
 	checking_tagged: BOOLEAN
 		-- Are we checking tagged_as right now?
 
-	void_checked_arguments: LINKED_LIST[INTEGER]
+	current_tagged: TAGGED_AS
+
+	void_checking_contracts: HASH_TABLE [TAGGED_AS, INTEGER]
 
 	is_project_setting_void_safety_complete: BOOLEAN
 			-- Is the project's setting for void safety set to "Complete"?
 		local
 			l_conf: CONF_OPTION
-		once
+		do
 			l_conf := current_context.universe.target.options
-			Result := l_conf.void_safety = l_conf.void_safety_index_all
+			Result := (l_conf.void_safety.index = l_conf.void_safety_index_all)
 		end
-
 end

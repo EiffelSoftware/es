@@ -70,13 +70,27 @@ feature -- Rules
 		do Result := translation_in_context ("Change to comparison with {REAL}.is_nan", once "code_analyzer") end
 
 	useless_contract_title: STRING_32
-		do Result := translation_in_context ("Object test fails", once "code_analyzer") end
+		do Result := translation_in_context ("Useless contract with void-safety", once "code_analyzer") end
+
+	useless_contract_fix: STRING_32
+		do Result := translation_in_context ("Remove the useless contract", once "code_analyzer") end
 
 	useless_contract_description: STRING_32
 		do Result := translation_in_context ("If a certain variable is declared as attached, either explicitly or by%
 							% the project setting %"Are types attached by default?%" then a contract declaring this variable%
 							% not to be void is useless. This rule only applies if the project setting for Void safety is set%
 							% to %"Complete%" (?).", once "code_analyzer") end
+
+	object_test_succeeds_fix: STRING_32
+		do Result := translation_in_context ("Replace construct with True", once "code_analyzer") end
+
+	object_test_succeeds_title: STRING_32
+		do Result := translation_in_context ("Object or Non-Void test succeeds", once "code_analyzer") end
+
+	object_test_succeeds_description: STRING_32
+		do Result := translation_in_context ("For an attached variable object tests and non-Void tests always succeed.%N%
+							% Also, objects tests that check if an entity is attached to a supertype always suceed.%NThe%
+							% tests should be removed.", once "code_analyzer") end
 
 	object_test_failing_fix: STRING_32
 		do Result := translation_in_context ("Refactor if block", once "code_analyzer") end
