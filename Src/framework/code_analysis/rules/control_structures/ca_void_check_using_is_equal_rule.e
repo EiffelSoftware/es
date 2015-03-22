@@ -65,19 +65,20 @@ feature {NONE} -- Rule Checking
 			l_violation: CA_RULE_VIOLATION
 			l_fix: CA_VOID_CHECK_USING_IS_EQUAL_FIX
 		do
-			if attached {ACCESS_FEAT_AS} a_nested.message as l_message then
-				if l_message.feature_name.name_32.is_equal("is_equal") and attached {VOID_AS} l_message.internal_parameters.parameters.first then
-					create l_violation.make_with_rule (Current)
-					l_violation.set_location (a_nested.start_location)
-					l_violation.long_description_info.extend (a_nested.target.access_name_32)
+			if
+				attached {ACCESS_FEAT_AS} a_nested.message as l_message
+				and then l_message.feature_name.name_32.is_equal("is_equal")
+				and then attached {VOID_AS} l_message.internal_parameters.parameters.first
+			then
+				create l_violation.make_with_rule (Current)
+				l_violation.set_location (a_nested.start_location)
+				l_violation.long_description_info.extend (a_nested.target.access_name_32)
 
-					create l_fix.make_with_nested (current_context.checking_class, a_nested)
-					l_violation.fixes.extend (l_fix)
+				create l_fix.make_with_nested (current_context.checking_class, a_nested)
+				l_violation.fixes.extend (l_fix)
 
-					violations.extend (l_violation)
-				end
+				violations.extend (l_violation)
 			end
 		end
-
 end
 

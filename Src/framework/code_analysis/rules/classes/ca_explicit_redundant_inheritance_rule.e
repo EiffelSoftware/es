@@ -1,9 +1,9 @@
 note
 	description: "[
-					RULE #89: Explicit redundant inheritance
-		
-					Explicitly duplicated inheritance links are redundant if there is no renaming, 
-					redefining, or change of export status. One should be removed.
+			RULE #89: Explicit redundant inheritance
+
+			Explicitly duplicated inheritance links are redundant if there is no renaming, 
+			redefining, or change of export status. One should be removed.
 	]"
 	author: "Paolo Antonucci"
 	date: "$Date$"
