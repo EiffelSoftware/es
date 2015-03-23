@@ -33,21 +33,6 @@ feature {NONE} -- Initialization
 			create void_checking_contracts.make (5)
 		end
 
-feature -- Access
-
-	title: STRING_32
-		do
-			Result := ca_names.useless_contract_title
-		end
-
-	id: STRING_32 = "CA009"
-			-- <Precursor>
-
-	description: STRING_32
-		do
-			Result := ca_names.useless_contract_description
-		end
-
 feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
@@ -179,5 +164,18 @@ feature {NONE} -- Implementation
 		do
 			l_conf := current_context.universe.target.options
 			Result := (l_conf.void_safety.index = l_conf.void_safety_index_all)
+		end
+
+	title: STRING_32
+		do
+			Result := ca_names.useless_contract_title
+		end
+
+	id: STRING_32 = "CA009"
+			-- <Precursor>
+
+	description: STRING_32
+		do
+			Result := ca_names.useless_contract_description
 		end
 end

@@ -25,21 +25,6 @@ feature {NONE} -- Initialization
 			make_with_defaults
 		end
 
-feature -- Access
-
-	title: STRING_32
-		do
-			Result := ca_names.real_nan_comparison_title
-		end
-
-	id: STRING_32 = "CA045"
-			-- <Precursor>
-
-	description: STRING_32
-		do
-			Result := ca_names.real_nan_comparison_description
-		end
-
 feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
@@ -106,5 +91,18 @@ feature {NONE} -- Implementation
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.real_nan_comparison_violation_1)
+		end
+		
+	title: STRING_32
+		do
+			Result := ca_names.real_nan_comparison_title
+		end
+
+	id: STRING_32 = "CA045"
+			-- <Precursor>
+
+	description: STRING_32
+		do
+			Result := ca_names.real_nan_comparison_description
 		end
 end

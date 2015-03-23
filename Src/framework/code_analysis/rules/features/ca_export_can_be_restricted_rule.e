@@ -21,27 +21,12 @@ inherit
 create
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make
 		do
 			make_with_defaults
 			checks_library_classes := False
-		end
-
-feature -- Access
-
-	title: STRING_32
-		do
-			Result := ca_names.export_can_be_restricted_title
-		end
-
-	id: STRING_32 = "CA075"
-			-- <Precursor>
-
-	description: STRING_32
-		do
-			Result := ca_names.export_can_be_restricted_description
 		end
 
 feature {NONE} -- Implementation
@@ -142,6 +127,19 @@ feature {NONE} -- Implementation
 			end
 
 			a_formatter.add (ca_messages.local_used_for_result_violation_2)
+		end
+
+	title: STRING_32
+		do
+			Result := ca_names.export_can_be_restricted_title
+		end
+
+	id: STRING_32 = "CA075"
+			-- <Precursor>
+
+	description: STRING_32
+		do
+			Result := ca_names.export_can_be_restricted_description
 		end
 
 end

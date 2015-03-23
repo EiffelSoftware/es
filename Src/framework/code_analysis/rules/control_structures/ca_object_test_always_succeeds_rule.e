@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 			make_with_defaults
 		end
 
-feature {NONE} -- Activation
+feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
@@ -36,8 +36,6 @@ feature {NONE} -- Activation
 			a_checker.add_bin_ne_pre_action (agent pre_process_bin_ne)
 			a_checker.add_object_test_pre_action (agent pre_process_object_test)
 		end
-
-feature {NONE} -- Implementation
 
 	pre_process_bin_ne (a_bin_ne: attached BIN_NE_AS)
 		do
@@ -106,7 +104,7 @@ feature {NONE} -- Implementation
 
 			l_violation.set_location (a_expr.start_location)
 
-				-- Put boolean into long_description whether the violating structure is a bin_neq_as or a object_test_as.
+				-- Put a boolean into long_description whether the violating structure is a bin_neq_as or a object_test_as.
 			l_violation.long_description_info.extend (attached {BIN_NE_AS} a_expr)
 			l_violation.long_description_info.extend (a_variable_name)
 

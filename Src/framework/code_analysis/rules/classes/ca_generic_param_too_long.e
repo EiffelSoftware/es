@@ -16,21 +16,6 @@ inherit
 create
 	make_with_defaults
 
-feature -- Access
-
-	title: STRING_32
-		do
-			Result := ca_names.generic_param_too_long_title
-		end
-
-	id: STRING_32 = "CA067"
-			-- <Precursor>
-
-	description: STRING_32
-		do
-			Result := ca_names.generic_param_too_long_description
-		end
-
 feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
@@ -47,14 +32,14 @@ feature {NONE} -- Implementation
 
 			if attached a_class.generics as l_generics then
 
-					-- First run to get all the single character parameters.
+					-- First iteration to get all the single character parameters.
 				across l_generics as l_generic_decl loop
 					if l_generic_decl.item.name.name_32.count = 1 then
 						first_chars.extend (l_generic_decl.item.name.name_8.at(1))
 					end
 				end
 
-					-- Second run to construct the violations.
+					-- Second iteration to construct the violations.
 				across l_generics as l_generic_decl loop
 					if l_generic_decl.item.name.name_32.count > 1 then
 						if not first_chars.has (l_generic_decl.item.name.name_8.at(1)) then
@@ -162,6 +147,19 @@ feature {NONE} -- Implementation
 			end
 
 			a_formatter.add (ca_messages.generic_param_too_long_violation_2)
+		end
+
+	title: STRING_32
+		do
+			Result := ca_names.generic_param_too_long_title
+		end
+
+	id: STRING_32 = "CA067"
+			-- <Precursor>
+
+	description: STRING_32
+		do
+			Result := ca_names.generic_param_too_long_description
 		end
 
 end

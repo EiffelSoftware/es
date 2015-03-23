@@ -15,27 +15,9 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		rename
-			make_with_defaults as make
-		end
 
 create
-	make
-
-feature -- Access
-
-	title: STRING_32
-		do
-			Result := ca_names.object_test_failing_title
-		end
-
-	id: STRING_32 = "CA007"
-			-- <Precursor>
-
-	description: STRING_32
-		do
-			Result := ca_names.object_test_failing_description
-		end
+	make_with_defaults
 
 feature {NONE} -- Implementation
 
@@ -74,7 +56,7 @@ feature {NONE} -- Implementation
 			across system.classes as l_class loop
 				if
 					attached l_class.item
-					and then not l_class.item.actual_type.name.is_equal ("TYPE[G#1]")
+					and then not l_class.item.actual_type.name.is_equal ("SPECIAL [G#1]")
 					and then not Result
 					and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t1)
 					and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t2)
@@ -117,6 +99,19 @@ feature {NONE} -- Implementation
 			end
 
 			a_formatter.add (ca_messages.object_test_failing_violation_2)
+		end
+
+	title: STRING_32
+		do
+			Result := ca_names.object_test_failing_title
+		end
+
+	id: STRING_32 = "CA007"
+			-- <Precursor>
+
+	description: STRING_32
+		do
+			Result := ca_names.object_test_failing_description
 		end
 
 end

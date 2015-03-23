@@ -32,21 +32,6 @@ feature {NONE} -- Initialization
 			create all_locals.make (10)
 		end
 
-feature -- Access
-
-	title: STRING_32
-		do
-			Result := ca_names.local_used_for_result_title
-		end
-
-	id: STRING_32 = "CA050"
-			-- <Precursor>
-
-	description: STRING_32
-		do
-			Result := ca_names.local_used_for_result_description
-		end
-
 feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
@@ -169,6 +154,19 @@ feature {NONE} -- Implementation
 			end
 
 			a_formatter.add (ca_messages.local_used_for_result_violation_2)
+		end
+
+	title: STRING_32
+		do
+			Result := ca_names.local_used_for_result_title
+		end
+
+	id: STRING_32 = "CA050"
+			-- <Precursor>
+
+	description: STRING_32
+		do
+			Result := ca_names.local_used_for_result_description
 		end
 
 end

@@ -33,21 +33,6 @@ feature {NONE} -- Initialization
 			locals_in_condition.compare_objects
 		end
 
-feature -- Access
-
-	title: STRING_32
-		do
-			Result := ca_names.mergeable_conditionals_title
-		end
-
-	id: STRING_32 = "CA087"
-			-- <Precursor>
-
-	description: STRING_32
-		do
-			Result := ca_names.mergeable_conditionals_description
-		end
-
 feature {NONE} -- Implementation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
@@ -188,5 +173,18 @@ feature {NONE} -- Implementation
 			a_formatter.add (ca_messages.mergeable_conditionals_violation_1)
 		end
 
+	title: STRING_32
+		do
+			Result := ca_names.mergeable_conditionals_title
+		end
+
+	id: STRING_32 = "CA087"
+			-- <Precursor>
+
+	description: STRING_32
+		do
+			Result := ca_names.mergeable_conditionals_description
+		end
+		
 end
 
