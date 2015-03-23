@@ -59,7 +59,10 @@ feature {NONE} -- Implementation
 				 l_type_1 := current_context.node_type (a_ot.expression, current_feature)
 				 l_type_2 := current_context.node_type (a_ot.type, current_feature)
 
-				 if not has_common_child (l_type_1, l_type_2) then
+				 if
+				 	l_type_1 /= Void and l_type_2 /= Void
+				 	and then not has_common_child (l_type_1, l_type_2)
+				 then
 				 	create_violation (a_ot)
 				 end
 			end
@@ -69,14 +72,14 @@ feature {NONE} -- Implementation
 			-- Is there a class that conforms to both `a_t1' and `a_t2'?
 		do
 			across system.classes as l_class loop
-				if attached l_class.item then
-					if
-						not Result
-						and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t1)
-						and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t2)
-					then
-						Result := True
-					end
+				if
+					attached l_class.item
+					and then not l_class.item.actual_type.name.is_equal ("TYPE[G#1]")
+					and then not Result
+					and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t1)
+					and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t2)
+				then
+					Result := True
 				end
 			end
 		end

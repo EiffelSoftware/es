@@ -16,14 +16,24 @@ inherit
 
 feature
 
-	foo
+	foo: INTEGER
 		do
-			b.foo
-			a.foo
+			a2.foo
+			bla
+			b.a2.foo
+			Result := b.foo
+			Result := blu
 		end
 
 	a2: A
+		do
+
+		end
 
 	b: B
 
+	blu: INTEGER
+		do
+
+		end
 end

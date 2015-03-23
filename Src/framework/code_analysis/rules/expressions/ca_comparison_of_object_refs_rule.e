@@ -64,8 +64,12 @@ feature {NONE} -- Rule Checking
 			l_viol: CA_RULE_VIOLATION
 			l_fix: CA_COMPARISON_OF_OBJECT_REFS_FIX
 		do
-			if not current_context.node_type(a_bin_eq.left, current_feature).is_expanded and
-			   not current_context.node_type(a_bin_eq.right, current_feature).is_expanded then
+			if
+				attached current_context.node_type(a_bin_eq.left, current_feature) as l_type_left
+				and then not l_type_left.is_expanded
+				and then attached current_context.node_type(a_bin_eq.right, current_feature) as l_type_right
+				and then not l_type_right.is_expanded
+			then
 				create l_viol.make_with_rule (Current)
 				l_viol.set_location (a_bin_eq.start_location)
 

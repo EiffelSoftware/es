@@ -42,13 +42,17 @@ feature {NONE} -- Implementation
 	pre_process_bin_ne (a_bin_ne: attached BIN_NE_AS)
 		do
 			if
-				attached {VOID_AS} a_bin_ne.right
-				and then current_context.node_type (a_bin_ne.left, current_feature).has_attached_mark
+				is_project_setting_void_safety_complete
+				and then attached {VOID_AS} a_bin_ne.right
+				and then attached current_context.node_type (a_bin_ne.left, current_feature) as l_type
+				and then l_type.has_attached_mark
 			then
 				create_violation (a_bin_ne, extract_feature_name (a_bin_ne.left))
 			elseif
-				attached {VOID_AS} a_bin_ne.left
-				and then current_context.node_type (a_bin_ne.right, current_feature).has_attached_mark
+				is_project_setting_void_safety_complete
+				and then attached {VOID_AS} a_bin_ne.left
+				and then attached current_context.node_type (a_bin_ne.right, current_feature) as l_type
+				and then l_type.has_attached_mark
 			then
 				create_violation (a_bin_ne, extract_feature_name (a_bin_ne.right))
 			end
@@ -62,14 +66,24 @@ feature {NONE} -- Implementation
 				l_type_var := current_context.node_type (a_object_test.expression, current_feature)
 				l_type_test := current_context.node_type (a_object_test.type, current_feature)
 
-				if l_type_var.conform_to (current_context.checking_class, l_type_test) then
+				if
+					l_type_var /= Void and l_type_test /= Void
+					and then l_type_var.conform_to (current_context.checking_class, l_type_test)
+				then
 					create_violation (a_object_test, extract_feature_name (a_object_test.expression))
 				end
 			elseif
-				current_context.node_type (a_object_test.expression, current_feature).has_attached_mark
+				is_project_setting_void_safety_complete
+				and then attached current_context.node_type (a_object_test.expression, current_feature) as l_type
+				and then l_type.has_attached_mark
 			then
 				create_violation (a_object_test, extract_feature_name (a_object_test.expression))
 			end
+		end
+
+	pre_process_feature (a_feature: attached FEATURE_AS)
+		do
+			current_feature := current_context.checking_class.feature_named_32 (a_feature.feature_names.first.visual_name_32)
 		end
 
 	extract_feature_name (a_expr: attached EXPR_AS): STRING
@@ -81,10 +95,6 @@ feature {NONE} -- Implementation
 			then
 				Result := l_id.name_32
 			end
-		end
-	pre_process_feature (a_feature: attached FEATURE_AS)
-		do
-			current_feature := current_context.checking_class.feature_named_32 (a_feature.feature_names.first.visual_name_32)
 		end
 
 	create_violation (a_expr: attached EXPR_AS; a_variable_name: STRING)
@@ -123,6 +133,15 @@ feature {NONE} -- Implementation
 			end
 
 			a_formatter.add (ca_messages.object_test_succeeds_violation_3)
+		end
+
+	is_project_setting_void_safety_complete: BOOLEAN
+			-- Is the project's setting for void safety set to "Complete"?
+		local
+			l_conf: CONF_OPTION
+		do
+			l_conf := current_context.universe.target.options
+			Result := (l_conf.void_safety.index = l_conf.void_safety_index_all)
 		end
 
 	current_feature: attached FEATURE_I

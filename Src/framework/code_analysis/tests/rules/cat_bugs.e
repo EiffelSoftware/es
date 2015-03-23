@@ -6,27 +6,13 @@ class
 
 feature
 
-	make_from_array (a: ARRAY [G])
-			-- Create list from array `a'.
-		require
-			array_exists: a /= Void
+	internal_traverse (a_root_object: ANY)
+		local
+			l_object: separate ANY
 		do
-			index := 0
-			area_v2 := a.area
-		ensure
-			shared: area = a.area
-			correct_position: before
-			filled: count = a.count
+			if attached {SPECIAL [ANY]} l_object as l_sp then
+
+			end
 		end
-
-	area: SPECIAL [G]
-
-	area_v2: SPECIAL [G]
-
-	index: INTEGER
-
-	before: BOOLEAN
-
-	count: INTEGER
 
 end

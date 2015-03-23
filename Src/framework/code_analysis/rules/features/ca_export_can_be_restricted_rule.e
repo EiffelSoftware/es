@@ -13,6 +13,11 @@ class
 inherit
 	CA_STANDARD_RULE
 
+	AST_ITERATOR
+		redefine
+			process_nested_as
+		end
+
 create
 	make
 
@@ -66,18 +71,18 @@ feature {NONE} -- Implementation
 						l_clients.after
 						or l_has_clients_outside_hierarchy
 					loop
-						if not l_clients.item.inherits_from (current_context.checking_class) then
-							if l_feat.item.callers_32 (l_clients.item, 0) /= Void then
-								l_has_clients_outside_hierarchy := True
-							end
-						else
-							if l_feat.item.callers_32 (l_clients.item, 0) /= Void then
-									-- Check whether all the calls to the feature are unqualified or not.
-								if has_qualified_calls (l_feat.item, l_clients.item) then
-									create_violation (l_feat.item.ast)
-								end
-							end
+						if
+							not l_clients.item.inherits_from (current_context.checking_class)
+							and then l_feat.item.callers_32 (l_clients.item, 0) /= Void
+						then
+							l_has_clients_outside_hierarchy := True
+						elseif
+							l_feat.item.callers_32 (l_clients.item, 0) /= Void
+							and then not has_qualified_calls (l_feat.item, l_clients.item)
+						then
+							create_violation (l_feat.item.ast)
 						end
+
 						l_clients.forth
 					end
 				end
@@ -85,27 +90,36 @@ feature {NONE} -- Implementation
 		end
 
 	has_qualified_calls (a_feature: E_FEATURE; a_class: CLASS_C): BOOLEAN
-		local
-			l_feature_name: STRING
 		do
-			l_feature_name := a_feature.name_32
+			found_qualified_call := False
 
-				-- Check for renaming
-			across a_class.ast.parents as l_parent loop
-				if
-					l_parent.item.type.class_name.name_8.is_equal (current_context.checking_class.name)
-					and then attached l_parent.item.renaming as l_renames
-				then
-					across l_renames as l_rename loop
-						if l_rename.item.	old_name.visual_name_32.is_equal (l_feature_name) then
-							l_feature_name := l_rename.item.new_name.visual_name_32
-						end
-					end
-				end
-			end
+			current_feature := a_feature.associated_feature_i
+			current_feature_name := a_feature.name_32
+			a_class.ast.process (Current)
 
-			Result := False
+			Result := found_qualified_call
 		end
+
+	process_nested_as (a_nested: attached NESTED_AS)
+		do
+			if
+				attached {ACCESS_FEAT_AS} a_nested as l_feat
+				and then l_feat.access_name_32.is_equal (current_feature_name)
+				and then attached current_context.node_type (a_nested.target, current_feature) as l_type
+				and then l_type.name.is_equal (current_context.checking_class.name)
+			then
+				found_qualified_call := True
+			end
+		end
+
+	current_feature: FEATURE_I
+		-- Feature currently being checked.
+
+	current_feature_name: STRING
+		-- Name of the feature being checked.
+
+	found_qualified_call: BOOLEAN
+		-- Has there been a qualified call found of the current feature?
 
 	create_violation (a_feature: attached FEATURE_AS)
 		local
@@ -114,6 +128,7 @@ feature {NONE} -- Implementation
 			create l_violation.make_with_rule (Current)
 
 			l_violation.set_location (a_feature.start_location)
+			l_violation.long_description_info.extend (current_feature_name)
 
 			violations.extend (l_violation)
 		end
