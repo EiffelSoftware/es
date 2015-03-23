@@ -56,7 +56,7 @@ feature {NONE} -- Implementation
 			across system.classes as l_class loop
 				if
 					attached l_class.item
-					and then not l_class.item.actual_type.name.is_equal ("SPECIAL [G#1]")
+					and then not (l_class.item.actual_type.name.is_equal ("SPECIAL [G#1]") or l_class.item.actual_type.name.is_equal ("TYPE [G#1]"))
 					and then not Result
 					and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t1)
 					and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t2)
@@ -77,13 +77,6 @@ feature {NONE} -- Implementation
 
 			l_violation.set_location (a_ot.start_location)
 
-			if
-				attached {EXPR_CALL_AS} a_ot.expression as l_expr_call
-				and then attached {ACCESS_ID_AS} l_expr_call.call as l_access_id
-			then
-				l_violation.long_description_info.extend (l_access_id.access_name_32)
-			end
-
 			create l_fix.make_with_ot (current_context.checking_class, a_ot)
 			l_violation.fixes.extend (l_fix)
 
@@ -93,12 +86,6 @@ feature {NONE} -- Implementation
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.object_test_failing_violation_1)
-
-			if attached {STRING_32} a_violation.long_description_info.first as l_feature_name then
-				a_formatter.add (l_feature_name)
-			end
-
-			a_formatter.add (ca_messages.object_test_failing_violation_2)
 		end
 
 	title: STRING_32

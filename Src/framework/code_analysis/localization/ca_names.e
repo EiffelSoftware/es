@@ -25,7 +25,7 @@ feature -- Rules
 		do Result := translation_in_context ("An exported feature that is used only in unqualified calls may be changed to secret.", once "code_analyzer") end
 
 	export_can_be_restricted_title: STRING_32
-		do Result := translation_in_context ("Exported feature never called", once "code_analyzer") end
+		do Result := translation_in_context ("Feature export can be restricted", once "code_analyzer") end
 
 	generic_param_too_long_fix_1: STRING_32
 		do Result := translation_in_context ("Replace '", once "code_analyzer") end
