@@ -43,6 +43,8 @@ feature {NONE} -- Implementation
 
 				 if
 				 	l_type_1 /= Void and l_type_2 /= Void
+				 	and then not l_type_1.has_formal_generic
+				 	and then not l_type_2.has_formal_generic
 				 	and then not has_common_child (l_type_1, l_type_2)
 				 then
 				 	create_violation (a_ot)
@@ -56,7 +58,7 @@ feature {NONE} -- Implementation
 			across system.classes as l_class loop
 				if
 					attached l_class.item
-					and then not (l_class.item.actual_type.name.is_equal ("SPECIAL [G#1]") or l_class.item.actual_type.name.is_equal ("TYPE [G#1]"))
+					and then not l_class.item.actual_type.has_formal_generic
 					and then not Result
 					and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t1)
 					and then l_class.item.actual_type.conform_to(current_context.checking_class, a_t2)
