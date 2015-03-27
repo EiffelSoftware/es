@@ -1422,14 +1422,17 @@ test	scoop-agent-creation-rule			scoop038 tcf pass scoop multithreaded agents
 test	scoop-agent-expression-uncontrolled		scoop039 tcf pass scoop multithreaded agents
 test	scoop-agent-expression-controlled		scoop040 tcf pass scoop multithreaded agents
 test	scoop-wait-condition-controlled			scoop041 tcf manual scoop multithreaded execution lock_passing assertion
-test	scoop-exceptions-precondition			scoop042 tcf fail scoop multithreaded exception
-test	scoop-exceptions-control-flow			scoop043 tcf fail scoop multithreaded exception
-test	scoop-exceptions-separate-callback		scoop044 tcf manual scoop multithreaded exception
-test	scoop-exceptions-accountability-handover	scoop045 tcf fail scoop multithreaded exception
-test	scoop-exceptions-small-tests			scoop046 tcf fail scoop multithreaded exception
+test	scoop-exceptions-precondition			scoop042 tcf pass scoop multithreaded exception
+test	scoop-exceptions-control-flow			scoop043 tcf pass scoop multithreaded exception
+test	scoop-exceptions-separate-callback		scoop044 tcf pass scoop multithreaded exception
+test	scoop-exceptions-accountability-handover	scoop045 tcf pass scoop multithreaded exception
+test	scoop-exceptions-small-tests			scoop046 tcf pass scoop multithreaded exception
 test	scoop-exceptions-import				scoop047 tcf fail scoop multithreaded exception
 test	scoop-exceptions-combinations			scoop048 tcf manual scoop multithreaded exception
 test	scoop-impersonation-lockpassing			scoop049 tcf manual scoop multithreaded deadlock lock_passing
+test	scoop-lockpassing-query					scoop050 tcf pass scoop multithreaded deadlock lock_passing
+test	scoop-nested-separate-callback			scoop051 tcf pass scoop multithreaded deadlock lock_passing
+test 	scoop-exceptions-unlock					scoop052 tcf manual scoop multithreaded exception deadlock
 
 test	deadlock-simple-symmetric-cycle			deadlock001 tcf manual scoop multithreaded deadlock
 test	deadlock-simple-asymmetric-cycle		deadlock002 tcf manual scoop multithreaded deadlock
@@ -2770,6 +2773,7 @@ test	object-test-local-in-conditional        attach109 tcf pass void_safe object
 test	initialization-in-conditional		attach110 tcf pass void_safe attached_types attribute scope validity conditional expression
 test	targeted-in-structure-classes		attach111 tcf pass void_safe targeted validity
 test	iteration-loop-target-attachment	attach112 tcf pass void_safe validity across iteration loop
+test	conversion-with-wrong-target-type	attach113 tcf pass void_safe conversion
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -2929,6 +2933,22 @@ test	pretty-constant-attribute-comment	pretty026 tcf pass pretty
 test	pretty-feature-call-comment		pretty027 tcf pass pretty
 test	pretty-comments-between-features	pretty028 tcf pass pretty
 test	pretty-loop-invariant			pretty029 tcf pass pretty
+
+-- Benchmarks
+test	benchmark-scoop-gc-sequential-processor-creation	bench001 tcf pass benchmark scoop scoop_gc gc
+test	benchmark-scoop-gc-recursive-processor-creation		bench002 tcf pass benchmark scoop scoop_gc gc
+test	benchmark-scoop-gc-tree-processor-creation		bench003 tcf manual benchmark scoop scoop_gc gc
+test	benchmark-scoop-synthetic-chain				bench004 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-chameneos			bench005 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-condition			bench006 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-mutex				bench007 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-outer				bench008 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-prodcons			bench009 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-product			bench010 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-randmat			bench011 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-threadring			bench012 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-thresh			bench013 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-scoop-synthetic-winnow			bench014 tcf pass benchmark scoop synthetic_benchmark
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing

@@ -1,5 +1,5 @@
 /*
-	description:	"SCOOP support."
+	description:	"Declarations for rt_request_group."
 	date:		"$Date$"
 	revision:	"$Revision: 96304 $"
 	copyright:	"Copyright (c) 2010-2012, Eiffel Software.",
@@ -35,47 +35,79 @@
 		]"
 */
 
-#ifndef _REQ_GRP_H
-#define _REQ_GRP_H
-#include <vector>
+/* TODO: Rename this file to rt_request_group.h when the C conversion is completed. */
+
+#ifndef _rt_request_group_h_
+#define _rt_request_group_h_
+
+#include "eif_portable.h"
+#include "rt_assert.h"
 
 class processor;
 class priv_queue;
 
-/* A request group.
- *
- * Request groups model the group of locks taken and released. This
- * generally occurs when a call has separate arguments.
+/*
+doc:	<struct name="rt_request_group", export="shared">
+doc:		<summary> Request groups model a set of locks to be taken and released atomically. They are used for separate arguments in a routine.
+doc: 			The rt_request_group contains all the fields of an vector struct, and thus "inherits" from it. </summary>
+doc:		<field name="area", type="priv_queue**"> A dynamically allocated array containing private queues (~ locks) within the request group. </field>
+doc:		<field name="count", type="size_t"> The current number of private queues. </field>
+doc:		<field name="capacity", type="size_t"> The currently reserved space in 'area', measured in number of elements. </field>
+doc:		<field name="client", type="processor*> The processor that wants to acquire the locks. </field>
+doc:		<field name="is_sorted", type="EIF_BOOLEAN"> A boolean to indicate whether the private queues within this request group are sorted.
+doc: 			It also indicates whether rt_request_group_lock() has been called in the past. </field>
+doc:		<fixme> A possible improvement might be to place the first few private queues into the request group struct itself, to avoid memory allocation on the heap. </fixme>
+doc:	</struct>
  */
-class req_grp : public std::vector<priv_queue*>
+struct rt_request_group
 {
-public:
-  /* Construct a new group.
-   * @client the <processor> which will issue calls to the group.
-   */
-  req_grp(processor* client);
-
-  /* Add a new processor to the group.
-   * @supplier the supplier to add
-   */
-  void add(processor* supplier);
-
-  /* Wait on all processors in the group.
-   *
-   * This call will only return when one of the group sends a notification.
-   */
-  void wait();
-
-  /* Lock all processors in the group.
-   */
-  void lock();
-
-  /* Unlock all processors in the group.
-   */
-  void unlock();
-private:
-  processor *client;
-  bool sorted;
+		/* NOTE: All fields are private. Do not modify them directly. */
+	priv_queue** area;
+	size_t capacity;
+	size_t count;
+	processor* client;
+	EIF_BOOLEAN is_sorted;
 };
+
+/*
+doc:	<routine name="rt_request_group_init" return_type="void" export="private">
+doc:		<summary> Initialize the request group to a consistent state. </summary>
+doc:		<param name="self" type="struct rt_request_group*"> The request group to be initialized. Must not be NULL. </param>
+doc:		<param name="a_client" type="struct processor*"> The processor which will issue calls to the suppliers within this request group. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> None. </synchronization>
+doc:	</routine>
+*/
+rt_private rt_inline void rt_request_group_init (struct rt_request_group* self, processor* a_client)
+{
+	REQUIRE ("not_null", self);
+	self->area = NULL;
+	self->capacity = 0;
+	self->count = 0;
+	self->is_sorted = 0;
+	self->client = a_client;
+}
+
+/*
+doc:	<routine name="rt_request_group_deinit" return_type="void" export="private">
+doc:		<summary> Deconstruct the request group and free any memory allocated within. </summary>
+doc:		<param name="self" type="struct rt_request_group*"> The request group to be de-initialized. Must not be NULL. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> None. </synchronization>
+doc:	</routine>
+*/
+rt_private rt_inline void rt_request_group_deinit (struct rt_request_group* self)
+{
+	REQUIRE ("not_null", self);
+	free (self->area);
+	rt_request_group_init (self, NULL);
+}
+
+
+/* Declarations */
+rt_shared void rt_request_group_add (struct rt_request_group* self, processor* supplier);
+rt_shared void rt_request_group_wait (struct rt_request_group* self);
+rt_shared void rt_request_group_lock (struct rt_request_group* self);
+rt_shared void rt_request_group_unlock (struct rt_request_group* self);
 
 #endif

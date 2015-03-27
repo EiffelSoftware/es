@@ -52,9 +52,11 @@ doc:<file name="processor.cpp" header="processor.hpp" version="$Id$" summary="SC
 
 atomic_int_type active_count = atomic_var_init;
 
+/* We need the size() and all the stack functions. */
+RT_DECLARE_VECTOR_SIZE_FUNCTIONS (request_group_stack_t, struct rt_request_group)
+RT_DECLARE_VECTOR_STACK_FUNCTIONS (request_group_stack_t, struct rt_request_group)
+
 processor::processor(EIF_SCP_PID _pid, bool _has_backing_thread) :
-	cache (this),
-	group_stack (),
 	my_token (this),
 	token_queue (),
 	token_queue_mutex(),
@@ -63,18 +65,29 @@ processor::processor(EIF_SCP_PID _pid, bool _has_backing_thread) :
 	pid(_pid),
 	private_queue_cache(),
 	cache_mutex(),
-	dirty_for_set(),
-	current_msg (),
+	is_dirty (false),
 	parent_obj (make_shared_function <void *> ((void *) 0))
 {
+	rt_queue_cache_init (&this->cache, this);
+	rt_message_init (&this->current_msg, SCOOP_MESSAGE_UNLOCK, NULL, NULL); /*TODO: Should we add a "default" enum for initialization? */
+	rt_message_channel_init (&this->result_notify, 64);
+	rt_message_channel_init (&this->startup_notify, 64);
+	request_group_stack_t_init (&this->request_group_stack);
 	active_count++;
 }
 
 processor::~processor()
 {
 	for (std::vector<priv_queue*>::iterator pq = private_queue_cache.begin (); pq != private_queue_cache.end (); ++ pq) {
-		delete *pq;
+
+		priv_queue* l_queue = *pq;
+		rt_private_queue_deinit (l_queue);
+		free (l_queue);
 	}
+ 	rt_message_channel_deinit (&this->startup_notify);
+	rt_message_channel_deinit (&this->result_notify);
+	request_group_stack_t_deinit (&this->request_group_stack);
+	rt_queue_cache_deinit (&this->cache);
 }
 
 bool processor::try_call (call_data *call)
@@ -94,9 +107,18 @@ bool processor::try_call (call_data *call)
 	if (saved_except) {
 		safe_saved_except = eif_protect(saved_except);
 	}
-	excatch(&exenv);	/* Record pseudo execution vector */
+		/* Record pseudo execution vector */
+	excatch(&exenv);
 
+#ifdef _MSC_VER
+/* Disable warning about C++ destructor not compatible with setjmp. It does not matter since
+ * we call C code. */
+#pragma warning (disable:4611)
+#endif
 	if (!setjmp(exenv)) {
+#ifdef _MSC_VER
+#pragma warning (default:4611)
+#endif
 #ifdef WORKBENCH
 		eif_apply_wcall (call);
 #else
@@ -115,35 +137,49 @@ bool processor::try_call (call_data *call)
 	}
 
 	RTXE;
-	expop(&eif_stack);					/* Pop pseudo vector */
+		/* Only when no exception occurred do we need to pop the stack. */
+    if (success) {
+			/* Pop pseudo vector */
+		expop(&eif_stack);
+	}
 	return success;
 }
 
 void processor::operator()(processor *client, call_data* call)
 {
-	EIF_SCP_PID sync_pid = call_data_sync_pid (call);
+	bool is_synchronous = (call_data_sync_pid (call) != NULL_PROCESSOR_ID);
 
-	if (call_data_is_lock_passing (call)) {
-		cache.push (&client->cache);
+		/* Only execute the call when the current processor region is clean. */
+	if (!is_dirty) {
+
+		if (is_synchronous) {
+				/* Grab all locks held by the client. */
+			rt_queue_cache_push (&this->cache, &client->cache);
+		}
+
+			/* Execute the call. */
+		bool successful_call = try_call (call);
+
+			/* Mark the current region as dirty if the call fails. */
+		if (!successful_call) {
+			is_dirty = true;
+		}
+
+		if (is_synchronous) {
+				/* Return the previously acquired locks. */
+			rt_queue_cache_pop (&this->cache);
+		}
 	}
 
-	bool successful_call = try_call (call);
-	if (!successful_call) {
-		dirty_for_set.insert (client);
-	}
+	if (is_synchronous) {
 
-	if (call_data_is_lock_passing (call)) {
-		cache.pop ();
-	}
+			/* Propagate exceptions on a synchronous call. */
+		if (is_dirty) {
+			is_dirty = false;
+			rt_message_channel_send (&client->result_notify, SCOOP_MESSAGE_DIRTY, NULL, NULL);
 
-	if (sync_pid != NULL_PROCESSOR_ID) {
-		std::set<processor*>::iterator it = dirty_for_set.find (client);
-
-		if (it != dirty_for_set.end()) {
-			client->result_notify.rude_awake();
-			dirty_for_set.erase (it);
 		} else {
-			client->result_notify.result_awake();
+			rt_message_channel_send (&client->result_notify, SCOOP_MESSAGE_RESULT_READY, NULL, NULL);
 		}
 	}
 
@@ -153,15 +189,27 @@ void processor::operator()(processor *client, call_data* call)
 void processor::process_priv_queue(priv_queue *pq)
 {
 	for (;;) {
-		pq->pop_msg (current_msg);
 
-		if (current_msg.call == NULL) {
+		/* Receive a new call and store it in current_msg.
+		 * This is a blocking call if no data is available.
+		 * The call might be logged by the original client of the queue
+		 * or some other processor that has acquired the locks during lock passing. */
+		rt_message_channel_receive (&pq->channel, &this->current_msg);
+
+		enum scoop_message_type type = current_msg.message_type;
+
+		CHECK ("valid_messages", type == SCOOP_MESSAGE_EXECUTE || type == SCOOP_MESSAGE_UNLOCK);
+
+		if (type == SCOOP_MESSAGE_UNLOCK) {
+			/* Forget dirtiness upon unlock */
+			is_dirty = false;
 			return;
 		}
 
-		(*this)(current_msg.client, current_msg.call);
+		(*this)(current_msg.sender, current_msg.call);
 
-		current_msg.call = NULL;
+			/* Make sure the call doesn't get traversed again for GC */
+		current_msg.call = NULL; /* TODO: initialize to default state? */
 	}
 }
 
@@ -174,7 +222,9 @@ void spawn_main(char* data, EIF_SCP_PID pid)
 		/* Record that the current thread is associated with a processor of a given ID. */
 	eif_set_processor_id (pid);
 
-	proc->startup_notify.result_awake();
+		/* TODO: Would it make sense to add another message type SCOOP_PROCESSOR_STARTED ? */
+	rt_message_channel_send (&proc->startup_notify, SCOOP_MESSAGE_RESULT_READY, NULL, NULL);
+
 	proc->application_loop();
 
 	registry.return_processor (proc);
@@ -256,7 +306,8 @@ void processor::mark(MARKER marking)
 	}
 
 	for (std::vector<priv_queue*>::iterator pq = private_queue_cache.begin (); pq != private_queue_cache.end (); ++ pq) {
-		(* pq) -> mark (marking);
+		rt_private_queue_mark (*pq, marking);
+// 		(* pq) -> mark (marking);
 	}
 }
 
@@ -264,8 +315,71 @@ void processor::mark(MARKER marking)
 priv_queue* processor::new_priv_queue()
 {
 	unique_lock_type lk (cache_mutex);
-	private_queue_cache.push_back(new priv_queue(this));
+
+	priv_queue* l_queue = (priv_queue*) malloc (sizeof (priv_queue));
+	rt_private_queue_init (l_queue, this);
+
+	private_queue_cache.push_back(l_queue);
 	return private_queue_cache.back();
+}
+
+/*
+doc:	<routine name="rt_processor_request_group_stack_extend" return_type="void" export="shared">
+doc:		<summary> Create a new request group and put it at the end of the request group stack. </summary>
+doc:		<param name="self" type="processor*"> The processor that owns the group stack. Must not be NULL. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> None. </synchronization>
+doc:	</routine>
+*/
+rt_shared void rt_processor_request_group_stack_extend (processor* self)
+{
+	int error = T_OK;
+	struct rt_request_group l_group; /* stack-allocated */
+
+	REQUIRE ("self_not_null", self);
+
+	rt_request_group_init (&l_group, self);
+	error = request_group_stack_t_extend (&self->request_group_stack, l_group);
+	if (error == T_NO_MORE_MEMORY) {
+		enomem();
+	}
+}
+
+/*
+doc:	<routine name="rt_processor_request_group_stack_last" return_type="struct rt_request_group*" export="shared">
+doc:		<summary> Return a pointer to the last element in the group stack of 'self'. </summary>
+doc:		<param name="self" type="processor*"> The processor that owns the group stack. Must not be NULL. </param>
+doc:		<return> A pointer to the last element of the group stack. </return>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> None. </synchronization>
+doc:	</routine>
+*/
+rt_shared struct rt_request_group* rt_processor_request_group_stack_last (processor* self)
+{
+	REQUIRE ("self_not_null", self);
+	REQUIRE ("not_empty", request_group_stack_t_count (&self->request_group_stack) > 0);
+	return request_group_stack_t_last_pointer (&self->request_group_stack);
+}
+
+/*
+doc:	<routine name="rt_processor_request_group_stack_remove_last" return_type="void" export="shared">
+doc:		<summary> Remove the last element from the group stack and free any resources. Note: This feature also performs an unlock operation. </summary>
+doc:		<param name="self" type="processor*"> The processor that owns the group stack. Must not be NULL. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> None. </synchronization>
+doc:	</routine>
+*/
+rt_shared void rt_processor_request_group_stack_remove_last (processor* self)
+{
+	struct rt_request_group* l_last = NULL;
+
+	REQUIRE ("self_not_null", self);
+	REQUIRE ("not_empty", request_group_stack_t_count (&self->request_group_stack) > 0);
+
+	l_last = rt_processor_request_group_stack_last (self);
+	rt_request_group_unlock (l_last);
+	rt_request_group_deinit (l_last);
+	request_group_stack_t_remove_last (&self->request_group_stack);
 }
 
 /*

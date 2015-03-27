@@ -56,22 +56,24 @@ extern "C" {
 rt_public void eif_new_scoop_request_group (EIF_SCP_PID client_pid)
 {
 	processor *client = registry [client_pid];
-	client->group_stack.push_back (req_grp(client));
+	rt_processor_request_group_stack_extend (client);
 }
 
-/* RTS_RD (o) - delete chain (release locks?) */
+/* RTS_RD (o) - delete request group of o and release any locks */
 rt_public void eif_delete_scoop_request_group (EIF_SCP_PID client_pid)
 {
 	processor *client = registry [client_pid];
-	client->group_stack.back().unlock();
-	client->group_stack.pop_back();
+
+		/* Unlock, deallocate and remove the request group. */
+	rt_processor_request_group_stack_remove_last (client);
 }
 
 /* RTS_RF (o) - wait condition fails */
 rt_public void eif_scoop_wait_request_group (EIF_SCP_PID client_pid)
 {
 	processor *client = registry [client_pid];
-	client->group_stack.back().wait();
+	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
+	rt_request_group_wait (l_group);
 }
 
 /* RTS_RS (c, s) - add supplier s to current group for c */
@@ -79,14 +81,17 @@ rt_public void eif_scoop_add_supplier_request_group (EIF_SCP_PID client_pid, EIF
 {
 	processor *client = registry [client_pid];
 	processor *supplier = registry [supplier_pid];
-	client->group_stack.back().add (supplier);
+
+	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
+	rt_request_group_add (l_group, supplier);
 }
 
 /* RTS_RW (o) - sort all suppliers in the group and get exclusive access */
 rt_public void eif_scoop_lock_request_group (EIF_SCP_PID client_pid)
 {
 	processor *client = registry [client_pid];
-	client->group_stack.back().lock();
+	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
+	rt_request_group_lock (l_group);
 }
 
 /* Processor creation */
@@ -146,22 +151,17 @@ rt_public void eif_log_call (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid, c
 {
 	processor *client = registry [client_pid];
 	processor *supplier = registry [supplier_pid];
-	priv_queue *pq = client->cache [supplier];
+	priv_queue *pq = rt_queue_cache_retrieve (&client->cache, supplier);
 
 	REQUIRE("has data", data);
 
 	if (!supplier->has_backing_thread) {
 		supplier->has_backing_thread = true;
-		pq->lock(client);
-		pq->log_call(client, data);
-		pq->unlock();
-	} else if (client->cache.has_subordinate(supplier)) {
-		supplier->result_notify.callback_awake(client, data);
-		if (call_data_sync_pid(data) != NULL_PROCESSOR_ID) {
-			client->result_notify.wait();
-		}
+		rt_private_queue_lock (pq, client);
+		rt_private_queue_log_call(pq, client, data);
+		rt_private_queue_unlock (pq);
 	} else {
-		pq->log_call(client, data);
+		rt_private_queue_log_call(pq, client, data);
 	}
 }
 
@@ -169,17 +169,26 @@ rt_public int eif_is_synced_on (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid
 {
 	processor *client = registry [client_pid];
 	processor *supplier = registry [supplier_pid];
+	priv_queue *pq = rt_queue_cache_retrieve (&client->cache, supplier);
 
-	priv_queue *pq = client->cache [supplier];
-	return pq->is_synced();
+	return rt_private_queue_is_synchronized (pq);
 }
 
 int eif_is_uncontrolled (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
 {
 	processor *client = registry [client_pid];
 	processor *supplier = registry [supplier_pid];
+	
+	/*
+	 * An object is only uncontrolled when all of the following apply:
+	 * - the handlers are different
+	 * - the client has no lock on the supplier yet
+	 * - the supplier has not passed its locks to the client in a previous call (separate callbacks).
+	 */
 
-	return client != supplier && !client->cache.has_locked(supplier);
+	return client != supplier 
+		&& !rt_queue_cache_is_locked (&client->cache, supplier)
+		&& !rt_queue_cache_has_locks_of (&client->cache, supplier);
 }
 
 /* Callback from garbage collector to indicate that the */

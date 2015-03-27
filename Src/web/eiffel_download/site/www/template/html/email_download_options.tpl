@@ -2,6 +2,10 @@
 <html lang="en-US">
 	<head>
 		<title>Eiffel Software - Downloading EiffelStudio</title>
+		<script src="https://github.com/johndyer/mediaelement/blob/master/build/jquery.js"></script>
+		<script src="https://github.com/johndyer/mediaelement/blob/master/build/mediaelement.min.js"></script>
+		<link rel="stylesheet" href="https://github.com/johndyer/mediaelement/blob/master/build/mediaelementplayer.css" />
+		
 	</head>
 	<body style="background: #ececf0; font-family: Arial, Tahoma, sans-serif; font-size: 10pt; max-width:640px;">
 		<header>
@@ -29,6 +33,7 @@
 			<p>
 				<a href="https://twitter.com/intent/tweet?button_hashtag=eiffel&hashtags=eiffel,programming,ide,programming,softwaredevelopment,softwareengineering&text=Just%20downloaded%20EiffelStudio.%20You%20should%20too.&url=http%3A%2F%2Fwww.eiffel.com%2Fdownload" target="_blank">Tweet to let your friends know!</a>
 			</p>
+
 
 			<p>
 				We wish you an excellent evaluation and hope that you will decide to use EiffelStudio for your upcoming projects. If you wish to purchase, need a trial extension, or have any questions, do not hesitate to <a href="https://www.eiffel.com/company/get-in-touch">contact us</a>.
@@ -82,5 +87,6 @@
 				This email is generated automatically, and the address is not monitored for responses. If you try contacting us by using "reply", you will not receive an answer.
 			</p>
 		</footer>
+
 	</body>
 </html>

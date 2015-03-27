@@ -48,54 +48,72 @@
 #include "notify_token.hpp"
 #include "queue_cache.hpp"
 
+#include "rt_vector.h"
+
+#if 0
+
 /* A specialized version of <spsc> that is for notification.
  *
  * The use of <spsc> allows notifications to not be lost, although
  * of course it can only be used between a single receiver and sender
  * at one time.
+ *
+ * TODO: this class can be eliminated: wait() should go
+ * into rt_message_channel (the C version of spsc), and the rest is simple
+ * enough to inline it at the call site.
  */
-struct notifier : spsc <notify_message> {
+struct notifier : spsc <rt_message> {
 
-  /* Wait for a new notification
-   */
-  notify_message wait ()
-  {
-    notify_message msg;
-    this->pop(msg, 64);
-    return msg;
-  }
+	/* Wait for a new notification */
+	struct rt_message wait ()
+	{
+		rt_message msg;
+		this->pop(msg, 64);
+		return msg;
+	}
 
-  /* Awaken the waiter rudely.
-   *
-   * Here, rudely means that the supplier of the current query is
-   * now dirty.
-   */
-  void rude_awake()
-  {
-    this->push(notify_message(notify_message::e_dirty));
-  }
+	/* Awaken the waiter rudely.
+	 *
+	 * Here, rudely means that the supplier of the current query is
+	 * now dirty.
+	 */
+	void rude_awake()
+	{
+		rt_message msg;
+		rt_message_init (&msg, SCOOP_MESSAGE_DIRTY, NULL, NULL);
+		this->push (msg);
+	}
 
-  /* Regular (non-callback, non-rude) wakeup.
-   *
-   * This wakeup is for results, for example.
-   */
-  void result_awake ()
-  {
-    this->push(notify_message());
-  }
+	/* Regular (non-callback, non-rude) wakeup.
+	 *
+	 * This wakeup is for results, for example.
+	 */
+	void result_awake ()
+	{
+		rt_message msg;
+		rt_message_init (&msg, SCOOP_MESSAGE_RESULT_READY, NULL, NULL);
+		this->push (msg);
+	}
 
-  /* A callback wakeup.
-   *
-   * This means that the waiting is due to lock passing, and this is
-   * actually a call from one of the suppliers that we passed our
-   * callstack to.
-   */
-  void callback_awake (processor* client, call_data *call)
-  {
-    this->push(notify_message(notify_message::e_callback, client, call));
-  }
+	/* A callback wakeup.
+	 *
+	 * This means that the waiting is due to lock passing, and this is
+	 * actually a call from one of the suppliers that we passed our
+	 * callstack to.
+	 */
+	void callback_awake (processor* client, call_data *call)
+	{
+		rt_message msg;
+		rt_message_init (&msg, SCOOP_MESSAGE_CALLBACK, client, call);
+		this->push(msg);
+	}
 
 };
+#endif 
+
+/* Define the struct to be used for the group stack. */
+RT_DECLARE_VECTOR_BASE (request_group_stack_t, struct rt_request_group)
+
 
 /* The SCOOP logical unit of processing.
  *
@@ -158,12 +176,12 @@ public:
   recursive_mutex_type qoq_mutex;
 
 public:
-  /* A stack of <req_grp>s.
+  /* A stack of request groups.
    * 
    * The vector here is used as a stack, which mirrors the processors locked
    * in the real call stack.
    */
-  std::vector <req_grp> group_stack;
+  struct request_group_stack_t request_group_stack;
 
 public:
   /* Register another processors <notify_token>.
@@ -208,7 +226,7 @@ public:
    * This is the notifier that this processor will wait on when
    * it asks another processor for a result.
    */
-  notifier result_notify;
+  struct rt_message_channel result_notify;
 
 public:
   /* Ask the Eiffel runtime to make a new thread for this processor.
@@ -228,7 +246,7 @@ public:
    * It is important for GC that the thread that requested this processor
    * to spawn a thread doesn't proceed until it has been constructed.
    */
-  notifier startup_notify;
+  struct rt_message_channel startup_notify;
 
   /* The processor ID.
    */
@@ -247,15 +265,15 @@ private:
   mutex_type cache_mutex;
 
 private:
-  /* Clients that we have to notify that we didn't do what they wanted.
-   */
-  std::set<processor*> dirty_for_set;
+
+  /* Stores whether the current processor / region is marked as dirty.*/
+  bool is_dirty;
 
   /* The current message we have.
    * 
    * This call in here will be traced during marking.
    */
-  pq_message current_msg;
+  rt_message current_msg;
 
 
   /* A vacuous pointer object to satisfy the Eiffel runtime's requirement
@@ -273,5 +291,9 @@ private:
 
 };
 
+/* Declarations for group stack manipulation. */
+rt_shared void rt_processor_request_group_stack_extend (processor* self);
+rt_shared struct rt_request_group* rt_processor_request_group_stack_last (processor* self);
+rt_shared void rt_processor_request_group_stack_remove_last (processor* self);
 
 #endif

@@ -2,7 +2,7 @@
 	description: "Macros used by C code at run time."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2013, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2015, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -203,7 +203,6 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 /* Macro used for object cloning:
  *  RTCL(x) clones 'x' and return a pointer to the cloned object
- *  RTCB(x) clones bit `x'
  *  RTRCL(x) same as RTCL, but uses a user-defined version of `copy'
  *  RTCCL(c) same as RTRCL, but first checks if `x' is expanded
  */
@@ -1311,7 +1310,7 @@ RT_LNK void eif_exit_eiffel_code(void);
  * Macros for SCOOP 
  */
 
-// Define RTS_SCP_CAPABLE for use by eplug to determine whether SCOOP can be initialized.
+/* Define RTS_SCP_CAPABLE for use by eplug to determine whether SCOOP can be initialized. */
 #ifndef RTS_SCP_CAPABLE
 #ifdef EIF_THREADS
 #define RTS_SCP_CAPABLE 1 
@@ -1376,9 +1375,9 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #define RTS_OU(c,o) ((o) && eif_is_uncontrolled (RTS_PID (c), RTS_PID (o)))
 
-#define EIF_SET_ACTIVE(o) ; //  "SCOOP/Qs: set_active not implemented" o;
-#define EIF_SET_PASSIVE(o) ; //  "SCOOP/Qs: set_passive not implemented" o;
-#define EIF_IS_PASSIVE(o) 0 // "SCOOP/Qs: is_passive not implemented" o;
+#define EIF_SET_ACTIVE(o) ; /*  "SCOOP/Qs: set_active not implemented" o; */
+#define EIF_SET_PASSIVE(o) ; /*  "SCOOP/Qs: set_passive not implemented" o; */
+#define EIF_IS_PASSIVE(o) 0 /* "SCOOP/Qs: is_passive not implemented" o; */
 
 /*
  * Processor:
@@ -1505,6 +1504,8 @@ RT_LNK void eif_exit_eiffel_code(void);
  * RTS_AC(n,t,a) - allocate container a that can hold n arguments for target t
  * RTS_AA(v,f,t,n,a) - register argument v corresponding to field f of type t at position n in a
  * RTS_AS(v,f,t,n,a) - same as RTS_AA except that that argument is checked if it is controlled or not that is recorded to make synchronous call if required
+ * 
+ * TODO: Change the compiler to always emit RTS_AA for queries, because they're synchronous anyway.
  */
 #define RTS_AC(n,t,a) \
 	{ \
@@ -1513,7 +1514,6 @@ RT_LNK void eif_exit_eiffel_code(void);
 		((call_data*)(a)) -> count = (n); \
 		((call_data*)(a)) -> result = NULL; \
 		((call_data*)(a)) -> sync_pid = (EIF_SCP_PID) -1; \
-		((call_data*)(a)) -> is_lock_passing = EIF_FALSE; \
 	}
 #ifdef WORKBENCH
 #define RTS_AA(v,f,t,n,a) ((call_data*)(a)) -> argument [(n) - 1] = (v);
@@ -1532,7 +1532,6 @@ RT_LNK void eif_exit_eiffel_code(void);
 			if (val) { \
 				if (!RTS_OU(Current, val)) { \
 					if (EIF_IS_DIFFERENT_PROCESSOR (((call_data*)(a))->target, val)) { \
-						((call_data*)(a)) -> is_lock_passing = EIF_TRUE; \
 						((call_data*)(a)) -> sync_pid = RTS_PID(Current); \
 					} \
 				} \

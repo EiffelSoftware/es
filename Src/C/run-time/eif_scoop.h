@@ -52,7 +52,7 @@
 extern "C" {
 #endif
 
-#define RT_MAX_SCOOP_PROCESSOR_COUNT 1024 /* Maximum number of SCOOP processors, including root. */
+#define RT_MAX_SCOOP_PROCESSOR_COUNT 1024 /* Maximum number of SCOOP processors, including root. It should be power of 2 to satisfy current implementation of mpmc_bounded_queue. */
 
 
 /* Separate calls */
@@ -61,7 +61,6 @@ typedef struct call_data {
 	EIF_REFERENCE target;			/* Target of a call */
 
 #ifdef WORKBENCH
-	BODY_INDEX body_index;	/* Used by ISE_SCOOP_MANAGER */
 	int routine_id;					/* Routine to be called */
 	EIF_TYPED_VALUE *result;		/* Address of a result for queries */
 #else
@@ -74,7 +73,6 @@ typedef struct call_data {
 #endif /* WORKBENCH */
 	EIF_NATURAL_32 count;			/* Number of arguments excluding target object */
 	EIF_SCP_PID sync_pid;			/* Indicator of a synchronous call */
-	EIF_BOOLEAN is_lock_passing;	/* Indicator of a lock passing call */
 	EIF_TYPED_VALUE argument [1];	/* Arguments excluding target object */
 } call_data;
 
@@ -83,11 +81,6 @@ RT_LNK void eif_log_call (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid, call
 RT_LNK void eif_apply_wcall (call_data *data);
 #endif
 RT_LNK void eif_call_const (call_data * a);
-
-/* Not used. TODO: remove after removing ISE_SCOOP_MANAGER. */
-#define eif_free_call(a)
-#define eif_try_call(a)
-#define eif_mark_live_pid(x)
 
 /* Request chain stack */
 
@@ -101,7 +94,6 @@ RT_LNK void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk); /
 #define set_integer_32_return_value(a_integer_32_typed_value,a_integer) ((EIF_TYPED_VALUE *) a_integer_32_typed_value)->item.i4 = a_integer;
 
 #define call_data_sync_pid(a_call_data) ((call_data*) a_call_data)->sync_pid
-#define call_data_is_lock_passing(a_call_data) ((call_data*) a_call_data)->is_lock_passing
 
 /* Processor properties */
 RT_LNK void eif_new_processor(EIF_REFERENCE obj);

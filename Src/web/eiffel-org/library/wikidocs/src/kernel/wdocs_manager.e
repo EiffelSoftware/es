@@ -23,6 +23,8 @@ inherit
 			content as template_content
 		end
 
+	WIKI_FILE_RESOLVER
+
 	REFACTORING_HELPER
 
 	WDOCS_DATA_ACCESS
@@ -53,6 +55,17 @@ feature -- Access
 	version_id: detachable READABLE_STRING_GENERAL
 
 	tmp_dir: PATH
+
+	is_version_id (v: like version_id): BOOLEAN
+		do
+			if v = Void then
+				Result := version_id = Void
+			elseif not attached version_id as l_version_id then
+				Result := v = Void
+			else
+				Result := l_version_id.is_case_insensitive_equal (v)
+			end
+		end
 
 feature -- Persistency
 
@@ -333,7 +346,25 @@ feature -- Access: link
 					)
 		end
 
-feature -- Access: Image
+feature -- Access: File
+
+	file_to_url (a_file: WIKI_FILE_LINK; a_page: detachable WIKI_PAGE): detachable STRING
+			-- URL accessing the file `a_file'.
+		do
+			if a_page /= Void and then attached book_name (a_page) as l_book_name then
+				Result := "/book/" + l_book_name
+			else
+				Result := ""
+			end
+			Result.append ("/file/" + a_file.name)
+			if Result /= Void then
+				if attached version_id as vid then
+					Result.prepend ("/version/" + percent_encoder.percent_encoded_string (vid))
+				end
+			end
+		end
+
+feature -- Access: Image		
 
 	image_to_wiki_url (a_link: WIKI_IMAGE_LINK; a_page: detachable WIKI_PAGE): detachable STRING
 		do

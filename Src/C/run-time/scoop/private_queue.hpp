@@ -38,154 +38,63 @@
 #ifndef _PRIV_QUEUE_H
 #define _PRIV_QUEUE_H
 #include "eif_utils.hpp"
-#include "spsc.hpp"
+
+#include "rt_message.h"
+#include "rt_message_channel.hpp"
 
 class processor;
 
-struct notify_message
-{
-  typedef enum {
-    e_result_ready,
-    e_dirty,
-    e_callback
-  } e_type;
-
-  notify_message(e_type type = e_result_ready,
-		 processor* client = NULL,
-		 call_data* call = NULL) :
-    client (client),
-    call (call),
-    type (type)
-  {
-  }
-
-  processor* client;
-  call_data* call;
-  e_type type;
-};
-
-
-
-struct pq_message
-{
-  typedef enum {
-    e_normal,
-    e_unlock
-  } e_type;
-
-  pq_message(e_type type = e_normal,
-	     processor* client = NULL,
-	     call_data* call = NULL) :
-    client (client),
-    call (call),
-    type (type)
-  {
-  }
-
-  processor* client;
-  call_data* call;
-  e_type type;
-};
-
-
-/* The private queue class.
- *
- * This structure functions as a lock between the client and the supplier.
- * The client is the original client, as this queue may be passed to
- * other clients during lock-passing.
- */
-class priv_queue : spsc <pq_message>
+/*
+doc:	<struct name="rt_private_queue", export="shared">
+doc:		<summary> The private queue struct.
+doc:
+doc:			This structure serves as a central part of communication between
+doc:			a client and a supplier. It contains an rt_message_channel for the
+doc:			client to send new call data structs.
+doc:
+doc:			The struct also serves as a lock for the client on the supplier:
+doc:			As long as a private queue is inside the queue-of-queues of  the supplier
+doc:			the client has exclusive access.
+doc:
+doc:			Note that the client processor may change during lock passing, i.e.
+doc:			it's not guaranteed to be always the client that created the queue.
+doc:		</summary>
+doc:		<field name="call_stack_msg", type="struct rt_message"> The call being executed right now. Accessed only by the supplier or by the GC. </field>
+doc:		<field name="channel", type="struct rt_message_channel"> The message channel used for communication. </field>
+doc:		<field name="supplier", type="processor*"> The supplier to whom messages will be sent. This field is constant. Accessed only by the client. </field>
+doc:		<field name="lock_depth", type="int"> The current lock depth (for recursive locking). Accessed only by the client. </field>
+doc:		<field name="synced", type="EIF_BOOLEAN"> Whether the supplier is synchronized with the client. Accessed only by the client. </field>
+doc:		<fixme> It may be possible to improve performance slightly with some careful alignment to cache lines (also within rt_message_channel) </fixme>
+doc:	</struct>
+*/
+class priv_queue /* TODO: Rename this to 'struct rt_private_queue' */
 {
 public:
-  /* Construct a private queue.
-   * @supplier is where all requests logged here will be sent to.
-   *
-   * Note that this is only private for the supplier, many clients may access
-   * the supplier through this queue.
-   */
-  priv_queue (processor *supplier);
+	/* Consumer/Supplier part. */
+  struct rt_message call_stack_msg;
 
-  /* The lifetime end-point of this queue. */
+  /* Shared part. */
+  struct rt_message_channel channel;
+
+  /* Client / Producer part */
   processor *supplier;
-  
-  /* Locks this private queue.
-   * @client the client of this locking operation
-   *
-   * This places this queue in the <supplier>s queue of queues <qoq>.
-   * Locking can be recursive, both for the owner and any recipients of
-   * lock passing.
-   */
-  void lock(processor *client);
-
-  /* Logs a new call to the supplier.
-   * @client the client of the call
-   * @call the call to go to the supplier.
-   *
-   * This is essentially an enqueue operation on the underlying 
-   * concurrent queue, waking the supplier if it was waiting on this
-   * queue for more calls.
-   */
-  void log_call(processor *client, call_data *call);
-
-  /* Receive a new call.
-   * @call will contain the calla fter the return of the function.
-   *
-   * This will be called by the supplier to receive new calls from the client
-   * (**or** some processor that the client has passed its locks to).
-   * This is a blocking call if no call data is available.
-   */
-  void pop_msg (pq_message &msg)
-  {
-    pop (msg);
-  }
-
-  /* Register a wait operation with the <supplier>.
-   * @client the client to call back
-   *
-   * The <supplier> will contact the client when it has executed some
-   * other calls, and thus may have changed a wait-condition.
-   */
-  void register_wait(processor* client);
-
-  /* Unlock this queue.
-   *
-   * Instructs the <supplier> to remove this queue from the <qoq>.
-   */
-  void unlock();
-
-  /* The locked status of this queue.
-   *
-   * Reports if this queue is currently locked.
-   */
-  bool is_locked();
-
-  /* The synchronization status of the queue with the <supplier>.
-   *
-   * The queue is considered synchronized if the <supplier> is currently processing
-   * this queue but is not currently applying any call, and the queue itself
-   * is empty.
-   */
-  bool is_synced();
-
-  /* Whether the <supplier> threw an exception. */
-  bool dirty;
-
-  /* GC interaction */
-public:
-  /* Mark the call data.
-   * @mark the marking routine to use.
-   *
-   * This is for integration with the EiffelStudio garbage collector
-   * so that the target and arguments of the calls in the call data
-   * (which is here outside the view of the runtime) will not be collected.
-   */
-  void mark (MARKER marking);
-
-private:
-  notify_message call_stack_msg;
-  bool synced;
   int lock_depth;
+  EIF_BOOLEAN synced;
 };
 
+
+/* Declarations. */
+rt_shared void rt_private_queue_init (priv_queue* self, processor* a_supplier);
+rt_shared void rt_private_queue_deinit (priv_queue* self);
+rt_shared void rt_private_queue_mark (priv_queue* self, MARKER marking);
+
+rt_shared EIF_BOOLEAN rt_private_queue_is_synchronized (priv_queue* self);
+rt_shared EIF_BOOLEAN rt_private_queue_is_locked (priv_queue* self);
+
+rt_shared void rt_private_queue_lock (priv_queue* self, processor* client);
+rt_shared void rt_private_queue_unlock (priv_queue* self);
+rt_shared void rt_private_queue_register_wait (priv_queue* self, processor* client);
+
+rt_shared void rt_private_queue_log_call (priv_queue* self, processor* client, struct call_data* call);
 
 #endif

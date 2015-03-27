@@ -49,45 +49,24 @@ extern "C" {
 #endif
 
 /* Macros for call structure manipulation:
- *  CAttrOffs(x,y,z)
- *  CBodyId(x,y,z)
- *  CGENFeatType(t,x,y,z)
- *  MPatId(x)
- *  FPatId(x)
+ *  CBodyId(body_id,routine_id,dtype)
+ *  MPatId(body_id)
+ *  FPatId(body_id)
  */
 
-#define CAttrOffs(x,y,z) \
+#define CBodyId(body_id,routine_id,dtype)	\
 	{ \
 		struct rout_info info; \
-		struct desc_info *desc; \
-		info = eorg_table[(y)]; \
-		desc = (desc_tab[info.origin])[(z)]; \
-		(x) = (desc[info.offset]).offset; \
+		const struct desc_info *desc; \
+		info = eorg_table[(routine_id)]; \
+		desc = (desc_tab[info.origin])[(dtype)]; \
+		(body_id) = (desc[info.offset]).body_index; \
 	}	
 
-#define CBodyId(x,y,z)	\
-	{ \
-		struct rout_info info; \
-		struct desc_info *desc; \
-		info = eorg_table[(y)]; \
-		desc = (desc_tab[info.origin])[(z)]; \
-		(x) = (desc[info.offset]).body_index; \
-	}	
+#define MPatId(body_id) mpatidtab[body_id]
+#define FPatId(body_id) egc_fpatidtab[body_id]
 
-#define CGENFeatType(t,x,y,z) \
-	{ \
-		struct rout_info info; \
-		struct desc_info *desc; \
-		info = eorg_table[(y)] ;\
-		desc = (desc_tab[info.origin])[(z)] ;\
-		(t) = (desc[info.offset]).type ;\
-		(x) = (desc[info.offset]).gen_type ;\
-	}
-
-#define MPatId(x) mpatidtab[x]
-#define FPatId(x) egc_fpatidtab[x]
-
-extern void rt_wexp(int routine_id, EIF_TYPE_INDEX dyn_type, EIF_REFERENCE object);						/* Creation call for expanded types */
+extern void rt_wexp(int routine_id, EIF_TYPE_INDEX dyn_type, EIF_REFERENCE object);		/* Creation call for expanded types */
 
 #ifdef __cplusplus
 }

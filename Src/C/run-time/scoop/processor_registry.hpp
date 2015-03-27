@@ -109,6 +109,10 @@ public:
 
   void wait_for_all();
 
+  void request_gc (int * fingerprint);
+
+  volatile int gc_fingerprint;
+
 private:
   processor* procs [RT_MAX_SCOOP_PROCESSOR_COUNT];
   pid_set used_pids;

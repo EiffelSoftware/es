@@ -186,6 +186,7 @@ MT_OBJECTS = \
 	$(INDIR)MTprocessor_registry.$obj \
 	$(INDIR)MTnotify_token.$obj \
 	$(INDIR)MTprivate_queue.$obj \
+	$(INDIR)MTmessage_channel.$obj \
 	$(INDIR)MTprocessor.$obj \
 	$(INDIR)MTqueue_cache.$obj \
 	$(INDIR)MTreq_grp.$obj \
@@ -248,6 +249,7 @@ MT_WOBJECTS = \
 	$(INDIR)MTwprocessor_registry.$obj \
 	$(INDIR)MTwnotify_token.$obj \
 	$(INDIR)MTwprivate_queue.$obj \
+	$(INDIR)MTwmessage_channel.$obj \
 	$(INDIR)MTwprocessor.$obj \
 	$(INDIR)MTwqueue_cache.$obj \
 	$(INDIR)MTwreq_grp.$obj \
@@ -328,13 +330,16 @@ $(OUTDIR)finalized.dll : $(OBJECTS)
 	cd ..$(DIR)run-time
 
 
-all:: x2c.exe runtime_validation.exe
+all:: x2c.exe runtime_validation.exe wruntime_validation.exe
 
 x2c.exe: x2c.c offset.$obj eif_size.h
 	$(CC) $ccflags $optimize  -I. -I./include -I$(TOP) -I$(TOP)/idrs $(OUTPUT_EXE_CMD)$@ x2c.c offset.$obj
 
 runtime_validation.exe: runtime_validation.c offset.$obj
 	$(CC) $ccflags $optimize  -I. -I./include -I$(TOP) -I$(TOP)/idrs $(OUTPUT_EXE_CMD)$@ runtime_validation.c offset.$obj
+
+wruntime_validation.exe: runtime_validation.c offset.$obj
+	$(CC) $ccflags $optimize -DWORKBENCH -I. -I./include -I$(TOP) -I$(TOP)/idrs $(OUTPUT_EXE_CMD)$@ runtime_validation.c offset.$obj
 
 
 $all_dependency
@@ -698,6 +703,9 @@ $(INDIR)MTnotify_token.$obj: $(RTSRC)scoop$(DIR)notify_token.cpp
 $(INDIR)MTprivate_queue.$obj: $(RTSRC)scoop$(DIR)private_queue.cpp
 	$(CPP) $(JMTCPPFLAGS) $?
 
+$(INDIR)MTmessage_channel.$obj: $(RTSRC)scoop$(DIR)message_channel.cpp
+	$(CPP) $(JMTCPPFLAGS) $?
+
 $(INDIR)MTprocessor.$obj: $(RTSRC)scoop$(DIR)processor.cpp
 	$(CPP) $(JMTCPPFLAGS) $?
 
@@ -858,6 +866,9 @@ $(INDIR)MTwnotify_token.$obj: $(RTSRC)scoop$(DIR)notify_token.cpp
 	$(CPP) $(JMTCPPFLAGS) -DWORKBENCH $?
 
 $(INDIR)MTwprivate_queue.$obj: $(RTSRC)scoop$(DIR)private_queue.cpp
+	$(CPP) $(JMTCPPFLAGS) -DWORKBENCH $?
+
+$(INDIR)MTwmessage_channel.$obj: $(RTSRC)scoop$(DIR)message_channel.cpp
 	$(CPP) $(JMTCPPFLAGS) -DWORKBENCH $?
 
 $(INDIR)MTwprocessor.$obj: $(RTSRC)scoop$(DIR)processor.cpp
