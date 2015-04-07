@@ -168,12 +168,12 @@ feature {NONE} -- Implementation
 
 feature -- Status setting
 
-	set_stone (new_stone: STONE)
+	set_stone (new_stone: detachable STONE)
 			-- Associate current formatter with class contained in `a_stone'.
 		do
 			force_stone (new_stone)
 			if attached {CLASSC_STONE} new_stone as l_classc_stone then
-				if (not l_classc_stone.class_i.is_external_class) or is_dotnet_formatter then
+				if (not l_classc_stone.is_dotnet_class) or is_dotnet_formatter then
 					set_class (l_classc_stone.e_class)
 				end
 			else
@@ -184,7 +184,7 @@ feature -- Status setting
 			end
 		end
 
-	force_stone (a_stone: STONE)
+	force_stone (a_stone: detachable STONE)
 			-- Directly set `stone' with `a_stone'
 		local
 			l_stone: CLASSC_STONE
@@ -224,7 +224,7 @@ feature -- Status setting
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -102,8 +102,10 @@ inherit
 			process_instr_call_as,
 			process_loop_as,
 			process_iteration_as,
+			process_named_expression_as,
 			process_variant_as,
 			process_retry_as,
+			process_separate_instruction_as,
 
 			-- Expressions
 			process_typed_char_as,
@@ -1412,6 +1414,16 @@ feature {CLASS_AS} -- Instructions
 			end
 		end
 
+	process_separate_instruction_as (a: SEPARATE_INSTRUCTION_AS)
+			-- <Precursor>
+		do
+			print_on_new_line (a.separate_keyword (match_list))
+			process_eiffel_list (a.arguments)
+			process_keyword_as (a.do_keyword (match_list))
+			print_compound (a.compound)
+			print_on_new_line (a.end_keyword)
+		end
+
 feature {CLASS_AS} -- Expressions
 
 	process_custom_attribute_as (l_as: CUSTOM_ATTRIBUTE_AS)
@@ -1600,6 +1612,14 @@ feature {CLASS_AS} -- Calls
 			end
 			print_list_inline (l_as.parameters)
 			safe_process (l_as.rparan_symbol (match_list))
+		end
+
+	process_named_expression_as (a_as: NAMED_EXPRESSION_AS)
+			-- <Precursor>
+		do
+			a_as.expression.process (Current)
+			safe_process (a_as.as_keyword (match_list))
+			a_as.name.process (Current)
 		end
 
 	process_access_inv_as (l_as: ACCESS_INV_AS)
@@ -1956,7 +1976,7 @@ invariant
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

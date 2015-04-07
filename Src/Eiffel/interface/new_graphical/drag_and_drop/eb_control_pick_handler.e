@@ -38,24 +38,26 @@ feature -- Basic operations
 			valid_stone: st /= Void and then st.is_valid
 		local
 			pref: STRING
-			cv_cst: CLASSI_STONE
 		do
 			if st.is_storable then
 				pref := chosen_receiver
 				if pref.is_equal (names.co_new_window) then
-					window_manager.create_window
-					window_manager.last_created_window.force_stone (st)
+					window_manager.last_focused_development_window.new_development_window_cmd.execute_with_stone (st)
+
 				elseif pref.is_equal (names.co_editor) then
 					window_manager.last_focused_development_window.set_stone (st)
+
 				elseif pref.is_equal (names.co_context) then
 					window_manager.last_focused_development_window.tools.set_stone (st)
+
 				elseif pref.is_equal (names.co_external_editor) then
-					cv_cst ?= st
-					if cv_cst /= Void then
-						process_class (cv_cst)
+						-- We will open the stone in the external editor only if it has an associated file.
+					if attached {FILED_STONE} st as fs then
+						edit_in_external_editor (fs)
 					else
-						window_manager.last_focused_development_window.force_stone (st)
+						window_manager.last_focused_development_window.set_stone (st)
 					end
+
 				elseif pref.is_equal (names.co_new_tab_editor) then
 					window_manager.last_focused_development_window.commands.new_tab_cmd.execute_with_stone (st)
 				end
@@ -77,34 +79,23 @@ feature {NONE} -- Implementation
 			lower_case: Result.is_equal (Result.as_lower)
 		end
 
-	process_class (cs: CLASSI_STONE)
+	edit_in_external_editor (fs: FILED_STONE)
 			-- Process class stone.
 		local
 			req: COMMAND_EXECUTOR
-			conv_f: FEATURE_STONE
 		do
-			conv_f ?= cs
-			if conv_f = Void then
-				create req
-				req.execute (preferences.misc_data.external_editor_cli (cs.file_name, 1))
+			create req
+			if attached {FEATURE_STONE} fs as l_feature then
+					-- With a feature stone we can open the external editor on that feature if it supports
+					-- the ability (e.g. with vi you can do vi +line_number filename).
+				req.execute (preferences.misc_data.external_editor_cli (l_feature.class_i.file_name.name, l_feature.line_number))
 			else
-				process_feature (conv_f)
+				req.execute (preferences.misc_data.external_editor_cli (fs.file_name, 1))
 			end
 		end
 
-	process_feature (fs: FEATURE_STONE)
-			-- Process feature stone.
-		local
-			req: COMMAND_EXECUTOR
-		do
-				-- feature text area
-			create req
-			req.execute (preferences.misc_data.external_editor_cli (
-				fs.class_i.file_name.name, fs.line_number))
-		end
-
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -117,22 +108,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_CONTROL_PICK_HANDLER

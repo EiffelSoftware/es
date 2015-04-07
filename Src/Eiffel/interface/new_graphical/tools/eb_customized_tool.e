@@ -78,7 +78,7 @@ feature -- Access
 			Result := interface_names.l_no_info_of_element
 		end
 
-	stone: STONE
+	stone: detachable STONE
 			-- Stone representing Current
 		do
 			Result := last_stone
@@ -169,7 +169,7 @@ feature -- Setting
 --				end
 --			end
 
-			if develop_window.unified_stone then
+			if develop_window.is_unified_stone then
 				develop_window.set_stone (st)
 			elseif develop_window.link_tools then
 				develop_window.tools.set_stone (st)
@@ -180,7 +180,7 @@ feature -- Setting
 			end
 		end
 
-	set_stone (new_stone: STONE)
+	set_stone (new_stone: detachable STONE)
 			-- Send a stone to class formatters.
 		local
 			l_stone: like stone
@@ -372,7 +372,7 @@ invariant
 	id_attached: id /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

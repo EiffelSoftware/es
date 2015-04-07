@@ -176,6 +176,7 @@ rt_shared void rt_queue_cache_push (struct queue_cache* self, struct queue_cache
 
 	REQUIRE ("self_not_null", self);
 	REQUIRE ("giver_not_null", giver);
+	REQUIRE ("not_equal", self != giver);
 
 		/* Try to get any borrowed locks from 'giver'. */
 	l_borrowed = giver->borrowed_queues;
@@ -323,8 +324,9 @@ rt_shared priv_queue* rt_queue_cache_retrieve (struct queue_cache* self, process
 
 		/* If we still don't have a queue, we need to create a new one. */
 	if (NULL == l_result) {
-		 l_result = supplier->new_priv_queue();
-		 ht_force (&self->owned_queues, supplier->pid, &l_result);
+		/*TODO: Error handling...*/
+		int error = rt_processor_new_private_queue (supplier, &l_result);
+		ht_force (&self->owned_queues, supplier->pid, &l_result);
 	}
 
 	ENSURE ("result_available", l_result);

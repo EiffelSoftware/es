@@ -528,9 +528,6 @@ feature -- EB_TOOL features
 	build_interface
 			-- Build interface
 		do
-			check
-				has_case: (create {EIFFEL_LAYOUT}).eiffel_layout.has_diagram
-			end
 			make_with_tool
 
 			create history_manager.make (Current)
@@ -1399,7 +1396,7 @@ feature {NONE} -- Clean up
 
 feature {ES_DIAGRAM_TOOL_PANEL, EB_CONTEXT_DIAGRAM_COMMAND, EIFFEL_CLASS_FIGURE} -- Toolbar actions
 
-	launch_stone (a_stone: STONE)
+	launch_stone (a_stone: detachable STONE)
 			-- Launch stone.
 		local
 			l_tool: EB_STONABLE_TOOL
@@ -1407,7 +1404,7 @@ feature {ES_DIAGRAM_TOOL_PANEL, EB_CONTEXT_DIAGRAM_COMMAND, EIFFEL_CLASS_FIGURE}
 		do
 			fst ?= a_stone
 			l_tool := decide_tool_to_display (a_stone)
-			if develop_window.unified_stone then
+			if develop_window.is_unified_stone then
 				develop_window.set_stone (a_stone)
 			else
 				l_tool.set_stone (a_stone)
@@ -1450,7 +1447,7 @@ feature {EB_DEVELOPMENT_WINDOW_TOOLS, EB_STONE_CHECKER, EB_DEVELOPMENT_WINDOW} -
 			end
 		end
 
-	set_stone (new_stone: STONE)
+	set_stone (new_stone: detachable STONE)
 			-- Simply change last stone.
 			-- If current widget is displayed, the stone is forced.
 			-- Choose default tool to load a feature stone.
@@ -2503,7 +2500,7 @@ invariant
 	shortcut_table_not_void: shortcut_table /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

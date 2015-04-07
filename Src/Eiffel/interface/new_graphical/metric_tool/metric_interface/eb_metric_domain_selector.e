@@ -116,6 +116,12 @@ feature {NONE} -- Initialization
 			default_create
 		end
 
+	user_create_interface_objects
+			-- <Precursor>
+		do
+			-- FIXME: Currently code is not void-safe and initialization still takes place in `user_initialization'.
+		end
+
 	user_initialization
 			-- Called by `initialize'.
 			-- Any custom user initialization that
@@ -265,14 +271,16 @@ feature -- Access
 
 feature -- Element change
 
-	set_stone (new_stone: STONE)
+	set_stone (new_stone: detachable STONE)
 			-- Make `s' the new value of stone.
 			-- Changes display as a consequence, to preserve the fact
 			-- that the tool displays the content of the stone
 			-- (when there is a stone).
 		do
 			set_focus
-			on_drop (new_stone)
+			if new_stone /= Void then
+				on_drop (new_stone)
+			end
 		end
 
 	setup_delayed_domain_item_buttons (a_cur_app: BOOLEAN; a_delayed_input: BOOLEAN; a_delayed_item: BOOLEAN)
@@ -795,7 +803,7 @@ invariant
 	grid_support_attached: grid_support /= Void
 
 note
-        copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+        copyright:	"Copyright (c) 1984-2015, Eiffel Software"
         license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
         licensing_options:	"http://www.eiffel.com/licensing"
         copying: "[

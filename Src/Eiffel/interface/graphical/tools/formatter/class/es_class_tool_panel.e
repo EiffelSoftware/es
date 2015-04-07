@@ -14,7 +14,8 @@ inherit
 		rename
 			last_stone as stone
 		redefine
-			tool_veto_pebble_function
+			tool_veto_pebble_function,
+			enable_dotnet_formatters
 		end
 
 	ES_CLASS_TOOL_COMMANDER_I
@@ -107,50 +108,35 @@ feature {ES_CLASS_TOOL} -- Element change
 
 feature -- Status setting
 
-	set_stone (new_stone: STONE)
+	set_stone (a_stone: detachable STONE)
 			-- Send a stone to class formatters.
 		local
-			fst: FEATURE_STONE
-			cst: CLASSC_STONE
-			ist: CLASSI_STONE
-			type_changed: BOOLEAN
+			l_class_c_stone: CLASSC_STONE
+			l_is_external_class: BOOLEAN
 		do
-			fst ?= new_stone
-			if fst /= Void then
+			if attached {FEATURE_STONE} a_stone as fst then
 				check
 					feature_not_void: fst.e_feature /= Void
 					class_not_void: fst.e_feature.associated_class /= Void
 				end
-				create cst.make (fst.e_feature.associated_class)
-			else
-				cst ?= new_stone
-				ist ?= new_stone
+				create l_class_c_stone.make (fst.e_feature.associated_class)
+				l_is_external_class := l_class_c_stone.e_class.is_true_external
+			elseif attached {CLASSI_STONE} a_stone as ist then
+				if attached {CLASSC_STONE} a_stone as cst then
+					l_class_c_stone := cst
+				end
+				l_is_external_class := ist.is_dotnet_class
 			end
-			if cst /= Void then
-				type_changed := (cst.e_class.is_true_external and not is_stone_external) or
-					(not cst.e_class.is_true_external and is_stone_external)
-			elseif ist /= Void then
-				type_changed := (ist.class_i.is_external_class and not is_stone_external) or
-					(not ist.class_i.is_external_class and is_stone_external)
-			end
-
-			if type_changed then
-				-- Toggle stone flag.
-            	is_stone_external := not is_stone_external
-            end
 
             	-- Update formatters.
-            if is_stone_external and cst /= Void then
-				enable_dotnet_formatters (True)
-			else
-				enable_dotnet_formatters (False)
+			enable_dotnet_formatters (l_is_external_class)
+
+			if l_class_c_stone /= Void then
+				update_viewpoints (l_class_c_stone.e_class)
 			end
-			if cst /= Void then
-				update_viewpoints (cst.e_class)
-			end
-			if cst = Void or else stone = Void or else not stone.same_as (cst) then
+			if l_class_c_stone = Void or else stone = Void or else not stone.same_as (l_class_c_stone) then
 					-- Set the stones.
-				set_last_stone (cst)
+				set_last_stone (l_class_c_stone)
 				develop_window.tools.set_last_stone (stone)
 			end
 
@@ -182,21 +168,7 @@ feature {NONE} -- Implementation
 		local
 			l_done: BOOLEAN
 		do
-			from
-				formatters.start
-			until
-				formatters.after
-			loop
-				if
-					(formatters.item.is_dotnet_formatter and a_flag) or
-					(not a_flag)
-				then
-					formatters.item.enable_sensitive
-				else
-					formatters.item.disable_sensitive
-				end
-				formatters.forth
-			end
+			Precursor (a_flag)
 
 				-- Determine which formatter to give focus based upon previous one.
 			if a_flag then
@@ -231,7 +203,7 @@ feature {NONE} -- Implementation
 		do
 			fst ?= st
 			l_tool := decide_tool_to_display (st)
-			if develop_window.unified_stone then
+			if develop_window.is_unified_stone then
 				develop_window.set_stone (st)
 			elseif develop_window.link_tools then
 				develop_window.tools.set_stone (st)
@@ -268,7 +240,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

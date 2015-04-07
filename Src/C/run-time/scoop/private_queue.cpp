@@ -65,7 +65,7 @@ rt_shared void rt_private_queue_init (priv_queue* self, processor* a_supplier)
 	self->lock_depth = 0;
 
 	rt_message_channel_init (&self->channel, 512);
-	rt_message_init (&self->call_stack_msg, SCOOP_MESSAGE_UNLOCK, NULL, NULL); /* TODO: default state? */
+	rt_message_init (&self->call_stack_msg, SCOOP_MESSAGE_INVALID, NULL, NULL, NULL);
 }
 
 /*
@@ -131,7 +131,7 @@ rt_shared void rt_private_queue_lock (priv_queue* self, processor* client)
 	REQUIRE ("client_not_null", client);
 
 	if (self->lock_depth == 0) {
-		self->supplier->qoq.push (qoq_item (client, self));
+		rt_message_channel_send (&(self->supplier->queue_of_queues), SCOOP_MESSAGE_ADD_QUEUE, client, NULL, self);
 		self->synced = EIF_FALSE;
 	}
 	self->lock_depth++;
@@ -152,7 +152,7 @@ rt_shared void rt_private_queue_unlock (priv_queue* self)
 	self->lock_depth--;
 
 	if (self->lock_depth == 0) {
-		rt_message_channel_send (&self->channel, SCOOP_MESSAGE_UNLOCK, NULL, NULL);
+		rt_message_channel_send (&self->channel, SCOOP_MESSAGE_UNLOCK, NULL, NULL, NULL);
 		self->synced = EIF_FALSE;
 	}
 }
@@ -172,7 +172,8 @@ rt_shared void rt_private_queue_register_wait (priv_queue* self, processor* clie
 {
 	REQUIRE ("self_not_null", self);
 	REQUIRE ("client_not_null", client);
-	self->supplier->register_notify_token (client->my_token);
+	REQUIRE ("self_synchronized", self->synced);
+	rt_processor_subscribe_wait_condition (self->supplier, client);
 	self->synced = false;
 }
 
@@ -211,10 +212,10 @@ rt_shared void rt_private_queue_log_call (priv_queue* self, processor* client, s
 		call -> sync_pid = client -> pid;
 		will_sync = EIF_TRUE;
 
-		rt_message_channel_send (&self->supplier->result_notify, SCOOP_MESSAGE_CALLBACK, client, call);
+		rt_message_channel_send (&self->supplier->result_notify, SCOOP_MESSAGE_CALLBACK, client, call, NULL);
 
 	} else {
-		rt_message_channel_send (&self->channel, SCOOP_MESSAGE_EXECUTE, client, call);
+		rt_message_channel_send (&self->channel, SCOOP_MESSAGE_EXECUTE, client, call, NULL);
 	}
 		/* NOTE: After the previous send operations, the call data struct might have been */
 		/* free()'d by the supplier. Therefore it must not be accessed any more here. */
@@ -228,6 +229,8 @@ rt_shared void rt_private_queue_log_call (priv_queue* self, processor* client, s
 			 * l_client == client && client->pid == l_sync_pid
 			 */
 		processor *l_client = registry[l_sync_pid];
+		CHECK ("some_test", l_client == client && client->pid == l_sync_pid);
+
 		struct rt_message* l_message = &self->call_stack_msg;
 
 			/* Wait on our own result notifier for a message by the other processor. */
@@ -237,7 +240,9 @@ rt_shared void rt_private_queue_log_call (priv_queue* self, processor* client, s
 			l_message->message_type == SCOOP_MESSAGE_CALLBACK;
 			rt_message_channel_receive (&l_client->result_notify, l_message))
 		{
-			(*l_client) (l_message->sender, l_message->call);
+				/*NOTE: The thread executing this feature is the one behind 'client'. */
+			rt_processor_execute_call (l_client, l_message->sender, l_message->call);
+// 			(*l_client) (l_message->sender, l_message->call);
 			l_message->call = NULL;
 		}
 

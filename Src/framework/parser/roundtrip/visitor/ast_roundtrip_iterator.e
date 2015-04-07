@@ -992,6 +992,16 @@ feature
 			safe_process (l_as.end_keyword)
 		end
 
+	process_separate_instruction_as (a: SEPARATE_INSTRUCTION_AS)
+			-- <Precursor>
+		do
+			safe_process (a.separate_keyword (match_list))
+			a.arguments.process (Current)
+			safe_process (a.do_keyword (match_list))
+			safe_process (a.compound)
+			a.end_keyword.process (Current)
+		end
+
 	process_external_as (l_as: EXTERNAL_AS)
 		do
 			safe_process (l_as.external_keyword (match_list))
@@ -1355,6 +1365,14 @@ feature
 			safe_process (l_as.rparan_symbol (match_list))
 		end
 
+	process_named_expression_as (a_as: NAMED_EXPRESSION_AS)
+			-- <Precursor>
+		do
+			a_as.expression.process (Current)
+			safe_process (a_as.as_keyword (match_list))
+			a_as.name.process (Current)
+		end
+
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)
 			-- Process `l_as'.
 		do
@@ -1541,7 +1559,7 @@ invariant
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

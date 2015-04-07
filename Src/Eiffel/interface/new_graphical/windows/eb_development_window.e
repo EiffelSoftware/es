@@ -616,21 +616,19 @@ feature -- Update
 --			end
 --			tools.class_tool.invalidate
 --			tools.features_relation_tool.invalidate
-			if eiffel_layout.has_diagram then
-					-- Target diagram stone to root class or cluster if no stone is set.
-				if
-					tools.diagram_tool.last_stone = Void and then
-					l_system /= Void and then
-					eiffel_project.initialized and then
-					eiffel_system.workbench.is_already_compiled and then
-					not l_system.root_creators.is_empty
-				then
-					l_root := l_system.root_creators.first
-					if l_root.root_class /= Void and then l_root.root_class.compiled_class /= Void then
-						tools.diagram_tool.set_stone (create {CLASSC_STONE}.make (l_root.root_class.compiled_class))
-					else
-						tools.diagram_tool.set_stone (create {CLUSTER_STONE}.make (l_root.cluster))
-					end
+				-- Target diagram stone to root class or cluster if no stone is set.
+			if
+				tools.diagram_tool.last_stone = Void and then
+				l_system /= Void and then
+				eiffel_project.initialized and then
+				eiffel_system.workbench.is_already_compiled and then
+				not l_system.root_creators.is_empty
+			then
+				l_root := l_system.root_creators.first
+				if l_root.root_class /= Void and then l_root.root_class.compiled_class /= Void then
+					tools.diagram_tool.set_stone (create {CLASSC_STONE}.make (l_root.root_class.compiled_class))
+				else
+					tools.diagram_tool.set_stone (create {CLUSTER_STONE}.make (l_root.cluster))
 				end
 			end
 
@@ -719,67 +717,50 @@ feature -- Update
 
 feature -- Stone process
 
-	stone: STONE
+	stone: detachable STONE
 			-- Current stone
 
 	toggle_unified_stone
 			-- Change the stone management mode.
 		do
-			set_unified_stone (not unified_stone)
-			if unified_stone then
+				-- Save new value of `is_unified_stone' after toggle.
+			set_is_unified_stone (not is_unified_stone)
+
+				-- Save the corresponding the preference.
+			preferences.development_window_data.context_unified_stone_preference.set_value (is_unified_stone)
+
+			if is_unified_stone then
 				send_stone_to_context
 				commands.send_stone_to_context_cmd.disable_sensitive
-			else
-				if stone /= Void then
-					commands.send_stone_to_context_cmd.enable_sensitive
-				end
+			elseif stone /= Void then
+				commands.send_stone_to_context_cmd.enable_sensitive
 			end
 		end
 
-	set_stone (a_stone: STONE)
+	set_stone (a_stone: detachable STONE)
 			-- Change the currently focused stone.
 		local
 			l_warning: ES_DISCARDABLE_WARNING_PROMPT
-			cv_cst: detachable CLASSI_STONE
-			ef_stone: detachable EXTERNAL_FILE_STONE
-			l: LIST [EB_DEVELOPMENT_WINDOW]
-			l_filename: detachable like {ERROR}.file_name
-		do
-			cv_cst ?= a_stone
-			if cv_cst /= Void then
-				l_filename := cv_cst.file_name
-			else
-				ef_stone ?= a_stone
-				if ef_stone /= Void then
-					l_filename := ef_stone.file_name
-				end
-			end
-
-			if l_filename /= Void and (cv_cst /= Void or ef_stone /= Void) then
-				l := Window_manager.development_windows_with_class (l_filename)
-				if l.is_empty or else l.has (Current) then
-						-- We're not editing the class in another window.
-					set_stone_after_first_check (a_stone)
-				else
-					create l_warning.make_standard (warning_messages.w_class_already_edited, "", create {ES_BOOLEAN_PREFERENCE_SETTING}.make (preferences.dialog_data.already_editing_class_preference, True))
-					l_warning.set_button_action (l_warning.dialog_buttons.ok_button, agent set_stone_after_first_check (a_stone))
-					l_warning.show (window)
-				end
-			else
-				set_stone_after_first_check (a_stone)
-			end
-			update_save_symbol
-		end
-
-	set_stone_after_first_check (a_stone: STONE)
-			-- Display text associated with `a_stone', if any and if possible
-		local
+			l_window_list: LIST [EB_DEVELOPMENT_WINDOW]
 			l_checker: EB_STONE_FIRST_CHECKER
 		do
 			if a_stone /= Void then
 				create l_checker.make (Current)
-				l_checker.set_stone_after_first_check (a_stone)
+				if attached {CLASSI_STONE} a_stone as l_class_i_stone then
+					l_window_list := Window_manager.development_windows_with_class (l_class_i_stone.class_i)
+					if l_window_list.is_empty or else l_window_list.has (Current) then
+							-- We're not editing the class in another window.
+						l_checker.set_stone_after_first_check (a_stone)
+					else
+						create l_warning.make_standard (warning_messages.w_class_already_edited, "", create {ES_BOOLEAN_PREFERENCE_SETTING}.make (preferences.dialog_data.already_editing_class_preference, True))
+						l_warning.set_button_action (l_warning.dialog_buttons.ok_button, agent l_checker.set_stone_after_first_check (a_stone))
+						l_warning.show (window)
+					end
+				else
+					l_checker.set_stone_after_first_check (a_stone)
+				end
 			end
+			update_save_symbol
 		end
 
 	force_stone (s: STONE)
@@ -789,7 +770,7 @@ feature -- Stone process
 		do
 			if s.is_storable then
 				set_stone (s)
-				if not unified_stone then
+				if not is_unified_stone then
 					tools.set_stone (s)
 				end
 			end
@@ -1371,7 +1352,7 @@ feature -- Tools & Controls
 	managed_main_formatters: ARRAYED_LIST [EB_CLASS_TEXT_FORMATTER]
 			-- All formatters that can be displayed in the main editor frame.
 
-	unified_stone: BOOLEAN
+	is_unified_stone: BOOLEAN
 			-- Is the stone common with the context tool or not?
 
 	link_tools: BOOLEAN
@@ -1682,19 +1663,14 @@ feature {EB_STONE_CHECKER, EB_STONE_FIRST_CHECKER, EB_DEVELOPMENT_WINDOW_PART} -
 			-- Give a correct sensitivity to formatters.
 		local
 			cist: CLASSI_STONE
-			cst: CLASSC_STONE
 			type_changed: BOOLEAN
 			cluster_st: CLUSTER_STONE
 		do
-			cst ?= stone
 			cist ?= stone
 			-- Check to if formatting context has changed.
-			if cst /= Void then
-				type_changed := (cst.e_class.is_true_external and not is_stone_external) or
-					(not cst.e_class.is_true_external and is_stone_external)
-			elseif cist /= Void then
-				type_changed := (cist.class_i.is_external_class and not is_stone_external) or
-					(not cist.class_i.is_external_class and is_stone_external)
+			if cist /= Void then
+				type_changed := (cist.is_dotnet_class and not is_stone_external) or
+					(not cist.is_dotnet_class and is_stone_external)
 			end
 
 			if type_changed then
@@ -1702,7 +1678,7 @@ feature {EB_STONE_CHECKER, EB_STONE_FIRST_CHECKER, EB_DEVELOPMENT_WINDOW_PART} -
 				is_stone_external := not is_stone_external
 			end
 
-			if cst /= Void then
+			if attached {CLASSC_STONE} stone then
 				address_manager.enable_formatters
 				if is_stone_external then
 						-- Change formatters to .NET sensitivity (from normal).
@@ -2396,15 +2372,12 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_PART} -- EB_DEVELO
 
 feature {EB_DEVELOPMENT_WINDOW_DIRECTOR, EB_DEVELOPMENT_WINDOW_BUILDER, EB_ADDRESS_MANAGER} --EB_DEVELOPMENT_WINDOW_DIRECTOR issues.
 
-	set_unified_stone (a_bool: like unified_stone)
-			-- Set `unified_stone'
+	set_is_unified_stone (a_bool: like is_unified_stone)
+			-- Set `is_unified_stone' with `a_bool'.
 		do
-			unified_stone := a_bool
-
-				-- Set the preference.
-			preferences.development_window_data.context_unified_stone_preference.set_value (a_bool)
+			is_unified_stone := a_bool
 		ensure
-			set: unified_stone = a_bool
+			set: is_unified_stone = a_bool
 		end
 
 	set_history_manager (a_manager: like history_manager)
@@ -2581,7 +2554,7 @@ invariant
 	window_id_positive: window_id > 0
 
 note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -126,12 +126,12 @@ feature -- Status setting
 			set_classi (a_class.original_class)
 		end
 
-	set_stone (new_stone: STONE)
+	set_stone (new_stone: detachable STONE)
 			-- Associate `Current' with class contained in `new_stone'.
 		do
 			force_stone (new_stone)
 			if attached {CLASSI_STONE} new_stone as l_new_stone then
-				if not l_new_stone.class_i.is_external_class then
+				if not l_new_stone.is_dotnet_class then
 					set_classi (l_new_stone.class_i)
 				end
 			else
@@ -157,7 +157,7 @@ feature -- Status setting
 			ensure_display_in_widget_owner
 		end
 
-	force_stone (a_stone: STONE)
+	force_stone (a_stone: detachable STONE)
 			-- Directly set `stone' with `a_stone'
 		do
 			Precursor (a_stone)
@@ -205,7 +205,7 @@ feature {NONE} -- Implementation
 		-- Does it make sense to show line numbers in Current?
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -229,11 +229,11 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_BASIC_TEXT_FORMATTER

@@ -3193,6 +3193,21 @@ feature {NONE} -- Implementation
 			text_formatter_decorator.process_keyword_text (ti_retry_keyword, Void)
 		end
 
+	process_separate_instruction_as (a: SEPARATE_INSTRUCTION_AS)
+			-- <Precursor>
+		do
+			put_breakable
+			text_formatter_decorator.process_keyword_text (ti_separate_keyword, Void)
+			a.arguments.process (Current)
+			text_formatter_decorator.process_keyword_text (ti_do_keyword, Void)
+			text_formatter_decorator.put_new_line
+			text_formatter_decorator.indent
+			safe_process (a.compound)
+			text_formatter_decorator.exdent
+			text_formatter_decorator.put_new_line
+			text_formatter_decorator.process_keyword_text (ti_end_keyword, Void)
+		end
+
 	process_external_as (l_as: EXTERNAL_AS)
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
@@ -4197,6 +4212,14 @@ feature {NONE} -- Implementation
 			text_formatter_decorator.indent
 			l_as.parameters.process (Current)
 			text_formatter_decorator.exdent
+		end
+
+	process_named_expression_as (a_as: NAMED_EXPRESSION_AS)
+			-- <Precursor>
+		do
+			a_as.expression.process (Current)
+			text_formatter_decorator.put_space
+			a_as.name.process (Current)
 		end
 
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)
@@ -5238,7 +5261,7 @@ invariant
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

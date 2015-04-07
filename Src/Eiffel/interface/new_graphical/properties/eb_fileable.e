@@ -24,10 +24,10 @@ inherit
 
 feature -- Access
 
-	stone: STONE
+	stone: detachable STONE
 			-- Stone for current.
 
-	file_name: like {FILED_STONE}.file_name
+	file_name: detachable like {FILED_STONE}.file_name
 			-- Name of the file being displayed.
 			-- This attribute is useful when `stone'
 			-- is Void (this case occurs after loading
@@ -88,24 +88,16 @@ feature -- Status Settings
 			internal_last_saving_date := a_timestamp
 		end
 
-	set_stone (new_stone: STONE)
-			-- Make `s' the new value of stone.
-			-- Change file name as a consequence, to keep invariant.
-		local
-			filed_stone: FILED_STONE
+	set_stone (a_stone: detachable STONE)
+			-- Make `a_stone' the new value of `stone'.
+			-- Update `file_name' if `a_stone' is a FILED_STONE.
 		do
-			stone := new_stone
-			filed_stone ?= new_stone
-			if filed_stone /= Void then
-				set_file_name_from_stone (filed_stone)
+			stone := a_stone
+			if attached {FILED_STONE} a_stone as l_filed_stone then
+				set_file_name_from_stone (l_filed_stone)
 			else
 				file_name := Void
 			end
---| FIXME ARNAUD
---			if stone_b /= Void then
---				stone_b.set_pebble (new_stone)
---			end
---| END FIXME
 		end
 
 	set_last_save_failed (a_fail: BOOLEAN)
@@ -153,19 +145,17 @@ feature {NONE} -- Status Settings
 
 	set_file_name_from_stone (s: FILED_STONE)
 			-- Update `file_name' using information from `s'.
+		require
+			s_attached: s /= Void
 		local
 			f: RAW_FILE
 		do
-			if (s = Void) or else (s.file_name = Void) then
-				set_file_name (Void)
+			set_file_name (s.file_name)
+			create f.make_with_name (file_name)
+			if f.exists then
+				set_last_saving_date (f.date)
 			else
-				set_file_name (s.file_name)
-				create f.make_with_name (file_name)
-				if f.exists then
-					set_last_saving_date (f.date)
-				else
-					set_file_name (Void)
-				end
+				set_file_name (Void)
 			end
 		end
 
@@ -279,7 +269,7 @@ feature {NONE} -- Implementation
 			-- Date of last save
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -13,7 +13,7 @@ inherit
 
 	FILED_STONE
 		redefine
-			is_valid, synchronized_stone, same_as,
+			is_valid, synchronized_stone, same_as, is_compatible_with,
 			stone_name
 		end
 
@@ -127,14 +127,27 @@ feature -- Status report
 	is_valid: BOOLEAN
 			-- Is `Current' a valid stone?
 		do
-			Result := class_i /= Void and class_i.is_valid
+			Result := class_i /= Void and then class_i.is_valid
+		end
+
+	is_dotnet_class: BOOLEAN
+		do
+			Result := class_i /= Void and then class_i.is_valid and then class_i.is_external_class
+		end
+
+feature -- Comparison
+
+	is_compatible_with (other: STONE): BOOLEAN
+			-- Do `Current' and `other' represent the same class?
+		do
+			Result := attached {CLASSI_STONE} other as convcur and then class_i.is_equal (convcur.class_i)
+				and then equal (class_i.config_class.overriden_by, convcur.class_i.config_class.overriden_by)
 		end
 
 	same_as (other: STONE): BOOLEAN
 			-- Do `Current' and `other' represent the same class?
 		do
-			Result := attached {CLASSI_STONE} other as convcur and then class_i.is_equal (convcur.class_i)
-				and then equal (class_i.config_class.overriden_by, convcur.class_i.config_class.overriden_by)
+			Result := is_compatible_with (other)
 		end
 
 feature {NONE} -- Implementation
@@ -145,7 +158,7 @@ invariant
 	actual_class_i_not_void: class_i /= Void
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

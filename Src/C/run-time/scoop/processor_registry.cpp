@@ -63,8 +63,10 @@ processor_registry::processor_registry () :
 
 	used_pids.add(0);
 
-	processor *root_proc = new processor(0, true);
-	root_proc->has_client = true;
+	processor *root_proc = NULL;
+	int error = rt_processor_create (0, EIF_TRUE, &root_proc);
+	CHECK ("no_error", error == T_OK); /* TODO: Error handling. */
+	CHECK ("has_client_set", root_proc->has_client);
 
 	procs[0] = root_proc;
 
@@ -78,7 +80,7 @@ processor_registry::processor_registry () :
 processor* processor_registry::create_fresh (EIF_REFERENCE obj)
 {
 	EIF_SCP_PID pid = 0;
-	processor *proc;
+	processor *proc = NULL;
 		/* TODO: Return newly allocated PID instead of writing it to 'obj'
 		   so that the argument 'obj' can be removed. */
 	EIF_OBJECT object = eif_protect (obj);
@@ -96,16 +98,16 @@ processor* processor_registry::create_fresh (EIF_REFERENCE obj)
 		}
 	}
 
-	proc = new processor(pid, false);
+	int error = rt_processor_create (pid, EIF_FALSE, &proc);
+	CHECK ("no_error", error == T_OK); /* TODO: Error handling. */
+
 	procs[pid] = proc;
 	obj = eif_access (object);
 	RTS_PID(obj) = pid;
 
 	used_pids.add (pid);
 
-	proc->spawn();
-	struct rt_message dummy;
-	rt_message_channel_receive (&proc->startup_notify, &dummy);
+	rt_processor_spawn (proc);
 
 	eif_wean (object);
 
@@ -128,7 +130,7 @@ void processor_registry::return_processor (processor *proc)
 	eif_unset_processor_id ();
 
 	if (used_pids.erase (pid)) {
-		delete proc;
+		rt_processor_destroy (proc);
 		procs [pid] = NULL;
 
 		if (used_pids.size() == 0) {
@@ -171,7 +173,7 @@ void processor_registry::mark_all (MARKER marking)
 		for (EIF_SCP_PID i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; i++) {
 			if (used_pids.has (i)) {
 				processor *proc = (*this) [i];
-				proc->mark (marking);
+				rt_processor_mark (proc, marking);
 			}
 		}
 		is_marking = false;
@@ -189,7 +191,7 @@ void processor_registry::unmark (EIF_SCP_PID pid)
 	if (used_pids.has (pid)) {
 		processor *proc = (*this) [pid];
 		clear_from_caches (proc);
-		proc->shutdown();
+		rt_processor_shutdown (proc);
 	}
 }
 
@@ -199,6 +201,7 @@ void processor_registry::clear_from_caches (processor *proc)
 	for (EIF_SCP_PID i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; i++) {
 		if (used_pids.has (i)) {
 			rt_queue_cache_clear ( &(procs[i]->cache), proc);
+			rt_processor_unsubscribe_wait_condition (procs[i], proc);
 		}
 	}
 }
@@ -208,8 +211,10 @@ void processor_registry::wait_for_all()
 {
 	processor *root_proc = (*this)[0];
 
-	root_proc->has_client = false;
-	root_proc->application_loop();
+		/* This statement seems to be redundant with the code in rt_processor_application_loop */
+	root_proc->has_client = EIF_FALSE;
+
+	rt_processor_application_loop (root_proc);
 
 	return_processor (root_proc);
 

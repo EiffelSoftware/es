@@ -175,11 +175,12 @@ doc:		<param name="self" type="struct rt_message_channel*"> The rt_message_chann
 doc:		<param name="message_type" type="enum scoop_message_type"> The type of the message. </param>
 doc:		<param name="sender" type="struct processor*"> The sender processor. Must not be NULL for SCOOP_MESSAGE_EXECUTE and SCOOP_MESSAGE_CALLBACK. </param>
 doc:		<param name="call" type="struct call_data*"> Information about a call to be executed. Must not be NULL for SCOOP_MESSAGE_EXECUTE and SCOOP_MESSAGE_CALLBACK. </param>
+doc:		<param name="queue" type="priv_queue*"> The queue to be executed by the receiver. Must not be NULL for ADD_QUEUE messages. </param>
 doc:		<thread_safety> Safe for exactly one sender thread and one receiver thread. </thread_safety>
 doc:		<synchronization> None required. </synchronization>
 doc:	</routine>
  */
-rt_private rt_inline void enqueue (struct rt_message_channel* self, enum scoop_message_type message_type, processor* sender, struct call_data* call)
+rt_private rt_inline void enqueue (struct rt_message_channel* self, enum scoop_message_type message_type, processor* sender, struct call_data* call, priv_queue* queue)
 {
 	struct mc_node* node = NULL;
 	REQUIRE ("self_not_null", self);
@@ -189,7 +190,7 @@ rt_private rt_inline void enqueue (struct rt_message_channel* self, enum scoop_m
 	CHECK ("next_is_null", !node->next);
 
 		/* Set up the rt_message value. */
-	rt_message_init (&node->value, message_type, sender, call);
+	rt_message_init (&node->value, message_type, sender, call, queue);
 
 		/* Enqueue the message. The store_release guarantees that the receiver
 		 * will see a consistent view of the node (i.e. with all fields initialized
@@ -251,18 +252,20 @@ doc:		<param name="self" type="struct rt_message_channel*"> The channel on which
 doc:		<param name="message_type" type="enum scoop_message_type"> The type of the message. </param>
 doc:		<param name="sender" type="struct processor*"> The sender processor. Must not be NULL for SCOOP_MESSAGE_EXECUTE and SCOOP_MESSAGE_CALLBACK. </param>
 doc:		<param name="call" type="struct call_data*"> Information about a call to be executed. Must not be NULL for SCOOP_MESSAGE_EXECUTE and SCOOP_MESSAGE_CALLBACK. </param>
+doc:		<param name="queue" type="priv_queue*"> The queue to be executed by the receiver. Must not be NULL for ADD_QUEUE messages. </param>
 doc:		<thread_safety> Safe for exactly one sender thread and one receiver thread. </thread_safety>
 doc:		<synchronization> None required. </synchronization>
 doc:	</routine>
 */
-rt_shared void rt_message_channel_send (struct rt_message_channel* self, enum scoop_message_type message_type, processor* sender, struct call_data* call)
+rt_shared void rt_message_channel_send (struct rt_message_channel* self, enum scoop_message_type message_type, processor* sender, struct call_data* call, priv_queue* queue)
 {
 	REQUIRE ("self_not_null", self);
 	REQUIRE ("sender_not_null", sender || (message_type != SCOOP_MESSAGE_EXECUTE && message_type != SCOOP_MESSAGE_CALLBACK));
 	REQUIRE ("call_not_null", call || (message_type != SCOOP_MESSAGE_EXECUTE && message_type != SCOOP_MESSAGE_CALLBACK));
+	REQUIRE ("queue_not_null", queue || (message_type != SCOOP_MESSAGE_ADD_QUEUE));
 
 		/* Perform the non-blocking enqueue operation. */
-	enqueue (self, message_type, sender, call);
+	enqueue (self, message_type, sender, call, queue);
 
 		/* Lock the condition variable mutex. */
 	eif_pthread_mutex_lock (self->has_elements_condition_mutex);
@@ -318,6 +321,29 @@ rt_shared void rt_message_channel_receive (struct rt_message_channel* self, stru
 		RTGC;
 	}
 }
+
+/*
+doc:	<routine name="rt_message_channel_is_empty" return_type="EIF_BOOLEAN" export="shared">
+doc:		<summary> Check if the message channel is empty, i.e. if there are no messages to be received. </summary>
+doc:		<param name="self" type="struct rt_message_channel*"> The rt_message_channel struct. Must not be NULL. </param>
+doc:		<return> EIF_TRUE when the channel is empty. EIF_FALSE if there's a message to be received. </return>
+doc:		<thread_safety> Safe on the receiver thread. </thread_safety>
+doc:		<synchronization> None required. </synchronization>
+doc:	</routine>
+*/
+rt_shared EIF_BOOLEAN rt_message_channel_is_empty (struct rt_message_channel* self)
+{
+	struct mc_node* item = NULL;
+	REQUIRE ("self_not_null", self);
+
+		/* Check if there's a message to be dequeued.
+		 * The load_consume ensures that we get a consistent view
+		 * if the producer just enqueued a new item. */
+	item = load_consume ( &(self->tail->next));
+	return !item;
+}
+
+
 
 /*
 doc:	<routine name="rt_message_channel_mark" return_type="void" export="shared">

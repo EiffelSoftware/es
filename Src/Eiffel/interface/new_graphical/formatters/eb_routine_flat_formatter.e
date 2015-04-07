@@ -49,11 +49,11 @@ feature -- Status setting
 			end
 		end
 
-	set_stone (new_stone: STONE)
+	set_stone (new_stone: detachable STONE)
 			-- Associate `Current' with class contained in `new_stone'.
 		do
 			force_stone (new_stone)
-			if attached {FEATURE_STONE} new_stone as l_new_stone and then l_new_stone.class_i.is_external_class then
+			if attached {FEATURE_STONE} new_stone as l_new_stone and then l_new_stone.is_dotnet_class then
 				set_dotnet_mode (True)
 				internal_consumed_type := consumed_type (l_new_stone.class_i)
 			else
@@ -177,7 +177,7 @@ feature {NONE} -- Implementation
 			-- Should breakpoints be shown in Current?
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

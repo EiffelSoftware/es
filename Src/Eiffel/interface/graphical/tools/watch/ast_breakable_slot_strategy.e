@@ -91,6 +91,7 @@ inherit
 			process_instr_call_as,
 			process_loop_as,
 			process_retry_as,
+			process_separate_instruction_as,
 			process_external_as,
 			process_attribute_as,
 			process_do_as,
@@ -105,6 +106,7 @@ inherit
 			process_formal_dec_as,
 			process_class_type_as,
 			process_generic_class_type_as,
+			process_named_expression_as,
 			process_named_tuple_type_as,
 			process_none_type_as,
 			process_rename_as,
@@ -1633,6 +1635,16 @@ feature {NONE} -- Implementation
 			put_breakable (l_as)
 		end
 
+	process_separate_instruction_as (a: SEPARATE_INSTRUCTION_AS)
+			-- <Precursor>
+		do
+			put_breakable (a.arguments)
+			a.arguments.process (Current)
+			if attached a.compound as c then
+				format_compound (c)
+			end
+		end
+
 	process_external_as (l_as: EXTERNAL_AS)
 		do
 			check
@@ -2069,6 +2081,12 @@ feature {NONE} -- Implementation
 	process_parameter_list_as (l_as: PARAMETER_LIST_AS)
 		do
 			l_as.parameters.process (Current)
+		end
+
+	process_named_expression_as (a_as: NAMED_EXPRESSION_AS)
+			-- <Pecursor>
+		do
+			a_as.expression.process (Current)
 		end
 
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)
@@ -2757,7 +2775,7 @@ invariant
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

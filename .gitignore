@@ -446,8 +446,6 @@ Src/framework/code_analysis/void_safe_tests/*.log
 Src/framework/code_analysis/void_safe_tests/EIFGENs
 Src/framework/code_analysis/void_safe_tests/log.txt
 Src/framework/code_analysis/void_safe_tests/test_output.txt
-Src/framework/configuration/*.wb
-Src/framework/configuration/EIFGENs
 Src/framework/eiffel2boogie/tests/EIFGENs
 Src/framework/eiffel2boogie/tests/autoproof_output.txt
 Src/framework/eiffel2boogie/tests/exception_trace.log

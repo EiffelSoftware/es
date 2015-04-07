@@ -16,9 +16,9 @@ inherit
 			stone,
 			retrieve_formatters,
 			force_last_stone,
-			on_file_changed,
 			initialize,
 			tool_veto_pebble_function,
+			enable_dotnet_formatters,
 			refresh
 		end
 
@@ -51,7 +51,7 @@ feature -- Access
 			-- Special handle to flat formatters of routine. Required to properly update
 			-- breakpoint positions during debugging.
 
-	stone: STONE
+	stone: detachable STONE
 			-- Currently managed stone.
 
 	predefined_formatters: like formatters
@@ -152,30 +152,17 @@ feature {ES_FEATURE_RELATION_TOOL} -- Element change
 
 feature -- Status setting
 
-	set_stone (new_stone: STONE)
+	set_stone (a_stone: detachable STONE)
 			-- Send a stone to feature formatters.
 		local
-			l_last_stone, fst: FEATURE_STONE
-			type_changed: BOOLEAN
+			l_last_stone: FEATURE_STONE
 			l_feature_comparer: E_FEATURE_COMPARER
 		do
-			fst ?= new_stone
 				-- Avoid class stone from extending to the history.
-			if fst /= Void then
-				type_changed := (fst.e_class.is_true_external and not is_stone_external) or
-					(not fst.e_class.is_true_external and is_stone_external)
-
-					-- Toggle stone flag.
-				if type_changed then
-					is_stone_external := not is_stone_external
-				end
-
+			if attached {FEATURE_STONE} a_stone as fst then
 					-- Update formatters.
-	            if is_stone_external then
-					enable_dotnet_formatters (True)
-				else
-					enable_dotnet_formatters (False)
-				end
+				enable_dotnet_formatters (fst.is_dotnet_class)
+
 				update_viewpoints (fst.e_class)
 				create l_feature_comparer
 				l_last_stone ?= stone
@@ -195,8 +182,10 @@ feature -- Status setting
 					end
 				end
 			else
-				if new_stone = Void or else (not new_stone.is_valid) then
-					do_all_in_list (formatters, agent (a_formatter: EB_FORMATTER) do a_formatter.reset_display end)
+				if a_stone = Void or else (not a_stone.is_valid) then
+					across formatters as l_formatter loop
+						l_formatter.item.reset_display
+					end
 				end
 			end
 
@@ -259,7 +248,7 @@ feature -- Status setting
 				l_tool := develop_window.tools.default_class_tool
 			end
 
-			if develop_window.unified_stone then
+			if develop_window.is_unified_stone then
 				develop_window.set_stone (st)
 			elseif develop_window.link_tools then
 				if not found then
@@ -271,7 +260,6 @@ feature -- Status setting
 				if l_tool = Void then
 					if found then
 							-- Reset the stone on the tool with the found new feature stone.
-						check is_stone_valid (new_fs) end
 						set_stone (new_fs)
 					end
 				else
@@ -324,26 +312,6 @@ feature -- Status setting
 			set: content.user_widget.is_displayed = not is_refresh_needed
 		end
 
-feature {NONE} -- Event handlers
-
-	on_file_changed (a_type: NATURAL_8)
-			-- Called when the file associated with the last stone is changed
-			--
-			-- `a_type': The type of modification performed on the file. See {FILE_NOTIFIER_MODIFICATION_TYPES} for modification types.
-		local
-			l_mode: like mode
-		do
-			if (a_type & {FILE_NOTIFIER_MODIFICATION_TYPES}.file_changed) = {FILE_NOTIFIER_MODIFICATION_TYPES}.file_changed then
-				l_mode := mode
-				if l_mode = {ES_FEATURE_RELATION_TOOL_VIEW_MODES}.basic or l_mode = {ES_FEATURE_RELATION_TOOL_VIEW_MODES}.flat then
-						-- For now we do not do a refresh of the feature, until we can better handle saving of the scrolled position information
-						-- and provide comments when major modifications have been made to the class.
---					refresh
-				end
-			end
-			Precursor (a_type)
-		end
-
 feature {NONE} -- Implementation
 
 	enable_dotnet_formatters (a_flag: BOOLEAN)
@@ -351,21 +319,7 @@ feature {NONE} -- Implementation
 		local
 			l_done: BOOLEAN
 		do
-			from
-				formatters.start
-			until
-				formatters.after
-			loop
-				if
-					(formatters.item.is_dotnet_formatter and a_flag) or
-					(not a_flag)
-				then
-					formatters.item.enable_sensitive
-				else
-					formatters.item.disable_sensitive
-				end
-				formatters.forth
-			end
+			Precursor (a_flag)
 
 					-- Determine which formatter to give focus based upon previous one.
 			if a_flag then
@@ -399,24 +353,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
-feature{NONE} -- Implementation
+feature {NONE} -- Implementation
 
 	retrieve_formatters
 			-- Retrieve all formatters related with Current tool and store them in `formatters'
 		do
 			Precursor
-			do_all_in_list (
-				formatters,
-				agent (a_formatter: EB_FORMATTER)
-					local
-						l_flat_formatter: like flat_formatter
-					do
-						l_flat_formatter ?= a_formatter
-						if l_flat_formatter /= Void then
-							flat_formatter := l_flat_formatter
-						end
-					end
-			)
+			across formatters as l_formatter until flat_formatter /= Void loop
+				if attached {like flat_formatter} l_formatter.item as l_flat_formatter then
+					flat_formatter := l_flat_formatter
+				end
+			end
 		end
 
 	tool_veto_pebble_function (a_stone: ANY): BOOLEAN
@@ -426,7 +373,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

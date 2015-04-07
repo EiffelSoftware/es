@@ -48,7 +48,7 @@ feature -- Command
 			handle_break_error_ace_external_file_stone (a_stone)
 			if
 				develop_window.stone /= Void and then
-				not develop_window.unified_stone
+				not develop_window.is_unified_stone
 			then
 				develop_window.commands.send_stone_to_context_cmd.enable_sensitive
 			else
@@ -96,7 +96,6 @@ feature {NONE} -- Implementation functions
 			conv_brkstone ?= a_stone
 			conv_errst ?= a_stone
 
-			ef_stone ?= a_stone
 			target_stone ?= a_stone
 
 			cluster_st ?= a_stone
@@ -122,7 +121,7 @@ feature {NONE} -- Implementation functions
 		end
 
 	handle_break_error_ace_external_file_stone (a_stone: STONE)
-			-- Handle `conv_brkstone', `conv_errst', `ef_stone' and `target_stone' if exist.
+			-- Handle `conv_brkstone', `conv_errst', and `target_stone' if exist.
 		local
 			bpm: BREAKPOINTS_MANAGER
 		do
@@ -134,17 +133,6 @@ feature {NONE} -- Implementation functions
 					bpm.set_user_breakpoint (conv_brkstone.routine, conv_brkstone.index)
 				end
 				bpm.notify_breakpoints_changes
-			elseif ef_stone /= Void then
-				if not text_loaded and then current_editor /= Void then
-					f := ef_stone.file
-					f.make_with_path (f.path)
-					f.open_read
-					f.read_stream (f.count)
-					f.close
-					prevent_duplicated_editor (a_stone)
-					current_editor.set_stone (a_stone)
-					current_editor.load_text (f.last_string)
-				end
 			elseif target_stone /= Void and then target_stone.is_valid then
 				handle_target_stone (target_stone)
 			else
@@ -157,9 +145,6 @@ feature {NONE} -- Implementation functions
 		local
 			s: STRING_32
 		do
-				-- Remember previous stone.
-			old_stone := develop_window.stone
-
 			develop_window.tools.properties_tool.set_stone (a_target_stone)
 
 				-- Update the title of the window
@@ -184,9 +169,6 @@ feature {NONE} -- Implementation functions
 			l_stonable: ES_STONABLE_I
 			s: STRING_32
 		do
-				-- Remember previous stone.
-			old_stone := develop_window.stone
-
 			develop_window.commands.new_feature_cmd.disable_sensitive
 
 				-- We update the state of the `Add to Favorites' command.
@@ -227,7 +209,7 @@ feature {NONE} -- Implementation functions
 --			end
 
 				-- Update the context tool.
-			if develop_window.unified_stone then
+			if develop_window.is_unified_stone then
 				develop_window.tools.set_stone (a_stone)
 			end
 		end
@@ -436,8 +418,8 @@ feature {NONE} -- Implementation functions
 	set_class_text_for_class_stone
 			-- Set class texts for class stone.
 		do
-			if class_text_exists or else new_class_stone.class_i.is_external_class then
-				if new_class_stone.class_i.is_external_class then
+			if class_text_exists or else new_class_stone.is_dotnet_class then
+				if new_class_stone.is_dotnet_class then
 					externali ?= new_class_stone.class_i
 					check
 						externali_not_void: externali /= Void
@@ -1040,9 +1022,6 @@ feature {NONE} -- Implementation attributes
 	develop_window: EB_DEVELOPMENT_WINDOW
 			-- Development window associate with current.
 
-	old_stone: STONE
-			-- Old stone.
-
 	new_class_stone: CLASSI_STONE
 			-- New class stone.
 
@@ -1066,12 +1045,6 @@ feature {NONE} -- Implementation attributes
 
 	target_stone: TARGET_STONE
 			-- Target stone.
-
-	ef_stone: EXTERNAL_FILE_STONE
-			-- External file stone.
-
-	f: FILE
-			-- File associate with `ef_stone'.
 
 	conv_errst: ERROR_STONE
 			-- Error stone.
@@ -1161,7 +1134,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

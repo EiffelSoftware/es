@@ -676,6 +676,14 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		deferred
 		end
 
+	process_named_expression_as (l_as: NAMED_EXPRESSION_AS)
+			-- Process `l_as'.
+		require
+			is_valid_visitor: is_valid
+			non_void_as: l_as /= Void
+		deferred
+		end
+
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)
 			-- Process `l_as'.
 		require
@@ -1224,6 +1232,14 @@ feature {AST_EIFFEL} -- Instructions visitors
 		deferred
 		end
 
+	process_separate_instruction_as (a_as: SEPARATE_INSTRUCTION_AS)
+			-- Process `a_as'.
+		require
+			is_valid_visitor: is_valid
+			non_void_as: attached a_as
+		deferred
+		end
+
 feature {AST_EIFFEL} -- External visitors
 
 	process_external_as (l_as: EXTERNAL_AS)
@@ -1331,7 +1347,7 @@ feature -- Quantification
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
