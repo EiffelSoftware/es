@@ -25,7 +25,7 @@ feature
 	build_tool_interface (root_widget: EV_TEXT)
 		do
 			create {ALIAS_ANALYZER_ON_RELATION} alias_analyzer.make
-			create {ALIAS_ANALYZER_ON_GRAPH} alias_analyzer.make
+			--create {ALIAS_ANALYZER_ON_GRAPH} alias_analyzer.make
 			create {CHANGE_ANALYZER_ON_RELATION} change_analyzer.make
 			analyzer := change_analyzer
 			propagate_drop_actions (Void)
@@ -269,7 +269,7 @@ feature {NONE} -- Analyzer
 			-- The engine to perform alias analysis.
 
 ;note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
