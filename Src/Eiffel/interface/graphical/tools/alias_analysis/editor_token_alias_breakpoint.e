@@ -19,12 +19,13 @@ create
 
 feature {NONE}
 
-	make_replace (a_to_replace: EDITOR_TOKEN_BREAKPOINT)
+	make_replace (a_to_replace: EDITOR_TOKEN_BREAKPOINT; a_line_number: INTEGER_32)
 		require
 			a_to_replace /= Void
 			a_to_replace.previous = Void
 			a_to_replace.next /= Void
 			a_to_replace.pebble /= Void
+			a_line_number >= 0
 		do
 			make
 			set_next_token (a_to_replace.next)
@@ -32,6 +33,7 @@ feature {NONE}
 			next.set_previous_token (Current)
 			set_pebble (a_to_replace.pebble)
 			a_to_replace.set_pebble (Void)
+			line_number := a_line_number
 		ensure
 			previous = Void
 			next = old a_to_replace.next
@@ -40,9 +42,12 @@ feature {NONE}
 			next.previous = Current
 			pebble = old a_to_replace.pebble
 			a_to_replace.pebble = Void
+			line_number = a_line_number
 		end
 
 feature
+
+	line_number: INTEGER_32
 
 	next_alias_breakpoint: EDITOR_TOKEN_ALIAS_BREAKPOINT assign set_next_alias_breakpoint
 

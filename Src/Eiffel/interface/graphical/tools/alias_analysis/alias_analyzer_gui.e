@@ -53,6 +53,7 @@ feature {NONE}
 	on_stone_changed (a_stone: STONE)
 		local
 			l_el: EIFFEL_EDITOR_LINE
+			l_line_number: INTEGER_32
 			l_last: EDITOR_TOKEN_ALIAS_BREAKPOINT
 
 			l_internal: INTERNAL
@@ -63,6 +64,7 @@ feature {NONE}
 
 			from
 				l_el := feature_view.editor.text_displayed.first_line
+				l_line_number := 1
 			until
 				l_el = Void
 			loop
@@ -86,19 +88,20 @@ feature {NONE}
 					end
 
 					if l_last = Void then
-						l_last := create {EDITOR_TOKEN_ALIAS_BREAKPOINT}.make_replace (etb)
+						l_last := create {EDITOR_TOKEN_ALIAS_BREAKPOINT}.make_replace (etb, l_line_number)
 						l_last.active := True
 						first_alias_breakpoint := l_last
 						cur_alias_breakpoint := l_last
 						step_over_button.enable_sensitive
 					else
-						l_last.next_alias_breakpoint := create {EDITOR_TOKEN_ALIAS_BREAKPOINT}.make_replace (etb)
+						l_last.next_alias_breakpoint := create {EDITOR_TOKEN_ALIAS_BREAKPOINT}.make_replace (etb, l_line_number)
 						l_last.next_alias_breakpoint.previous_alias_breakpoint := l_last
 						l_last := l_last.next_alias_breakpoint
 					end
 					l_internal.set_reference_field (l_field_index, l_el, l_last)
 				end
 				l_el := l_el.next
+				l_line_number := l_line_number + 1
 			end
 			feature_view.editor.refresh
 		ensure
@@ -115,6 +118,7 @@ feature {NONE}
 				cur_alias_breakpoint := first_alias_breakpoint
 			end
 			cur_alias_breakpoint.active := True
+			feature_view.editor.display_line_with_context (cur_alias_breakpoint.line_number)
 			feature_view.editor.refresh
 		end
 
