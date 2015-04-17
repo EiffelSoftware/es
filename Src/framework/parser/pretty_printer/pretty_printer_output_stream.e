@@ -5,7 +5,7 @@ class
 	PRETTY_PRINTER_OUTPUT_STREAM
 
 inherit
-	SHARED_LOCALE
+	LOCALIZED_PRINTER
 
 create
 	make_file,
@@ -44,11 +44,11 @@ feature {NONE} -- Creation
 	make_standard_output
 			-- Associate output with standard output.
 		do
+			is_open_query := agent (io.output).is_open_write
 			output := agent (s: READABLE_STRING_GENERAL)
 				do
 					localized_print (s)
 				end
-			is_open_query := agent (io.output).is_open_write
 		end
 
 	make_string (s: STRING_32)
@@ -87,7 +87,7 @@ feature {NONE} -- Access
 ;note
 	revision: "$Revision$"
 	date: "$Date$"
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

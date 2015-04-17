@@ -40,9 +40,13 @@
 #include "eif_portable.h"
 #include "eif_posix_threads.h"
 #include "eif_error.h"
+#include "rt_assert.h"
 
 /* TODO: Move the implementations into a C file and adapt the build system accordingly. */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
 doc:	<struct name="rt_identifier_set" export="shared">
@@ -264,5 +268,9 @@ rt_private rt_inline EIF_BOOLEAN rt_identifier_set_try_consume (struct rt_identi
 	}
 	return success;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _rt_identifier_set_h_ */

@@ -40,10 +40,10 @@ doc:<file name="eveqs.cpp" header="eif_scoop.h" version="$Id$" summary="SCOOP su
 */
 
 #include "rt_msc_ver_mismatch.h"
-#include "eif_utils.hpp"
 #include "processor_registry.hpp"
-#include "internal.hpp"
+#include "processor.hpp"
 #include "eif_interp.h"
+#include "eif_atomops.h"
 #include "rt_wbench.h"
 #include "rt_struct.h"
 #include "rt_assert.h"
@@ -55,14 +55,14 @@ extern "C" {
 /* RTS_RC (o) - create request group for o */
 rt_public void eif_new_scoop_request_group (EIF_SCP_PID client_pid)
 {
-	processor *client = registry [client_pid];
+	processor *client = rt_get_processor (client_pid);
 	rt_processor_request_group_stack_extend (client);
 }
 
 /* RTS_RD (o) - delete request group of o and release any locks */
 rt_public void eif_delete_scoop_request_group (EIF_SCP_PID client_pid)
 {
-	processor *client = registry [client_pid];
+	processor *client = rt_get_processor (client_pid);
 
 		/* Unlock, deallocate and remove the request group. */
 	rt_processor_request_group_stack_remove_last (client);
@@ -71,7 +71,7 @@ rt_public void eif_delete_scoop_request_group (EIF_SCP_PID client_pid)
 /* RTS_RF (o) - wait condition fails */
 rt_public void eif_scoop_wait_request_group (EIF_SCP_PID client_pid)
 {
-	processor *client = registry [client_pid];
+	processor *client = rt_get_processor (client_pid);
 	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
 	rt_request_group_wait (l_group);
 }
@@ -79,8 +79,8 @@ rt_public void eif_scoop_wait_request_group (EIF_SCP_PID client_pid)
 /* RTS_RS (c, s) - add supplier s to current group for c */
 rt_public void eif_scoop_add_supplier_request_group (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
 {
-	processor *client = registry [client_pid];
-	processor *supplier = registry [supplier_pid];
+	processor *client = rt_get_processor (client_pid);
+	processor *supplier = rt_get_processor (supplier_pid);
 
 	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
 	rt_request_group_add (l_group, supplier);
@@ -89,7 +89,7 @@ rt_public void eif_scoop_add_supplier_request_group (EIF_SCP_PID client_pid, EIF
 /* RTS_RW (o) - sort all suppliers in the group and get exclusive access */
 rt_public void eif_scoop_lock_request_group (EIF_SCP_PID client_pid)
 {
-	processor *client = registry [client_pid];
+	processor *client = rt_get_processor (client_pid);
 	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
 	rt_request_group_lock (l_group);
 }
@@ -98,7 +98,31 @@ rt_public void eif_scoop_lock_request_group (EIF_SCP_PID client_pid)
 /* RTS_PA */
 rt_public void eif_new_processor (EIF_REFERENCE obj)
 {
-	registry.create_fresh (obj);
+	EIF_SCP_PID new_pid = 0;
+	int error = T_OK;
+
+		/* TODO: Return newly allocated PID instead of writing it to 'obj'
+		   so that the argument 'obj' can be removed. */
+	EIF_OBJECT object = eif_protect (obj);
+
+	error = rt_processor_registry_create_region (&new_pid);
+
+	switch (error) {
+		case T_OK:
+			obj = eif_access (object);
+			RTS_PID(obj) = new_pid;
+			eif_wean (object);
+			rt_processor_registry_activate (new_pid);
+			break;
+		case T_NO_MORE_MEMORY:
+			eif_wean (object);
+			enomem();
+			break;
+		default:
+			eif_wean (object);
+			esys();
+			break;
+	}
 }
 
 /* Call logging */
@@ -149,17 +173,17 @@ rt_public void eif_apply_wcall (call_data *data)
 
 rt_public void eif_log_call (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid, call_data *data)
 {
-	processor *client = registry [client_pid];
-	processor *supplier = registry [supplier_pid];
+	processor *client = rt_get_processor (client_pid);
+	processor *supplier = rt_get_processor (supplier_pid);
 	priv_queue *pq = rt_queue_cache_retrieve (&client->cache, supplier);
 
 	REQUIRE("has data", data);
 
 	if (!supplier->is_creation_procedure_logged) {
-		supplier->is_creation_procedure_logged = EIF_TRUE;
 		rt_private_queue_lock (pq, client);
 		rt_private_queue_log_call(pq, client, data);
 		rt_private_queue_unlock (pq);
+		supplier->is_creation_procedure_logged = EIF_TRUE;
 	} else {
 		rt_private_queue_log_call(pq, client, data);
 	}
@@ -167,8 +191,8 @@ rt_public void eif_log_call (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid, c
 
 rt_public int eif_is_synced_on (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
 {
-	processor *client = registry [client_pid];
-	processor *supplier = registry [supplier_pid];
+	processor *client = rt_get_processor (client_pid);
+	processor *supplier = rt_get_processor (supplier_pid);
 	priv_queue *pq = rt_queue_cache_retrieve (&client->cache, supplier);
 
 	return rt_private_queue_is_synchronized (pq);
@@ -176,8 +200,8 @@ rt_public int eif_is_synced_on (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid
 
 int eif_is_uncontrolled (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
 {
-	processor *client = registry [client_pid];
-	processor *supplier = registry [supplier_pid];
+	processor *client = rt_get_processor (client_pid);
+	processor *supplier = rt_get_processor (supplier_pid);
 	
 	/*
 	 * An object is only uncontrolled when all of the following apply:
@@ -195,23 +219,76 @@ int eif_is_uncontrolled (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
 /* processor isn't used anymore. */
 rt_shared void rt_unmark_processor (EIF_SCP_PID pid)
 {
-	registry.unmark(pid);
+	rt_processor_registry_deactivate (pid);
 }
 
+/*
+doc:	<routine name="rt_enumerate_live_processors" return_type="void" export="shared">
+doc:		<summary> Mark all processors that currently have a client as alive. 
+doc:			Note: This is an approximation (i.e. a subset) of the truly alive processors.
+doc:			Some processors may not have a client at the moment, but some objects on them are still referenced. </summary>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Only call during GC. </synchronization>
+doc:	</routine>
+*/
 rt_shared void rt_enumerate_live_processors(void)
 {
-	registry.enumerate_live();
+	processor* proc = NULL;
+	
+	for (EIF_SCP_PID i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; i++) {
+		
+		proc = rt_lookup_processor (i);
+		
+			/* We also mark processors as alive whose creation procedure has not been logged yet.
+			 * This avoids a potential problem that a processor is garbage collected after creation,
+			 * just before the RTS_PID() of its root feature has been set. */
+		if (proc && (proc->has_client || !proc->is_creation_procedure_logged)) {
+			rt_mark_live_pid (proc->pid);
+		}
+	}
 }
 
 rt_public void eif_wait_for_all_processors(void)
 {
-	registry.wait_for_all();
+	rt_processor_registry_quit_root_processor ();
 }
 
+/*
+doc:	<routine name="rt_mark_all_processors" return_type="void" export="shared">
+doc:		<summary> Mark all processors in the system. </summary>
+doc:		<param name="marking" type="MARKER"> The marker function. Must not be NULL. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Only call during GC. </synchronization>
+doc:	</routine>
+*/
 rt_shared void rt_mark_all_processors (MARKER marking)
 {
-	registry.mark_all(marking);
+	static volatile EIF_INTEGER_32 rt_is_marking = 0;
+	processor* proc = NULL;
+
+	EIF_INTEGER_32 new_value = 1;
+	EIF_INTEGER_32 expected = 0;
+
+	REQUIRE ("marking_not_null", marking);
+
+		/* Use compare-exchange to determine whether marking is necessary. */
+		/* TODO: RS: Why is it necessary to use CAS here? As far as I can see this
+		 * operation is called exactly once and only by a single thread during GC... */
+	EIF_INTEGER_32 previous = RTS_ACAS_I32 (&rt_is_marking, new_value, expected);
+
+	if (previous == expected) {
+		for (EIF_SCP_PID i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; i++) {
+
+			proc = rt_lookup_processor (i);
+			if (proc) {
+				rt_processor_mark (proc, marking);
+			}
+		}
+			/* Reset rt_is_marking to zero. */
+		RTS_AS_I32 (&rt_is_marking, 0);
+	}
 }
+
 
 #ifdef __cplusplus
 }
