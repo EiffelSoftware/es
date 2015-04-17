@@ -10,19 +10,28 @@ class
 
 inherit
 
-	ES_DOCKABLE_STONABLE_TOOL_PANEL [EV_TEXT]
+	ES_DOCKABLE_STONABLE_TOOL_PANEL [EV_NOTEBOOK]
 
 create
 	make
 
 feature
 
-	create_widget: EV_TEXT
+	create_widget: EV_NOTEBOOK
+		local
+			l_gui: ALIAS_ANALYZER_GUI
 		do
+			create l_gui.make (develop_window)
+			create text_area
+
 			create Result
+			Result.extend (l_gui)
+			Result.set_item_text (l_gui, "GUI")
+			Result.extend (text_area)
+			Result.set_item_text (text_area, "Console")
 		end
 
-	build_tool_interface (root_widget: EV_TEXT)
+	build_tool_interface (root_widget: EV_NOTEBOOK)
 		do
 			create {ALIAS_ANALYZER_ON_RELATION} alias_analyzer.make
 			--create {ALIAS_ANALYZER_ON_GRAPH} alias_analyzer.make
@@ -40,8 +49,8 @@ feature
 			analyze_button.set_pixmap (stock_pixmaps.debug_run_icon)
 			analyze_button.set_pixel_buffer (stock_pixmaps.debug_run_icon_buffer)
 			analyze_button.select_actions.extend (agent run_analyzer)
-			analyze_button.select_actions.extend (agent user_widget.append_text ("%N"))
-			analyze_button.select_actions.extend (agent user_widget.append_text (guide_drop_message))
+			analyze_button.select_actions.extend (agent text_area.append_text ("%N"))
+			analyze_button.select_actions.extend (agent text_area.append_text (guide_drop_message))
 			analyze_button.disable_sensitive
 			Result.extend (analyze_button)
 			create stop_button.make
@@ -94,16 +103,16 @@ feature {NONE}
 				if not is_runnable then
 						-- There is no context to perform the analysis.
 					analyze_button.disable_sensitive
-					user_widget.set_text ("")
+					text_area.set_text ("")
 				elseif is_in_stone_synchronization then
 					analyze_button.enable_sensitive
-					user_widget.set_text ({STRING_32} "Press Analyze to process " + stone.stone_name + ".")
+					text_area.set_text ({STRING_32} "Press Analyze to process " + stone.stone_name + ".")
 				elseif is_runnable then
 					analyze_button.enable_sensitive
 					run_analyzer
 				end
-				user_widget.append_text ("%N")
-				user_widget.append_text (guide_drop_message)
+				text_area.append_text ("%N")
+				text_area.append_text (guide_drop_message)
 			end
 				-- The following line forces postcondition satisfaction.
 				-- Violations happen once in a blue moon, and are possibly related to compilation.
@@ -124,7 +133,7 @@ feature {NONE}
 	window_references: LINKED_LIST [EV_TITLED_WINDOW]
 			-- References to the displayed windows, so that they don't get garbage collected.
 
-feature {NONE} -- Toolbar
+feature {NONE} -- GUI elements
 
 	analyze_button: SD_TOOL_BAR_BUTTON
 			-- Button to trigger analyzer.
@@ -143,6 +152,8 @@ feature {NONE} -- Toolbar
 
 	model_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Toggle to enable/disable reporting model queries instead of attribute changes.
+
+	text_area: EV_TEXT
 
 feature {NONE} -- Message
 
@@ -208,7 +219,7 @@ feature {NONE} -- Analyzer
 								m.append_string (ff.feature_name_32)
 								m.append_string ({STRING_32} "...%N")
 								analyzer.report_statistics_to (m)
-								user_widget.set_text (m)
+								text_area.set_text (m)
 								ev_application.process_events
 							end
 						(f, c))
@@ -221,7 +232,7 @@ feature {NONE} -- Analyzer
 					s.append_character ('%N')
 					analyzer.report_to (s)
 				else
-					user_widget.set_text ({STRING_32} "Processing " + c.name + "...")
+					text_area.set_text ({STRING_32} "Processing " + c.name + "...")
 					analyzer.process_class (c,
 						agent (cc: CLASS_C)
 							local
@@ -231,7 +242,7 @@ feature {NONE} -- Analyzer
 								m.append_string (cc.name)
 								m.append_string ({STRING_32} "...%N")
 								analyzer.report_statistics_to (m)
-								user_widget.set_text (m)
+								text_area.set_text (m)
 								ev_application.process_events
 							end
 						(c)
@@ -248,7 +259,7 @@ feature {NONE} -- Analyzer
 				s.append_character ('%N')
 				s.append_character ('%N')
 				analyzer.report_statistics_to (s)
-				user_widget.set_text (s)
+				text_area.set_text (s)
 			end
 			stop_button.disable_sensitive
 		end
