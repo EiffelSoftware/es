@@ -20,15 +20,28 @@ feature
 	create_widget: EV_NOTEBOOK
 		local
 			l_gui: ALIAS_ANALYZER_GUI
+			l_vertical_box: EV_VERTICAL_BOX
+			l_tool_bar: SD_TOOL_BAR
 		do
 			create l_gui.make (develop_window)
+
 			create text_area
+			create l_tool_bar.make
+			across create_console_tool_bar_items as c loop
+				l_tool_bar.extend (c.item)
+			end
+			l_tool_bar.compute_minimum_size
+
+			create l_vertical_box
+			l_vertical_box.extend (l_tool_bar)
+			l_vertical_box.disable_item_expand (l_tool_bar)
+			l_vertical_box.extend (text_area)
 
 			create Result
 			Result.extend (l_gui)
 			Result.set_item_text (l_gui, "GUI")
-			Result.extend (text_area)
-			Result.set_item_text (text_area, "Console")
+			Result.extend (l_vertical_box)
+			Result.set_item_text (l_vertical_box, "Console")
 		end
 
 	build_tool_interface (root_widget: EV_NOTEBOOK)
@@ -42,7 +55,11 @@ feature
 
 	create_tool_bar_items: detachable ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 		do
-			create Result.make (2)
+		end
+
+	create_console_tool_bar_items: detachable ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+		do
+			create Result.make (6)
 			create analyze_button.make
 			analyze_button.set_text ("Analyze")
 			analyze_button.set_tooltip ("Analyze selected item.")
