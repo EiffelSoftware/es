@@ -36,6 +36,7 @@ feature {NONE}
 			feature_view.set_editor_displayer (feature_view.displayer_generator.any_generator.item ([a_develop_window, l_drop_actions]))
 			feature_view.set_combo_box (create {EV_COMBO_BOX}.make_with_text ((create {INTERFACE_NAMES}).l_Flat_view))
 			feature_view.on_shown
+			feature_view.editor.margin.margin_area.pointer_button_release_actions.wipe_out
 
 			create step_over_button.make_with_text_and_action ("", agent on_step_over)
 			step_over_button.set_pixmap ((create {EB_SHARED_PIXMAPS}).icon_pixmaps.debug_step_over_icon)
