@@ -126,11 +126,6 @@ Src/C/run-time/U/*.ilk
 Src/C/run-time/U/*.lib
 Src/C/run-time/U/*.obj
 Src/C/run-time/U/*.pdb
-Src/C/run-time/concurrency/*.exe
-Src/C/run-time/concurrency/*.ilk
-Src/C/run-time/concurrency/*.lib
-Src/C/run-time/concurrency/*.obj
-Src/C/run-time/concurrency/*.pdb
 Src/C/run-time/config.sh
 Src/C/run-time/eif_config.h
 Src/C/run-time/eif_confmagic.h
