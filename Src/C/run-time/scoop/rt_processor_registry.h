@@ -1,7 +1,7 @@
 /*
 	description:	"Declarations for struct rt_processor_registry."
 	date:		"$Date$"
-	revision:	"$Revision: 96304 $"
+	revision:	"$Revision$"
 	copyright:	"Copyright (c) 2014-2015, Eiffel Software.",
 				"Copyright (c) 2014 Scott West <scott.gregory.west@gmail.com>"
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
@@ -34,11 +34,13 @@
 			Customer support http://support.eiffel.com
 		]"
 */
-/* TODO: Rename this file to rt_processor_registry.h */
+
 #ifndef _rt_processor_registry_h_
 #define _rt_processor_registry_h_
 
 #include "rt_identifier_set.h"
+#include "rt_scoop.h"
+#include "rt_assert.h"
 
 /* Forward declarations */
 struct rt_processor;
@@ -58,22 +60,24 @@ rt_shared void rt_processor_registry_quit_root_processor (void);
 /* GC support. TODO: Move this to some other file (maybe scoop_gc.c?). It doesn't really fit here. */
 rt_shared void rt_scoop_gc_request (int* fingerprint);
 
-struct rt_processor_registry
-{
-public:
-	/* C++ leftovers */
-  rt_processor_registry () {
-	rt_processor_registry_init();
-  }
 
-  ~rt_processor_registry () {
-	rt_processor_registry_deinit();
-  }
-
-  void request_gc (int * fingerprint) {
-	  rt_scoop_gc_request (fingerprint);
-  }
-
+/*
+doc:	<struct name="rt_processor_registry" export="shared">
+doc:		<summary> The processor registry struct is a singleton.
+doc:			It manages a processor's lifecycle, maintains a set of free
+doc:			processor identifiers, and manages a mapping from PID to
+doc:			processor objects.
+doc:		</summary>
+doc:		<field name="procs" type="struct rt_processor**"> The array used to map PIDs to processors. </field>
+doc:		<field name="processor_count" type="volatile EIF_INTEGER_32"> An atomic integer to keep track of currently alive processors. </field>
+doc:		<field name="free_pids" type="struct rt_identifier_set"> A set of free (unassigned) PIDs. </field>
+doc:		<field name="all_done" type="EIF_BOOLEAN"> A boolean value indicating whether there are no more alive processors. Used by the root thread for program termination. </field>
+doc:		<field name="all_done_mutex" type="EIF_MUTEX_TYPE*"> A mutex to protect the all_done field. </field>
+doc:		<field name="all_done_cv" type="EIF_COND_TYPE*"> A condition variable for the root thread to wait for the all_done field to become true. </field>
+doc:		<fixme> Could it be that all_done and processor_count==0 contain the same information? </fixme>
+doc:	</struct>
+*/
+struct rt_processor_registry {
 	/*
 	 * Although the procs array is accessed by several threads,
 	 * it is not necessary to synchronize the access. There are several
@@ -117,6 +121,11 @@ public:
 };
 
 
+/*
+ * NOTE: This global variable is exported only for performance reasons
+ * (rt_get_processor and rt_lookup_processor can be inlined that way).
+ * Do not use it directly.
+ */
 extern struct rt_processor_registry registry;
 
 /*

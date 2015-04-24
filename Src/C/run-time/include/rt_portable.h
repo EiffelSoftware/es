@@ -1,5 +1,5 @@
 /*
-	description: "Unique lock class."
+	description: "Portable declarations for the runtime."
 	date:		"$Date$"
 	revision:	"$Revision$"
 	copyright:	"Copyright (c) 1985-2006, Eiffel Software."
@@ -7,19 +7,19 @@
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Runtime.
-			
+
 			Eiffel Software's Runtime is free software; you can
 			redistribute it and/or modify it under the terms of the
 			GNU General Public License as published by the Free
 			Software Foundation, version 2 of the License
 			(available at the URL listed under "license" above).
-			
+
 			Eiffel Software's Runtime is distributed in the hope
 			that it will be useful,	but WITHOUT ANY WARRANTY;
 			without even the implied warranty of MERCHANTABILITY
 			or FITNESS FOR A PARTICULAR PURPOSE.
 			See the	GNU General Public License for more details.
-			
+
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Runtime; if not,
 			write to the Free Software Foundation, Inc.,
@@ -34,51 +34,30 @@
 		]"
 */
 
-#ifndef _RT_UNIQUE_LOCK_HPP
-#define _RT_UNIQUE_LOCK_HPP
+#ifndef _rt_portable_h_
+#define _rt_portable_h_
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
 
-namespace eiffel_run_time
-{
+/*
+ * Disable compiler warnings for unused functions.
+ */
 
-template <class mutex_type>
-class unique_lock
-{
-public:
-	explicit unique_lock (mutex_type& m):
-			mutex_pointer (&m), is_owned (false)
-	{
-			/* construct and lock */
-		mutex_pointer -> lock();
-		is_owned = true;
-	}
-
-	~unique_lock ()
-	{
-			/* clean up */
-		if (is_owned) {
-			mutex_pointer -> unlock();
-		}
-	}
-
-	unique_lock (const unique_lock &);	/* not defined */
-	unique_lock & operator = (const unique_lock &);	/* not defined */
-
-	mutex_type * mutex ()
-	{
-			/* return pointer to managed mutex */
-		return mutex_pointer;
-	}
-
-private:
-	mutex_type * mutex_pointer;
-	bool is_owned;
-
-}; /* class unique_lock */
-
-} /* namespace eiffel_run_time */
-
+#if defined __GNUC__
+#	define rt_unused __attribute__((__unused__))
+#elif defined __clang__
+#	if __has_attribute (__unused__)
+#		define rt_unused __attribute__((__unused__))
+#	endif
 #endif
+
+#ifndef rt_unused
+#define rt_unused
+#endif
+
+
+
+
+#endif /* _rt_portable_h_ */

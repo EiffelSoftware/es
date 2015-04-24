@@ -1,9 +1,8 @@
 /*
-	description:	"SCOOP support."
+	description:	"Helper functions used by the SCOOP runtime."
 	date:		"$Date$"
-	revision:	"$Revision: 96304 $"
-	copyright:	"Copyright (c) 2010-2012, Eiffel Software.",
-				"Copyright (c) 2014 Scott West <scott.gregory.west@gmail.com>"
+	revision:	"$Revision$"
+	copyright:	"Copyright (c) 2010-2012, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -35,38 +34,20 @@
 		]"
 */
 
-/*
-doc:<file name="notify_token.cpp" header="notify_token.hpp" version="$Id$" summary="SCOOP support.">
-*/
-#include "rt_msc_ver_mismatch.h"
-#if 0
-#include "notify_token.hpp"
+#ifndef _rt_scoop_helpers_h_
+#define _rt_scoop_helpers_h_
 
-notify_token::notify_token(processor *client) :
-	client_(client),
-	token_queue_(make_shared_function <mpscq <processor*> > ())
-{
-}
+#include "eif_portable.h"
+#include "rt_garcol.h" /* TODO: It would be nice if we wouldn't have to pull in as many dependencies for the definition of MARKER. */
 
-notify_token::notify_token(const notify_token& other) :
-	client_(other.client_),
-	token_queue_(other.token_queue_)
-{
-}
+/* Forward declaration */
+struct call_data;
 
-processor* notify_token::client() const
-{
-	return client_;
-}
+void rt_set_processor_id (EIF_SCP_PID pid); /* Associate processor of ID `pid' with the current thread. */
+void rt_unset_processor_id (void);	/* Dissociate processor from the current thread. */
 
-void notify_token::wait()
-{
-	processor* dummy;
-	token_queue_->pop (dummy);
-}
+void rt_mark_call_data(MARKER marking, struct call_data* call); /* Mark references in a call_data struct with the MARKER function. */
 
-void notify_token::notify(processor *client)
-{
-	token_queue_->push (client);
-}
-#endif
+EIF_BOOLEAN rt_scoop_try_call (struct call_data *call); /* Execute 'call' and return EIF_FALSE if an exception happened. */
+
+#endif /* _rt_scoop_helpers_h_ */

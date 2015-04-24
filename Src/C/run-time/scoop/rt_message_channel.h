@@ -1,7 +1,7 @@
 /*
 	description:	"Declarations for the message channel struct."
-	date:		"$Date: 2015-03-19 18:13:44 +0100 (Thu, 19 Mar 2015) $"
-	revision:	"$Revision: 96880 $"
+	date:		"$Date$"
+	revision:	"$Revision$"
 	copyright:	"Copyright (c) 2010-2012, Eiffel Software.",
 				"Copyright (c) 2014 Scott West <scott.gregory.west@gmail.com>"
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
@@ -40,7 +40,7 @@
 
 #include "rt_message.h"
 #include "eif_posix_threads.h"
-#include "rt_scoop_gc.h"
+#include "rt_scoop_helpers.h"
 
 /* Cache line size on most modern processors in bytes. */
 #define CACHE_LINE_SIZE 64
@@ -49,16 +49,16 @@
 struct mc_node;
 
 /*
-doc:	<struct name="rt_message_channel", export="shared">
+doc:	<struct name="rt_message_channel" export="shared">
 doc:		<summary> Represents a message channel between two SCOOP processors. NOTE: The implementation relies on the fact that there's only one sender and one receiver thread! </summary>
-doc:		<field name="has_elements_condition_mutex", type="EIF_MUTEX_TYPE*"> A mutex which is needed for blocking receive. </field>
-doc:		<field name="has_elements_condition", type="EIF_COND_TYPE*"> A condition variable which is used for blocking receive. </field>
-doc:		<field name="spin", type="size_t"> The number of times a processor should try a non-blocking receive before waiting on the condition variable. </field>
-doc:		<field name="tail", type="struct mc_node*"> The tail of the internal message queue. Points to the guard node. </field>
-doc:		<field name="cache_line_pad", type="char[]"> Free space to ensure that no cache line ping-pong happens. </field>
-doc:		<field name="head", type="struct mc_node*"> The head of the internal message queue. This is where new messages get inserted. </field>
-doc:		<field name="first", type="struct mc_node*"> The last unused node. Points to a cache of free (reusable) nodes, or the guard node if none exist. </field>
-doc:		<field name="tail_copy", type="struct mc_node*"> A helper pointer that points somewhere between first and tail. </field>
+doc:		<field name="has_elements_condition_mutex" type="EIF_MUTEX_TYPE*"> A mutex which is needed for blocking receive. </field>
+doc:		<field name="has_elements_condition" type="EIF_COND_TYPE*"> A condition variable which is used for blocking receive. </field>
+doc:		<field name="spin" type="size_t"> The number of times a processor should try a non-blocking receive before waiting on the condition variable. </field>
+doc:		<field name="tail" type="struct mc_node*"> The tail of the internal message queue. Points to the guard node. </field>
+doc:		<field name="cache_line_pad" type="char[]"> Free space to ensure that no cache line ping-pong happens. </field>
+doc:		<field name="head" type="struct mc_node*"> The head of the internal message queue. This is where new messages get inserted. </field>
+doc:		<field name="first" type="struct mc_node*"> The last unused node. Points to a cache of free (reusable) nodes, or the guard node if none exist. </field>
+doc:		<field name="tail_copy" type="struct mc_node*"> A helper pointer that points somewhere between first and tail. </field>
 doc:	</struct>
 */
 struct rt_message_channel {

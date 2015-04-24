@@ -1,5 +1,5 @@
 /*
-	description:	"SCOOP support."
+	description:	"Main functions of the SCOOP runtime."
 	date:		"$Date$"
 	revision:	"$Revision$"
 	copyright:	"Copyright (c) 2010-2015, Eiffel Software."
@@ -35,7 +35,7 @@
 */
 
 /*
-doc:<file name="scoop.c" header="eif_scoop.h" version="$Id$" summary="SCOOP support.">
+doc:<file name="scoop.c" header="eif_scoop.h" version="$Id$" summary="Main functions of the SCOOP runtime.">
 */
 
 #include "eif_portable.h"
@@ -48,9 +48,32 @@ doc:<file name="scoop.c" header="eif_scoop.h" version="$Id$" summary="SCOOP supp
 #include "rt_garcol.h"
 #include "rt_macros.h"
 
+#include "rt_processor_registry.h"
+#include "rt_processor.h"
+
 #ifndef EIF_THREADS
 #error "SCOOP is currenly supported only in multithreaded mode."
 #endif
+
+/* Call logging */
+
+rt_public void eif_log_call (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid, call_data *data)
+{
+	struct rt_processor *client = rt_get_processor (client_pid);
+	struct rt_processor *supplier = rt_get_processor (supplier_pid);
+	struct rt_private_queue *pq = rt_queue_cache_retrieve (&client->cache, supplier);
+
+	REQUIRE("has data", data);
+
+	if (!supplier->is_creation_procedure_logged) {
+		rt_private_queue_lock (pq, client);
+		rt_private_queue_log_call(pq, client, data);
+		rt_private_queue_unlock (pq);
+		supplier->is_creation_procedure_logged = EIF_TRUE;
+	} else {
+		rt_private_queue_log_call(pq, client, data);
+	}
+}
 
 rt_public void eif_call_const (call_data * a)
 {
@@ -59,7 +82,74 @@ rt_public void eif_call_const (call_data * a)
 	(void) a;
 }
 
-/* Request chain stack */
+/* Processor creation */
+
+/* RTS_PA */
+rt_public void eif_new_processor (EIF_REFERENCE obj)
+{
+	EIF_SCP_PID new_pid = 0;
+	int error = T_OK;
+
+		/* TODO: Return newly allocated PID instead of writing it to 'obj'
+		   so that the argument 'obj' can be removed. */
+	EIF_OBJECT object = eif_protect (obj);
+
+	error = rt_processor_registry_create_region (&new_pid);
+
+	switch (error) {
+		case T_OK:
+			obj = eif_access (object);
+			RTS_PID(obj) = new_pid;
+			eif_wean (object);
+			rt_processor_registry_activate (new_pid);
+			break;
+		case T_NO_MORE_MEMORY:
+			eif_wean (object);
+			enomem();
+			break;
+		default:
+			eif_wean (object);
+			esys();
+			break;
+	}
+}
+
+/* Status report */
+
+rt_public int eif_is_synced_on (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
+{
+	struct rt_processor *client = rt_get_processor (client_pid);
+	struct rt_processor *supplier = rt_get_processor (supplier_pid);
+	struct rt_private_queue *pq = rt_queue_cache_retrieve (&client->cache, supplier);
+
+	return rt_private_queue_is_synchronized (pq);
+}
+
+int eif_is_uncontrolled (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
+{
+	struct rt_processor *client = rt_get_processor (client_pid);
+	struct rt_processor *supplier = rt_get_processor (supplier_pid);
+
+	/*
+	 * An object is only uncontrolled when all of the following apply:
+	 * - the handlers are different
+	 * - the client has no lock on the supplier yet
+	 * - the supplier has not passed its locks to the client in a previous call (separate callbacks).
+	 */
+
+	return client != supplier
+		&& !rt_queue_cache_is_locked (&client->cache, supplier)
+		&& !rt_queue_cache_has_locks_of (&client->cache, supplier);
+}
+
+/* Entry point for the root thread. */
+
+rt_public void eif_wait_for_all_processors(void)
+{
+	rt_processor_registry_quit_root_processor ();
+}
+
+/* Obsolete functions */
 
 /* Push client `c' on the request chain stack `stk' without notifying SCOOP mananger. */
 rt_public void eif_request_chain_push (EIF_REFERENCE c, struct stack * stk)
@@ -112,37 +202,48 @@ rt_public void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk)
 	}
 }
 
-/* Processor properties */
+/*Functions to manipulate the request group stack */
 
-/*
-doc:	<routine name="eif_set_processor_id" export="public">
-doc:		<summary>Associate processor of ID `pid' with the current thread.</summary>
-doc:		<param name="pid" type="EIF_SCP_PID">ID of the processor.</param>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Not required because called before starting any threads.</synchronization>
-doc:	</routine>
-*/
-rt_public void eif_set_processor_id (EIF_SCP_PID pid)
+/* RTS_RC (o) - create request group for o */
+rt_public void eif_new_scoop_request_group (EIF_SCP_PID client_pid)
 {
-	RT_GET_CONTEXT
-	rt_thr_context * c = rt_globals->eif_thr_context_cx;
-	c -> logical_id = pid;
-	c -> is_processor = EIF_TRUE;
+	struct rt_processor* client = rt_get_processor (client_pid);
+	rt_processor_request_group_stack_extend (client);
 }
 
-/*
-doc:	<routine name="eif_unset_processor_id" export="public">
-doc:		<summary>Dissociate processor from the current thread.</summary>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Not required because changes a single integer value.</synchronization>
-doc:	</routine>
-*/
-rt_public void eif_unset_processor_id (void)
+/* RTS_RD (o) - delete request group of o and release any locks */
+rt_public void eif_delete_scoop_request_group (EIF_SCP_PID client_pid)
 {
-	RT_GET_CONTEXT
-	eif_synchronize_gc (rt_globals);
-	rt_globals -> eif_thr_context_cx -> is_processor = EIF_FALSE;
-	eif_unsynchronize_gc (rt_globals);
+	struct rt_processor* client = rt_get_processor (client_pid);
+
+		/* Unlock, deallocate and remove the request group. */
+	rt_processor_request_group_stack_remove_last (client);
+}
+
+/* RTS_RF (o) - wait condition fails */
+rt_public void eif_scoop_wait_request_group (EIF_SCP_PID client_pid)
+{
+	struct rt_processor* client = rt_get_processor (client_pid);
+	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
+	rt_request_group_wait (l_group);
+}
+
+/* RTS_RS (c, s) - add supplier s to current group for c */
+rt_public void eif_scoop_add_supplier_request_group (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
+{
+	struct rt_processor* client = rt_get_processor (client_pid);
+	struct rt_processor* supplier = rt_get_processor (supplier_pid);
+
+	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
+	rt_request_group_add (l_group, supplier);
+}
+
+/* RTS_RW (o) - sort all suppliers in the group and get exclusive access */
+rt_public void eif_scoop_lock_request_group (EIF_SCP_PID client_pid)
+{
+	struct rt_processor* client = rt_get_processor (client_pid);
+	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
+	rt_request_group_lock (l_group);
 }
 
 /*

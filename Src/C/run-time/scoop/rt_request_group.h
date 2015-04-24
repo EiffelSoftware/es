@@ -1,7 +1,7 @@
 /*
-	description:	"Declarations for rt_request_group."
+	description:	"Declarations for the rt_request_group struct."
 	date:		"$Date$"
-	revision:	"$Revision: 96304 $"
+	revision:	"$Revision$"
 	copyright:	"Copyright (c) 2010-2012, Eiffel Software.",
 				"Copyright (c) 2014 Scott West <scott.gregory.west@gmail.com>"
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
@@ -34,8 +34,6 @@
 			Customer support http://support.eiffel.com
 		]"
 */
-
-/* TODO: Rename this file to rt_request_group.h when the C conversion is completed. */
 
 #ifndef _rt_request_group_h_
 #define _rt_request_group_h_
@@ -110,4 +108,4 @@ rt_shared void rt_request_group_wait (struct rt_request_group* self);
 rt_shared void rt_request_group_lock (struct rt_request_group* self);
 rt_shared void rt_request_group_unlock (struct rt_request_group* self);
 
-#endif
+#endif /* _rt_request_group_h_ */

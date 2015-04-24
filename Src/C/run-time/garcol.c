@@ -1373,6 +1373,7 @@ rt_public void reclaim(void)
 
 #ifdef EIF_THREADS
 			if (eif_thr_is_root ()) {
+				rt_scoop_reclaim();
 				eif_thread_cleanup ();
 			}
 #endif	/* EIF_THREADS */

@@ -1,5 +1,5 @@
 /*
-	description:	"SCOOP support."
+	description:	"Main functions of the SCOOP runtime."
 	date:		"$Date$"
 	revision:	"$Revision$"
 	copyright:	"Copyright (c) 2010-2015, Eiffel Software."
@@ -40,6 +40,16 @@
 #pragma once
 #endif
 
+/* TODO: This file needs some cleanup...
+ *
+ * EIF_IS_SCOOP_CAPABLE is only needed in eif_built_in.h and can be moved there.
+ *
+ * The inclusion of eif_threads.h should be avoided if possible.
+ *
+ * There seems to be a big overlap between the request chain stack and the
+ * rt_request_group stacks in a processor object. Maybe the two can be merged somehow.
+ */
+
 #include "eif_threads.h"
 
 #if defined(EIF_HAS_MEMORY_BARRIER) && (EIF_OS != EIF_OS_SUNOS) && !defined (__SUNPRO_CC)
@@ -51,9 +61,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define RT_MAX_SCOOP_PROCESSOR_COUNT 1024 /* Maximum number of SCOOP processors, including root. It should be power of 2 to satisfy current implementation of mpmc_bounded_queue. */
-
 
 /* Separate calls */
 
@@ -77,9 +84,6 @@ typedef struct call_data {
 } call_data;
 
 RT_LNK void eif_log_call (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid, call_data* data);
-#ifdef WORKBENCH
-RT_LNK void eif_apply_wcall (call_data *data);
-#endif
 RT_LNK void eif_call_const (call_data * a);
 
 /* Request chain stack */
@@ -88,11 +92,10 @@ RT_LNK void eif_request_chain_push (EIF_REFERENCE c, struct stack * stk);	/* Pus
 RT_LNK void eif_request_chain_pop (struct stack * stk);	/* Pop one element from the request chain stack `stk' without notifying SCOOP mananger. */
 RT_LNK void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk); /* Restore request chain stack `stk' to have the top `t' notifying SCOOP manager about all removed request chains. */
 
-/* Scoop Macros */
-
+/* Scoop Macros
+ * TODO: Are these macros still in use somewhere? */
 #define set_boolean_return_value(a_boolean_typed_value,a_boolean) ((EIF_TYPED_VALUE *) a_boolean_typed_value)->item.b = a_boolean;
 #define set_integer_32_return_value(a_integer_32_typed_value,a_integer) ((EIF_TYPED_VALUE *) a_integer_32_typed_value)->item.i4 = a_integer;
-
 #define call_data_sync_pid(a_call_data) ((call_data*) a_call_data)->sync_pid
 
 /* Processor properties */
@@ -100,10 +103,6 @@ RT_LNK void eif_new_processor(EIF_REFERENCE obj);
 RT_LNK int eif_is_uncontrolled (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid);
 RT_LNK int eif_is_synced_on (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid);
 RT_LNK void eif_wait_for_all_processors(void);
-
-/* Garbage collection */
-RT_LNK void eif_set_processor_id (EIF_SCP_PID pid); /* Associate processor of ID `pid' with the current thread. */
-RT_LNK void eif_unset_processor_id (void);	/* Dissociate processor from the current thread. */
 
 /* Request chain operations */
 RT_LNK void eif_new_scoop_request_group (EIF_SCP_PID client_pid);
@@ -114,7 +113,6 @@ RT_LNK void eif_scoop_lock_request_group (EIF_SCP_PID client_pid);
 
 #ifdef __cplusplus
 }
-
 #endif
 
 #endif	/* _eif_scoop_h_ */

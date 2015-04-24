@@ -1,7 +1,7 @@
 /*
 	description:	"Declarations for the queue_cache struct."
 	date:		"$Date$"
-	revision:	"$Revision: 96304 $"
+	revision:	"$Revision$"
 	copyright:	"Copyright (c) 2010-2012, Eiffel Software.",
 				"Copyright (c) 2014 Scott West <scott.gregory.west@gmail.com>"
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
@@ -35,8 +35,6 @@
 		]"
 */
 
-
-/* TODO: Rename the file to rt_queue_cache.h */
 #ifndef _rt_queue_cache_h_
 #define _rt_queue_cache_h_
 
@@ -53,7 +51,7 @@ struct rt_processor;
 struct rt_private_queue;
 
 /* Declare an internal vector data structure. */
-RT_DECLARE_VECTOR (rt_vector_queue_cache, queue_cache*)
+RT_DECLARE_VECTOR (rt_vector_queue_cache, struct queue_cache *)
 
 /*
 doc:	<struct name="queue_cache" export="shared">

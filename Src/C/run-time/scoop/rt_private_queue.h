@@ -1,7 +1,7 @@
 /*
-	description:	"SCOOP support."
+	description:	"Declarations for the rt_private_queue struct."
 	date:		"$Date$"
-	revision:	"$Revision: 96304 $"
+	revision:	"$Revision$"
 	copyright:	"Copyright (c) 2010-2012, Eiffel Software.",
 				"Copyright (c) 2014 Scott West <scott.gregory.west@gmail.com>"
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
@@ -35,17 +35,16 @@
 		]"
 */
 
-/* TODO: Rename to rt_private_queue.h */
 #ifndef _rt_private_queue_h_
 #define _rt_private_queue_h_
 
 #include "rt_message.h"
-#include "rt_message_channel.hpp"
+#include "rt_message_channel.h"
 
 struct rt_processor;
 
 /*
-doc:	<struct name="rt_private_queue", export="shared">
+doc:	<struct name="rt_private_queue" export="shared">
 doc:		<summary> The private queue struct.
 doc:
 doc:			This structure serves as a central part of communication between
@@ -59,11 +58,11 @@ doc:
 doc:			Note that the client processor may change during lock passing, i.e.
 doc:			it's not guaranteed to be always the client that created the queue.
 doc:		</summary>
-doc:		<field name="call_stack_msg", type="struct rt_message"> The call being executed right now. Accessed only by the supplier or by the GC. </field>
-doc:		<field name="channel", type="struct rt_message_channel"> The message channel used for communication. </field>
-doc:		<field name="supplier", type="struct rt_processor*"> The supplier to whom messages will be sent. This field is constant. Accessed only by the client. </field>
-doc:		<field name="lock_depth", type="int"> The current lock depth (for recursive locking). Accessed only by the client. </field>
-doc:		<field name="synced", type="EIF_BOOLEAN"> Whether the supplier is synchronized with the client. Accessed only by the client. </field>
+doc:		<field name="call_stack_msg" type="struct rt_message"> The call being executed right now. Accessed only by the supplier or by the GC. </field>
+doc:		<field name="channel" type="struct rt_message_channel"> The message channel used for communication. </field>
+doc:		<field name="supplier" type="struct rt_processor*"> The supplier to whom messages will be sent. This field is constant. Accessed only by the client. </field>
+doc:		<field name="lock_depth" type="int"> The current lock depth (for recursive locking). Accessed only by the client. </field>
+doc:		<field name="synced" type="EIF_BOOLEAN"> Whether the supplier is synchronized with the client. Accessed only by the client. </field>
 doc:		<fixme> It may be possible to improve performance slightly with some careful alignment to cache lines (also within rt_message_channel) </fixme>
 doc:	</struct>
 */
@@ -80,20 +79,18 @@ struct rt_private_queue {
 	EIF_BOOLEAN synced;
 };
 
-typedef struct rt_private_queue priv_queue; /* TODO: Get rid of this typedef.*/
-
 /* Declarations. */
-rt_shared void rt_private_queue_init (priv_queue* self, struct rt_processor* a_supplier);
-rt_shared void rt_private_queue_deinit (priv_queue* self);
-rt_shared void rt_private_queue_mark (priv_queue* self, MARKER marking);
+rt_shared void rt_private_queue_init (struct rt_private_queue* self, struct rt_processor* a_supplier);
+rt_shared void rt_private_queue_deinit (struct rt_private_queue* self);
+rt_shared void rt_private_queue_mark (struct rt_private_queue* self, MARKER marking);
 
-rt_shared EIF_BOOLEAN rt_private_queue_is_synchronized (priv_queue* self);
-rt_shared EIF_BOOLEAN rt_private_queue_is_locked (priv_queue* self);
+rt_shared EIF_BOOLEAN rt_private_queue_is_synchronized (struct rt_private_queue* self);
+rt_shared EIF_BOOLEAN rt_private_queue_is_locked (struct rt_private_queue* self);
 
-rt_shared void rt_private_queue_lock (priv_queue* self, struct rt_processor* client);
-rt_shared void rt_private_queue_unlock (priv_queue* self);
-rt_shared void rt_private_queue_register_wait (priv_queue* self, struct rt_processor* client);
+rt_shared void rt_private_queue_lock (struct rt_private_queue* self, struct rt_processor* client);
+rt_shared void rt_private_queue_unlock (struct rt_private_queue* self);
+rt_shared void rt_private_queue_register_wait (struct rt_private_queue* self, struct rt_processor* client);
 
-rt_shared void rt_private_queue_log_call (priv_queue* self, struct rt_processor* client, struct call_data* call);
+rt_shared void rt_private_queue_log_call (struct rt_private_queue* self, struct rt_processor* client, struct call_data* call);
 
 #endif /* _rt_private_queue_h_ */
