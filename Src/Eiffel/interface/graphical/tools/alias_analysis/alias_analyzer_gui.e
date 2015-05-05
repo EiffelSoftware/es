@@ -18,9 +18,10 @@ feature {NONE}
 
 	feature_view: EB_ROUTINE_FLAT_FORMATTER
 	step_over_button: EV_BUTTON
+	alias_info_text: EV_TEXT
 
-	first_alias_breakpoint: EDITOR_TOKEN_ALIAS_BREAKPOINT
-	cur_alias_breakpoint: EDITOR_TOKEN_ALIAS_BREAKPOINT
+	alias_analysis_runner: ALIAS_ANALYSIS_RUNNER
+
 
 	make (a_develop_window: EB_DEVELOPMENT_WINDOW)
 		local
@@ -42,6 +43,9 @@ feature {NONE}
 			step_over_button.set_pixmap ((create {EB_SHARED_PIXMAPS}).icon_pixmaps.debug_step_over_icon)
 			step_over_button.disable_sensitive
 
+			create alias_info_text
+			alias_info_text.disable_edit
+
 			create l_button_box
 			l_button_box.extend (step_over_button)
 			l_button_box.disable_item_expand (step_over_button)
@@ -49,6 +53,7 @@ feature {NONE}
 			extend (feature_view.editor.widget)
 			extend (l_button_box)
 			disable_item_expand (l_button_box)
+			extend (alias_info_text)
 		end
 
 	on_stone_changed (a_stone: STONE)
@@ -62,6 +67,8 @@ feature {NONE}
 			l_done: BOOLEAN
 		do
 			feature_view.set_stone (a_stone)
+			step_over_button.enable_sensitive
+			alias_info_text.set_text ("")
 
 			from
 				l_el := feature_view.editor.text_displayed.first_line
@@ -87,40 +94,32 @@ feature {NONE}
 							end
 						end
 					end
-
-					if l_last = Void then
-						l_last := create {EDITOR_TOKEN_ALIAS_BREAKPOINT}.make_replace (etb, l_line_number)
-						l_last.active := True
-						first_alias_breakpoint := l_last
-						cur_alias_breakpoint := l_last
-						step_over_button.enable_sensitive
-					else
-						l_last.next_alias_breakpoint := create {EDITOR_TOKEN_ALIAS_BREAKPOINT}.make_replace (etb, l_line_number)
-						l_last.next_alias_breakpoint.previous_alias_breakpoint := l_last
-						l_last := l_last.next_alias_breakpoint
-					end
+					create l_last.make_replace (etb, l_line_number, l_last)
 					l_internal.set_reference_field (l_field_index, l_el, l_last)
 				end
 				l_el := l_el.next
 				l_line_number := l_line_number + 1
 			end
-			feature_view.editor.refresh
+
+			if alias_analysis_runner /= Void then
+				alias_analysis_runner.terminate
+			end
+			create alias_analysis_runner.make (
+					l_last,
+					agent do feature_view.editor.refresh end
+				)
 		ensure
 			step_over_button.is_sensitive
-			first_alias_breakpoint /= Void
-			cur_alias_breakpoint = first_alias_breakpoint
+			alias_analysis_runner /= Void
 		end
 
 	on_step_over
 		do
-			cur_alias_breakpoint.active := False
-			cur_alias_breakpoint := cur_alias_breakpoint.next_alias_breakpoint
-			if cur_alias_breakpoint = Void then
-				cur_alias_breakpoint := first_alias_breakpoint
+			alias_analysis_runner.step
+			alias_info_text.set_text (alias_analysis_runner.report)
+			if alias_analysis_runner.is_done then
+				step_over_button.disable_sensitive
 			end
-			cur_alias_breakpoint.active := True
-			feature_view.editor.display_line_with_context (cur_alias_breakpoint.line_number)
-			feature_view.editor.refresh
 		end
 
 invariant

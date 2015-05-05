@@ -225,7 +225,7 @@ feature {NONE} -- Analyzer
 				analyzer.set_is_all_features (feature_from_any_toggle.is_selected)
 				if attached current_feature as f then
 					analyzer.process_feature (f, c,
-						agent (ff: FEATURE_I; cc: CLASS_C)
+						agent (ff: FEATURE_I; cc: CLASS_C; ag_data: ANY)
 							local
 								m: STRING_32
 							do
@@ -239,7 +239,7 @@ feature {NONE} -- Analyzer
 								text_area.set_text (m)
 								ev_application.process_events
 							end
-						(f, c))
+						(f, c, ?))
 					s := {STRING_32} "Processed {"
 					s.append_string (c.name)
 					s.append_character ('}')
@@ -251,7 +251,7 @@ feature {NONE} -- Analyzer
 				else
 					text_area.set_text ({STRING_32} "Processing " + c.name + "...")
 					analyzer.process_class (c,
-						agent (cc: CLASS_C)
+						agent (cc: CLASS_C; ag_data: ANY)
 							local
 								m: STRING_32
 							do
@@ -262,7 +262,7 @@ feature {NONE} -- Analyzer
 								text_area.set_text (m)
 								ev_application.process_events
 							end
-						(c)
+						(c, ?)
 					)
 					s := {STRING_32} "Processed "
 					s.append_string (c.name)

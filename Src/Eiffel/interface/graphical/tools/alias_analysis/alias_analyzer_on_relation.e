@@ -764,7 +764,7 @@ feature {NONE} -- Access
 	target: like last_item
 			-- Current target of a call.
 
-feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
+feature {ES_ALIAS_ANALYSIS_TOOL_PANEL, ALIAS_ANALYSIS_RUNNER} -- Output
 
 	report: STRING_32
 			-- Results of the analysis.
@@ -1089,7 +1089,7 @@ feature {NONE} -- Recursion
 ;note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 2012-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

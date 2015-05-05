@@ -34,7 +34,7 @@ feature {NONE} -- Creation
 
 feature -- Analysis
 
-	process_class (c: CLASS_C; u: PROCEDURE [ANY, TUPLE])
+	process_class (c: CLASS_C; u: PROCEDURE [ANY, TUPLE [ANY]])
 			-- Perform analysis on the class `c'
 			-- calling agent `u' from time to time to report progress.
 		do
@@ -45,7 +45,7 @@ feature -- Analysis
 			end
 		end
 
-	process_feature (f: FEATURE_I; c: CLASS_C; u: PROCEDURE [ANY, TUPLE])
+	process_feature (f: FEATURE_I; c: CLASS_C; u: PROCEDURE [ANY, TUPLE [ANY]])
 			-- Perform analysis on the feature `f' from the class `c'
 			-- calling agent `u' from time to time to report progress.
 		do
@@ -63,7 +63,7 @@ feature -- Analysis
 					-- Postpone update for a while.
 				is_update_required := False
 					-- Update client about current results.
-				update_agent.call (Void)
+				update_agent.call ([Void])
 					-- Record current time (finish time if the computation is over).
 				finish_time.make_now_utc
 					-- Check for timeout.
@@ -253,10 +253,28 @@ feature {AST_EIFFEL} -- Visitor: nested call
 	process_eiffel_list (a: EIFFEL_LIST [AST_EIFFEL])
 		local
 			q: BOOLEAN
+			l_cursor: INTEGER
 		do
 			q := is_qualified
 			is_qualified := False
-			Precursor (a)
+
+			--Precursor (a)
+			from
+				l_cursor := a.index
+				a.start
+			until
+				a.after
+			loop
+				if attached a.item as l_item then
+					update_agent.call (l_item)
+					l_item.process (Current)
+				else
+					check False end
+				end
+				a.forth
+			end
+			a.go_i_th (l_cursor)
+
 			is_qualified := q
 		end
 
@@ -356,7 +374,7 @@ feature {NONE} -- Storage
 
 feature {NONE} -- Client callback
 
-	update_agent: PROCEDURE [ANY , TUPLE]
+	update_agent: PROCEDURE [ANY , TUPLE [ANY]]
 			-- Procedure to update current status.
 
 feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
@@ -387,7 +405,7 @@ feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
