@@ -33,13 +33,13 @@ feature {NONE} -- Initialization
 
 feature -- Analysis
 
-	process_class (c: CLASS_C; u: PROCEDURE [ANY, TUPLE])
+	process_class (c: CLASS_C; u: PROCEDURE [ANY, TUPLE [ANY]])
 			-- <Precursor>
 		do
 			Precursor (c, u)
 		end
 
-	process_feature (f: FEATURE_I; c: CLASS_C; u: PROCEDURE [ANY, TUPLE])
+	process_feature (f: FEATURE_I; c: CLASS_C; u: PROCEDURE [ANY, TUPLE [ANY]])
 			-- <Precursor>
 		do
 			Precursor (f, c, u)
@@ -127,7 +127,7 @@ feature {NONE} -- Storage
 ;note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
