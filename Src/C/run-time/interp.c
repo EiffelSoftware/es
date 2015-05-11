@@ -522,28 +522,21 @@ rt_public void xinitint(void)
 /*
  * Create request chain wait until they are ready.
  */
-rt_private void initialize_request_chain (EIF_REFERENCE * volatile * qq, EIF_REFERENCE * volatile * qqt)
+rt_private void initialize_request_chain (void)
 {
 	/* Define indirect variable that is used to keep track of request chain stack. */
-#define q (*qq)
-#define qt (*qqt)
 	RT_GET_CONTEXT
-	EIF_GET_CONTEXT
 	uint32 n;
 
-		/* Create request chain. */
-	RTS_SRCX(icurrent -> it_ref);
 		/* Register reference arguments. */
 	for (n = argnum; n > 0; n--) {
 		EIF_TYPED_VALUE *last = arg(n);
-		if ((last -> type & SK_HEAD) == SK_REF && RTS_OS(icurrent -> it_ref, last -> it_ref)) {
+		if ((last -> type & SK_HEAD) == SK_REF && RTS_OU (icurrent -> it_ref, last -> it_ref)) {
 			RTS_RS(icurrent -> it_ref, last -> it_ref);
 		}
 	}
 		/* Wait for arguments to be locked. */
 	RTS_RW(icurrent -> it_ref);
-#undef q
-#undef qt
 }
 #endif /* EIF_THREADS */
 
@@ -598,7 +591,8 @@ rt_private void interpret(int flag, int where)
 	unsigned char * volatile pre_start = 0;		/* Start of a precondition. */
 	char volatile has_wait_condition = '\0';        /* Is there a wait condition? */
 	char volatile has_uncontrolled_argument = '\0'; /* Is uncontrolled argument used? */
-	RTS_SDX                                         /* Declarations for request chain */
+	RTS_SDP(rt_globals->eif_thr_context_cx->logical_id); /* Declarations for request chain */
+	RTS_SDC;
 #endif
 	BODY_INDEX body_id = 0;		/* Body id of routine */
 	int routine_id = 0;
@@ -862,7 +856,10 @@ rt_private void interpret(int flag, int where)
 		if ((*IC != BC_PRECOND) && (*IC != BC_START_CATCALL)) {
 #ifdef EIF_THREADS
 				/* Initialize request chain if required. */
-			if (uarg) initialize_request_chain (&q, &qt);
+			if (uarg) {
+				RTS_SRCX(icurrent -> it_ref);
+				initialize_request_chain ();
+			}
 #endif
 			goto enter_body; /* Start execution of a routine body. */
 		}
@@ -1016,7 +1013,10 @@ rt_private void interpret(int flag, int where)
 #endif
 #ifdef EIF_THREADS
 			/* Initialize request chain if required. */
-		if (uarg) initialize_request_chain (&q, &qt);
+		if (uarg) {
+			RTS_SRCX(icurrent -> it_ref);
+			initialize_request_chain ();
+		}
 			/* Record offset of a precondition block to repeat the check
 			   for failing wait conditions. */
 		pre_start = IC - 1;
@@ -1114,7 +1114,10 @@ rt_private void interpret(int flag, int where)
 		if (*IC != BC_PRECOND) {
 #ifdef EIF_THREADS
 				/* Initialize request chain if required. */
-			if (uarg) initialize_request_chain (&q, &qt);
+			if (uarg) {
+				RTS_SRCX(icurrent -> it_ref);
+				initialize_request_chain ();
+			}
 #endif
 			goto enter_body; /* Start execution of a routine body. */
 		}
@@ -1888,6 +1891,49 @@ rt_private void interpret(int flag, int where)
 		if (!(~in_assertion & WASC(icur_dtype) & CK_LOOP))
 			/* Loop assertions are not checked */
 			IC += offset;
+		break;
+
+
+	/*
+	 * Start of inline separate.
+	 */
+	case BC_START_SEPARATE:
+#ifdef DEBUG
+		dprintf(2)("BC_START_SEPARATE\n");
+#endif
+		{
+#ifdef EIF_THREADS
+			EIF_NATURAL_16 argument_count = 
+#endif
+			get_uint16(&IC); /* Number of arguments of the instruction. */
+
+#ifdef EIF_THREADS
+				/* Create request group. */
+			RTS_RC (icurrent->it_ref);
+				/* Add processors of uncontrolled separate arguments to the reuest group. */
+			for (; argument_count > 0; -- argument_count) {
+				last = opop ();
+				if ((last -> type & SK_HEAD) == SK_REF && RTS_OU (icurrent->it_ref, last->it_ref)) {
+					RTS_RS (icurrent->it_ref, last->it_ref);
+				}
+			}
+				/* Wait to get control. */
+			RTS_RW (icurrent->it_ref);
+#endif
+		}
+		break;
+
+	/*
+	 * End of inline separate.
+	 */
+	case BC_END_SEPARATE:
+#ifdef DEBUG
+		dprintf(2)("BC_END_SEPARATE\n");
+#endif
+#ifdef EIF_THREADS
+			/* Release control of the request group. */
+		RTS_RD (icurrent->it_ref);
+#endif
 		break;
 
 	/*

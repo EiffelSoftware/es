@@ -1498,6 +1498,10 @@ feature {NONE} -- Implementation
 								check
 									last_feature_name_correct: last_feature_name = l_feature_name.name
 								end
+									-- Restore previous value of `is_controlled'.
+								is_controlled := l_is_controlled
+									-- Adapt separateness and controlled status of the result to target type.
+								adapt_type_to_target (last_type, a_type, l_is_controlled, a_name, l_error_level, l_feature_name)
 								if l_needs_byte_node then
 									create {TUPLE_ACCESS_B} l_tuple_access_b.make (l_named_tuple, l_label_pos)
 									last_byte_node := l_tuple_access_b
@@ -1924,19 +1928,7 @@ feature {NONE} -- Implementation
 							is_controlled := l_is_controlled
 							if is_qualified and then attached last_type then
 									-- Adapt separateness and controlled status of the result to target type.
-								adapt_type_to_target (last_type, a_type, l_is_controlled, a_name)
-									-- Verify that if result type of a separate feature call is expanded it has no non-separate reference attributes.
-								if
-									error_level = l_error_level and then
-									a_type.is_separate and then
-									last_type.is_expanded and then
-									not last_type.is_processor_attachable_to (a_type)
-								then
-									error_handler.insert_error (create {VUER}.make (context, last_type, l_feature_name))
-								end
-							end
-
-							if is_qualified and then attached last_type then
+								adapt_type_to_target (last_type, a_type, l_is_controlled, a_name, l_error_level, l_feature_name)
 									-- If result type is declared frozen, then it keeps its status only if target is frozen.
 									-- Also if `last_type' is expanded or frozen or if the routine is frozen, we know for sure
 									-- there will not be any redeclaration so we can keep the `frozen' status of the query.
@@ -2973,6 +2965,7 @@ feature {NONE} -- Visitor
 				else
 					l_local_info := context.object_test_local (l_as.feature_name.name_id)
 					if l_local_info /= Void then
+						is_controlled := l_local_info.is_controlled
 						l_local_info.set_is_used (True)
 						last_access_writable := False
 						l_has_vuar_error := l_as.parameters /= Void
@@ -4611,7 +4604,7 @@ feature {NONE} -- Visitor
 					if not l_last_constrained.is_known then
 							-- Unknown feature in unknown class.
 							-- Use unknown type as a result type.
-						adapt_type_to_target (unknown_type, l_target_type, l_is_controlled, l_as)
+						adapt_type_to_target (unknown_type, l_target_type, l_is_controlled, l_as, 0, Void)
 					elseif l_prefix_feature = Void then
 							-- Error: not prefixed function found
 						create l_vwoe
@@ -4682,16 +4675,8 @@ feature {NONE} -- Visitor
 								process_assigner_command (last_type, l_last_constrained, l_prefix_feature)
 							end
 
-							adapt_type_to_target (l_prefix_feature_type, l_target_type, l_is_controlled, l_as)
-								-- Verify that if result type of a separate feature call is expanded it has no non-separate reference attributes.
-							if
-								error_level = l_error_level and then
-								l_target_type.is_separate and then
-								last_type.is_expanded and then
-								not last_type.is_processor_attachable_to (l_target_type)
-							then
-								error_handler.insert_error (create {VUER}.make (context, last_type, l_as.operator_location))
-							end
+							adapt_type_to_target (l_prefix_feature_type, l_target_type, l_is_controlled, l_as, l_error_level, l_as.operator_location)
+
 							if l_needs_byte_node then
 								l_access := l_prefix_feature.access (last_type, True, l_target_type.is_separate)
 									-- If we have something like `a.f' where `a' is predefined
@@ -5087,16 +5072,8 @@ feature {NONE} -- Visitor
 								process_assigner_command (l_target_type, l_left_constrained, last_alias_feature)
 							end
 
-							adapt_type_to_target (l_infix_type, l_target_type, l_is_controlled, l_as)
-								-- Verify that if result type of a separate feature call is expanded it has no non-separate reference attributes.
-							if
-								error_level = l_error_level and then
-								l_target_type.is_separate and then
-								last_type.is_expanded and then
-								not last_type.is_processor_attachable_to (l_target_type)
-							then
-								error_handler.insert_error (create {VUER}.make (context, last_type, l_as.operator_location))
-							end
+							adapt_type_to_target (l_infix_type, l_target_type, l_is_controlled, l_as, l_error_level, l_as.operator_location)
+
 							if l_needs_byte_node then
 								l_binary := byte_anchor.binary_node (l_as)
 								l_binary.set_left (l_left_expr)
@@ -7854,8 +7831,103 @@ feature {NONE} -- Visitor
 
 	process_separate_instruction_as (a_as: SEPARATE_INSTRUCTION_AS)
 			-- <Precursor>
+		local
+			local_id: ID_AS
+			local_name_id: INTEGER
+			location: LOCATION_AS
+			e: EXPR_AS
+			s: INTEGER
+			old_error_level: like error_level
+			local_info: LOCAL_INFO
+			local_type: TYPE_A
+			arguments: ARRAYED_LIST [ID_AS]
+			argument_code: detachable BYTE_LIST [ASSIGN_B]
+			assign_b: ASSIGN_B
 		do
-				-- TODO
+			old_error_level := error_level
+				-- Record current scope.
+			s := context.scope
+				-- Process arguments.
+			create arguments.make (a_as.arguments.count)
+			if is_byte_node_enabled then
+				create argument_code.make (a_as.arguments.count)
+			end
+			across
+				a_as.arguments as c
+			loop
+					-- Type check iteration expression.
+				last_byte_node := Void
+				e := c.item.expression
+				e.process (Current)
+				local_type := last_type
+				if not is_inherited and then attached local_type and then not local_type.is_separate then
+					if attached e.first_token (Void) as token then
+						location := token
+					else
+						location := c.item.name
+					end
+					error_handler.insert_error (create {V1SE}.make (local_type, context, location))
+				end
+					-- Default to type "ANY" on error.
+				if not attached local_type then
+					local_type := system.any_type
+				end
+					-- Type check new local name.
+				local_id := c.item.name
+				local_name_id := local_id.name_id
+				if not is_inherited then
+					if current_feature.has_argument_name (local_name_id) then
+							-- The local name is an argument name of the
+							-- current analyzed feature.
+						error_handler.insert_error (create {FRESH_IDENTIFIER_ERROR}.make (context, local_id))
+					elseif feature_table.has_id (local_name_id) then
+							-- The local name is a feature name of the
+							-- current analyzed class.
+						error_handler.insert_error (create {FRESH_IDENTIFIER_ERROR}.make (context, local_id))
+					end
+				end
+				if context.locals.has (local_name_id) then
+						-- The local name is a name of a feature local variable.
+					error_handler.insert_error (create {FRESH_IDENTIFIER_ERROR}.make (context, local_id))
+				end
+					-- A name clash with object test locals, iteration cursors and separate instruction arguments will be reported when checking for their scopes.
+				local_info := context.unchecked_object_test_local (local_id)
+				if not attached local_info then
+					create local_info
+					local_info.set_type (local_type)
+					local_info.set_position (context.next_object_test_local_position)
+					context.add_object_test_local (local_info, local_id)
+					local_info.set_is_used (True)
+						-- Mark this variable as controlled.
+					local_info.set_is_controlled (True)
+				end
+				if attached argument_code and then attached {EXPR_B} last_byte_node as b then
+					create assign_b
+					assign_b.set_source (b)
+					assign_b.set_target (create {OBJECT_TEST_LOCAL_B}.make (local_info.position, current_feature.body_index, local_type))
+					assign_b.set_line_number (c.item.expression.start_location.line)
+					argument_code.extend (assign_b)
+				end
+					-- Record local to activate its scope for compound.
+				arguments.extend (local_id)
+					-- Reset scopes to original level to before computing next argument.
+				context.set_scope (s)
+			end
+				-- Activate scopes of argument names.
+			across
+				arguments as c
+			loop
+				context.add_object_test_instruction_scope (c.item)
+			end
+				-- Process compound.
+			if attached a_as.compound as c then
+				process_compound (c)
+			end
+			if attached argument_code and then attached {BYTE_LIST [BYTE_NODE]} last_byte_node as b then
+				create {SEPARATE_INSTURCTION_B} last_byte_node.make (argument_code, b, a_as.end_location)
+			end
+				-- Remove arguments of the separate instruction.
+			context.remove_object_test_scopes (s)
 		end
 
 	process_external_as (l_as: EXTERNAL_AS)
@@ -8553,7 +8625,7 @@ feature {NONE} -- Visitor
 	process_named_expression_as (a_as: NAMED_EXPRESSION_AS)
 			-- <Precursor>
 		do
-				-- TODO: implement.
+				-- Processing is done by `process_separate_instruction_as'.
 		end
 
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)
@@ -10235,7 +10307,7 @@ feature {NONE} -- Agents
 			l_result_type := l_result_type.as_attached_in (context.current_class)
 
 				-- If a target type is separate, a type of the agent is separate.
-			adapt_type_to_target (l_result_type, a_target_type, is_controlled, an_agent)
+			adapt_type_to_target (l_result_type, a_target_type, is_controlled, an_agent, 0, Void)
 			l_result_type := last_type
 
 			if is_byte_node_enabled then
@@ -11594,24 +11666,40 @@ feature {NONE} -- Separateness
 			end
 		end
 
-	adapt_type_to_target (l: detachable TYPE_A; t: TYPE_A; c: BOOLEAN; n: AST_EIFFEL)
-			-- Adapt separateness status of the last message type `l' of the AST node `n'
-			-- to the target of type `t' which has a controlled status `c'
-			-- and update `is_controlled' accordingly.
+	adapt_type_to_target (non_adapted_type: detachable TYPE_A; target_type: TYPE_A; c: BOOLEAN; n: AST_EIFFEL; e: like error_level; error_location: detachable LOCATION_AS)
+			-- Adapt separateness status of the last message type `non_adapted_type' of the AST node `n'
+			-- to the target of type `target_type' which has a controlled status `c' and update `is_controlled' accordingly.
+			-- If `error_location' is attached and the target type is separate, check that the type `l' has no non-separate reference attributes
+			-- and report an error using if `e' is the same as `error_level'.
 		require
-			t_not_void: t /= Void
+			target_type_attached: attached target_type
+		local
+			result_type: TYPE_A
 		do
-			if
-				t.is_separate and then
-				l /= Void and then not l.is_separate
-			then
-					-- Separate call is controlled if target is controlled
-					-- and message type is not separate.
-				is_controlled := c
-				set_type (l.to_other_separateness (t), n)
+			if attached non_adapted_type then
+				if target_type.is_separate and then not non_adapted_type.is_separate then
+						-- Separate call is controlled if target is controlled
+						-- and message type is not separate.
+					is_controlled := c
+					result_type := non_adapted_type.to_other_separateness (target_type)
+				else
+					is_controlled := False
+					result_type := non_adapted_type
+				end
+				set_type (result_type, n)
+					-- Verify that if result type of a separate feature call is expanded it has no non-separate reference attributes.
+				if
+					error_level = e and then
+					target_type.is_separate and then
+					result_type.is_expanded and then
+					not result_type.is_processor_attachable_to (target_type)
+				then
+					error_handler.insert_error (create {VUER}.make (context, result_type, error_location))
+				end
 			else
+					-- Set `last_type' to Void to indicate an error.
 				is_controlled := False
-				set_type (l, n)
+				set_type (Void, n)
 			end
 		end
 

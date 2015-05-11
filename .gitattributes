@@ -1756,6 +1756,7 @@ Src/Delivery/studio/bitmaps/png/splash_shadow.png -text
 Src/Delivery/studio/config/windows/msc/appl.ico -text
 Src/Delivery/studio/eifinit/libraries.cfg -text
 Src/Delivery/studio/eifinit/precompiles.cfg -text
+Src/Delivery/studio/help/errors/short/V1SE -text
 Src/Delivery/studio/lang/mo_files/de_DE.mo -text
 Src/Delivery/studio/lang/mo_files/en_US.mo -text
 Src/Delivery/studio/lang/mo_files/fr_FR.mo -text
@@ -4882,7 +4883,6 @@ Src/tools/eiffel_ribbon/images/button_without_text_large.png -text
 Src/tools/eiffel_ribbon/images/button_without_text_large_highlight.png -text
 Src/tools/eiffel_ribbon/images/button_without_text_large_invalid.png -text
 Src/tools/eiffel_ribbon/images/ribbon_background.png -text
-Src/tools/espawn/espawn.lic -text
 Src/tools/estudio/config/estudio.ico -text
 Src/tools/estudio/config/estudio.lic -text
 Src/tools/estudio/config/estudio_e.ico -text
@@ -4890,6 +4890,7 @@ Src/tools/estudio/config/estudio_ecf.ico -text
 Src/tools/eweasel_comparator/eweasel_comparator.lic -text
 Src/tools/finish_freezing/appl.ico -text
 Src/tools/finish_freezing/finish_freezing-safe.lic -text
+Src/tools/finish_freezing/finish_freezing.exe.manifest -text
 Src/tools/finish_freezing/finish_freezing.lic -text
 Src/tools/hallow/hallow.lic -text
 Src/tools/iron/client/license.lic -text
@@ -6071,18 +6072,24 @@ Src/unstable/library/web/cms/cms-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/cms.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/examples/demo/demo-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/examples/demo/demo.ini -text
+Src/unstable/library/web/cms/examples/demo/modules/blog/cms_blog_module-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/examples/demo/modules/demo/cms_demo_module-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/examples/demo/site/config/application_configuration.json -text
-Src/unstable/library/web/cms/examples/demo/site/scripts/sqlite.sql -text
+Src/unstable/library/web/cms/examples/demo/site/scripts/core.sql -text
+Src/unstable/library/web/cms/examples/demo/site/scripts/node.sql -text
+Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/css/node.css -text
 Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/css/style.css -text
+Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/js/jquery-1.10.2.min.map -text
+Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/scss/node.scss -text
 Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/scss/style.scss -text
-Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/roc_template[!!-~]-2.html svneol=native#text/xml
-Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/roc_template.html svneol=native#text/xml
 Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/theme.info -text
 Src/unstable/library/web/cms/examples/demo/site/www/static/css/bootstrap.css -text
 Src/unstable/library/web/cms/examples/demo/site/www/static/css/dashboard.css -text
 Src/unstable/library/web/cms/examples/demo/site/www/static/images/ajax-loader.gif -text
 Src/unstable/library/web/cms/examples/demo/site/www/static/images/favicon.ico -text
+Src/unstable/library/web/cms/library/app_env/app_env-safe.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/library/app_env/app_env.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/library/app_env/license.lic -text
 Src/unstable/library/web/cms/library/configuration/config-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/configuration/config.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/configuration/license.lic -text
@@ -6090,7 +6097,6 @@ Src/unstable/library/web/cms/library/configuration/tests/config_tests-safe.ecf s
 Src/unstable/library/web/cms/library/configuration/tests/config_tests.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/layout/layout-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/layout/layout.ecf svneol=native#text/xml
-Src/unstable/library/web/cms/library/layout/license.lic -text
 Src/unstable/library/web/cms/library/license.lic -text
 Src/unstable/library/web/cms/library/model/cms_model-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/model/cms_model.ecf svneol=native#text/xml
@@ -6106,7 +6112,10 @@ Src/unstable/library/web/cms/library/persistence/sqlite/persistence_sqlite-safe.
 Src/unstable/library/web/cms/library/persistence/sqlite/persistence_sqlite.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/persistence/sqlite/tests/cms_lite.db -text
 Src/unstable/library/web/cms/library/persistence/sqlite/tests/tests-safe.ecf svneol=native#text/xml
-Src/unstable/library/web/cms/src/kernel/content/cms_block.e.bak -text
+Src/unstable/library/web/cms/modules/basic_auth/basic_auth-safe.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/modules/basic_auth/basic_auth.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/modules/node/node-safe.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/modules/node/node.ecf svneol=native#text/xml
 Src/web/eiffel-org/data/documentation/current/Eiffel/index.data -text
 Src/web/eiffel-org/data/documentation/current/EiffelStudio/Getting[!!-~]started.data -text
 Src/web/eiffel-org/data/documentation/current/EiffelStudio/Reference.data -text
@@ -6187,6 +6196,7 @@ Src/web/eiffel-org/site/themes/eiffel-org/assets/images/chat76.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/chat94.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/close13.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/eiffel_source.png -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/film50.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/ico-document.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/ico-download.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/ico-download2.png -text
@@ -6210,6 +6220,7 @@ Src/web/eiffel-org/site/themes/eiffel-org/assets/images/leaf3.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/light5.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/logo.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/menu.png -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/navigation9.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/notes1.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/objective.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/open12.png -text
@@ -6231,6 +6242,7 @@ Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/card2.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/chat76.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/chat94.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/close13.svg -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/film50.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/index.html svneol=native#text/xml
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/info15.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/info2.svg -text
@@ -6238,6 +6250,7 @@ Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/interface1.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/leaf3.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/light5.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/menu.svg -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/navigation9.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/notes1.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/objective.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/open12.svg -text
@@ -6573,6 +6586,7 @@ eweasel/tests/bench014/main.gold -text
 eweasel/tests/bench014/main2.gold -text
 eweasel/tests/bench014/main3.gold -text
 eweasel/tests/bench014/main4.gold -text
+eweasel/tests/bench015/Ace svneol=native#text/xml
 eweasel/tests/catcall013/Ace svneol=native#text/xml
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
@@ -7460,6 +7474,7 @@ eweasel/tests/store037/Ace_safe svneol=native#text/xml
 eweasel/tests/store039/Ace svneol=native#text/xml
 eweasel/tests/store040/Ace svneol=native#text/xml
 eweasel/tests/store041/Ace svneol=native#text/xml
+eweasel/tests/store042/Ace svneol=native#text/xml
 eweasel/tests/string003/Ace svneol=native#text/xml
 eweasel/tests/syntax001/notes -text
 eweasel/tests/syntax002/notes -text

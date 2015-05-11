@@ -149,59 +149,6 @@ rt_public void eif_wait_for_all_processors(void)
 	rt_processor_registry_quit_root_processor ();
 }
 
-/* Obsolete functions */
-
-/* Push client `c' on the request chain stack `stk' without notifying SCOOP mananger. */
-rt_public void eif_request_chain_push (EIF_REFERENCE c, struct stack * stk)
-{
-	epush (stk, c);
-}
-
-/* Pop one element from the request chain stack `stk' without notifying SCOOP mananger. */
-rt_public void eif_request_chain_pop (struct stack * stk)
-{
-	EIF_REFERENCE * top = stk->st_top - 1;   /* Start from the current top. */
-
-	if (top >= stk->st_cur->sk_arena) {
-		stk->st_top = top;               /* We remain in current chunk. */
-	}
-	else {
-		struct stchunk * s;              /* Top is in the previous chunk. */
-
-		RT_GET_CONTEXT
-
-		SIGBLOCK;                        /* Entering critical section */
-
-		s = stk->st_cur->sk_prev;        /* Look at previous chunk */
-		CHECK("sep_stack underflow", s);
-		top = s->sk_end - 1;		 /* Top at the end of previous chunk */
-
-		stk->st_cur = s;                 /* Update stack structure */
-		stk->st_top = top;
-		stk->st_end = s->sk_end;
-
-		SIGRESUME;                       /* Leaving critical section */
-#ifdef WORKBENCH
-		if (d_cxt.pg_status == PG_RUN)   /* Program is running */
-#endif
-			st_truncate(stk);        /* Remove unused chunks */
-	}
-}
-
-/* Restore request chain stack `stk' to have the top `t' notifying SCOOP manager about all removed request chains. */
-rt_public void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk)
-{
-	EIF_REFERENCE * top = stk->st_top;
-	if (!t) {
-		t = stk->st_hd->sk_arena; /* Use the beginning of the stack in case stack was empty. */
-	}
-	while (top != t) {
-		eif_request_chain_pop (stk); /* Pop one element. */
-		top = stk->st_top;
-		RTS_RD (*top);               /* Notify SCOOP manager about removed item. */
-	}
-}
-
 /*Functions to manipulate the request group stack */
 
 /* RTS_RC (o) - create request group for o */
@@ -211,13 +158,20 @@ rt_public void eif_new_scoop_request_group (EIF_SCP_PID client_pid)
 	rt_processor_request_group_stack_extend (client);
 }
 
+/* Get current size of request group stack. */
+rt_public size_t eif_scoop_request_group_stack_count (EIF_SCP_PID client_pid)
+{
+	struct rt_processor* client = rt_get_processor (client_pid);
+	return rt_processor_request_group_stack_count (client);
+}
+
 /* RTS_RD (o) - delete request group of o and release any locks */
-rt_public void eif_delete_scoop_request_group (EIF_SCP_PID client_pid)
+rt_public void eif_delete_scoop_request_group (EIF_SCP_PID client_pid, size_t count)
 {
 	struct rt_processor* client = rt_get_processor (client_pid);
 
 		/* Unlock, deallocate and remove the request group. */
-	rt_processor_request_group_stack_remove_last (client);
+	rt_processor_request_group_stack_remove (client, count);
 }
 
 /* RTS_RF (o) - wait condition fails */
@@ -244,6 +198,24 @@ rt_public void eif_scoop_lock_request_group (EIF_SCP_PID client_pid)
 	struct rt_processor* client = rt_get_processor (client_pid);
 	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
 	rt_request_group_lock (l_group);
+}
+
+/* Debugger extensions. */
+
+/*
+doc:	<routine name="eif_scoop_client_of" return_type="EIF_SCP_PID" export="public">
+doc:		<summary> Return the ID of the client processor that initially logged the private queue 'supplier' is currently working on. </summary>
+doc:		<param name="supplier" type="EIF_SCP_PID"> The supplier processor. </param>
+doc:		<return> The ID of the current client. If 'supplier' is not processing a private queue at the moment, the result is EIF_NULL_PROCESSOR. </return>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Only call when 'supplier' is blocked (e.g. during debugging). </synchronization>
+doc:	</routine>
+*/
+rt_public EIF_SCP_PID eif_scoop_client_of (EIF_SCP_PID supplier)
+{
+	REQUIRE ("valid_id", supplier != EIF_NULL_PROCESSOR && supplier < RT_MAX_SCOOP_PROCESSOR_COUNT);
+	REQUIRE ("exists", rt_get_processor (supplier) != NULL);
+	return rt_get_processor (supplier) -> client;
 }
 
 /*

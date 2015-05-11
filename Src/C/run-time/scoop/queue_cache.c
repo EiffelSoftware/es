@@ -43,6 +43,14 @@ doc:<file name="queue_cache.c" header="rt_queue_cache.h" version="$Id$" summary=
 #include "rt_private_queue.h"
 #include "rt_processor.h"
 
+/* Function to convert the PID to a hash table key.
+ * This is needed because the SCOOP pid 0 is not a valid key. */
+rt_private rt_inline rt_uint_ptr pid_to_key (EIF_SCP_PID pid)
+{
+	REQUIRE ("not_null_processor", pid != EIF_NULL_PROCESSOR);
+	return pid + 1;
+}
+
 /*
 doc:	<routine name="rt_queue_cache_find_from_owned return_type="struct rt_private_queue*" export="private">
 doc:		<summary> Find a private queue from the set of queues owned by 'self'. </summary>
@@ -64,7 +72,7 @@ rt_private struct rt_private_queue* rt_queue_cache_find_from_owned (struct queue
 
 		/* Find the position in the owned_queues hash table. */
 	l_owned = &self->owned_queues;
-	l_position = (struct rt_private_queue**) ht_value (l_owned, supplier->pid);
+	l_position = (struct rt_private_queue**) ht_value (l_owned, pid_to_key (supplier->pid));
 
 		/* If found, return the private queue pointer. */
 	if (l_position) {
@@ -105,8 +113,9 @@ rt_private struct rt_private_queue* rt_queue_cache_find_from_borrowed (struct qu
 			*/
 
 		size_t l_size = rt_vector_queue_cache_count (l_borrowed);
+		size_t i;
 
-		for (size_t i=0; i < l_size && !l_result; ++i) {
+		for (i = 0; i < l_size && !l_result; ++i) {
 
 			struct queue_cache* l_item = rt_vector_queue_cache_item (l_borrowed, i);
 			struct rt_private_queue* l_queue = rt_queue_cache_find_from_owned (l_item, supplier);
@@ -267,7 +276,7 @@ rt_shared EIF_BOOLEAN rt_queue_cache_has_locks_of (struct queue_cache* self, str
 {
 	struct rt_vector_queue_cache* l_borrowed = NULL;
 	EIF_BOOLEAN l_result = EIF_FALSE;
-	size_t l_size = 0;
+	size_t l_size = 0, i;
 
 	REQUIRE ("self_not_null", self);
 	REQUIRE ("supplier_not_null", supplier);
@@ -285,7 +294,7 @@ rt_shared EIF_BOOLEAN rt_queue_cache_has_locks_of (struct queue_cache* self, str
 			/* Search through all borrowed queue caches if one of their owner matches 'supplier' */
 		l_size =  rt_vector_queue_cache_count(l_borrowed);
 
-		for (size_t i=0; i < l_size && !l_result; ++i) {
+		for (i = 0; i < l_size && !l_result; ++i) {
 			l_result = (rt_vector_queue_cache_item (l_borrowed, i)->owner == supplier);
 		}
 	}
@@ -325,7 +334,7 @@ rt_shared struct rt_private_queue* rt_queue_cache_retrieve (struct queue_cache* 
 	if (NULL == l_result) {
 		/*TODO: Error handling...*/
 		int error = rt_processor_new_private_queue (supplier, &l_result);
-		ht_force (&self->owned_queues, supplier->pid, &l_result);
+		ht_force (&self->owned_queues, pid_to_key (supplier->pid), &l_result);
 	}
 
 	ENSURE ("result_available", l_result);
@@ -382,7 +391,7 @@ rt_shared void rt_queue_cache_clear (struct queue_cache* self, struct rt_process
 
 		/* It is not necessary to delete queues which are borrowed from other queue_aches.
 		* The algorithm in processor_registry will traverse them later. */
-	ht_remove (&self->owned_queues, proc->pid);
+	ht_remove (&self->owned_queues, pid_to_key (proc->pid));
 }
 
 /*

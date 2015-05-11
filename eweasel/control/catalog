@@ -541,7 +541,7 @@ test	bogus-vdrd2-error				valid267 tcf fail validity
 test	crash-on-veen2a					valid268 tcf pass validity
 test	bogus-vsrp3-with-require-else-false	valid269 tcf fail used_to_pass validity
 test	spurious-vuot-in-assertion		valid270 tcf pass validity object_test
-test	spurious-vweq-warning			valid271 tcf fail used_to_pass validity
+test	spurious-vweq-warning			valid271 tcf fail validity
 test	non-conforming-missing-vmss3		valid272 tcf fail validity non-conforming
 test	spurious-vtgc3-with-vmfn		valid273 tcf fail validity
 test	duplicate-vfac1				valid274 tcf pass validity
@@ -1429,13 +1429,17 @@ test	scoop-exceptions-separate-callback		scoop044 tcf pass scoop multithreaded e
 test	scoop-exceptions-accountability-handover	scoop045 tcf pass scoop multithreaded exception
 test	scoop-exceptions-small-tests			scoop046 tcf pass scoop multithreaded exception
 test	scoop-exceptions-import				scoop047 tcf fail scoop multithreaded exception
-test	scoop-exceptions-combinations			scoop048 tcf manual scoop multithreaded exception
-test	scoop-impersonation-lockpassing			scoop049 tcf manual scoop multithreaded deadlock lock_passing
+test	scoop-exceptions-combinations			scoop048 tcf pass scoop multithreaded exception
+test	scoop-impersonation-lockpassing			scoop049 tcf pass scoop multithreaded deadlock lock_passing
 test	scoop-lockpassing-query					scoop050 tcf pass scoop multithreaded deadlock lock_passing
 test	scoop-nested-separate-callback			scoop051 tcf pass scoop multithreaded deadlock lock_passing
-test 	scoop-exceptions-unlock					scoop052 tcf manual scoop multithreaded exception deadlock
+test 	scoop-exceptions-unlock					scoop052 tcf pass scoop multithreaded exception deadlock
 test	scoop-exceptions-dispose			scoop053 tcf fail scoop multithreaded exception execution
 test	scoop-named-tuple-validity			scoop054 tcf fail scoop tuple validity
+test	scoop-separate-instruction-fresh-id		scoop055 tcf pass scoop validity
+test	scoop-separate-instruction-dependent-arguments	scoop056 tcf pass scoop validity
+test	scoop-separate-instruction-non-separate		scoop057 tcf pass scoop validity
+test	scoop-separate-instruction-execution		scoop058 tcf pass scoop execution
 
 test	deadlock-simple-symmetric-cycle			deadlock001 tcf manual scoop multithreaded deadlock
 test	deadlock-simple-asymmetric-cycle		deadlock002 tcf manual scoop multithreaded deadlock
@@ -2204,6 +2208,7 @@ test	storable-performance-testing	store038 tcf pass storable performance
 test	storable-with-long-nested-generics	store039 tcf pass storable
 test	storable-with-qualified-anchors	store040 tcf pass storable
 test	storable-with-qualified-anchors-reject	store041 tcf pass storable
+test	storable-failure-unstable-state	store042 tcf pass storable
 
 -- Library class tests
 
@@ -2272,6 +2277,8 @@ test	wrong-label-in-generics			tuple013	tcf pass tuple
 test	wrong-manifest-tuple-type		tuple014	tcf pass tuple
 test	attached-tuple-element-validity	tuple015	tcf pass tuple
 test	tuple-basic-to-reference		tuple016 tcf pass tuple basic_types
+test	named-tuple-in-generic-constraint	tuple017 tcf fail tuple formal multiconstraint generic
+test	named-tuple-constraint-validity		tuple018 tcf fail tuple formal multiconstraint generic validity
 
 -- ~ operator test
 test	tilde-on-basic-type		tilde001	tcf pass tilde
@@ -2941,7 +2948,7 @@ test	pretty-inline-separate-instruction	pretty030 tcf pass pretty
 -- Benchmarks
 test	benchmark-scoop-gc-sequential-processor-creation	bench001 tcf pass benchmark scoop scoop_gc gc
 test	benchmark-scoop-gc-recursive-processor-creation		bench002 tcf pass benchmark scoop scoop_gc gc
-test	benchmark-scoop-gc-tree-processor-creation		bench003 tcf manual benchmark scoop scoop_gc gc
+test	benchmark-scoop-gc-tree-processor-creation		bench003 tcf pass benchmark scoop scoop_gc gc
 test	benchmark-scoop-synthetic-chain				bench004 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-scoop-synthetic-chameneos			bench005 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-scoop-synthetic-condition			bench006 tcf pass benchmark scoop synthetic_benchmark
@@ -2953,6 +2960,7 @@ test	benchmark-scoop-synthetic-randmat			bench011 tcf pass benchmark scoop synth
 test	benchmark-scoop-synthetic-threadring			bench012 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-scoop-synthetic-thresh			bench013 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-scoop-synthetic-winnow			bench014 tcf pass benchmark scoop synthetic_benchmark
+test	benchmark-runtime-slow-allocation			bench015 tcf pass benchmark runtime
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing

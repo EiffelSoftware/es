@@ -71,16 +71,17 @@ feature -- Router
 			-- Router configuration.
 		do
 			create Result.make (7)
-			Result.handle_with_request_methods ("/about", create {WSF_URI_AGENT_HANDLER}.make (agent handle_about (a_api, ?, ?)), Result.methods_head_get)
+			Result.handle_with_request_methods ("/welcome", create {WSF_URI_AGENT_HANDLER}.make (agent handle_welcome (a_api, ?, ?)), Result.methods_head_get)
 			Result.handle_with_request_methods ("/purpose", create {WSF_URI_AGENT_HANDLER}.make (agent handle_purpose (a_api, ?, ?)), Result.methods_head_get)
 			Result.handle_with_request_methods ("/news", create {WSF_URI_AGENT_HANDLER}.make (agent handle_news (a_api, ?, ?)), Result.methods_head_get)
-			Result.handle_with_request_methods ("/articles", create {WSF_URI_AGENT_HANDLER}.make (agent handle_articles (a_api, ?, ?)), Result.methods_head_get)
-			Result.handle_with_request_methods ("/blogs", create {WSF_URI_AGENT_HANDLER}.make (agent handle_blogs (a_api, ?, ?)), Result.methods_head_get)
+			Result.handle_with_request_methods ("/updates", create {WSF_URI_AGENT_HANDLER}.make (agent handle_updates (a_api, ?, ?)), Result.methods_head_get)
 			Result.handle_with_request_methods ("/privacy_policy", create {WSF_URI_AGENT_HANDLER}.make (agent handle_privacy_policy (a_api, ?, ?)), Result.methods_head_get)
 			Result.handle_with_request_methods ("/terms_of_use", create {WSF_URI_AGENT_HANDLER}.make (agent handle_terms_of_use (a_api, ?, ?)), Result.methods_head_get)
 
 			Result.handle_with_request_methods ("/contribute", create {WSF_URI_AGENT_HANDLER}.make (agent handle_contribute (a_api, ?, ?)), Result.methods_head_get)
 			Result.handle_with_request_methods ("/contribute_description", create {WSF_URI_AGENT_HANDLER}.make (agent handle_contribute_description (a_api, ?, ?)), Result.methods_head_get)
+
+			Result.handle_with_request_methods ("/resources", create {WSF_URI_AGENT_HANDLER}.make (agent handle_resources (a_api, ?, ?)), Result.methods_head_get)
 		end
 
 feature -- Hooks configuration
@@ -107,13 +108,13 @@ feature -- Hooks
 		local
 			l_string: STRING
 		do
-			Result := <<"front_header_welcome", "social_area", "eiffel_copyright", "about_main", "purpose", "news", "articles", "blogs", "social_buttons", "updates", "popular_nodes", "libraries", "privacy_policy", "terms_of_use", "main">>
+			Result := <<"front_header_welcome", "social_area", "eiffel_copyright", "welcome_main", "purpose", "news", "social_buttons", "updates", "sidebar_updates","popular_nodes", "libraries", "privacy_policy", "terms_of_use", "main">>
 			create l_string.make_empty
 			across Result as ic loop
 					l_string.append (ic.item)
 					l_string.append_character (' ')
 				end
-			log.write_debug (generator + ".block_list:" + l_string )
+			write_debug_log (generator + ".block_list:" + l_string )
 		end
 
 	get_block_view (a_block_id: READABLE_STRING_8; a_response: CMS_RESPONSE)
@@ -127,16 +128,16 @@ feature -- Hooks
 			if a_block_id.is_case_insensitive_equal_general ("front_header_welcome") and then l_path_info.same_string_general ("/") then
 				if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 					a_response.add_block (l_tpl_block, "header")
-					log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+					write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 				else
 					debug ("cms")
 						a_response.add_warning_message ("Error with block [" + a_block_id + "]")
 					end
 				end
-			elseif a_block_id.is_case_insensitive_equal_general ("about_main") and then l_path_info.starts_with ("/about") then
+			elseif a_block_id.is_case_insensitive_equal_general ("welcome_main") and then l_path_info.starts_with ("/welcome") then
 				if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 					a_response.add_block (l_tpl_block, "content")
-					log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+					write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 				else
 					debug ("cms")
 						a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -145,7 +146,7 @@ feature -- Hooks
 			elseif a_block_id.is_case_insensitive_equal_general ("purpose") and then l_path_info.starts_with ("/purpose") then
 				if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 					a_response.add_block (l_tpl_block, "content")
-					log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+					write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 				else
 					debug ("cms")
 						a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -154,25 +155,16 @@ feature -- Hooks
 			elseif a_block_id.is_case_insensitive_equal_general ("news") and then l_path_info.starts_with ("/news") then
 				if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 					a_response.add_block (l_tpl_block, "content")
-					log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+					write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 				else
 					debug ("cms")
 						a_response.add_warning_message ("Error with block [" + a_block_id + "]")
 					end
 				end
-			elseif a_block_id.is_case_insensitive_equal_general ("articles") and then l_path_info.starts_with ("/articles") then
+			elseif a_block_id.is_case_insensitive_equal_general ("updates") and then l_path_info.starts_with ("/updates") then
 				if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 					a_response.add_block (l_tpl_block, "content")
-					log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
-				else
-					debug ("cms")
-						a_response.add_warning_message ("Error with block [" + a_block_id + "]")
-					end
-				end
-			elseif a_block_id.is_case_insensitive_equal_general ("blogs") and then l_path_info.starts_with ("/blogs") then
-				if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
-					a_response.add_block (l_tpl_block, "content")
-					log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+					write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 				else
 					debug ("cms")
 						a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -187,7 +179,7 @@ feature -- Hooks
 				then
 					if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 						a_response.add_block (l_tpl_block, "sidebar_second")
-						log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+						write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 					else
 						debug ("cms")
 							a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -197,7 +189,7 @@ feature -- Hooks
 			elseif a_block_id.is_case_insensitive_equal_general ("popular_nodes") then
 				if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 					a_response.add_block (l_tpl_block, "sidebar_second")
-					log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+					write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 				else
 					debug ("cms")
 						a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -207,7 +199,7 @@ feature -- Hooks
 				if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 					-- TODO: double check: Social Header is only included in the home page.
 					a_response.add_block (l_tpl_block, "header")
-					log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+					write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 				else
 					debug ("cms")
 						a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -217,15 +209,15 @@ feature -- Hooks
 				if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 					l_tpl_block.set_is_raw (True)
 					a_response.add_block (l_tpl_block, "footer")
-					log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+					write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 				else
 					a_response.add_warning_message ("Error with block [" + a_block_id + "]")
 				end
-			elseif a_block_id.is_case_insensitive_equal_general ("updates") then
+			elseif a_block_id.is_case_insensitive_equal_general ("sidebar_updates") then
 				if a_response.is_front then
 					if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 						a_response.add_block (l_tpl_block, "sidebar_second")
-						log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+						write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 					else
 						debug ("cms")
 							a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -236,7 +228,7 @@ feature -- Hooks
 				if a_response.is_front then
 					if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 						a_response.add_block (l_tpl_block, "sidebar_second")
-						log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+						write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 					else
 						debug ("cms")
 							a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -246,7 +238,7 @@ feature -- Hooks
 			elseif a_block_id.is_case_insensitive_equal_general ("privacy_policy") and then  a_response.request.path_info.same_string_general ("/privacy_policy") then
 						if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 							a_response.add_block (l_tpl_block, "content")
-							log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+							write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 						else
 							debug ("cms")
 								a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -255,7 +247,7 @@ feature -- Hooks
 			elseif a_block_id.is_case_insensitive_equal_general ("terms_of_use") and then  a_response.request.path_info.same_string_general ("/terms_of_use") then
 					if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 							a_response.add_block (l_tpl_block, "content")
-							log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+							write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 					else
 						debug ("cms")
 							a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -264,7 +256,7 @@ feature -- Hooks
 			elseif a_block_id.is_case_insensitive_equal_general ("main") and then  a_response.request.path_info.same_string_general ("/") then
 					if attached template_block (Current, a_block_id, a_response) as l_tpl_block then
 						a_response.add_block (l_tpl_block, "content")
-						log.write_debug (generator + ".get_block_view with template_block:" + l_tpl_block.out)
+						write_debug_log (generator + ".get_block_view with template_block:" + l_tpl_block.out)
 					else
 						debug ("cms")
 							a_response.add_warning_message ("Error with block [" + a_block_id + "]")
@@ -276,18 +268,18 @@ feature -- Hooks
 
 feature -- Request handling: About	
 
-	handle_about (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
+	handle_welcome (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
 		local
 			r: CMS_RESPONSE
 		do
-			log.write_debug (generator + ".handle_about")
+			write_debug_log (generator + ".handle_welcome")
 			if req.is_get_request_method then
 				create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
 			else
 				create {NOT_FOUND_ERROR_CMS_RESPONSE} r.make (req, res, api)
 			end
 
-			r.values.force ("about_main", "about_main")
+			r.values.force ("welcome_main", "welcome_main")
 			r.execute
 		end
 
@@ -295,7 +287,7 @@ feature -- Request handling: About
 		local
 			r: CMS_RESPONSE
 		do
-			log.write_debug (generator + ".handle_purpose")
+			write_debug_log (generator + ".handle_purpose")
 			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
 			r.values.force ("purpose", "purpose")
 			r.execute
@@ -305,29 +297,19 @@ feature -- Request handling: About
 		local
 			r: CMS_RESPONSE
 		do
-			log.write_debug (generator + ".handle_about")
+			write_debug_log (generator + ".handle_news")
 			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
 			r.values.force ("news", "news")
 			r.execute
 		end
 
-	handle_articles (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
+	handle_updates (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
 		local
 			r: CMS_RESPONSE
 		do
-			log.write_debug (generator + ".handle_articles")
+			write_debug_log (generator + ".handle_updates")
 			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
-			r.values.force ("articles", "articles")
-			r.execute
-		end
-
-	handle_blogs (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
-		local
-			r: CMS_RESPONSE
-		do
-			log.write_debug (generator + ".handle_blogs")
-			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
-			r.values.force ("blogs", "blogs")
+			r.values.force ("updates", "updates")
 			r.execute
 		end
 
@@ -335,7 +317,7 @@ feature -- Request handling: About
 		local
 			r: CMS_RESPONSE
 		do
-			log.write_debug (generator + ".handle_privacy_policy")
+			write_debug_log (generator + ".handle_privacy_policy")
 			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
 			r.values.force ("privacy_policy", "privacy_policy")
 			r.execute
@@ -345,7 +327,7 @@ feature -- Request handling: About
 		local
 			r: CMS_RESPONSE
 		do
-			log.write_debug (generator + ".handle_terms_of_use")
+			write_debug_log (generator + ".handle_terms_of_use")
 			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
 			r.values.force ("terms_of_use", "terms_of_use")
 			r.execute
@@ -355,7 +337,7 @@ feature -- Request handling: About
 		local
 			r: CMS_RESPONSE
 		do
-			log.write_debug (generator + ".handle_main")
+			write_debug_log (generator + ".handle_main")
 			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
 			r.values.force ("main", "main")
 			r.execute
@@ -364,6 +346,24 @@ feature -- Request handling: About
 
 feature -- Request handling: Contribute
 
+	handle_resources (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
+		local
+			r: CMS_RESPONSE
+		do
+			fixme ("Use CMS node and associated content for Resources link!")
+			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
+			r.set_value ("resources", "optional_content_type")
+			r.set_main_content ("")
+			if attached template_block (Current, "resources_page", r) as l_tpl_block then
+				r.add_block (l_tpl_block, "content")
+			else
+				debug ("cms")
+					r.add_warning_message ("Error with block [resources_page]")
+				end
+			end
+			r.execute
+		end
+
 	handle_contribute (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
 		local
 			r: CMS_RESPONSE
@@ -371,7 +371,6 @@ feature -- Request handling: Contribute
 			fixme ("Use CMS node and associated content for Contribute link!")
 			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
 			r.set_value ("contribute", "optional_content_type")
---			r.set_title ("Contribute")
 			r.set_main_content ("")
 			if attached template_block (Current, "contribute_page", r) as l_tpl_block then
 				r.add_block (l_tpl_block, "content")
@@ -390,7 +389,6 @@ feature -- Request handling: Contribute
 			fixme ("Use CMS node and associated content for Contribute link!")
 			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
 			r.set_value ("contribute", "optional_content_type")
---			r.set_title ("Contribute")
 			r.set_main_content ("")
 			if attached template_block (Current, "contribute_description", r) as l_tpl_block then
 				r.add_block (l_tpl_block, "content")

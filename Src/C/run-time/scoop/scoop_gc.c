@@ -137,15 +137,16 @@ doc:	</routine>
 rt_private void rt_enumerate_live_processors(void)
 {
 	struct rt_processor* proc = NULL;
+	EIF_SCP_PID i;
 
-	for (EIF_SCP_PID i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; i++) {
+	for (i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; i++) {
 
 		proc = rt_lookup_processor (i);
 
 			/* We also mark processors as alive whose creation procedure has not been logged yet.
 			 * This avoids a potential problem that a processor is garbage collected after creation,
 			 * just before the RTS_PID() of its root feature has been set. */
-		if (proc && (proc->has_client || !proc->is_creation_procedure_logged)) {
+		if (proc && (proc->is_active || !proc->is_creation_procedure_logged)) {
 			rt_mark_live_pid (proc->pid);
 		}
 	}
@@ -187,7 +188,12 @@ rt_shared void rt_prepare_live_index ()
 				/* The thread is allocated for a processor. */
 				/* Liveness of processor will be reported by SCOOP manager and detected during GC. */
 				/* Record "PID->index" relation for future use. */
-			pid_index [c -> logical_id] = i;
+			if (c->logical_id != EIF_NULL_PROCESSOR) {
+				pid_index [c -> logical_id] = i;
+			} else {
+				/* The processor has already been collected in the previous GC cycle and is about to destroy itself.
+				 * There's nothing we have to do here. */
+			}
 		} else {
 				/* This is a non-SCOOP thread. */
 				/* Add it to the live indexes. */
@@ -219,7 +225,10 @@ rt_shared void rt_update_live_index (void)
 	for (i = 0; i < live_index_count; i++) {
 		rt_thr_context * c = t [live_index [i]] -> eif_thr_context_cx;
 		if (c -> is_processor) {
-			RT_UNMARK_PID (c -> logical_id);
+				/* A EIF_NULL_PROCESSOR indicates that the processor is about to destroy itself because it has no more references.
+				 * If the GC thinks it's alive this is a bug. */
+			CHECK ("has_id", c->logical_id != EIF_NULL_PROCESSOR);
+			RT_UNMARK_PID (c->logical_id);
 		}
 	}
 		/* Add indexes of processors that were not marked before. */
@@ -298,7 +307,11 @@ rt_shared void rt_report_live_index (void)
 	for (i = live_index_count; i < count; i++) {
 		rt_thr_context * c = t [live_index [i]] -> eif_thr_context_cx;
 			/* Notify SCOOP manager that the processor is not used anymore. */
-		rt_processor_registry_deactivate (c->logical_id);
+			/* Note: Processors with a EIF_NULL_PROCESSOR are about to destroy themselves.
+			 * No need to send the shutdown signal again. */
+		if (c->logical_id != EIF_NULL_PROCESSOR) {
+			rt_processor_registry_deactivate (c->logical_id);
+		}
 	}
 	/* Notify SCOOP manager that the GC cycle is over. */
 	/* Unused currently, don't want to come up with another replacement
@@ -321,16 +334,18 @@ rt_shared void rt_mark_all_processors (MARKER marking)
 
 	EIF_INTEGER_32 new_value = 1;
 	EIF_INTEGER_32 expected = 0;
+	EIF_INTEGER_32 previous;
 
 	REQUIRE ("marking_not_null", marking);
 
 		/* Use compare-exchange to determine whether marking is necessary. */
 		/* TODO: RS: Why is it necessary to use CAS here? As far as I can see this
 		 * operation is called exactly once and only by a single thread during GC... */
-	EIF_INTEGER_32 previous = RTS_ACAS_I32 (&rt_is_marking, new_value, expected);
+	previous = RTS_ACAS_I32 (&rt_is_marking, new_value, expected);
 
 	if (previous == expected) {
-		for (EIF_SCP_PID i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; i++) {
+		EIF_SCP_PID i;
+		for (i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; i++) {
 
 			proc = rt_lookup_processor (i);
 			if (proc) {

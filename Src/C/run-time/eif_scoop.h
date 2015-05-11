@@ -40,23 +40,20 @@
 #pragma once
 #endif
 
-/* TODO: This file needs some cleanup...
- *
- * EIF_IS_SCOOP_CAPABLE is only needed in eif_built_in.h and can be moved there.
- *
- * The inclusion of eif_threads.h should be avoided if possible.
- *
- * There seems to be a big overlap between the request chain stack and the
- * rt_request_group stacks in a processor object. Maybe the two can be merged somehow.
- */
+#include "eif_portable.h"
+#include "eif_config.h" /* for EIF_OS_SUNOS */
+#include "eif_types.h" /* for EIF_TYPED_VALUE */
+#include "eif_struct.h" /* for fnptr */
 
-#include "eif_threads.h"
-
-#if defined(EIF_HAS_MEMORY_BARRIER) && (EIF_OS != EIF_OS_SUNOS) && !defined (__SUNPRO_CC)
+/* TODO: This definition is only used in eif_build_in.h. Should it be moved there? */
+#if (EIF_OS != EIF_OS_SUNOS) && !defined (__SUNPRO_CC)
 #	define EIF_IS_SCOOP_CAPABLE 1
 #else
 #	define EIF_IS_SCOOP_CAPABLE 0
 #endif
+
+/* A reserved, invalid SCOOP processor identifier. */
+#define EIF_NULL_PROCESSOR ((EIF_SCP_PID) -1)
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,12 +83,6 @@ typedef struct call_data {
 RT_LNK void eif_log_call (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid, call_data* data);
 RT_LNK void eif_call_const (call_data * a);
 
-/* Request chain stack */
-
-RT_LNK void eif_request_chain_push (EIF_REFERENCE c, struct stack * stk);	/* Push client `c' on the request chain stack `stk' without notifying SCOOP mananger. */
-RT_LNK void eif_request_chain_pop (struct stack * stk);	/* Pop one element from the request chain stack `stk' without notifying SCOOP mananger. */
-RT_LNK void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk); /* Restore request chain stack `stk' to have the top `t' notifying SCOOP manager about all removed request chains. */
-
 /* Scoop Macros
  * TODO: Are these macros still in use somewhere? */
 #define set_boolean_return_value(a_boolean_typed_value,a_boolean) ((EIF_TYPED_VALUE *) a_boolean_typed_value)->item.b = a_boolean;
@@ -106,10 +97,14 @@ RT_LNK void eif_wait_for_all_processors(void);
 
 /* Request chain operations */
 RT_LNK void eif_new_scoop_request_group (EIF_SCP_PID client_pid);
-RT_LNK void eif_delete_scoop_request_group (EIF_SCP_PID client_pid);
+RT_LNK void eif_delete_scoop_request_group (EIF_SCP_PID client_pid, size_t count);
+RT_LNK size_t eif_scoop_request_group_stack_count (EIF_SCP_PID client_pid);
 RT_LNK void eif_scoop_wait_request_group (EIF_SCP_PID client_pid);
 RT_LNK void eif_scoop_add_supplier_request_group (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid);
 RT_LNK void eif_scoop_lock_request_group (EIF_SCP_PID client_pid);
+
+/* Debugger extensions. */
+RT_LNK EIF_SCP_PID eif_scoop_client_of (EIF_SCP_PID supplier);
 
 #ifdef __cplusplus
 }

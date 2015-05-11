@@ -79,8 +79,10 @@ rt_private rt_inline struct mc_node* load_consume (struct mc_node*const* node_ad
 		 * The fence nesures that all the values written into the mc_node
 		 * struct by another thread are now visible by this thread. */
 
+#if defined EIF_HAS_MEMORY_BARRIER
 		/* Compiler fence */
 	EIF_MEMORY_BARRIER;
+#endif
 
 		/* Hardware fence is implicit on x86. */
 
@@ -105,15 +107,19 @@ rt_private rt_inline void store_release (struct mc_node** node_address, struct m
 		/* This is the correct position of the fence.
 		* The fence nesures that all the values written into the mc_node
 		* struct by this thread are visible by the other thread once it loads the pointer with load_consume. */
+	
+	struct mc_node* volatile* volatile_node_address;
 
+#if defined EIF_HAS_MEMORY_BARRIER
 		/* Compiler fence */
 	EIF_MEMORY_BARRIER;
+#endif
 
 		/* Hardware fence is implicit on x86. */
 
 		/* Read this as a "pointer to a volatile pointer to an mc_node" */
 		/* RS: Is this to ensure that the memory lookup actually happens and isn't optimized away, i.e. to reduce latency? */
-	struct mc_node* volatile* volatile_node_address = (struct mc_node* volatile*) node_address;
+	volatile_node_address = (struct mc_node* volatile*) node_address;
 
 		/* Perform the store operation. */
 	*volatile_node_address = node;
@@ -177,7 +183,7 @@ doc:		<param name="sender" type="struct rt_processor*"> The sender processor. Mu
 doc:		<param name="call" type="struct call_data*"> Information about a call to be executed. Must not be NULL for SCOOP_MESSAGE_EXECUTE and SCOOP_MESSAGE_CALLBACK. </param>
 doc:		<param name="queue" type="struct rt_private_queue*"> The queue to be executed by the receiver. Must not be NULL for ADD_QUEUE messages. </param>
 doc:		<thread_safety> Safe for exactly one sender thread and one receiver thread. </thread_safety>
-doc:		<synchronization> None required. </synchronization>
+doc:		<synchronization> None required, but must not be called during garbage collection. </synchronization>
 doc:	</routine>
  */
 rt_private rt_inline void enqueue (struct rt_message_channel* self, enum scoop_message_type message_type, struct rt_processor* sender, struct call_data* call, struct rt_private_queue* queue)
@@ -208,7 +214,7 @@ doc:		<param name="self" type="struct rt_message_channel*"> The rt_message_chann
 doc:		<param name="message" type="struct rt_message*"> A pointer to a rt_message struct where the result shall be stored. May be NULL. </param>
 doc:		<return> EIF_TRUE if the dequeue operation was successful. EIF_FALSE if no message is ready to be dequeued. </return>
 doc:		<thread_safety> Safe for exactly one sender thread and one receiver thread. </thread_safety>
-doc:		<synchronization> None required. </synchronization>
+doc:		<synchronization> None required, but must not be called during garbage collection. </synchronization>
 doc:	</routine>
 */
 rt_private rt_inline EIF_BOOLEAN dequeue (struct rt_message_channel* self, struct rt_message* message)
@@ -264,11 +270,20 @@ rt_shared void rt_message_channel_send (struct rt_message_channel* self, enum sc
 	REQUIRE ("call_not_null", call || (message_type != SCOOP_MESSAGE_EXECUTE && message_type != SCOOP_MESSAGE_CALLBACK));
 	REQUIRE ("queue_not_null", queue || (message_type != SCOOP_MESSAGE_ADD_QUEUE));
 
+	/* TODO: Measure if there's any performance benefit at all by doing the enqueue operation outside the lock. */
+#if defined EIF_HAS_MEMORY_BARRIER
 		/* Perform the non-blocking enqueue operation. */
 	enqueue (self, message_type, sender, call, queue);
 
 		/* Lock the condition variable mutex. */
 	eif_pthread_mutex_lock (self->has_elements_condition_mutex);
+#else
+		/* Lock the condition variable mutex. */
+	eif_pthread_mutex_lock (self->has_elements_condition_mutex);
+
+			/* Perform the enqueue operation. */
+	enqueue (self, message_type, sender, call, queue);
+#endif
 
 		/* Wake up the receiver. */
 	eif_pthread_cond_signal (self->has_elements_condition);
@@ -290,35 +305,67 @@ doc:	</routine>
 rt_shared void rt_message_channel_receive (struct rt_message_channel* self, struct rt_message* message)
 {
 	EIF_BOOLEAN success = EIF_FALSE;
+	size_t i;
 
 	REQUIRE ("self_not_null", self);
 
+#if defined EIF_HAS_MEMORY_BARRIER
 		/* First try to dequeue in a non-blocking fashion. */
-	for (size_t i=0; i < self->spin && !success; ++i) {
+	for (i = 0; i < self->spin && !success; ++i) {
 		success = dequeue (self, message);
 	}
+#endif
 
 		/* If we didn't get an item so far, we wait on the condition variable. */
 	if (!success) {
 
-			/* Inform the GC that we're blocked. */
-		EIF_ENTER_C;
+			/* The following code looks a bit strange and inefficient,
+			 * but it is necessary to run correctly:
+			 *
+			 * We cannot call dequeue() at a point where the garbage collector
+			 * may run, because we risk that we lose updates to moved references
+			 * in the call_data struct.
+			 *
+			 * Also, we cannot synchronize for garbage collection while holding
+			 * the has_elements_condition_mutex, otherwise there might be a deadlock
+			 * where a sender thread waits for the mutex, a GC thread waits for the
+			 * sender, and this thread waits for GC to begin.
+			 *
+			 * And we have to hold the lock between the call to dequeue() and
+			 * eif_pthread_cond_wait, because otherwise we risk losing a signal
+			 * by the sender.
+			 *
+			 * NOTE: On systems with a memory barrier it might be possible to add
+			 * a short-circuit after RTGC, since dequeue() doesn't need to be
+			 * protected by a mutex.
+			 */
 
 			/* Lock the condition variable mutex. */
 		eif_pthread_mutex_lock (self->has_elements_condition_mutex);
 
 			/* Try to receive a message. */
 		while (!dequeue (self, message)) {
+
+				/* We couldn't get a message. Inform the GC that we're blocked. */
+			EIF_ENTER_C;
+
 				/* Wait on the condition variable for a producer to signal availability of new messages. */
 			eif_pthread_cond_wait (self->has_elements_condition, self->has_elements_condition_mutex);
+
+				/* Now we need to synchronize for GC. Since the previous wait reacquired the lock,
+				 * and we're not allowed to hold a lock during GC, we have to release it now. */
+			eif_pthread_mutex_unlock (self->has_elements_condition_mutex);
+
+				/* Inform the GC that we're no longer blocked, and synchronize for GC if it's currently running. */
+			EIF_EXIT_C;
+			RTGC;
+
+				/* To perform the dequeue operation we should reacquire the lock. */
+			eif_pthread_mutex_lock (self->has_elements_condition_mutex);
 		}
 
-			/* Release the condition variable mutex. */
+			/* Finally, release the previously acquired lock. */
 		eif_pthread_mutex_unlock (self->has_elements_condition_mutex);
-
-			/* Inform the GC that we're no longer blocked. */
-		EIF_EXIT_C;
-		RTGC;
 	}
 }
 

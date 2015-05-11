@@ -25,6 +25,7 @@ inherit
 			process_separate_instruction_as,
 			process_tagged_as,
 			process_object_test_as,
+			process_named_expression_as,
 			process_nested_as
 		end
 
@@ -35,6 +36,8 @@ inherit
 	SHARED_EIFFEL_PROJECT
 
 	INTERNAL_COMPILER_STRING_EXPORTER
+
+	DEBUGGER_COMPILER_UTILITIES
 
 create
 	make
@@ -299,10 +302,8 @@ feature {NONE} -- Element change
 		local
 			s: STRING
 			i, l_line: INTEGER
-			l_info: like breakable_feature_info
 		do
-			l_info := breakable_feature_info
-			if l_info /= Void then
+			if attached breakable_feature_info as l_info then
 				if a_text /= Void then
 					s := a_text
 				else
@@ -324,12 +325,17 @@ feature {NONE} -- Element change
 
 	register_object_test_local (a_name: ID_AS; a_type: detachable TYPE_AS; a_exp: detachable EXPR_AS)
 			-- Register object test local info
-		local
-			l_info: like breakable_feature_info
 		do
-			l_info := breakable_feature_info
-			if l_info /= Void then
+			if attached breakable_feature_info as l_info then
 				l_info.add_object_test_local (a_name, a_type, a_exp)
+			end
+		end
+
+	register_named_expression_local (a_name: ID_AS; a_exp: detachable EXPR_AS)
+			-- Register object test local info
+		do
+			if attached breakable_feature_info as l_info then
+				l_info.add_object_test_local (a_name, Void, a_exp)
 			end
 		end
 
@@ -465,7 +471,6 @@ feature {NONE} -- Iteration
 	process_separate_instruction_as (a: SEPARATE_INSTRUCTION_AS)
 			-- <Precursor>
 		do
-			register_breakable (a)
 			a.arguments.process (Current)
 			safe_process (a.compound)
 		end
@@ -573,6 +578,13 @@ feature {NONE} -- Iteration
 				register_object_test_local (l_name, l_as.type, l_as.expression)
 			end
 			Precursor (l_as)
+		end
+
+	process_named_expression_as (a_as: NAMED_EXPRESSION_AS)
+		do
+			register_breakable (a_as)
+			register_named_expression_local (a_as.name, a_as.expression)
+			Precursor (a_as)
 		end
 
 feature {NONE} -- Implementation: Iteration

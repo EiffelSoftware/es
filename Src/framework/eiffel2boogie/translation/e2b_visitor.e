@@ -512,6 +512,13 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.arguments)
 		end
 
+
+	process_separate_b (a_node: SEPARATE_INSTURCTION_B)
+			-- Process `a_node'.
+		do
+			check not_implemented: False end
+		end
+
 	process_string_b (a_node: STRING_B)
 			-- Process `a_node'.
 		do

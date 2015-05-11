@@ -73,8 +73,8 @@ static  char    *names [] = {
 "BC_LASSIGN" ,
 "BC_ASSIGN" ,
 "BC_CREATE" ,
-"BC_NOTUSED_27" ,
-"BC_NOTUSED_28" ,
+"BC_START_SEPARATE" ,
+"BC_END_SEPARATE" ,
 "BC_NOTUSED_29" ,
 "BC_NOTUSED_30" ,
 "BC_CREATE_TYPE" ,
@@ -836,6 +836,13 @@ static  void    print_instructions (void)
 				fprintf (ofp,"rid %d ", (int) get_int32(&ip));
 				break;
 
+			case BC_START_SEPARATE: /* Start of an inline separate instruction. */
+				fprintf (ofp,"%d args", (int) get_uint16(&ip));
+				break;
+
+			case  BC_END_SEPARATE: /* End of an inline separate instruction. */
+				break;
+
 			case BC_SPECIAL_EXTEND:
 				fprintf (ofp, "Index %d ", get_int32(&ip));
 				break;
@@ -893,7 +900,12 @@ static  void    print_instructions (void)
 				/* Routine id */
 				fprintf (ofp,"rid %d ", get_int32(&ip));
 				/* Is precursor or static */
-				(void) get_int16(&ip);
+				{
+					int16 l_type = get_int16(&ip);
+					if (l_type != -1) {
+						fprintf(ofp, " call on type ID=%d", l_type);
+					}
+				}
 				break;
 
 			case  BC_ATTRIBUTE_INV :

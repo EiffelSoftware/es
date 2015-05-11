@@ -248,8 +248,13 @@ rt_private void internal_traversal(struct rt_traversal_context *a_context, EIF_R
 	zone = HEADER(object);
 	flags = zone->ov_flags;
 
-	if (flags & EO_STORE)			/* Object is already marked? */
-		return;						/* Then we already dealt with it */
+	if (!a_context->is_unmarking) {
+		if (flags & EO_STORE)			/* Object is already marked? */
+			return;						/* Then we already dealt with it */
+	} else {
+		if (!(flags & EO_STORE))		/* Object is already unmarked? */
+			return;						/* Then we already dealt with it. */
+	}
 
 		/* Mark the object if it is not expanded, or if it is, it should be the top level object. */
 	if (is_first_level || !eif_is_nested_expanded(flags)) {
@@ -279,7 +284,11 @@ rt_private void internal_traversal(struct rt_traversal_context *a_context, EIF_R
 		 * release of the stack relies on an accurate object count.
 		 */
 
-		flags |= EO_STORE;			/* Object marked as traversed */
+		if (!a_context->is_unmarking) {
+			flags |= EO_STORE;			/* Object marked as traversed */
+		} else {
+			flags &= ~EO_STORE;
+		}
 		a_context->obj_nb++; 					/* Count the number of objects traversed */
 	}
 
@@ -296,7 +305,7 @@ rt_private void internal_traversal(struct rt_traversal_context *a_context, EIF_R
 	}
 #endif
 
-	zone->ov_flags = flags;			/* Mark the object */
+	zone->ov_flags = flags;			/* Update mark of the object */
 
 	/* Evaluation of the number of references of the object. It is really
 	 * important that we traverse the objects in the same way a deep clone
@@ -738,9 +747,6 @@ rt_private EIF_REFERENCE matching (void (*action_fnptr) (EIF_REFERENCE, EIF_REFE
 	for (i = 0; i < once_set_list.count; i++)
 		match_simple_stack(once_set_list.threads.sstack[i], action_fnptr);
 
-	for (i = 0; i < sep_stack_list.count; i++)
-		match_simple_stack(sep_stack_list.threads.sstack[i], action_fnptr);
-
 #ifdef WORKBENCH
 	for (i = 0; i < opstack_list.count; i++)
 		match_op_stack(opstack_list.threads.opstack[i], action_fnptr);
@@ -1013,11 +1019,7 @@ rt_private uint32 chknomark(char *object, struct htable *tbl, uint32 object_coun
 
 	/* Mark the object if not expanded */
 	if (!eif_is_nested_expanded(flags)) {
-		if (ht_put(tbl,key,object) == (char *) 0) {
-			ht_xtend(tbl);
-			if (ht_put(tbl,key,object) == (char *) 0)
-				eif_panic("insertion trouble");
-		}
+		ht_force(tbl,key,object);
 		object_count++;
 	}
 
