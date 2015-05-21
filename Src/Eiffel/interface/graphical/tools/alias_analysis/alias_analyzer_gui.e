@@ -18,6 +18,8 @@ feature {NONE}
 
 	feature_view: EB_ROUTINE_FLAT_FORMATTER
 	step_over_button: EV_BUTTON
+	step_out_button: EV_BUTTON
+	test_button: EV_BUTTON
 	alias_info_text: EV_TEXT
 
 	alias_analysis_runner: ALIAS_ANALYSIS_RUNNER
@@ -43,17 +45,35 @@ feature {NONE}
 			step_over_button.set_pixmap ((create {EB_SHARED_PIXMAPS}).icon_pixmaps.debug_step_over_icon)
 			step_over_button.disable_sensitive
 
+			create step_out_button.make_with_text_and_action ("", agent on_step_out)
+			step_out_button.set_pixmap ((create {EB_SHARED_PIXMAPS}).icon_pixmaps.debug_step_out_icon)
+			step_out_button.disable_sensitive
+
+			create test_button.make_with_text_and_action ("TS", agent run_tests)
+
 			create alias_info_text
 			alias_info_text.disable_edit
 
 			create l_button_box
 			l_button_box.extend (step_over_button)
 			l_button_box.disable_item_expand (step_over_button)
+			l_button_box.extend (step_out_button)
+			l_button_box.disable_item_expand (step_out_button)
+			l_button_box.extend (create {EV_HORIZONTAL_BOX})
+			l_button_box.extend (test_button)
+			l_button_box.disable_item_expand (test_button)
 
 			extend (feature_view.editor.widget)
 			extend (l_button_box)
 			disable_item_expand (l_button_box)
 			extend (alias_info_text)
+		end
+
+	reset
+		do
+			step_over_button.enable_sensitive
+			step_out_button.enable_sensitive
+			alias_info_text.set_text ("")
 		end
 
 	on_stone_changed (a_stone: STONE)
@@ -66,65 +86,185 @@ feature {NONE}
 			l_field_index: INTEGER_32
 			l_done: BOOLEAN
 		do
-			feature_view.set_stone (a_stone)
-			step_over_button.enable_sensitive
-			alias_info_text.set_text ("")
-
-			from
-				l_el := feature_view.editor.text_displayed.first_line
-				l_line_number := 1
-			until
-				l_el = Void
-			loop
-				if
-					attached {EDITOR_TOKEN_BREAKPOINT} l_el.real_first_token as etb and then
-					etb.pebble /= Void
-				then
-					if l_internal = Void then
-						create l_internal
-						from
-							l_field_index := 1
-						until
-							l_done
-						loop
-							if l_internal.field (l_field_index, l_el) = etb then
-								l_done := True
-							else
-								l_field_index := l_field_index + 1
+			reset
+			if
+				attached {FEATURE_STONE} a_stone as fs and then
+				attached {E_ROUTINE} fs.e_feature as r and then
+				attached {PROCEDURE_I} r.associated_class.feature_named_32 (r.name_32) as p
+			then
+				feature_view.set_stone (a_stone)
+				from
+					l_el := feature_view.editor.text_displayed.first_line
+					l_line_number := 1
+				until
+					l_el = Void
+				loop
+					if
+						attached {EDITOR_TOKEN_BREAKPOINT} l_el.real_first_token as etb and then
+						etb.pebble /= Void
+					then
+						if l_internal = Void then
+							create l_internal
+							from
+								l_field_index := 1
+							until
+								l_done
+							loop
+								if l_internal.field (l_field_index, l_el) = etb then
+									l_done := True
+								else
+									l_field_index := l_field_index + 1
+								end
 							end
 						end
+						create l_last.make_replace (etb, l_line_number, l_last)
+						l_internal.set_reference_field (l_field_index, l_el, l_last)
 					end
-					create l_last.make_replace (etb, l_line_number, l_last)
-					l_internal.set_reference_field (l_field_index, l_el, l_last)
+					l_el := l_el.next
+					l_line_number := l_line_number + 1
 				end
-				l_el := l_el.next
-				l_line_number := l_line_number + 1
-			end
 
-			if alias_analysis_runner /= Void then
-				alias_analysis_runner.terminate
+				create alias_analysis_runner.make (
+						p,
+						l_last,
+						agent do feature_view.editor.refresh end
+					)
 			end
-			create alias_analysis_runner.make (
-					l_last,
-					agent do feature_view.editor.refresh end
-				)
 		ensure
 			step_over_button.is_sensitive
+			step_out_button.is_sensitive
 			alias_analysis_runner /= Void
 		end
 
 	on_step_over
 		do
-			alias_analysis_runner.step
+			alias_analysis_runner.step_over
 			alias_info_text.set_text (alias_analysis_runner.report)
 			if alias_analysis_runner.is_done then
 				step_over_button.disable_sensitive
+				step_out_button.disable_sensitive
+			end
+		end
+
+	on_step_out
+		do
+			alias_analysis_runner.step_out
+			alias_info_text.set_text (alias_analysis_runner.report)
+			if alias_analysis_runner.is_done then
+				step_over_button.disable_sensitive
+				step_out_button.disable_sensitive
+			end
+		end
+
+	run_tests
+		local
+			l_testsuite_name: STRING_8
+			l_l: LIST [CLASS_I]
+			l_ft: FEATURE_TABLE
+		do
+			reset
+
+			l_testsuite_name := "ALIAS_ANALYSIS_TESTSUITE"
+			l_l := feature_view.eiffel_universe.classes_with_name (l_testsuite_name)
+			inspect l_l.count
+			when 1 then
+				if attached l_l.first.compiled_class as c then
+					from
+						l_ft := c.feature_table
+						l_ft.start
+					until
+						l_ft.after
+					loop
+						if l_ft.item_for_iteration.written_class = c then
+							test_class (l_ft.item_for_iteration.type.base_class)
+						end
+						l_ft.forth
+					end
+				else
+					alias_info_text.set_text ("Class " + l_testsuite_name + " not compiled?!")
+				end
+			when 0 then
+				alias_info_text.set_text ("Class " + l_testsuite_name + " not found?!")
+			else
+				alias_info_text.set_text (l_l.count.out + " " + l_testsuite_name + " classes found?!")
+			end
+		end
+
+	test_class (a_c: CLASS_C)
+		require
+			a_c /= Void
+		local
+			l_ft: FEATURE_TABLE
+		do
+			alias_info_text.append_text ("Testing " + a_c.name + "%N")
+			from
+				l_ft := a_c.feature_table
+				l_ft.start
+			until
+				l_ft.after
+			loop
+				if
+					attached {PROCEDURE_I} l_ft.item_for_iteration as p and then
+					p.e_feature.written_class = a_c
+				then
+					test_feature (p)
+				end
+				l_ft.forth
+			end
+		end
+
+	test_feature (a_f: PROCEDURE_I)
+		require
+			a_f /= Void
+		local
+			l_malformed_note: BOOLEAN
+			l_aliasing: STRING_32
+			l_analyzer: ALIAS_ANALYSIS_RUNNER
+		do
+			if a_f.e_feature.ast.indexes /= Void then
+				across
+					a_f.e_feature.ast.indexes as c
+				until
+					l_malformed_note
+				loop
+					if c.item.tag.name_8.is_equal ("aliasing") then
+						if
+							l_aliasing = Void and
+							c.item.index_list.count = 1
+						then
+							l_aliasing := c.item.index_list[1].string_value_32
+							if l_aliasing.starts_with ("%"") and l_aliasing.ends_with ("%"") then
+								l_aliasing := l_aliasing.substring (2, l_aliasing.count - 1)
+								l_aliasing.replace_substring_all ("%%N", "%N")
+							else
+								l_aliasing := Void
+								l_malformed_note := True
+							end
+						else
+							l_malformed_note := True
+						end
+					end
+				end
+			end
+			if l_malformed_note then
+				alias_info_text.append_text ("   - " + a_f.feature_name_32 + ": Malformed note?!%N")
+			elseif l_aliasing /= Void then
+				create l_analyzer.make (a_f, Void, Void)
+				l_analyzer.step_out
+
+				alias_info_text.append_text ("   - " + a_f.feature_name_32 + ": ")
+				if l_analyzer.report.is_equal (l_aliasing) then
+					alias_info_text.append_text ("PASS%N")
+				else
+					alias_info_text.append_text ("FAIL%N")
+				end
 			end
 		end
 
 invariant
 	feature_view /= Void
 	step_over_button /= Void
+	step_out_button /= Void
 
 note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"
