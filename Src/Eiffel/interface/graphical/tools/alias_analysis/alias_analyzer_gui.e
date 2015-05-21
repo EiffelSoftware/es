@@ -50,6 +50,7 @@ feature {NONE}
 			step_out_button.disable_sensitive
 
 			create test_button.make_with_text_and_action ("TS", agent run_tests)
+			test_button.set_tooltip ("Run Test Suite")
 
 			create alias_info_text
 			alias_info_text.disable_edit
@@ -71,6 +72,7 @@ feature {NONE}
 
 	reset
 		do
+			feature_view.editor.clear_window
 			step_over_button.enable_sensitive
 			step_out_button.enable_sensitive
 			alias_info_text.set_text ("")
