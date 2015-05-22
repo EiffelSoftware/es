@@ -125,10 +125,11 @@ it is destroyed completely.
 /* Declarations */
 rt_shared void rt_message_channel_send (struct rt_message_channel* self, enum scoop_message_type message_type, struct rt_processor* sender, struct call_data* call, struct rt_private_queue* queue);
 rt_shared void rt_message_channel_receive (struct rt_message_channel* self, struct rt_message* message);
+rt_shared void rt_message_channel_receive_with_gc (struct rt_message_channel* self, struct rt_message* message);
 rt_shared EIF_BOOLEAN rt_message_channel_is_empty (struct rt_message_channel* self);
 
 rt_shared void rt_message_channel_mark (struct rt_message_channel* self, MARKER marking);
-rt_shared void rt_message_channel_init (struct rt_message_channel* self, size_t default_spin);
+rt_shared int rt_message_channel_init (struct rt_message_channel* self, size_t default_spin);
 rt_shared void rt_message_channel_deinit (struct rt_message_channel* self);
 
 #endif /* _rt_message_channel_h_ */

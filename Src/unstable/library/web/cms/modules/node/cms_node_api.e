@@ -170,9 +170,9 @@ feature -- URL
 			-- or URI of path for selection of new content possibilities if ct is Void.
 		do
 			if ct /= Void then
-				Result := "/node/add/" + ct.name
+				Result := "node/add/" + ct.name
 			else
-				Result := "/node/"
+				Result := "node/"
 			end
 		end
 
@@ -190,13 +190,13 @@ feature -- URL
 		require
 			a_node.has_id
 		do
-			Result := "/node/" + a_node.id.out
+			Result := "node/" + a_node.id.out
 		end
 
 	nodes_path: STRING
 			-- URI path for list of nodes.
 		do
-			Result := "/nodes"
+			Result := "nodes"
 		end
 
 feature -- Access: Node
@@ -210,6 +210,14 @@ feature -- Access: Node
 			-- List of nodes.
 		do
 			Result := node_storage.nodes
+		end
+
+
+	trashed_nodes (a_user: CMS_USER): LIST [CMS_NODE]
+			-- List of nodes with status in {CMS_NODE_API}.trashed.
+			-- if the current user is admin, it will retrieve all the trashed nodes
+		do
+			Result := node_storage.trashed_nodes (a_user.id)
 		end
 
 	recent_nodes (a_offset, a_rows: INTEGER): LIST [CMS_NODE]
@@ -314,6 +322,21 @@ feature -- Change: Node
 			-- Update node `a_node' data.
 		do
 			node_storage.update_node (a_node)
+		end
+
+	trash_node (a_node: CMS_NODE)
+			-- Trash node `a_node'.
+			--! remove the node from the storage.
+		do
+			node_storage.trash_node (a_node)
+		end
+
+
+	restore_node (a_node: CMS_NODE)
+			-- Restore node `a_node'.
+			-- From {CMS_NODE_API}.trashed to {CMS_NODE_API}.not_published.
+		do
+			node_storage.restore_node (a_node)
 		end
 
 

@@ -547,7 +547,7 @@ test	spurious-vtgc3-with-vmfn		valid273 tcf fail validity
 test	duplicate-vfac1				valid274 tcf pass validity assigner
 test	non-conforming-equality			valid275 tcf pass validity conformance equality warning
 test	missing-assigner-feature		valid276 tcf pass validity assigner fixed
-test	insufficiently-exported-assigner-feature valid277 tcf fail validity assigner
+test	insufficiently-exported-assigner-feature valid277 tcf pass validity assigner
 test	invalid-static-inspect-constant	 	valid278 tcf pass validity
 test	wrong-tuple-type-in-descendants	valid279 tcf fail validity
 test	bogus-vjar-error			valid280 tcf pass validity anchored_type
@@ -1407,18 +1407,18 @@ test	scoop-undetected-vuer				scoop022 tcf fail scoop multithreaded validity inc
 test	scoop-expanded-class-constrained-generic	scoop023 tcf fail scoop multithreaded termination expanded generic
 test	scoop-multi-dot-call-chain			scoop024 tcf pass scoop multithreaded execution assigner
 test	scoop-expanded-separate				scoop025 tcf fail used_to_pass scoop multithreaded expanded execution
-test	scoop-unnested-logging				scoop026 tcf fail used_to_pass scoop multithreaded execution
+test	scoop-unnested-logging				scoop026 tcf pass scoop multithreaded execution
 test	scoop-lock-passing-on-separate-creation		scoop027 tcf pass scoop multithreaded execution lock_passing
 test	scoop-sequential-processor-creation		scoop028 tcf pass scoop multithreaded execution
 test	scoop-recursive-processor-creation		scoop029 tcf pass scoop multithreaded execution
 test	scoop-agent-validity				scoop030 tcf pass scoop multithreaded validity expanded agents conformance
 test	scoop-agent-call				scoop031 tcf pass scoop multithreaded agents execution
-test	scoop-corrupted-string				scoop032 tcf fail used_to_pass scoop multithreaded execution
+test	scoop-corrupted-string				scoop032 tcf pass scoop multithreaded execution
 test	scoop-lock-passing-same-target			scoop033 tcf pass scoop multithreaded execution lock_passing
 test	scoop-corrupted-polymorphic-call		scoop034 tcf fail used_to_pass scoop multithreaded execution
 test	scoop-null-reference-call			scoop035 tcf pass scoop multithreaded execution
 test	scoop-nested-chain-uncontrolled-check		scoop036 tcf pass scoop multithreaded execution
-test	scoop-run-time-crash				scoop037 tcf fail scoop multithreaded execution
+test	scoop-run-time-crash				scoop037 tcf pass scoop multithreaded execution
 test	scoop-agent-creation-rule			scoop038 tcf pass scoop multithreaded agents
 test	scoop-agent-expression-uncontrolled		scoop039 tcf pass scoop multithreaded agents
 test	scoop-agent-expression-controlled		scoop040 tcf pass scoop multithreaded agents
@@ -1435,13 +1435,15 @@ test	scoop-lockpassing-query					scoop050 tcf pass scoop multithreaded deadlock 
 test	scoop-nested-separate-callback			scoop051 tcf pass scoop multithreaded deadlock lock_passing
 test 	scoop-exceptions-unlock					scoop052 tcf pass scoop multithreaded exception deadlock
 test	scoop-exceptions-dispose			scoop053 tcf fail scoop multithreaded exception execution
-test	scoop-named-tuple-validity			scoop054 tcf fail scoop tuple validity
-test	scoop-separate-instruction-fresh-id		scoop055 tcf pass scoop validity
-test	scoop-separate-instruction-dependent-arguments	scoop056 tcf pass scoop validity
-test	scoop-separate-instruction-non-separate		scoop057 tcf pass scoop validity
-test	scoop-separate-instruction-execution		scoop058 tcf pass scoop execution
-test	scoop-gc-stress-test					scoop059 tcf fail scoop execution
-test	scoop-assigner-command-validity			scoop060 tcf fail scoop assigner validity
+test	scoop-named-tuple-validity			scoop054 tcf pass scoop multithreaded tuple validity
+test	scoop-separate-instruction-fresh-id		scoop055 tcf pass scoop multithreaded validity
+test	scoop-separate-instruction-dependent-arguments	scoop056 tcf pass scoop multithreaded validity
+test	scoop-separate-instruction-non-separate		scoop057 tcf pass scoop multithreaded validity
+test	scoop-separate-instruction-execution		scoop058 tcf pass scoop multithreaded execution
+test	scoop-gc-stress-test				scoop059 tcf pass scoop multithreaded execution
+test	scoop-assigner-command-validity			scoop060 tcf pass scoop multithreaded assigner validity
+test	scoop-named-tuple-execution			scoop061 tcf fail scoop multithreaded tuple assigner execution
+test	scoop-generating-type-deadlock		scoop062 tcf manual scoop multithreaded
 
 test	deadlock-simple-symmetric-cycle			deadlock001 tcf manual scoop multithreaded deadlock
 test	deadlock-simple-asymmetric-cycle		deadlock002 tcf manual scoop multithreaded deadlock
@@ -1792,6 +1794,7 @@ test	parenthesis-alias-tuple-convention	exec357 tcf pass execution expression pa
 test	conditional-expression-constant		exec358 tcf pass execution conditional expression conformance
 test	invalid-conversion-to-tuple		exec359 tcf pass execution parenthesis_alias conversion tuple conformance
 test	expanded-hash-table				exec360 tcf pass execution expanded
+test	conversion-in-assigner-command		exec361 tcf pass execution assigner conversion
 
 -- Once specific
 
@@ -2019,6 +2022,7 @@ test	bad-library-class			term212 tcf fail termination
 test	across-on-tuple				term213 tcf pass termination across iteration
 test	qat-greater-number-of-formal	term214 tcf pass validity anchored_type system-validity
 test	large-integer-64-crash			term215 tcf pass syntax
+test	conversion-by-constant-attribute	term216 tcf pass termination conversion
 
 -- Config
 
@@ -2963,6 +2967,7 @@ test	benchmark-scoop-synthetic-threadring			bench012 tcf pass benchmark scoop sy
 test	benchmark-scoop-synthetic-thresh			bench013 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-scoop-synthetic-winnow			bench014 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-runtime-slow-allocation			bench015 tcf pass benchmark runtime
+test	benchmark-scoop-memory-stress-test			bench016 tcf fail scoop multithreaded
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing

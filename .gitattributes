@@ -6077,6 +6077,7 @@ Src/unstable/library/web/cms/examples/demo/modules/demo/cms_demo_module-safe.ecf
 Src/unstable/library/web/cms/examples/demo/site/config/application_configuration.json -text
 Src/unstable/library/web/cms/examples/demo/site/scripts/core.sql -text
 Src/unstable/library/web/cms/examples/demo/site/scripts/node.sql -text
+Src/unstable/library/web/cms/examples/demo/site/scripts/user.sql -text
 Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/css/node.css -text
 Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/css/style.css -text
 Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/js/jquery-1.10.2.min.map -text
@@ -6587,6 +6588,7 @@ eweasel/tests/bench014/main2.gold -text
 eweasel/tests/bench014/main3.gold -text
 eweasel/tests/bench014/main4.gold -text
 eweasel/tests/bench015/Ace svneol=native#text/xml
+eweasel/tests/bench016/Ace svneol=native#text/xml
 eweasel/tests/catcall013/Ace svneol=native#text/xml
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
@@ -7418,6 +7420,7 @@ eweasel/tests/scoop050/Ace svneol=native#text/xml
 eweasel/tests/scoop051/Ace svneol=native#text/xml
 eweasel/tests/scoop052/Ace svneol=native#text/xml
 eweasel/tests/scoop059/Ace svneol=native#text/xml
+eweasel/tests/scoop062/Ace svneol=native#text/xml
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
 eweasel/tests/store002/notes -text

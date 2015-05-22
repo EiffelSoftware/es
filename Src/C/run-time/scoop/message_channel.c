@@ -42,6 +42,10 @@ doc:<file name="message_channel.c" header="rt_message_channel.h" version="$Id$" 
 #include "rt_message_channel.h"
 #include "eif_error.h"
 
+/* Variables to tweak the frequency of garbage collector runs. */
+#define RT_GC_TIMEOUT_START 100
+#define RT_GC_TIMEOUT_STEP 2
+
 /*
 doc:	<struct name="mc_node", export="private">
 doc:		<summary> A message channel node which forms a linked list. </summary>
@@ -159,8 +163,17 @@ rt_private rt_inline struct mc_node* allocate_node (struct rt_message_channel* s
 			/* We need to allocate a new node on the heap. */
 		 result = (struct mc_node*) malloc (sizeof (struct mc_node));
 		 if (!result) {
-				/* Report allocation failure. */
-			enomem();
+				/* NOTE: A memory allocation failure here is a pretty fatal error,
+				 * especially for UNLOCK, SHUTDOWN RESULT_READY and DIRTY messages.
+				 * The reason is that the recipient may be blocked infinitely with
+				 * no way to unblock it. Instead of letting this silent inconsistency
+				 * sneak into our program we bail out and panic. */
+				/* TODO: There might be a way to avoid a panic by making sure that
+				 * nodes for the above messages are always pre-allocated. This makes
+				 * the send operation unfailing, but clients would have to
+				 * ensure that an "emergency" node is available prior to sending
+				 * a critical message.*/
+			eif_panic ("Could not allocate a message node in rt_message_channel_send.");
 		 }
 	}
 
@@ -276,36 +289,44 @@ rt_shared void rt_message_channel_send (struct rt_message_channel* self, enum sc
 	enqueue (self, message_type, sender, call, queue);
 
 		/* Lock the condition variable mutex. */
-	eif_pthread_mutex_lock (self->has_elements_condition_mutex);
+	RT_TRACE (eif_pthread_mutex_lock (self->has_elements_condition_mutex));
 #else
 		/* Lock the condition variable mutex. */
-	eif_pthread_mutex_lock (self->has_elements_condition_mutex);
+	RT_TRACE (eif_pthread_mutex_lock (self->has_elements_condition_mutex));
 
 			/* Perform the enqueue operation. */
 	enqueue (self, message_type, sender, call, queue);
 #endif
 
 		/* Wake up the receiver. */
-	eif_pthread_cond_signal (self->has_elements_condition);
+	RT_TRACE (eif_pthread_cond_signal (self->has_elements_condition));
 
 		/* Release the condition variable mutex. */
-	eif_pthread_mutex_unlock (self->has_elements_condition_mutex);
+	RT_TRACE (eif_pthread_mutex_unlock (self->has_elements_condition_mutex));
 
 }
 
 /*
-doc:	<routine name="rt_message_channel_receive" return_type="void" export="shared">
-doc:		<summary> Receive a message on channel 'self' and store the result in 'message'. </summary>
-doc:		<param name="self" type="struct rt_message_channel*"> The channel on which to receive the message. May be NULL. </param>
-doc:		<param name="message" type="struct rt_message*"> A pointer to a rt_message struct where the result shall be stored. Must not be NULL. </param>
+doc:	<routine name="rt_message_channel_receive_impl" return_type="void" export="private">
+doc:		<summary> Implementation of rt_message_channel_receive and rt_message_channel_receive_with_gc.
+doc:			Garbage collection runs can be triggered with the command line argument 'is_with_gc'. </summary>
+doc:		<param name="self" type="struct rt_message_channel*"> The channel on which to receive the message. Must not be NULL. </param>
+doc:		<param name="message" type="struct rt_message*"> A pointer to a rt_message struct where the result shall be stored. May be NULL. </param>
+doc:		<param name="is_with_gc" type="EIF_BOOLEAN"> Whether the garbage collector shall be called periodically. </param>
 doc:		<thread_safety> Safe for exactly one sender thread and one receiver thread. </thread_safety>
 doc:		<synchronization> None required. </synchronization>
 doc:	</routine>
 */
-rt_shared void rt_message_channel_receive (struct rt_message_channel* self, struct rt_message* message)
+rt_private rt_inline void rt_message_channel_receive_impl (struct rt_message_channel* self, struct rt_message* message, const EIF_BOOLEAN is_with_gc)
 {
 	EIF_BOOLEAN success = EIF_FALSE;
-	size_t i;
+	size_t i = 0;
+	int error = T_OK;
+
+		/* Variables for the GC-specific receive. Note: Thanks to inlining most compilers will
+		 *  optimize away the dead code paths and unused variables. */
+	int gc_fingerprint = 0;
+	rt_uint_ptr wait_timeout = RT_GC_TIMEOUT_START;
 
 	REQUIRE ("self_not_null", self);
 
@@ -337,7 +358,7 @@ rt_shared void rt_message_channel_receive (struct rt_message_channel* self, stru
 			 */
 
 			/* Lock the condition variable mutex. */
-		eif_pthread_mutex_lock (self->has_elements_condition_mutex);
+		RT_TRACE (eif_pthread_mutex_lock (self->has_elements_condition_mutex));
 
 			/* Try to receive a message. */
 		while (!dequeue (self, message)) {
@@ -346,11 +367,15 @@ rt_shared void rt_message_channel_receive (struct rt_message_channel* self, stru
 			EIF_ENTER_C;
 
 				/* Wait on the condition variable for a producer to signal availability of new messages. */
-			eif_pthread_cond_wait (self->has_elements_condition, self->has_elements_condition_mutex);
+			if (is_with_gc) {
+				error = eif_pthread_cond_wait_with_timeout (self->has_elements_condition, self->has_elements_condition_mutex, wait_timeout);
+			} else {
+				RT_TRACE (eif_pthread_cond_wait (self->has_elements_condition, self->has_elements_condition_mutex));
+			}
 
 				/* Now we need to synchronize for GC. Since the previous wait reacquired the lock,
 				 * and we're not allowed to hold a lock during GC, we have to release it now. */
-			eif_pthread_mutex_unlock (self->has_elements_condition_mutex);
+			RT_TRACE (eif_pthread_mutex_unlock (self->has_elements_condition_mutex));
 
 				/* Inform the GC that we're no longer blocked, and synchronize for GC if it's currently running. */
 			EIF_EXIT_C;
@@ -365,14 +390,51 @@ rt_shared void rt_message_channel_receive (struct rt_message_channel* self, stru
 			}
 #endif
 
+				/* If invoked with GC enabled, we have to request it here, before re-acquiring the lock. */
+			if (is_with_gc && error == T_TIMEDOUT) {
+				rt_uint_ptr new_timeout = RT_GC_TIMEOUT_STEP * wait_timeout;
+				wait_timeout = (new_timeout > wait_timeout) ? new_timeout : wait_timeout; /* Overflow protection */
+				rt_scoop_gc_request (&gc_fingerprint);
+			}
+
 				/* To perform the dequeue operation we should reacquire the lock. */
-			eif_pthread_mutex_lock (self->has_elements_condition_mutex);
+			RT_TRACE (eif_pthread_mutex_lock (self->has_elements_condition_mutex));
 		}
 
 			/* Finally, release the previously acquired lock. */
-		eif_pthread_mutex_unlock (self->has_elements_condition_mutex);
+		RT_TRACE (eif_pthread_mutex_unlock (self->has_elements_condition_mutex));
 	}
 }
+
+/*
+doc:	<routine name="rt_message_channel_receive" return_type="void" export="shared">
+doc:		<summary> Receive a message on channel 'self' and store the result in 'message'. </summary>
+doc:		<param name="self" type="struct rt_message_channel*"> The channel on which to receive the message. Must not be NULL. </param>
+doc:		<param name="message" type="struct rt_message*"> A pointer to a rt_message struct where the result shall be stored. May be NULL. </param>
+doc:		<thread_safety> Safe for exactly one sender thread and one receiver thread. </thread_safety>
+doc:		<synchronization> None required. </synchronization>
+doc:	</routine>
+*/
+rt_shared void rt_message_channel_receive (struct rt_message_channel* self, struct rt_message* message)
+{
+	rt_message_channel_receive_impl (self, message, 0);
+}
+
+/*
+doc:	<routine name="rt_message_channel_receive" return_type="void" export="shared">
+doc:		<summary> Receive a message on channel 'self' and store the result in 'message'.
+doc:			If no message is available, trigger the garbage collector in regular intervals in between. </summary>
+doc:		<param name="self" type="struct rt_message_channel*"> The channel on which to receive the message. Must not be NULL. </param>
+doc:		<param name="message" type="struct rt_message*"> A pointer to a rt_message struct where the result shall be stored. May be NULL. </param>
+doc:		<thread_safety> Safe for exactly one sender thread and one receiver thread. </thread_safety>
+doc:		<synchronization> None required. </synchronization>
+doc:	</routine>
+*/
+rt_shared void rt_message_channel_receive_with_gc (struct rt_message_channel* self, struct rt_message* message)
+{
+	rt_message_channel_receive_impl (self, message, 1);
+}
+
 
 /*
 doc:	<routine name="rt_message_channel_is_empty" return_type="EIF_BOOLEAN" export="shared">
@@ -424,15 +486,16 @@ rt_shared void rt_message_channel_mark (struct rt_message_channel* self, MARKER 
 }
 
 /*
-doc:	<routine name="rt_message_channel_init" return_type="void" export="shared">
+doc:	<routine name="rt_message_channel_init" return_type="int" export="shared">
 doc:		<summary> Initialize the rt_message_channel struct 'self' and allocate some initial memory. </summary>
 doc:		<param name="self" type="struct rt_message_channel*"> The channel to be initialized. Must not be NULL. </param>
 doc:		<param name="default_spin" type="size_t"> The number of times a thread should spin on receive before waiting on a condition variable. </param>
+doc:		<return> T_OK on success. T_NO_MORE_MEMORY or a mutex creation error code when a resource could not be allocated. </return>
 doc:		<thread_safety> Not safe. </thread_safety>
 doc:		<synchronization> None. </synchronization>
 doc:	</routine>
 */
-rt_shared void rt_message_channel_init (struct rt_message_channel* self, size_t default_spin)
+rt_shared int rt_message_channel_init (struct rt_message_channel* self, size_t default_spin)
 {
 	int error = T_OK;
 	struct mc_node* l_node = NULL;
@@ -440,7 +503,7 @@ rt_shared void rt_message_channel_init (struct rt_message_channel* self, size_t 
 	REQUIRE ("self_not_null", self);
 
 		/* Ensure that the struct is in a consistent state
-		 * for de-initialization if some allocation fails. */
+		 * to call rt_message_channel_deinit() if some allocation fails. */
 	self->first = NULL;
 	self->has_elements_condition = NULL;
 	self->has_elements_condition_mutex = NULL;
@@ -448,36 +511,36 @@ rt_shared void rt_message_channel_init (struct rt_message_channel* self, size_t 
 
 		/* Allocate the guard node. */
 	l_node = (struct mc_node*) malloc (sizeof (struct mc_node));
+
 	if (!l_node) {
-			/* Report allocation failure. */
-		enomem();
+			/* Set the correct error code if malloc failed to allocate memory. */
+		error = T_NO_MORE_MEMORY;
+	} else {
+
+			/* Initialize the node to a consistent state. */
+		l_node->next = NULL;
+		rt_message_init (&l_node->value, SCOOP_MESSAGE_INVALID, NULL, NULL, NULL);
+
+			/* In the beginning, all pointers point to the guard node. */
+		self->head = l_node;
+		self->tail = l_node;
+		self->first = l_node;
+		self->tail_copy = l_node;
+
+			/* Create the mutex for blocking wait. */
+		error = eif_pthread_mutex_create (&self->has_elements_condition_mutex);
+
+			/* Create the condition variable for blocking wait. */
+		if (T_OK == error) {
+			error = eif_pthread_cond_create (&self->has_elements_condition);
+		}
 	}
 
-		/* Initialize the node to a consistent state. */
-	l_node->next = NULL;
-	rt_message_init (&l_node->value, SCOOP_MESSAGE_INVALID, NULL, NULL, NULL);
-
-		/* In the beginning, all pointers point to the guard node. */
-	self->head = l_node;
-	self->tail = l_node;
-	self->first = l_node;
-	self->tail_copy = l_node;
-
-		/* Create the mutex for blocking wait. */
-	error = eif_pthread_mutex_create (&self->has_elements_condition_mutex);
+		/* Free any allocataed resources in case of an error. */
 	if (error != T_OK) {
-			/* Free resources and report failure. */
 		rt_message_channel_deinit (self);
-		esys();
 	}
-
-		/* Create the condition variable for blocking wait. */
-	error = eif_pthread_cond_create (&self->has_elements_condition);
-	if (error != T_OK) {
-			/* Free resources and report failure. */
-		rt_message_channel_deinit (self);
-		esys ();
-	}
+	return error;
 }
 
 /*
@@ -509,12 +572,12 @@ rt_shared void rt_message_channel_deinit (struct rt_message_channel* self)
 
 		/* Free the mutex and condition variables. */
 	if (self->has_elements_condition) {
-		eif_pthread_cond_destroy (self->has_elements_condition);
+		RT_TRACE (eif_pthread_cond_destroy (self->has_elements_condition));
 		self->has_elements_condition = NULL;
 	}
 
 	if (self->has_elements_condition_mutex) {
-		eif_pthread_mutex_destroy (self->has_elements_condition_mutex);
+		RT_TRACE (eif_pthread_mutex_destroy (self->has_elements_condition_mutex));
 		self->has_elements_condition_mutex = NULL;
 	}
 }

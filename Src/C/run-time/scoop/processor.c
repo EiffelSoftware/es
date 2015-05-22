@@ -131,14 +131,13 @@ rt_shared int rt_processor_create (EIF_SCP_PID a_pid, EIF_BOOLEAN is_root_proces
 
 			/* Next we need to initialize several message channels. */
 		if (T_OK == error) {
-				/* TODO: Change rt_message_channel_init to return an error code instead of an exception. */
-			rt_message_channel_init (&self->result_notify, 64);
+			error = rt_message_channel_init (&self->result_notify, 64);
 		}
 		if (T_OK == error) {
-			rt_message_channel_init (&self->startup_notify, 64);
+			error = rt_message_channel_init (&self->startup_notify, 64);
 		}
 		if (T_OK == error) {
-			rt_message_channel_init (&self->queue_of_queues, 128);
+			error = rt_message_channel_init (&self->queue_of_queues, 128);
 		}
 
 
@@ -298,6 +297,7 @@ rt_shared void rt_processor_execute_call (struct rt_processor* self, struct rt_p
 	EIF_BOOLEAN is_synchronous;
 	EIF_BOOLEAN is_successful;
 	size_t l_count = 0;
+	int error = T_OK;
 
 	REQUIRE ("self_not_null", self);
 	REQUIRE ("client_not_null", client);
@@ -310,27 +310,34 @@ rt_shared void rt_processor_execute_call (struct rt_processor* self, struct rt_p
 
 		if (is_synchronous) {
 				/* Grab all locks held by the client. */
-			rt_queue_cache_push (&self->cache, &client->cache);
+			error = rt_queue_cache_push (&self->cache, &client->cache);
 		}
-			/* Remember the size of the request group stack. */
-		l_count = rt_processor_request_group_stack_count (self);
 
-			/* Execute the call. */
-		is_successful = rt_scoop_try_call (call);
-
-			/* Mark the current region as dirty if the call fails. */
-		if (!is_successful) {
+		if (error != T_OK) {
+				/* Lock passing failed. Treat the call as not successful. */
 			self->is_dirty = EIF_TRUE;
-				/* Unlock any request groups that may have been locked during this call. */
-			rt_processor_request_group_stack_remove (self, rt_processor_request_group_stack_count (self) - l_count);
-		}
+		} else {
 
-			/* The request group stack should be the same after this call. */
-		CHECK ("same_stack_size", rt_processor_request_group_stack_count(self) == l_count);
+				/* Remember the size of the request group stack. */
+			l_count = rt_processor_request_group_stack_count (self);
 
-		if (is_synchronous) {
-				/* Return the previously acquired locks. */
-			rt_queue_cache_pop (&self->cache);
+				/* Execute the call. */
+			is_successful = rt_scoop_try_call (call);
+
+				/* Mark the current region as dirty if the call fails. */
+			if (!is_successful) {
+				self->is_dirty = EIF_TRUE;
+					/* Unlock any request groups that may have been locked during this call. */
+				rt_processor_request_group_stack_remove (self, rt_processor_request_group_stack_count (self) - l_count);
+			}
+
+				/* The request group stack should be the same after this call. */
+			CHECK ("same_stack_size", rt_processor_request_group_stack_count(self) == l_count);
+
+			if (is_synchronous) {
+					/* Return the previously acquired locks. */
+				rt_queue_cache_pop (&self->cache);
+			}
 		}
 	}
 
@@ -432,7 +439,7 @@ rt_private void rt_processor_publish_wait_condition (struct rt_processor* self, 
 			if (item) {
 
 					/* Lock the registered processor's condition variable mutex. */
-				RT_TRACE (eif_pthread_mutex_lock (item->wait_condition_mutex)); /* TODO: Return an error code? */
+				RT_TRACE (eif_pthread_mutex_lock (item->wait_condition_mutex));
 
 					/* Send a signal. */
 				RT_TRACE (eif_pthread_cond_signal (item->wait_condition));
@@ -481,7 +488,7 @@ rt_shared void rt_processor_application_loop (struct rt_processor* self)
 			plsc();
 		}
 
-		rt_message_channel_receive (&self->queue_of_queues, &next_job);
+		rt_message_channel_receive_with_gc (&self->queue_of_queues, &next_job);
 
 		if (next_job.message_type == SCOOP_MESSAGE_ADD_QUEUE) {
 			increment_active_processor_count();
@@ -523,7 +530,7 @@ doc:	<routine name="rt_processor_new_private_queue" return_type="int" export="sh
 doc:		<summary> Create a new private queue whose supplier is this processor. </summary>
 doc:		<param name="self" type="struct rt_processor*"> The processor object. Must not be NULL. </param>
 doc:		<param name="result" type="struct rt_private_queue**"> A pointer to the location where the result shall be stored. Must not be NULL. </param>
-doc:		<return> T_OK on success. T_NO_MORE_MEMORY or a mutex locking error code on failure. </return>
+doc:		<return> T_OK on success. T_NO_MORE_MEMORY or a mutex creation error code when a resource could not be allocated. </return>
 doc:		<thread_safety> Safe. </thread_safety>
 doc:		<synchronization> None required. </synchronization>
 doc:	</routine>
@@ -539,16 +546,14 @@ int rt_processor_new_private_queue (struct rt_processor* self, struct rt_private
 	l_queue = (struct rt_private_queue*) malloc (sizeof (struct rt_private_queue));
 
 	if (l_queue) {
-			/* TODO: Change rt_private_queue_init to return an error code instead of an exception. */
-		/*error=*/rt_private_queue_init (l_queue, self);
+		error = rt_private_queue_init (l_queue, self);
 
 		if (T_OK == error) {
-			error = eif_pthread_mutex_lock (self->generated_private_queues_mutex);
 
-			if (T_OK == error) {
-				error = private_queue_list_t_extend (&self->generated_private_queues, l_queue);
-			}
-				/* An error during unlock is an indication of a bug. */
+			RT_TRACE (eif_pthread_mutex_lock (self->generated_private_queues_mutex));
+
+			error = private_queue_list_t_extend (&self->generated_private_queues, l_queue);
+
 			RT_TRACE (eif_pthread_mutex_unlock (self->generated_private_queues_mutex));
 		}
 
@@ -567,7 +572,7 @@ int rt_processor_new_private_queue (struct rt_processor* self, struct rt_private
 }
 
 /*
-doc:	<routine name="rt_processor_subscribe_wait_condition" return_type="void" export="shared">
+doc:	<routine name="rt_processor_subscribe_wait_condition" return_type="int" export="shared">
 doc:		<summary> Register for a notification when the heap protected by processor 'self' may have changed.
 doc:			This is used to implement wait condition change signalling.
 doc:			The registration is only valid for a single notification and will be deleted by 'self' afterwards.
@@ -575,16 +580,22 @@ doc:			Note: This feature is executed by the 'client' processor (i.e. thread), a
 doc:			supplier 'self' is synchronized with the client. </summary>
 doc:		<param name="self" type="struct rt_processor*"> The processor that will send the notification in the future. Must not be NULL. </param>
 doc:		<param name="client" type="struct rt_processor*"> The processor interested in wait condition changes. Must not be NULL. </param>
+doc:		<return> T_OK on success. T_NO_MORE_MEMORY in case of a memory allocation failure. </return>
 doc:		<thread_safety> Not safe. </thread_safety>
 doc:		<synchronization> Only call when 'self' is synchronized with 'client'. </synchronization>
 doc:	</routine>
 */
-rt_shared void rt_processor_subscribe_wait_condition (struct rt_processor* self, struct rt_processor* client)
+rt_shared int rt_processor_subscribe_wait_condition (struct rt_processor* self, struct rt_processor* client)
 {
+#ifdef EIF_ASSERTIONS
+	struct rt_private_queue* pq = NULL; /* For assertion checking. */
+#endif
 	REQUIRE ("self_not_null", self);
 	REQUIRE ("client_not_null", client);
-	REQUIRE ("synchronized", rt_private_queue_is_synchronized (rt_queue_cache_retrieve (&client->cache, self)));
-	subscriber_list_t_extend (&self->wait_condition_subscribers, client);
+	REQUIRE ("queue_available", T_OK == rt_queue_cache_retrieve (&client->cache, self, &pq));
+	REQUIRE ("synchronized", rt_private_queue_is_synchronized (pq));
+
+	return subscriber_list_t_extend (&self->wait_condition_subscribers, client);
 }
 
 
@@ -616,14 +627,15 @@ rt_shared void rt_processor_unsubscribe_wait_condition (struct rt_processor* sel
 }
 
 /*
-doc:	<routine name="rt_processor_request_group_stack_extend" return_type="void" export="shared">
+doc:	<routine name="rt_processor_request_group_stack_extend" return_type="int" export="shared">
 doc:		<summary> Create a new request group and put it at the end of the request group stack. </summary>
 doc:		<param name="self" type="struct rt_processor*"> The processor that owns the group stack. Must not be NULL. </param>
+doc:		<return> T_OK on success. T_NO_MORE_MEMORY in case of a memory allocation failure. </return>
 doc:		<thread_safety> Not safe. </thread_safety>
 doc:		<synchronization> None. </synchronization>
 doc:	</routine>
 */
-rt_shared void rt_processor_request_group_stack_extend (struct rt_processor* self)
+rt_shared int rt_processor_request_group_stack_extend (struct rt_processor* self)
 {
 	int error = T_OK;
 	struct rt_request_group l_group; /* stack-allocated */
@@ -632,9 +644,7 @@ rt_shared void rt_processor_request_group_stack_extend (struct rt_processor* sel
 
 	rt_request_group_init (&l_group, self);
 	error = request_group_stack_t_extend (&self->request_group_stack, l_group);
-	if (error == T_NO_MORE_MEMORY) {
-		enomem();
-	}
+	return error;
 }
 
 /*
