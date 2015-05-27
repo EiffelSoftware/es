@@ -218,24 +218,31 @@ feature {NONE}
 			a_f /= Void
 		local
 			l_analyzer: ALIAS_ANALYSIS_RUNNER
+			l_expected, l_actual: STRING_32
 		do
-			if attached expected_aliasing (a_f) as l_expected then
+			if attached expected_aliasing (a_f) as l_expected_list then
 				create l_analyzer.make (a_f, Void, Void)
-				across l_expected as c loop
+				across l_expected_list as c loop
 					l_analyzer.step_until (c.item.index)
+					l_expected := c.item.aliasing
+					l_actual := l_analyzer.report
 
 					alias_info_text.append_text ("   - " + a_f.feature_name_32 + " [" + c.item.index.out + "]: ")
-					if l_analyzer.report.is_equal (c.item.aliasing) then
+					if l_actual.is_equal (l_expected) then
 						alias_info_text.append_text ("PASS%N")
 					else
 						alias_info_text.append_text ("FAIL:%N")
 						alias_info_text.append_text ("      --- --- --- expected --- --- ---%N")
-						across c.item.aliasing.split ('%N') as c2 loop
-							alias_info_text.append_text ("      " + c2.item + "%N")
+						if not l_expected.is_empty then
+							across l_expected.split ('%N') as c2 loop
+								alias_info_text.append_text ("      " + c2.item + "%N")
+							end
 						end
 						alias_info_text.append_text ("      --- --- ---  actual  --- --- ---%N")
-						across l_analyzer.report.split ('%N') as c2 loop
-							alias_info_text.append_text ("      " + c2.item + "%N")
+						if not l_actual.is_empty then
+							across l_actual.split ('%N') as c2 loop
+								alias_info_text.append_text ("      " + c2.item + "%N")
+							end
 						end
 						alias_info_text.append_text ("      --- --- --- ---  --- --- --- ---%N")
 					end

@@ -10,9 +10,9 @@ class
 
 feature
 
-	a, b: detachable STRING_8
+	a, b, c: detachable STRING_8
 
-	test1
+	test_globals
 		note
 			aliasing:
 				"[
@@ -24,7 +24,7 @@ feature
 			b := a
 		end
 
-	test2
+	test_locals
 		note
 			aliasing1: ""
 			aliasing2: ""
@@ -49,6 +49,44 @@ feature
 			a := l_b
 
 			a := a
+		end
+
+	test_void_assignment
+		note
+			aliasing: ""
+		do
+			a := b
+		end
+
+	test_void_assignment_2
+		note
+			aliasing3: "[
+					{AAT_BASIC}.a: {AAT_BASIC}.b
+					{AAT_BASIC}.b: {AAT_BASIC}.a
+				]"
+			aliasing: ""
+		do
+			a := "a"
+			b := a
+			a := Void
+		end
+
+	test_void_assignment_3
+		note
+			aliasing4: "[
+					{AAT_BASIC}.a: {AAT_BASIC}.b, {AAT_BASIC}.c
+					{AAT_BASIC}.b: {AAT_BASIC}.c, {AAT_BASIC}.a
+					{AAT_BASIC}.c: {AAT_BASIC}.b, {AAT_BASIC}.a
+				]"
+			aliasing: "[
+					{AAT_BASIC}.a: {AAT_BASIC}.c
+					{AAT_BASIC}.c: {AAT_BASIC}.a
+				]"
+		do
+			a := "a"
+			b := a
+			c := b
+			b := Void
 		end
 
 note
