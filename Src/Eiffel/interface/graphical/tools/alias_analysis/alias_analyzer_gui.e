@@ -73,9 +73,10 @@ feature {NONE}
 	reset
 		do
 			feature_view.editor.clear_window
-			step_over_button.enable_sensitive
-			step_out_button.enable_sensitive
+			step_over_button.disable_sensitive
+			step_out_button.disable_sensitive
 			alias_info_text.set_text ("")
+			alias_analysis_runner := Void
 		end
 
 	on_stone_changed (a_stone: STONE)
@@ -95,6 +96,8 @@ feature {NONE}
 				attached {PROCEDURE_I} r.associated_class.feature_named_32 (r.name_32) as p
 			then
 				feature_view.set_stone (a_stone)
+				step_over_button.enable_sensitive
+				step_out_button.enable_sensitive
 				from
 					l_el := feature_view.editor.text_displayed.first_line
 					l_line_number := 1
@@ -125,17 +128,12 @@ feature {NONE}
 					l_el := l_el.next
 					l_line_number := l_line_number + 1
 				end
-
 				create alias_analysis_runner.make (
 						p,
 						l_last,
 						agent do feature_view.editor.refresh end
 					)
 			end
-		ensure
-			step_over_button.is_sensitive
-			step_out_button.is_sensitive
-			alias_analysis_runner /= Void
 		end
 
 	on_step_over
@@ -219,48 +217,94 @@ feature {NONE}
 		require
 			a_f /= Void
 		local
-			l_malformed_note: BOOLEAN
-			l_aliasing: STRING_32
 			l_analyzer: ALIAS_ANALYSIS_RUNNER
 		do
-			if a_f.e_feature.ast.indexes /= Void then
-				across
-					a_f.e_feature.ast.indexes as c
-				until
-					l_malformed_note
-				loop
-					if c.item.tag.name_8.is_equal ("aliasing") then
-						if
-							l_aliasing = Void and
-							c.item.index_list.count = 1
-						then
-							l_aliasing := c.item.index_list[1].string_value_32
-							if l_aliasing.starts_with ("%"") and l_aliasing.ends_with ("%"") then
-								l_aliasing := l_aliasing.substring (2, l_aliasing.count - 1)
-								l_aliasing.replace_substring_all ("%%N", "%N")
-							else
-								l_aliasing := Void
-								l_malformed_note := True
-							end
-						else
-							l_malformed_note := True
+			if attached expected_aliasing (a_f) as l_expected then
+				create l_analyzer.make (a_f, Void, Void)
+				across l_expected as c loop
+					l_analyzer.step_until (c.item.index)
+
+					alias_info_text.append_text ("   - " + a_f.feature_name_32 + " [" + c.item.index.out + "]: ")
+					if l_analyzer.report.is_equal (c.item.aliasing) then
+						alias_info_text.append_text ("PASS%N")
+					else
+						alias_info_text.append_text ("FAIL:%N")
+						alias_info_text.append_text ("      --- --- --- expected --- --- ---%N")
+						across c.item.aliasing.split ('%N') as c2 loop
+							alias_info_text.append_text ("      " + c2.item + "%N")
 						end
+						alias_info_text.append_text ("      --- --- ---  actual  --- --- ---%N")
+						across l_analyzer.report.split ('%N') as c2 loop
+							alias_info_text.append_text ("      " + c2.item + "%N")
+						end
+						alias_info_text.append_text ("      --- --- --- ---  --- --- --- ---%N")
 					end
 				end
 			end
-			if l_malformed_note then
-				alias_info_text.append_text ("   - " + a_f.feature_name_32 + ": Malformed note?!%N")
-			elseif l_aliasing /= Void then
-				create l_analyzer.make (a_f, Void, Void)
-				l_analyzer.step_out
+		end
 
-				alias_info_text.append_text ("   - " + a_f.feature_name_32 + ": ")
-				if l_analyzer.report.is_equal (l_aliasing) then
-					alias_info_text.append_text ("PASS%N")
-				else
-					alias_info_text.append_text ("FAIL%N")
+	expected_aliasing (a_f: PROCEDURE_I): LIST [TUPLE [index: INTEGER_32; aliasing: STRING_32]]
+		require
+			a_f /= Void
+		local
+			l_error: STRING_8
+			l_note_key, l_index_str: STRING_8
+			l_index: INTEGER_32
+			l_aliasing: STRING_32
+		do
+			if a_f.e_feature.ast.indexes /= Void then
+				create {TWO_WAY_LIST [TUPLE [INTEGER_32, STRING_32]]} Result.make
+				across
+					a_f.e_feature.ast.indexes as c
+				until
+					l_error /= Void
+				loop
+					l_note_key := c.item.tag.name_8
+					if l_note_key.starts_with ("aliasing") then
+						l_index_str := l_note_key.substring(("aliasing").count + 1, l_note_key.count)
+						if l_index_str.is_empty then
+							l_index := a_f.number_of_breakpoint_slots
+						elseif l_index_str.is_integer_32 then
+							l_index := l_index_str.to_integer_32
+						else
+							l_error := "Note %"" + l_note_key + "%" has an invalid index (" + l_index_str + ")"
+						end
+						if l_error = Void then
+							if
+								l_index >= 1 and
+								l_index <= a_f.number_of_breakpoint_slots and
+								(Result.is_empty or else Result.last.index < l_index)
+							then
+								inspect c.item.index_list.count
+								when 1 then
+									l_aliasing := c.item.index_list[1].string_value_32
+									if l_aliasing.starts_with ("%"") and l_aliasing.ends_with ("%"") then
+										l_aliasing := l_aliasing.substring (2, l_aliasing.count - 1)
+										l_aliasing.replace_substring_all ("%%N", "%N")
+										Result.extend ([l_index, l_aliasing])
+									else
+										l_error := "Note %"" + l_note_key + "%" has an invalid value"
+									end
+								when 0 then
+									l_error := "Note %"" + l_note_key + "%" has no values"
+								else
+									l_error := "Note %"" + l_note_key + "%" has " + c.item.index_list.count.out + " values"
+								end
+							else
+								l_error := "Note %"" + l_note_key + "%" has an invalid index (" + l_index.out + ")"
+							end
+						end
+					end
+				end
+				if l_error /= Void then
+					alias_info_text.append_text ("   - " + a_f.feature_name_32 + ": " + l_error + "?!%N")
+					Result := Void
+				elseif Result.is_empty then
+					Result := Void
 				end
 			end
+		ensure
+			Result = Void or else not Result.is_empty
 		end
 
 invariant

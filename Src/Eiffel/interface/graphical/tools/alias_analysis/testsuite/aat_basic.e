@@ -16,14 +16,39 @@ feature
 		note
 			aliasing:
 				"[
-					Void: any
-					NonVoid: any
 					{AAT_BASIC}.a: {AAT_BASIC}.b
 					{AAT_BASIC}.b: {AAT_BASIC}.a
 				]"
 		do
 			a := "a"
 			b := a
+		end
+
+	test2
+		note
+			aliasing1: ""
+			aliasing2: ""
+			aliasing3:
+				"[
+					{AAT_BASIC}.test2.l_a: {AAT_BASIC}.test2.l_b
+					{AAT_BASIC}.test2.l_b: {AAT_BASIC}.test2.l_a
+				]"
+			aliasing4:
+				"[
+					{AAT_BASIC}.test2.l_a: {AAT_BASIC}.test2.l_b, {AAT_BASIC}.a
+					{AAT_BASIC}.test2.l_b: {AAT_BASIC}.a, {AAT_BASIC}.test2.l_a
+					{AAT_BASIC}.a: {AAT_BASIC}.test2.l_b, {AAT_BASIC}.test2.l_a
+				]"
+			aliasing5: ""
+		local
+			l_a: STRING_8
+			l_b: STRING_8
+		do
+			l_a := "ab"
+			l_b := l_a
+			a := l_b
+
+			a := a
 		end
 
 note

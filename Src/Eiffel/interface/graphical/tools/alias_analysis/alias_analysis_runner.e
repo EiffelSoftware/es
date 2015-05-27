@@ -13,11 +13,6 @@ create
 
 feature {NONE}
 
-	routine: PROCEDURE_I
-
-	index: INTEGER_32
-		-- analysis will execute this breakpoint index next
-
 	breakpoints: ARRAY [EDITOR_TOKEN_ALIAS_BREAKPOINT]
 
 	gui_refresh_agent: PROCEDURE [ANY, TUPLE]
@@ -58,58 +53,34 @@ feature {NONE}
 			index = 1
 		end
 
-	alias_analyzer_update (a_analyzer: ALIAS_ANALYZER_ON_RELATION; a_data: ANY)
-		do
-			if attached {AST_EIFFEL} a_data as ag_ast then
-				if ag_ast.breakpoint_slot = 0 then
-					(create {ETR_BP_SLOT_INITIALIZER}).init_with_context (
-								routine.e_feature.ast,
-								routine.written_class
-							)
-				end
-				if index = ag_ast.breakpoint_slot then
-					--Io.put_string ("Taking report before " + ag_ast.generator + " (slot " + index.out + ").%N")
-					report := a_analyzer.report
-				end
-			end
-		end
-
 feature
+
+	routine: PROCEDURE_I
+
+	index: INTEGER_32
+		-- analysis will execute this breakpoint index next
 
 	report: STRING_32
 
 	step_over
 		require
 			not is_done
-		local
-			l_analyzer: ALIAS_ANALYZER_ON_RELATION
 		do
-			if breakpoints /= Void then
-				breakpoints[index].active := False
-			end
-
-			index := index + 1
-			report := "[No report taken?!]";
-
-			create l_analyzer.make
-			l_analyzer.process_feature (
-					routine,
-					routine.written_class,
-					agent alias_analyzer_update (l_analyzer, ?)
-				)
-			if index = routine.number_of_breakpoint_slots then
-				report := l_analyzer.report
-			end
-
-			if breakpoints /= Void then
-				breakpoints[index].active := True
-				gui_refresh_agent.call
-			end
+			step_until (index + 1)
 		end
 
 	step_out
 		require
 			not is_done
+		do
+			step_until (routine.number_of_breakpoint_slots)
+		end
+
+	step_until (a_index: INTEGER_32)
+		require
+			not is_done
+			a_index >= index
+			a_index <= routine.number_of_breakpoint_slots
 		local
 			l_analyzer: ALIAS_ANALYZER_ON_RELATION
 		do
@@ -117,16 +88,43 @@ feature
 				breakpoints[index].active := False
 			end
 
-			index := routine.number_of_breakpoint_slots
+			index := a_index
 			report := "[No report taken?!]";
 
 			create l_analyzer.make
-			l_analyzer.process_feature (
-					routine,
-					routine.written_class,
-					agent (ag_data: ANY) do end
-				)
-			report := l_analyzer.report
+			if index = routine.number_of_breakpoint_slots then
+				l_analyzer.process_feature (
+						routine,
+						routine.written_class,
+						agent (ag_data: ANY) do end
+					)
+				report := l_analyzer.report
+			else
+				l_analyzer.process_feature (
+						routine,
+						routine.written_class,
+						agent (ag_analyzer: ALIAS_ANALYZER_ON_RELATION; ag_data: ANY)
+							do
+								if attached {AST_EIFFEL} ag_data as ag_ast then
+									if ag_ast.breakpoint_slot = 0 then
+										(create {ETR_BP_SLOT_INITIALIZER}).init_with_context (
+													routine.e_feature.ast,
+													routine.written_class
+												)
+									end
+									if index = ag_ast.breakpoint_slot then
+										--Io.put_string ("Taking report before " + ag_ast.generator + " (slot " + index.out + ").%N")
+										report := ag_analyzer.report
+									end
+								end
+							end (l_analyzer, ?)
+					)
+			end
+
+			-- cleanup workaround for the current implementation from Alexander
+			report.replace_substring_all ("NonVoid: any", "")
+			report.replace_substring_all ("Void: any", "")
+			report.left_adjust
 
 			if breakpoints /= Void then
 				breakpoints[index].active := True
