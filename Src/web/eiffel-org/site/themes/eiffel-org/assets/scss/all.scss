@@ -580,6 +580,9 @@
 	min-height: 150px;
 	.btn-holder{
 		@include grid(3);
+		margin-left: 0px;
+  		margin-right: 0px;
+  		width: initial;
 		.btn {
 			@include linear-gradient(#99cc33, #769830);
 			@include border-radius(4px);
@@ -629,6 +632,9 @@
 
 .footer-nav{
 	@include grid(6);
+	margin-right: 0px;
+	margin-left: 0px; 
+	width: 640px;
 	ul{
 		@extend %listreset;
 		overflow: hidden;
@@ -727,25 +733,25 @@
 #content {
 	.contribute-block, .about-block, .promo-block {
 		overflow: hidden;
-		padding: 8px 0 0;
-		margin: 0 0 -46px;
+		padding: 8px 25px 0;
+		margin: 0 65px -46px;
 		ul{
 			@extend %listreset;
 			margin: 0 0 0 -73px;
 			li{
-				width: 285px;
-				height: 261px;
+				background: #e9eced;
+				width: 325px;
+				height: 320px;
 				float: left;
-				margin: 0 0 54px 33px;
+				margin: 0 48px 34px 33px;
+				@include border-radius(7px);
+				&:hover{
+					background: #e3e7e8;
+				}
 				a{
-					background: #e9eced;
 					display: block;
 					text-align: center;
-					padding: 24px 20px 11px;
-					@include border-radius(7px);
-					&:hover{
-						background: #e3e7e8;
-					}
+					padding: 20px 5px;
 				}
 				.ico{
 					width: 52px;
@@ -765,6 +771,19 @@
 				p{
 					color: #0C0D0D;
 				}
+				div {
+					background: #e9eced;
+					display: block;
+					text-align: center;
+					padding: 20px 5px;
+					@include border-radius(7px);
+					&:hover{
+						background: #e3e7e8;
+					}
+					a{
+						display: inline-block;
+					}
+				 }
 			}
 		}
 	}
@@ -814,9 +833,9 @@
 		
 	}
 
-	.about-block, .promo-block {
+	.about-block, .promo-block, .contribute-block {
 		ul li {
-			height: 320px;
+			/*height: 320px;*/
 			h2 {
 				@include border-radius(7px);
 				/* background: #2B4054; */
@@ -825,18 +844,9 @@
 		}
 	}
 
-	.about-block {
+	.about-block, .contribute-block {
 		ul {
 			margin: 0 0 0 0px;
-		} 
-	}
-
-	.contribute-block{
-		ul {
-			margin: 0 0 0 0px;
-			li {
-				margin-top: 10px;
-			}
 		} 
 	}
 

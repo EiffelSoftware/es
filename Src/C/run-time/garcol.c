@@ -80,6 +80,7 @@ doc:<file name="garcol.c" header="eif_garcol.h" version="$Id$" summary="Garbage 
 #include "rt_except.h"
 #include "rt_debug.h"
 #include "rt_main.h"
+#include "rt_hashin.h"
 
 #include "rt_scoop_gc.h"
 
@@ -453,22 +454,13 @@ rt_private struct stack c_stack_object_set = {
 #endif
 
 /*
-doc:	<attribute name="rt_type_set" return_type="EIF_REFERENCE *" export="public">
-doc:		<summary>Mapping between dynamic type and TYPE instances of size `rt_type_set_count'.</summary>
+doc:	<attribute name="rt_type_set" return_type="struct htable" export="shared">
+doc:		<summary>Mapping between dynamic type and TYPE instances of size `rt_type_set_count'.Initialized in `mainc.c' in `eif_rtinit'.</summary>
 doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>Through `eif_type_set_mutex'</synchronization>
 doc:	</attribute>
 */
-rt_public EIF_REFERENCE *rt_type_set = NULL;
-
-/*
-doc:	<attribute name="rt_type_set_count" return_type="EIF_REFERENCE *" export="public">
-doc:		<summary>Number of elements in `rt_type_set'.</summary>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Through `eif_type_set_mutex'</synchronization>
-doc:	</attribute>
-*/
-rt_public rt_uint_ptr volatile rt_type_set_count = 0;
+rt_shared struct htable rt_type_set;
 
 #ifdef EIF_THREADS
 /*
@@ -1479,7 +1471,7 @@ rt_private void full_mark (EIF_CONTEXT_NOARG)
 		/* This should be done before any marking. */
 	rt_prepare_live_index ();
 	rt_mark_all_processors(MARK_SWITCH);
-	if (!live_index_count) {
+	if (rt_live_thread_count() == 0) {
 		rt_update_live_index();
 	}
 #endif
@@ -1493,10 +1485,8 @@ rt_private void full_mark (EIF_CONTEXT_NOARG)
 #endif
 	except_mnger = MARK_SWITCH(&except_mnger);	/* EXCEPTION_MANAGER */
 
-		/* Deal with TYPE instances. */
-		/* We add +2 to `eif_next_gen_id' because index 0 and 1 are reserved for detachable NONE and
-		 * attached NONE. See `eif_type_malloc'. */
-	mark_array (rt_type_set, (rt_type_set_count > eif_next_gen_id ? eif_next_gen_id + (rt_uint_ptr) 2 : rt_type_set_count), MARK_SWITCH, moving);
+		/* Deal with TYPE instances, simply traverse the array values. */
+	mark_array ((EIF_REFERENCE *) rt_type_set.h_values, rt_type_set.h_capacity, MARK_SWITCH, moving);
 
 		/* Detect live and dead processors without taking once manifest strings into account,
 		 * because they do not add any information about liveness status of the processors. */
@@ -1593,11 +1583,11 @@ rt_private void internal_marking(MARKER marking, int moving)
 
 	if (rt_g_data.status & (GC_PART | GC_GEN)) {
 			/* Full GC: mark only live processors. */
-		for (j = 0; j < live_index_count;) {
+		for (j = 0; j < rt_live_thread_count ();) {
 				/* Iterate over known live indexes. */
-			for (n = live_index_count; j < n; j++) {
+			for (n = rt_live_thread_count (); j < n; j++) {
 					/* Use only live indexes. */
-				i = live_index [j];
+				i = rt_thread_item (j);
 				CHECK ("Valid index", i < loc_set_list.count);
 				mark_stack(loc_set_list.threads.sstack[i], marking, moving);
 				mark_stack(loc_stack_list.threads.sstack[i], marking, moving);
@@ -1625,17 +1615,15 @@ rt_private void internal_marking(MARKER marking, int moving)
 		rt_complement_live_index ();
 	} else {
 			/* Partical GC: duplicate indexes to mark all processors. */
-		j = 0;
-		for (n = loc_set_list.count; j < n; j++) {
-			live_index [j] = j;
-		}
+		CHECK ("same_count", loc_set_list.count == rt_globals_list.count);
+		rt_set_all_threads_live ();
 		j = 0;
 	}
 	for (n = loc_set_list.count; j < n; j++) {
 			/* Use `live_index' to figure out what else has to be marked.
 			 * It includes unmarked indexes when doing full GC and
 			 * all indexes when doing partial GC. */
-		i = live_index [j];
+		i = rt_thread_item (j);
 		CHECK ("Valid index", i < loc_set_list.count);
 		mark_stack(loc_set_list.threads.sstack[i], marking, moving);
 		mark_stack(loc_stack_list.threads.sstack[i], marking, moving);
@@ -3949,7 +3937,7 @@ rt_private void mark_new_generation(EIF_CONTEXT_NOARG)
 		/* This should be done before any marking. */
 	rt_prepare_live_index ();
 	rt_mark_all_processors(GEN_SWITCH);
-	if (!live_index_count) {
+	if (rt_live_thread_count() == 0) {
 		rt_update_live_index();
 	}
 #endif

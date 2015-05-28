@@ -82,7 +82,7 @@ feature -- Access
 		end
 
 
-feature {NONE} -- Setters
+feature -- Setters
 
 	set_global_visiblity_override (a_value: AT_TRILEAN)
 			-- Set `global_visibility_override' to `a_value'.

@@ -83,7 +83,7 @@ feature -- AutoTeach options
 			end
 		end
 
-feature {NONE} -- Setters
+feature -- Setters
 
 	set_insert_code_placeholder (a_bool: BOOLEAN)
 			-- Set `must_insert_code_placeholder' to `a_bool'.

@@ -108,7 +108,7 @@ feature -- Treatment
 			local_treat_as_complex_override.set_undefined
 		end
 
-feature {NONE} -- Setters
+feature -- Setters
 
 	set_global_content_visibility_override (a_value: AT_TRILEAN)
 			-- Set `global_content_visibility_override' to `a_value'.
