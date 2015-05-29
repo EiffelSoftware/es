@@ -22,6 +22,7 @@ feature
 			l_gui: ALIAS_ANALYZER_GUI
 			l_vertical_box: EV_VERTICAL_BOX
 			l_tool_bar: SD_TOOL_BAR
+			l_test_suite: ALIAS_ANALYZER_TEST_SUITE
 		do
 			create l_gui.make (develop_window)
 
@@ -37,11 +38,15 @@ feature
 			l_vertical_box.disable_item_expand (l_tool_bar)
 			l_vertical_box.extend (text_area)
 
+			create l_test_suite.make
+
 			create Result
 			Result.extend (l_gui)
 			Result.set_item_text (l_gui, "GUI")
 			Result.extend (l_vertical_box)
 			Result.set_item_text (l_vertical_box, "Console")
+			Result.extend (l_test_suite)
+			Result.set_item_text (l_test_suite, "Test Suite")
 		end
 
 	build_tool_interface (root_widget: EV_NOTEBOOK)
