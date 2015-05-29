@@ -1,28 +1,58 @@
 note
 	description: "[
-			[Alias Analysis] Test suite main class.
-
-			To run the test suite:
-			- Add the directory of this class as a cluster to your Eiffel project.
-			- Reference this class somewhere in your code. E.g.:
-			  dummy: detachable ALIAS_ANALYSIS_TESTSUITE
-			- Click on the "TS" button in the Alias Analysis view.
-		]"
+		This class tests the alias analysis of overloaded operators (in Eiffel, those routines
+		that have the 'alias' keyword: 'overloaded operator' is used to avoid confusions with alias analysis).
+		
+		Specifically, this class tests the alias analysis of routine 'oper' defined in AAT_OVER_OPER_B class. 
+		Operator '&' is overloaded to this routine, thus the alias analysis for "object_b := object_b.oper("")" 
+		should yield the same result for the alias analysis of "object_b := object_b & """ (here, 'object_b' is 
+		of type AAT_OVER_OPER_B).
+	]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ALIAS_ANALYSIS_TESTSUITE
+	AAT_OVER_OPER_A
 
-feature {NONE}
+create
+	make
 
-	-- Add all classes with tests here:
-	c1: detachable AAT_BASIC
-	c2: detachable AAT_OVER_OPER_A
+feature --Initialisation
 
-;note
+	object_b: AAT_OVER_OPER_B
+
+	make
+		do
+			create object_b
+		end
+
+	test1
+		note
+			aliasing:
+				"[
+				    {AAT_OVER_OPER_A}.object_b.{AAT_OVER_OPER_B}.oper: NonVoid
+				    {AAT_OVER_OPER_B}.oper: {AAT_OVER_OPER_A}.object_b
+				    {AAT_OVER_OPER_A}.object_b: {AAT_OVER_OPER_B}.oper
+				]"
+		do
+			object_b := object_b.oper("")
+		end
+
+	test2
+		note
+			aliasing:
+				"[
+				    {AAT_OVER_OPER_A}.object_b.{AAT_OVER_OPER_B}.oper: NonVoid
+				    {AAT_OVER_OPER_B}.oper: {AAT_OVER_OPER_A}.object_b
+				    {AAT_OVER_OPER_A}.object_b: {AAT_OVER_OPER_B}.oper
+				]"
+		do
+			object_b := object_b & ""
+		end
+
+note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

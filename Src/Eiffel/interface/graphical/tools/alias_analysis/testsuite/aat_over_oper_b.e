@@ -1,28 +1,23 @@
 note
 	description: "[
-			[Alias Analysis] Test suite main class.
-
-			To run the test suite:
-			- Add the directory of this class as a cluster to your Eiffel project.
-			- Reference this class somewhere in your code. E.g.:
-			  dummy: detachable ALIAS_ANALYSIS_TESTSUITE
-			- Click on the "TS" button in the Alias Analysis view.
-		]"
+		This class is a helper for tests defined in AAT_OVER_OPER_A.
+	]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ALIAS_ANALYSIS_TESTSUITE
+	AAT_OVER_OPER_B
 
-feature {NONE}
+feature
 
-	-- Add all classes with tests here:
-	c1: detachable AAT_BASIC
-	c2: detachable AAT_OVER_OPER_A
+	oper alias "&" (val: STRING): AAT_OVER_OPER_B
+		do
+			create Result
+		end
 
-;note
+note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
