@@ -1415,7 +1415,7 @@ test	scoop-agent-validity				scoop030 tcf pass scoop multithreaded validity expa
 test	scoop-agent-call				scoop031 tcf pass scoop multithreaded agents execution
 test	scoop-corrupted-string				scoop032 tcf pass scoop multithreaded execution
 test	scoop-lock-passing-same-target			scoop033 tcf pass scoop multithreaded execution lock_passing
-test	scoop-corrupted-polymorphic-call		scoop034 tcf fail used_to_pass scoop multithreaded execution
+test	scoop-corrupted-polymorphic-call		scoop034 tcf pass scoop multithreaded execution
 test	scoop-null-reference-call			scoop035 tcf pass scoop multithreaded execution
 test	scoop-nested-chain-uncontrolled-check		scoop036 tcf pass scoop multithreaded execution
 test	scoop-run-time-crash				scoop037 tcf pass scoop multithreaded execution
@@ -1442,7 +1442,7 @@ test	scoop-separate-instruction-non-separate		scoop057 tcf pass scoop multithrea
 test	scoop-separate-instruction-execution		scoop058 tcf pass scoop multithreaded execution
 test	scoop-gc-stress-test				scoop059 tcf pass scoop multithreaded execution
 test	scoop-assigner-command-validity			scoop060 tcf pass scoop multithreaded assigner validity
-test	scoop-named-tuple-execution			scoop061 tcf fail scoop multithreaded tuple assigner execution
+test	scoop-named-tuple-execution			scoop061 tcf pass scoop multithreaded tuple assigner execution
 test	scoop-generating-type-deadlock		scoop062 tcf manual scoop multithreaded
 test	scoop-conformance				scoop063 tcf pass scoop multithreaded generic conformance object_test execution
 
@@ -2024,6 +2024,7 @@ test	across-on-tuple				term213 tcf pass termination across iteration
 test	qat-greater-number-of-formal	term214 tcf pass validity anchored_type system-validity
 test	large-integer-64-crash			term215 tcf pass syntax
 test	conversion-by-constant-attribute	term216 tcf pass termination conversion
+test	generic-assignment-to-tuple-field	term217 tcf pass termination tuple assigner
 
 -- Config
 
@@ -2968,7 +2969,7 @@ test	benchmark-scoop-synthetic-threadring			bench012 tcf pass benchmark scoop sy
 test	benchmark-scoop-synthetic-thresh			bench013 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-scoop-synthetic-winnow			bench014 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-runtime-slow-allocation			bench015 tcf pass benchmark runtime
-test	benchmark-scoop-memory-stress-test			bench016 tcf manual scoop multithreaded
+test	benchmark-scoop-memory-stress-test			bench016 tcf pass scoop multithreaded
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing

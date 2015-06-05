@@ -2014,13 +2014,31 @@ feature {NONE} -- Visitors
 				if l_tuple_type.c_type.is_reference then
 					context.make_tuple_catcall_check (ba, a_node.position)
 				end
+				if a_node.context_type.is_separate then
+						-- Perform separate tuple access if required.
+					ba.append (bc_separate)
+						-- There is one argument and the access is not synchronized.
+					ba.append_argument_count (1)
+					ba.append_boolean (False)
+						-- Make sure that target is at the top.
+					ba.append (bc_rotate)
+					ba.append_short_integer (2)
+				end
 				ba.append (bc_tuple_assign)
+				ba.append_integer_32 (a_node.position)
 			else
-					-- Access to tuple entry.
+					-- Access to tuple field.
+				if a_node.context_type.is_separate then
+						-- Perform separate tuple access if required.
+					ba.append (bc_separate)
+						-- There are no arguments and the access is synchronized.
+					ba.append_argument_count (0)
+					ba.append_boolean (True)
+				end
 				ba.append (bc_tuple_access)
+				ba.append_integer_32 (a_node.position)
+				ba.append_natural_32 (l_tuple_type.sk_value (context.context_class_type.type))
 			end
-			ba.append_integer_32 (a_node.position)
-			ba.append_natural_32 (l_tuple_type.sk_value (context.context_class_type.type))
 		end
 
 	process_tuple_const_b (a_node: TUPLE_CONST_B)

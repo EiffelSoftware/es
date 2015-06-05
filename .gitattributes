@@ -3335,6 +3335,7 @@ Src/framework/eiffel_llvm/LICENCE.md -text
 Src/framework/eiffel_llvm/README.txt -text
 Src/framework/eiffel_llvm/library/eiffel_llvm.ecf svneol=native#text/xml
 Src/framework/eiffel_llvm/library/testing/eiffel_llvm_tests.ecf svneol=native#text/xml
+Src/framework/eiffel_llvm/tutorial/kaleidoscope/chapter_1/kaleidoscope.ecf svneol=native#text/xml
 Src/framework/eiffel_transform/Demo/printer_test.ee -text
 Src/framework/eiffel_transform/Demo/target.ee -text
 Src/framework/eiffel_transform/Tests/test_ass_attempt_replacing.1.ref -text
