@@ -74,6 +74,7 @@ feature {NONE}
 
 			create expected
 			expected.disable_edit
+			expected.disable_word_wrapping
 			create l_expected_box
 			l_expected_box.extend (create {EV_LABEL}.make_with_text ("Expected:"))
 			l_expected_box.disable_item_expand (l_expected_box.last)
@@ -81,6 +82,7 @@ feature {NONE}
 
 			create actual
 			actual.disable_edit
+			actual.disable_word_wrapping
 			create l_actual_box
 			l_actual_box.extend (create {EV_LABEL}.make_with_text ("Actual:"))
 			l_actual_box.disable_item_expand (l_actual_box.last)
