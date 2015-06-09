@@ -52,6 +52,20 @@ feature --Initialisation
 			object_b := object_b & ""
 		end
 
+	test3
+			-- `l_a' and `l_b' are not aliased.
+		note
+			aliasing3: ""
+		local
+			l_a: AAT_OVER_OPER_B
+			l_b: AAT_OVER_OPER_B
+		do
+			l_a := object_b.oper("")
+			l_b := object_b.oper("")
+
+			l_a := l_a -- dummy; check aliasing before this (local variables)
+		end
+
 note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
