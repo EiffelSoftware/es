@@ -551,10 +551,11 @@ feature -- Output
 						if entry_tail (t) >= 0 then
 							create w
 							if attached w.System.rout_info_table.origin (entry_qualifier (t)) as c and then attached c.feature_of_rout_id (entry_qualifier (t)) as f then
+								Result := "{" + c.name + "}." + f.feature_name_32 + "."
 								if entry_tail (t) <= f.argument_count then
-									Result := "{" + c.name + "}." + f.feature_name_32 + "(" + entry_tail (t).out + ")"
+									Result := Result + f.arguments.item_name (entry_tail (t))
 								else
-									Result := "{" + c.name + "}." + f.feature_name_32 + "." + (entry_tail (t) - f.argument_count).out
+									Result := Result + local_variable_name (entry_tail (t) - f.argument_count, ({ROUTINE_AS} #? f.body.body.content).locals)
 								end
 							end
 						else
@@ -640,6 +641,36 @@ feature {NONE} -- Storage
 	qualification: ARRAYED_LIST [INTEGER_32]
 			-- Total number of qualifiers in the chain of given item.
 
+feature {NONE} -- helper functions
+
+	local_variable_name (a_var_index: INTEGER_32; a_locals: EIFFEL_LIST [LIST_DEC_AS]): STRING_8
+			-- TODO I'm sure there must be a function doing this somewhere already?!
+		require
+			a_var_index >= 1
+			a_locals /= Void
+		local
+			l_i: INTEGER_32
+		do
+			l_i := a_var_index
+			across
+				a_locals as c
+			until
+				Result /= Void
+			loop
+				if l_i <= c.item.id_list.count then
+					Result := c.item.item_name (l_i)
+				else
+					l_i := l_i - c.item.id_list.count
+				end
+			end
+			if Result = Void then
+				-- not found?!
+				Result := "???"
+			end
+		ensure
+			Result /= Void
+		end
+
 invariant
 	same_count: indexes.count = values.count and indexes.count = qualification.count
 	has_current_index: has_index (current_index)
@@ -650,35 +681,35 @@ invariant
 	is_unqualified_void_index: is_unqualified (void_index)
 
 note
-	copyright: "Copyright (c) 2012-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
-		This file is part of Eiffel Software's Eiffel Development Environment.
-		
-		Eiffel Software's Eiffel Development Environment is free
-		software; you can redistribute it and/or modify it under
-		the terms of the GNU General Public License as published
-		by the Free Software Foundation, version 2 of the License
-		(available at the URL listed under "license" above).
-		
-		Eiffel Software's Eiffel Development Environment is
-		distributed in the hope that it will be useful, but
-		WITHOUT ANY WARRANTY; without even the implied warranty
-		of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-		See the GNU General Public License for more details.
-		
-		You should have received a copy of the GNU General Public
-		License along with Eiffel Software's Eiffel Development
-		Environment; if not, write to the Free Software Foundation,
-		Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-	]"
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
 	source: "[
-		Eiffel Software
-		5949 Hollister Ave., Goleta, CA 93117 USA
-		Telephone 805-685-1006, Fax 805-685-6869
-		Website http://www.eiffel.com
-		Customer support http://support.eiffel.com
-	]"
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end
