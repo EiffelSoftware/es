@@ -38,7 +38,8 @@ feature {NONE}
 			l_tool_bar: SD_TOOL_BAR
 			l_stats_box: EV_HORIZONTAL_BOX
 			l_overview_box, l_expected_box, l_actual_box: EV_VERTICAL_BOX
-			l_main_box: EV_HORIZONTAL_BOX
+			l_comparison_box: EV_HORIZONTAL_BOX
+			l_split_area: EV_HORIZONTAL_SPLIT_AREA
 		do
 			ok_icon := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.tool_output_successful_icon
 			fail_icon := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.tool_output_failed_icon
@@ -117,15 +118,18 @@ feature {NONE}
 			l_actual_box.disable_item_expand (l_actual_box.last)
 			l_actual_box.extend (actual)
 
-			create l_main_box
-			l_main_box.extend (l_overview_box)
-			l_main_box.extend (l_expected_box)
-			l_main_box.extend (l_actual_box)
+			create l_comparison_box
+			l_comparison_box.extend (l_expected_box)
+			l_comparison_box.extend (l_actual_box)
+
+			create l_split_area
+			l_split_area.extend (l_overview_box)
+			l_split_area.extend (l_comparison_box)
 
 			default_create
 			extend (l_tool_bar)
 			disable_item_expand (l_tool_bar)
-			extend (l_main_box)
+			extend (l_split_area)
 
 			standard_text_color := expected.foreground_color
 			create warning_text_color.make_with_8_bit_rgb (255, 0, 0)
