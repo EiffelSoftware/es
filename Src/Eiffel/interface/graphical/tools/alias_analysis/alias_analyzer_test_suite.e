@@ -22,6 +22,7 @@ create
 
 feature {NONE}
 
+	stats_total, stats_failures, stats_ok: EV_TEXT_FIELD
 	overview: EV_TREE
 	expected: EV_TEXT
 	actual: EV_TEXT
@@ -35,9 +36,13 @@ feature {NONE}
 			l_run_button: SD_TOOL_BAR_BUTTON
 			l_clear_button: SD_TOOL_BAR_BUTTON
 			l_tool_bar: SD_TOOL_BAR
+			l_stats_box: EV_HORIZONTAL_BOX
 			l_overview_box, l_expected_box, l_actual_box: EV_VERTICAL_BOX
 			l_main_box: EV_HORIZONTAL_BOX
 		do
+			ok_icon := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.tool_output_successful_icon
+			fail_icon := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.tool_output_failed_icon
+
 			create l_run_button.make
 			l_run_button.set_text ("Run Test Suite")
 			l_run_button.set_pixmap ((create {EB_SHARED_PIXMAPS}).icon_pixmaps.debug_run_icon)
@@ -51,6 +56,28 @@ feature {NONE}
 			l_tool_bar.extend (l_run_button)
 			l_tool_bar.extend (l_clear_button)
 			l_tool_bar.compute_minimum_size
+
+			create stats_total
+			stats_total.disable_edit
+			create stats_failures
+			stats_failures.disable_edit
+			create stats_ok
+			stats_ok.disable_edit
+
+			create l_stats_box
+			l_stats_box.extend (create {EV_LABEL}.make_with_text ("Tests:"))
+			l_stats_box.disable_item_expand (l_stats_box.last)
+			l_stats_box.extend (stats_total)
+			l_stats_box.extend (create_icon (fail_icon))
+			l_stats_box.disable_item_expand (l_stats_box.last)
+			l_stats_box.extend (create {EV_LABEL}.make_with_text ("Failures:"))
+			l_stats_box.disable_item_expand (l_stats_box.last)
+			l_stats_box.extend (stats_failures)
+			l_stats_box.extend (create_icon (ok_icon))
+			l_stats_box.disable_item_expand (l_stats_box.last)
+			l_stats_box.extend (create {EV_LABEL}.make_with_text ("Ok:"))
+			l_stats_box.disable_item_expand (l_stats_box.last)
+			l_stats_box.extend (stats_ok)
 
 			create overview
 			overview.select_actions.extend (agent
@@ -69,6 +96,8 @@ feature {NONE}
 				end)
 			create l_overview_box
 			l_overview_box.extend (create {EV_LABEL}.make_with_text ("Tests:"))
+			l_overview_box.disable_item_expand (l_overview_box.last)
+			l_overview_box.extend (l_stats_box)
 			l_overview_box.disable_item_expand (l_overview_box.last)
 			l_overview_box.extend (overview)
 
@@ -100,12 +129,31 @@ feature {NONE}
 
 			standard_text_color := expected.foreground_color
 			create warning_text_color.make_with_8_bit_rgb (255, 0, 0)
-			ok_icon := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.tool_output_successful_icon
-			fail_icon := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.tool_output_failed_icon
+		end
+
+	create_icon (a_pixmap: EV_PIXMAP): EV_WIDGET
+		local
+			l_cell: EV_CELL
+			l_box: EV_VERTICAL_BOX
+		do
+			create l_cell
+			l_cell.set_background_pixmap (a_pixmap)
+			l_cell.set_minimum_size (16, 16)
+
+			create l_box
+			l_box.extend (create {EV_HORIZONTAL_BOX})
+			l_box.extend (l_cell)
+			l_box.disable_item_expand (l_cell)
+			l_box.extend (create {EV_HORIZONTAL_BOX})
+
+			Result := l_box
 		end
 
 	reset
 		do
+			stats_total.set_text ("")
+			stats_failures.set_text ("")
+			stats_ok.set_text ("")
 			overview.wipe_out
 			expected.set_foreground_color (standard_text_color)
 			expected.set_text ("")
@@ -126,6 +174,9 @@ feature {NONE}
 			inspect l_l.count
 			when 1 then
 				if attached l_l.first.compiled_class as c then
+					stats_total.set_text ("0")
+					stats_failures.set_text ("0")
+					stats_ok.set_text ("0")
 					from
 						l_ft := c.feature_table
 						l_ft.start
@@ -207,10 +258,13 @@ feature {NONE}
 					l_test_tree_item.set_data (l_test_info)
 					if l_test_info.passed then
 						l_test_tree_item.set_pixmap (ok_icon)
+						stats_ok.set_text ((stats_ok.text.to_integer_32 + 1).out)
 					else
 						l_test_tree_item.set_pixmap (fail_icon)
+						stats_failures.set_text ((stats_failures.text.to_integer_32 + 1).out)
 					end
 					l_feature_tree_item.extend (l_test_tree_item)
+					stats_total.set_text ((stats_total.text.to_integer_32 + 1).out)
 
 					if not l_test_info.passed and not l_feature_tree_item.is_expanded then
 						l_feature_tree_item.set_pixmap (fail_icon)
