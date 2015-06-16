@@ -53,9 +53,9 @@ feature {NONE}
 
 			create l_button_box
 			l_button_box.extend (step_over_button)
-			l_button_box.disable_item_expand (step_over_button)
+			l_button_box.disable_item_expand (l_button_box.last)
 			l_button_box.extend (step_out_button)
-			l_button_box.disable_item_expand (step_out_button)
+			l_button_box.disable_item_expand (l_button_box.last)
 
 			extend (feature_view.editor.widget)
 			extend (l_button_box)

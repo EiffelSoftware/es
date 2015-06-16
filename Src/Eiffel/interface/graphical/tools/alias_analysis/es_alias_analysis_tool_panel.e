@@ -19,13 +19,9 @@ feature
 
 	create_widget: EV_NOTEBOOK
 		local
-			l_gui: ALIAS_ANALYZER_GUI
 			l_vertical_box: EV_VERTICAL_BOX
 			l_tool_bar: SD_TOOL_BAR
-			l_test_suite: ALIAS_ANALYZER_TEST_SUITE
 		do
-			create l_gui.make (develop_window)
-
 			create text_area
 			create l_tool_bar.make
 			across create_console_tool_bar_items as c loop
@@ -38,24 +34,37 @@ feature
 			l_vertical_box.disable_item_expand (l_tool_bar)
 			l_vertical_box.extend (text_area)
 
-			create l_test_suite.make
-
 			create Result
-			Result.extend (l_gui)
-			Result.set_item_text (l_gui, "GUI")
 			Result.extend (l_vertical_box)
 			Result.set_item_text (l_vertical_box, "Console")
-			Result.extend (l_test_suite)
-			Result.set_item_text (l_test_suite, "Test Suite")
 		end
 
 	build_tool_interface (root_widget: EV_NOTEBOOK)
+		local
+			l_gui: ALIAS_ANALYZER_GUI
+			l_test_suite: ALIAS_ANALYZER_TEST_SUITE
+			l_ast_viewer: ALIAS_ANALYZER_AST_VIEWER
 		do
 			create {ALIAS_ANALYZER_ON_RELATION} alias_analyzer.make
 			--create {ALIAS_ANALYZER_ON_GRAPH} alias_analyzer.make
 			create {CHANGE_ANALYZER_ON_RELATION} change_analyzer.make
 			analyzer := change_analyzer
 			propagate_drop_actions (Void)
+
+			-- add these after the `propagate_drop_actions' call:
+			create l_gui.make (develop_window)
+			root_widget.put_front (l_gui)
+			root_widget.set_item_text (l_gui, "GUI")
+
+			create l_test_suite.make
+			root_widget.extend (l_test_suite)
+			root_widget.set_item_text (l_test_suite, "Test Suite")
+
+			create l_ast_viewer.make
+			root_widget.extend (l_ast_viewer)
+			root_widget.set_item_text (l_ast_viewer, "AST Viewer")
+
+			root_widget.select_item (l_gui)
 		end
 
 	create_tool_bar_items: detachable ARRAYED_LIST [SD_TOOL_BAR_ITEM]
