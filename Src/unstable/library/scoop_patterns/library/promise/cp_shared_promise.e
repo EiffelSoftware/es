@@ -24,8 +24,7 @@ feature {NONE} -- Initialization
 			is_terminated := False
 			is_exceptional := False
 			is_cancelled := False
-			create progress_change_event.make
-			create termination_event.make
+			create change_event.make
 		ensure
 			not_terminated: not is_terminated
 			not_exceptional: not is_exceptional
@@ -41,13 +40,9 @@ feature -- Access
 	progress: DOUBLE
 			-- <Precursor>
 
-	progress_change_event: CP_EVENT [TUPLE [DOUBLE]]
-			-- Event source for progress changes.
-			-- The argument corresponds to the new progress value.
-
-	termination_event: CP_EVENT [TUPLE [BOOLEAN]]
-			-- Event source for termination.
-			-- The event argument is True if termination was successful, and False if an exception happened.
+	change_event: CP_EVENT [detachable TUPLE]
+			-- Event source for change notifications.
+			-- A subscribed agent should not take any arguments.
 
 feature -- Status report
 
@@ -74,7 +69,7 @@ feature -- Basic operations
 			-- Declare the asynchronous operation as terminated.
 		do
 			is_terminated := True
-			termination_event.publish ([is_successfully_terminated])
+			change_event.publish (Void)
 		ensure
 			terminated: is_terminated
 		end
@@ -85,7 +80,7 @@ feature -- Basic operations
 			valid: 0.0 <= a_progress and a_progress <= 1.0
 		do
 			progress := a_progress
-			progress_change_event.publish ([a_progress])
+			change_event.publish (Void)
 		ensure
 			progress_set: progress = a_progress
 		end

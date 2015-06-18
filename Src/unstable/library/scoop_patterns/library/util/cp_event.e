@@ -7,7 +7,7 @@ note
 
 
 class
-	CP_EVENT [D -> TUPLE]
+	CP_EVENT [D -> detachable TUPLE]
 
 create
 	make
@@ -66,8 +66,7 @@ feature -- Publication
 
 	publish (arguments: D)
 			-- Publish an event and notify all subscribers.
-		require
-			arguments_not_void: arguments /= Void
+			-- Note: If `arguments' is attached, lock passing will happen.
 		do
 			actions.do_all (agent call_async (?, arguments))
 		end

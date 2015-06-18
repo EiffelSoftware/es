@@ -29,18 +29,11 @@ feature -- Access
 			Result := utils.promise_progress (subject)
 		end
 
-	progress_change_event: CP_EVENT_PROXY [TUPLE [DOUBLE]]
+	change_event: CP_EVENT_PROXY [detachable TUPLE]
 			-- Event source for progress changes.
-			-- The argument corresponds to the new progress value.
+			-- A subscribed agent should not take any arguments.
 		attribute
-			create Result.make (utils.promise_progress_change_event (subject))
-		end
-
-	termination_event: CP_EVENT_PROXY [TUPLE [BOOLEAN]]
-			-- Event source for termination.
-			-- The event argument is True if termination was successful, and False if an exception happened.
-		attribute
-			create Result.make (utils.promise_termination_event (subject))
+			create Result.make (utils.promise_change_event (subject))
 		end
 
 feature -- Status report

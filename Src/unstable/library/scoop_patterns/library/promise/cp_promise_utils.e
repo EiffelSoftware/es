@@ -33,16 +33,10 @@ feature -- Access
 			Result := a_promise.progress
 		end
 
-	promise_progress_change_event (a_promise: separate CP_SHARED_PROMISE): separate CP_EVENT [TUPLE [DOUBLE]]
-			-- Progress change event in `a_promise'.
+	promise_change_event (a_promise: separate CP_SHARED_PROMISE): separate CP_EVENT [detachable TUPLE]
+			-- Change event in `a_promise'.
 		do
-			Result := a_promise.progress_change_event
-		end
-
-	promise_termination_event (a_promise: separate CP_SHARED_PROMISE): separate CP_EVENT [TUPLE [BOOLEAN]]
-			-- Termination event in `a_promise'.
-		do
-			Result := a_promise.termination_event
+			Result := a_promise.change_event
 		end
 
 feature -- Status report

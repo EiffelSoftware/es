@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CP_EVENT_UTILS [D -> TUPLE]
+	CP_EVENT_UTILS [D -> detachable TUPLE]
 
 feature -- Status report
 
@@ -43,8 +43,7 @@ feature -- Publication
 
 	event_publish (an_event: separate CP_EVENT [D]; arguments: D)
 			-- Publish an event and notify all subscribers.
-		require
-			arguments_not_void: arguments /= Void
+			-- Note: If `arguments' is attached, lock passing will happen.
 		do
 			an_event.publish (arguments)
 		end

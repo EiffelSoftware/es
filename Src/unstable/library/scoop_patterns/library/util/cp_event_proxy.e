@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CP_EVENT_PROXY [D -> TUPLE]
+	CP_EVENT_PROXY [D -> detachable TUPLE]
 
 inherit
 	CP_PROXY [CP_EVENT [D], CP_EVENT_UTILS [D]]
@@ -25,7 +25,7 @@ feature -- Subscription
 
 	subscribe (action: separate PROCEDURE [ANY, D])
 			-- Subscribe with `action'.
-			-- Bloks if already subscribed.
+			-- Blocks if already subscribed.
 		do
 			utils.event_subscribe (subject, action)
 		end
@@ -47,8 +47,7 @@ feature -- Publication
 
 	publish (arguments: D)
 			-- Publish an event and notify all subscribers.
-		require
-			arguments_not_void: arguments /= Void
+			-- Note: If `arguments' is attached, lock passing will happen.
 		do
 			utils.event_publish (subject, arguments)
 		end
