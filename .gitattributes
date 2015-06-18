@@ -1952,6 +1952,15 @@ Src/Eiffel/doc/debugger_files/image002.gif svneol=native#unset
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.dia -text
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.png -text
 Src/build/build.ico -text
+Src/contrib/authentication/oauth/cypress/consumer-safe.ecf svneol=native#text/xml
+Src/contrib/authentication/oauth/cypress/consumer/apis/apis.ecf svneol=native#text/xml
+Src/contrib/authentication/oauth/cypress/consumer/apis/license.lic -text
+Src/contrib/authentication/oauth/cypress/consumer/examples/examples.ecf svneol=native#text/xml
+Src/contrib/authentication/oauth/cypress/consumer/examples/license.lic -text
+Src/contrib/authentication/oauth/cypress/consumer/license.lic -text
+Src/contrib/authentication/oauth/cypress/consumer/tests/consumer-tests.rc -text
+Src/contrib/authentication/oauth/cypress/consumer/tests/license.lic -text
+Src/contrib/authentication/oauth/cypress/consumer/tests/tests-safe.ecf svneol=native#text/xml
 Src/contrib/examples/web/ewf/debug/debug.ecf svneol=native#text/xml
 Src/contrib/examples/web/ewf/desktop_app/README.md -text
 Src/contrib/examples/web/ewf/desktop_app/files/index.html -text
