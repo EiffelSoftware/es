@@ -1447,6 +1447,8 @@ test	scoop-generating-type-deadlock		scoop062 tcf manual scoop multithreaded
 test	scoop-conformance				scoop063 tcf pass scoop multithreaded generic conformance object_test execution
 test	scoop-agent-with-reference-argument		scoop064 tcf manual scoop multithreaded agent execution
 test	scoop-impersonation-tests				scoop065 tcf manual scoop multithreaded execution
+test	scoop-passive-processors				scoop066 tcf fail scoop multithreaded
+test	scoop-passive-processor-exception		scoop067 tcf fail scoop multithreaded exception
 
 test	deadlock-simple-symmetric-cycle			deadlock001 tcf manual scoop multithreaded deadlock
 test	deadlock-simple-asymmetric-cycle		deadlock002 tcf manual scoop multithreaded deadlock
@@ -2971,7 +2973,8 @@ test	benchmark-scoop-synthetic-threadring			bench012 tcf pass benchmark scoop sy
 test	benchmark-scoop-synthetic-thresh			bench013 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-scoop-synthetic-winnow			bench014 tcf pass benchmark scoop synthetic_benchmark
 test	benchmark-runtime-slow-allocation			bench015 tcf pass benchmark runtime
-test	benchmark-scoop-memory-stress-test			bench016 tcf pass scoop multithreaded
+test	benchmark-scoop-memory-stress-test			bench016 tcf pass benchmark scoop multithreaded
+test	benchmark-scoop-passive-memory-stress-test	bench017 tcf fail benchmark scoop multithreaded
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing
