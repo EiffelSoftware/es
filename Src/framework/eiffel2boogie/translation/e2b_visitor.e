@@ -513,7 +513,7 @@ feature {BYTE_NODE} -- Visitors
 		end
 
 
-	process_separate_b (a_node: SEPARATE_INSTURCTION_B)
+	process_separate_b (a_node: SEPARATE_INSTRUCTION_B)
 			-- Process `a_node'.
 		do
 			check not_implemented: False end

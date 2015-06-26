@@ -152,39 +152,6 @@ feature -- API
 			Result := api.formats
 		end
 
-feature -- Module
-
-	module_resource_path (a_module: CMS_MODULE; a_resource: PATH): detachable PATH
-			-- Resource path of `a_resource' for module `a_module', if resource exists.
-		local
-			rp: PATH
-			ut: FILE_UTILITIES
-		do
-				-- Check first in selected theme folder.
-			rp := module_assets_theme_location (a_module)
-			Result := rp.extended_path (a_resource)
-			if not ut.file_path_exists (Result) then
-					-- And if not found, look into site/modules/$a_module.name/.... folders.
-				rp := module_assets_location (a_module)
-				Result := rp.extended_path (a_resource)
-				if not ut.file_path_exists (Result) then
-					Result := Void
-				end
-			end
-		end
-
-	module_assets_location (a_module: CMS_MODULE): PATH
-			-- Location for the assets associated with `a_module'.
-		do
-			Result := setup.environment.path.extended ("modules").extended (a_module.name)
-		end
-
-	module_assets_theme_location (a_module: CMS_MODULE): PATH
-			-- Location for the assets associated with `a_module'.
-		do
-			Result := setup.theme_location.extended ("modules").extended (a_module.name)
-		end
-
 feature -- URL utilities
 
 	is_front: BOOLEAN
@@ -921,13 +888,19 @@ feature -- Generation
 				across
 					reg_ic.item.blocks as ic
 				loop
---					if attached {CMS_SMARTY_CONTENT_BLOCK} ic.item as l_tpl_block then
---						across
---							page.variables as var_ic
---						loop
---							l_tpl_block.set_value (var_ic.item, var_ic.key)
---						end
---					end
+					if attached {CMS_SMARTY_TEMPLATE_BLOCK} ic.item as l_tpl_block then
+							-- Apply page variables to smarty block.
+							-- FIXME: maybe add notion of values at the CMS_BLOCK level
+							--        or consider a CMS_BLOCK_WITH_VALUES ...
+						across
+							page.variables as var_ic
+						loop
+							if not l_tpl_block.values.has (var_ic.key) then
+									-- Do not overwrite if has key.
+								l_tpl_block.set_value (var_ic.item, var_ic.key)
+							end
+						end
+					end
 					page.add_to_region (theme.block_html (ic.item), reg_ic.item.name)
 				end
 			end

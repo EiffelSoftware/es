@@ -919,7 +919,7 @@ feature -- Comparison
 	is_processor_attachable_to (other: TYPE_A): BOOLEAN
 			-- May processor of current type be used as a processor of type `other'?
 		do
-			if is_separate implies other.is_separate then
+			if (is_separate and system.is_scoop) implies other.is_separate then
 				-- General rule.
 				Result := True
 			elseif attached context.current_feature as f and then

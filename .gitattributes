@@ -1976,15 +1976,6 @@ Src/contrib/examples/web/ewf/tutorial/step_2/hello/alternatives/message/hello_wi
 Src/contrib/examples/web/ewf/upload_image/htdocs/ewf.jpg -text
 Src/contrib/examples/web/ewf/upload_image/htdocs/favicon.ico -text
 Src/contrib/examples/web/ewf/upload_image/htdocs/files/do_not_remove -text
-Src/contrib/library/authentication/oauth/cypress/consumer-safe.ecf svneol=native#text/xml
-Src/contrib/library/authentication/oauth/cypress/consumer/apis/apis.ecf svneol=native#text/xml
-Src/contrib/library/authentication/oauth/cypress/consumer/apis/license.lic -text
-Src/contrib/library/authentication/oauth/cypress/consumer/examples/examples.ecf svneol=native#text/xml
-Src/contrib/library/authentication/oauth/cypress/consumer/examples/license.lic -text
-Src/contrib/library/authentication/oauth/cypress/consumer/license.lic -text
-Src/contrib/library/authentication/oauth/cypress/consumer/tests/consumer-tests.rc -text
-Src/contrib/library/authentication/oauth/cypress/consumer/tests/license.lic -text
-Src/contrib/library/authentication/oauth/cypress/consumer/tests/tests-safe.ecf svneol=native#text/xml
 Src/contrib/library/gobo/build.eant svneol=native#text/xml
 Src/contrib/library/gobo/doc/argument/alternate.xml svneol=native#text/xml
 Src/contrib/library/gobo/doc/argument/build.eant svneol=native#text/xml
@@ -2553,6 +2544,8 @@ Src/contrib/library/gobo/src/geyacc/system.xace -text svneol=native#application/
 Src/contrib/library/graphic/toolkit/wex/examples/wex/Framework_example/TOOLBAR.BMP svneol=native#unset
 Src/contrib/library/graphic/toolkit/wex/examples/wex/Framework_example/app.ico svneol=native#unset
 Src/contrib/library/graphic/toolkit/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
+Src/contrib/library/network/authentication/http_authorization/http_authorization-safe.ecf svneol=native#text/xml
+Src/contrib/library/network/authentication/http_authorization/http_authorization.ecf svneol=native#text/xml
 Src/contrib/library/network/server/nino/example/SimpleWebServer/webroot/demo1/img/gradient_light.jpg -text
 Src/contrib/library/network/server/nino/example/SimpleWebServer/webroot/demo2/img/background.jpg -text
 Src/contrib/library/network/server/nino/example/SimpleWebServer/webroot/demo2/img/button_bg.jpg -text
@@ -2596,6 +2589,8 @@ Src/contrib/library/network/server/nino/example/SimpleWebServer/webroot/html/ima
 Src/contrib/library/print/ael_printf/AEL_Printf.pdf -text svneol=unset#unset
 Src/contrib/library/print/ael_printf/Amalasoft[!!-~]Printf.docx -text
 Src/contrib/library/runtime/process/eclop/doc/eclop.pdf -text
+Src/contrib/library/security/openid/consumer/openid-safe.ecf svneol=native#text/xml
+Src/contrib/library/security/openid/consumer/openid.ecf svneol=native#text/xml
 Src/contrib/library/svn/svn.lic -text
 Src/contrib/library/text/encryption/eel/src/digests/sha_functions.e.orig -text
 Src/contrib/library/text/encryption/eel/src/ec/ec_domain_parameters.e.orig -text
@@ -2606,6 +2601,15 @@ Src/contrib/library/text/parser/json/library/json_gobo_extension.ecf -text svneo
 Src/contrib/library/text/parser/json/test/autotest/test_suite/test_suite-safe.ecf -text svneol=native#application/xml
 Src/contrib/library/text/parser/json/test/autotest/test_suite/test_suite.ecf -text svneol=native#application/xml
 Src/contrib/library/text/parser/wikitext/tests/tests-safe.ecf svneol=native#text/xml
+Src/contrib/library/web/authentication/oauth/cypress/consumer-safe.ecf svneol=native#text/xml
+Src/contrib/library/web/authentication/oauth/cypress/consumer/apis/apis.ecf svneol=native#text/xml
+Src/contrib/library/web/authentication/oauth/cypress/consumer/apis/license.lic -text
+Src/contrib/library/web/authentication/oauth/cypress/consumer/examples/examples.ecf svneol=native#text/xml
+Src/contrib/library/web/authentication/oauth/cypress/consumer/examples/license.lic -text
+Src/contrib/library/web/authentication/oauth/cypress/consumer/license.lic -text
+Src/contrib/library/web/authentication/oauth/cypress/consumer/tests/consumer-tests.rc -text
+Src/contrib/library/web/authentication/oauth/cypress/consumer/tests/license.lic -text
+Src/contrib/library/web/authentication/oauth/cypress/consumer/tests/tests-safe.ecf svneol=native#text/xml
 Src/contrib/library/web/communication/mediatype/collection+json/doc/collectionjson.png -text
 Src/contrib/library/web/framework/ewf/ewsgi/connectors/standalone/license.lic -text
 Src/contrib/library/web/framework/ewf/ewsgi/connectors/standalone/src/httpd/httpd-safe.ecf svneol=native#text/xml
@@ -5894,9 +5898,17 @@ Src/unstable/library/web/cms/examples/demo/demo-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/examples/demo/demo.ini -text
 Src/unstable/library/web/cms/examples/demo/modules/blog/cms_blog_module-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/examples/demo/modules/demo/cms_demo_module-safe.ecf svneol=native#text/xml
-Src/unstable/library/web/cms/examples/demo/site/config/application_configuration.json -text
+Src/unstable/library/web/cms/examples/demo/site/config/demo.json -text
+Src/unstable/library/web/cms/examples/demo/site/modules/login/login.json -text
+Src/unstable/library/web/cms/examples/demo/site/modules/login/mail_templates/account_activation.html svneol=native#text/xml
+Src/unstable/library/web/cms/examples/demo/site/modules/login/mail_templates/account_new_password.html svneol=native#text/xml
+Src/unstable/library/web/cms/examples/demo/site/modules/login/mail_templates/account_re_activation.html svneol=native#text/xml
+Src/unstable/library/web/cms/examples/demo/site/modules/login/mail_templates/account_welcome.html svneol=native#text/xml
+Src/unstable/library/web/cms/examples/demo/site/modules/login/oauth2_gmail.json -text
+Src/unstable/library/web/cms/examples/demo/site/modules/node/scripts/node.sql -text
+Src/unstable/library/web/cms/examples/demo/site/modules/oauth20/scripts/oauth2_consumers.sql -text
+Src/unstable/library/web/cms/examples/demo/site/modules/oauth20/scripts/oauth2_consumers_initialize.sql -text
 Src/unstable/library/web/cms/examples/demo/site/scripts/core.sql -text
-Src/unstable/library/web/cms/examples/demo/site/scripts/node.sql -text
 Src/unstable/library/web/cms/examples/demo/site/scripts/user.sql -text
 Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/css/blog.css -text
 Src/unstable/library/web/cms/examples/demo/site/themes/bootstrap/assets/css/node.css -text
@@ -5919,20 +5931,26 @@ Src/unstable/library/web/cms/library/configuration/config.ecf svneol=native#text
 Src/unstable/library/web/cms/library/configuration/license.lic -text
 Src/unstable/library/web/cms/library/configuration/tests/config_tests-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/configuration/tests/config_tests.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/library/email/email-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/layout/layout-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/layout/layout.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/license.lic -text
 Src/unstable/library/web/cms/library/model/cms_model-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/model/cms_model.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/model/license.lic -text
+Src/unstable/library/web/cms/library/persistence/mysql/scripts/core.sql -text
+Src/unstable/library/web/cms/library/persistence/mysql/scripts/node.sql -text
+Src/unstable/library/web/cms/library/persistence/mysql/scripts/user.sql -text
 Src/unstable/library/web/cms/library/persistence/store_mysql/store_mysql-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/persistence/store_mysql/tests/tests.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/persistence/store_odbc/store_odbc-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/persistence/store_odbc/tests/tests-safe.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/modules/auth/auth-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/modules/basic_auth/basic_auth-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/modules/basic_auth/basic_auth.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/modules/node/node-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/modules/node/node.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/modules/oauth20/oauth20-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/data/documentation/current/Eiffel/index.data -text
 Src/web/eiffel-org/data/documentation/current/EiffelStudio/Getting[!!-~]started.data -text
 Src/web/eiffel-org/data/documentation/current/EiffelStudio/Reference.data -text
@@ -5965,11 +5983,11 @@ Src/web/eiffel-org/modules/eiffel_community/eiffel_community-safe.ecf svneol=nat
 Src/web/eiffel-org/modules/eiffel_download/eiffel_download-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/wiki_docs/wiki_docs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/site/config/app.ini -text
-Src/web/eiffel-org/site/config/application_configuration.json -text
 Src/web/eiffel-org/site/config/cms.ini -text
-Src/web/eiffel-org/site/config/modules/contact/contact.json -text
-Src/web/eiffel-org/site/config/modules/eiffel_lang_about/about_configuration.json -text
+Src/web/eiffel-org/site/config/eiffel_community_site.json -text
 Src/web/eiffel-org/site/config/wdocs.ini -text
+Src/web/eiffel-org/site/modules/contact/contact.json -text
+Src/web/eiffel-org/site/modules/eiffel_lang_about/about_configuration.json -text
 Src/web/eiffel-org/site/themes/eiffel-lang-review/assets/images/bg-head.jpg -text
 Src/web/eiffel-org/site/themes/eiffel-lang-review/assets/images/bg-head2.jpg -text
 Src/web/eiffel-org/site/themes/eiffel-lang-review/assets/images/bg-header.jpg -text
@@ -7107,6 +7125,7 @@ eweasel/tests/incr380/Ace_rev2 -text
 eweasel/tests/incr381/Ace_rev2 -text
 eweasel/tests/incr428/Ace_rev2 -text
 eweasel/tests/incr431/Ace svneol=native#text/xml
+eweasel/tests/incr432/Ace svneol=native#text/xml
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text
@@ -7242,6 +7261,7 @@ eweasel/tests/scoop063/Ace svneol=native#text/xml
 eweasel/tests/scoop065/Ace svneol=native#text/xml
 eweasel/tests/scoop066/Ace svneol=native#text/xml
 eweasel/tests/scoop067/Ace svneol=native#text/xml
+eweasel/tests/scoop068/Ace svneol=native#text/xml
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
 eweasel/tests/store002/notes -text

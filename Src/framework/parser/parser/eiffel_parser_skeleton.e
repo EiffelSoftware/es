@@ -172,7 +172,6 @@ feature -- Initialization
 			last_rsqure.wipe_out
 			current_class := Void
 			is_ignoring_attachment_marks := False
-			is_ignoring_separate_mark := False
 			is_frozen_class := False
 			is_external_class := False
 			is_partial_class := False
@@ -212,9 +211,6 @@ feature -- Status report
 
 	is_ignoring_attachment_marks: BOOLEAN
 			-- Are we simply ignoring attachment marks while parsing?
-
-	is_ignoring_separate_mark: BOOLEAN
-			-- Are separate marks ignored?
 
 	is_frozen_variant_mark_supported: BOOLEAN
 			-- Are type interval supported?
@@ -636,14 +632,6 @@ feature -- Settings
 			is_ignoring_attachment_marks := v
 		ensure
 			is_ignoring_attachment_marks_set: is_ignoring_attachment_marks = v
-		end
-
-	ignore_separate_mark (v: BOOLEAN)
-			-- Ignore separate marks if `v' is `True' and respect them otherwise.
-		do
-			is_ignoring_separate_mark := v
-		ensure
-			is_ignoring_separate_mark_set: is_ignoring_separate_mark = v
 		end
 
 feature -- Modification

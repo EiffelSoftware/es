@@ -113,6 +113,7 @@ create
 %type <detachable BINARY_AS>			Qualified_binary_expression
 %type <detachable BODY_AS>				Declaration_body
 %type <detachable BOOL_AS>				Boolean_constant
+%type <BOOLEAN>					Creation_region
 %type <detachable CALL_AS>				Call Remote_call Qualified_call
 %type <detachable CASE_AS>				When_part
 %type <detachable CHAR_AS>				Character_constant
@@ -1684,7 +1685,7 @@ Class_or_tuple_type:
 	| TE_SEPARATE Unmarked_class_or_tuple_type
 			{
 				$$ := $2
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($1)
 				end
 			}
@@ -1694,7 +1695,7 @@ Class_or_tuple_type:
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($1), False, True)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($2)
 				end
 			}
@@ -1704,7 +1705,7 @@ Class_or_tuple_type:
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($1), True, False)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($2)
 				end
 			}
@@ -1737,7 +1738,7 @@ Class_or_tuple_type:
 				if attached $$ as l_type then
 					l_type.set_variance_mark ($1, True, False)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($2)
 				end
 			}
@@ -1751,7 +1752,7 @@ Class_or_tuple_type:
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($2), False, True)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($3)
 				end
 			}
@@ -1765,7 +1766,7 @@ Class_or_tuple_type:
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($2), True, False)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($3)
 				end
 			}
@@ -1798,7 +1799,7 @@ Class_or_tuple_type:
 				if attached $$ as l_type then
 					l_type.set_variance_mark ($1, False, True)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($2)
 				end
 			}
@@ -1812,7 +1813,7 @@ Class_or_tuple_type:
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($2), False, True)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($3)
 				end
 			}
@@ -1826,7 +1827,7 @@ Class_or_tuple_type:
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($2), True, False)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($3)
 				end
 			}
@@ -1878,7 +1879,7 @@ Anchored_type:	Unmarked_anchored_type
 	|	TE_SEPARATE Unmarked_anchored_type
 			{
 				$$ := $2
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($1)
 				end
 			}
@@ -1888,7 +1889,7 @@ Anchored_type:	Unmarked_anchored_type
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($1), True, False)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($2)
 				end
 			}
@@ -1898,7 +1899,7 @@ Anchored_type:	Unmarked_anchored_type
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($1), False, True)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($2)
 				end
 			}
@@ -1931,7 +1932,7 @@ Anchored_type:	Unmarked_anchored_type
 				if attached $$ as l_type then
 					l_type.set_variance_mark ($1, True, False)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($2)
 				end
 			}
@@ -1945,7 +1946,7 @@ Anchored_type:	Unmarked_anchored_type
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($2), True, False)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($3)
 				end
 			}
@@ -1959,7 +1960,7 @@ Anchored_type:	Unmarked_anchored_type
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($2), False, True)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($3)
 				end
 			}
@@ -1992,7 +1993,7 @@ Anchored_type:	Unmarked_anchored_type
 				if attached $$ as l_type then
 					l_type.set_variance_mark ($1, False, True)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($2)
 				end
 			}
@@ -2006,7 +2007,7 @@ Anchored_type:	Unmarked_anchored_type
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($2), True, False)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($3)
 				end
 			}
@@ -2020,7 +2021,7 @@ Anchored_type:	Unmarked_anchored_type
 				if not is_ignoring_attachment_marks and then attached $$ as l_type then
 					l_type.set_attachment_mark (extract_keyword ($2), False, True)
 				end
-				if not is_ignoring_separate_mark and then attached $$ as l_type then
+				if attached $$ as l_type then
 					l_type.set_separate_mark ($3)
 				end
 			}
@@ -3055,14 +3056,14 @@ Creation: TE_BANG TE_BANG Creation_target Creation_call
 						filename, "Use keyword `create' instead."))
 				end
 			}
-	|	TE_CREATE Creation_target Creation_call
-			{ $$ := ast_factory.new_create_creation_as (Void, $2, $3, $1) }
-	|	TE_CREATE Typed Creation_target Creation_call
-			{ $$ := ast_factory.new_create_creation_as ($2, $3, $4, $1) }
+	|	TE_CREATE Creation_region Creation_target Creation_call
+			{ $$ := ast_factory.new_create_creation_as ($2, Void, $3, $4, $1) }
+	|	TE_CREATE Creation_region Typed Creation_target Creation_call
+			{ $$ := ast_factory.new_create_creation_as ($2, $3, $4, $5, $1) }
 	;
 
-Creation_expression: TE_CREATE Typed Creation_call
-			{ $$ := ast_factory.new_create_creation_expr_as ($2, $3, $1) }
+Creation_expression: TE_CREATE Creation_region Typed Creation_call
+			{ $$ := ast_factory.new_create_creation_expr_as ($2, $3, $4, $1) }
 	|	TE_BANG Obsolete_creation_type TE_BANG Creation_call
 			{
 				$$ := ast_factory.new_bang_creation_expr_as ($2, $4, $1, $3)
@@ -3070,6 +3071,21 @@ Creation_expression: TE_CREATE Typed Creation_call
 					report_one_warning (
 						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1),
 						filename, "Use keyword `create' instead."))
+				end
+			}
+	;
+
+Creation_region: -- Empty
+			{ $$ := True }
+	|	TE_LT Class_identifier TE_GT
+			{ 
+				$$ := True
+				if attached $2 as l_id then
+					if {PREDEFINED_NAMES}.none_class_name_id = l_id.name_id then
+						$$ := False
+					else
+						report_one_error (create {SYNTAX_ERROR}.make (token_line ($2), token_column ($2), filename, "Passive regions should use type specifier %"NONE%"."))
+					end
 				end
 			}
 	;
