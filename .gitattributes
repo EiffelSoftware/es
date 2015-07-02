@@ -5255,6 +5255,8 @@ Src/web/eiffel-org/site/modules/auth/oauth2_gmail.json -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
 Src/web/eiffel-org/site/modules/node/scripts/node.sql -text
 Src/web/eiffel-org/site/modules/wdocs/wdocs.ini -text
+Src/web/eiffel-org/site/scripts/core.sql -text
+Src/web/eiffel-org/site/scripts/user.sql -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/css/all.css -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/favicon.ico -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/fonts/museosans_500-webfont.eot -text
