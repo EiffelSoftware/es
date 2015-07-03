@@ -693,6 +693,8 @@ static  void    print_instructions (void)
 				break;
 			case BC_CATCALL :
 				print_cid();
+					/* Annotations. */
+				fprintf (ofp, " with annotations 0x%X", (int) get_int16(&ip));
 					/* Static type of class */
 				print_ctype (get_int16(&ip));
 				fprintf (ofp, ".%s", get_string8(&ip, get_int32(&ip)));
@@ -870,9 +872,9 @@ static  void    print_instructions (void)
 				/* Separate feature call prefix */
 				fprintf (ofp, "%d args ", get_uint16(&ip));
 				if (get_bool(&ip))
-					fprintf (ofp, "(wait)");
+					fprintf (ofp, "(query/active)");
 				else
-					fprintf (ofp, "(nowait)");
+					fprintf (ofp, "(command/passive)");
 				break;
 			case  BC_EXTERN_INV :
 				/* External with invariant check */

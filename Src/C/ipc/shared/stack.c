@@ -49,6 +49,7 @@
 #include "eif_garcol.h"
 #include "eif_malloc.h"
 #include "stack.h"
+#include "eif_stack.h"
 #include "com.h"
 #include "request.h"
 #include "eif_macros.h"
@@ -68,8 +69,8 @@
  * We have a provision here for all the possible stack we may inspect.
  */
 rt_private struct xstack xstk_context;	/* Saved exception stack context */
-rt_private struct dbstack dstk_context;	/* Saved calling stack context */
-rt_private struct opstack istk_context;	/* Operational stack (interpreter) */
+rt_private struct dbcursor dstk_context;	/* Saved calling stack context */
+rt_private struct opcursor istk_context;	/* Operational stack (interpreter) */
 
 /* Private Routines declarations */
 rt_private void 		send_dump(EIF_PSTREAM s, struct dump *dp);	/* Send XDR'ed dumped item to ewb */
@@ -89,9 +90,6 @@ rt_public unsigned char modify_local(uint32 stack_depth, uint32 loc_type,
                                      uint32 loc_number, EIF_TYPED_VALUE *new_value); /* modify a local value */
 rt_public void			send_stack_variables(EIF_PSTREAM s, uint32 where);	/* Dump the locals and arguments of a feature */
 rt_public void 			send_once_result(EIF_PSTREAM s, MTOT OResult, uint32 otype); /* dump the results of onces feature */
-
-/* extern Routines used */
-extern EIF_TYPED_ADDRESS 	*c_oitem(uint32 n); /* from debug.c - Returns a pointer to the item at position `n' down the stack */
 
 /*-------------------------
  - Routine implementation -
@@ -212,8 +210,8 @@ rt_private void save_stacks(void)
 	/* Save the appropriate stack context, depending on the operations to
 	 * be performed... */
 	memcpy (&xstk_context, &eif_stack, sizeof(struct xstack));
-	memcpy (&dstk_context, &db_stack, sizeof(struct dbstack));
-	memcpy (&istk_context, &op_stack, sizeof(struct opstack));
+	eif_dbstack_save_cursor(&db_stack, &dstk_context);
+	eif_opstack_save_cursor(&op_stack, &istk_context);
 }
 
 /**************************************************************************
@@ -228,8 +226,8 @@ rt_private void restore_stacks(void)
 
 	/* Restore context of all the stack we had to modify/inspect */
 	memcpy (&eif_stack, &xstk_context, sizeof(struct xstack));
-	memcpy (&db_stack, &dstk_context, sizeof(struct dbstack));
-	memcpy (&op_stack, &istk_context, sizeof(struct opstack));
+	eif_dbstack_restore_cursor(&db_stack, &dstk_context);
+	eif_opstack_restore_cursor(&op_stack, &istk_context);
 }
 
 /**************************************************************************
@@ -246,6 +244,7 @@ rt_private void restore_stacks(void)
 rt_private struct dump *get_next_execution_vector(void)
 {
 	EIF_GET_CONTEXT
+	RT_GET_CONTEXT
 
 	struct ex_vect *top;		/* Exception vector */
 	static struct ex_vect copy;	/* copy of the exception vector */
@@ -289,7 +288,7 @@ rt_private struct dump *get_next_execution_vector(void)
 	if (dc != NULL && (dc->dc_exec == top)) { /* We've reached a melted feature */
 		init_var_dump(dc);		/* Make this feature "active" */
 		dumped.dmp_type = DMP_MELTED;	/* Structure contains melted feature */
-		dpop();
+		eif_dbstack_pop_address(&db_stack);
 	} else {
 		dumped.dmp_type = DMP_VECT;	/* Structure contains frozen feature */
 	}
@@ -315,11 +314,11 @@ rt_private struct dump *get_next_execution_vector(void)
 rt_private struct dcall *safe_dtop(void)
 {
 	RT_GET_CONTEXT
-	if (db_stack.st_top && db_stack.st_top == db_stack.st_hd->sk_arena) {
+	if (eif_dbstack_is_empty (&db_stack)) {
 		return NULL;
+	} else {
+		return EIF_STACK_TOP_ADDRESS(db_stack);
 	}
-
-	return dtop();		/* Stack is not empty */
 }
 
 /*
@@ -356,6 +355,7 @@ rt_private void init_var_dump(struct dcall *call)
 rt_private uint32 go_ith_stack_level(uint32 level)
 {
 	EIF_GET_CONTEXT
+	RT_GET_CONTEXT
 
 	struct ex_vect *top;		/* Exception vector */
 	struct ex_vect copy;		/* copy of the exception vector */
@@ -403,7 +403,7 @@ rt_private uint32 go_ith_stack_level(uint32 level)
 		if (dc != NULL && (dc->dc_exec == top)) {	/* We've reached a melted feature */
 			init_var_dump(dc);		/* Make this feature "active" */
 			if (i!=level-1) {
-				dpop();
+				eif_dbstack_pop_address(&db_stack);
 			}
 		} else {
 			copy = *top;

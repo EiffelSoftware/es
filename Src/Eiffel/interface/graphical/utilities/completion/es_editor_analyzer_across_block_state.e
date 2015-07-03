@@ -24,18 +24,6 @@ feature -- Status report
 			Result := Precursor (a_token, a_line) and then is_keyword_token (a_token, {EIFFEL_KEYWORD_CONSTANTS}.across_keyword)
 		end
 
-feature {NONE} -- Status report
-
-	keyword_token_detected (a_token: EDITOR_TOKEN; a_line: EDITOR_LINE): BOOLEAN
-			-- Determines if a token is a keyword token.
-			--
-			-- `a_token': Token to check for an if/elseif token.
-			-- `a_line' : The line where the supplied token is resident.
-			-- `Result' : True if the token is a keyword token; False otherwise.
-		do
-			Result := attached {EDITOR_TOKEN_KEYWORD} a_token
-		end
-
 feature {NONE} -- Basic operation
 
 	process_next_tokens (a_info: ES_EDITOR_ANALYZER_FEATURE_STATE_INFO; a_end_token: detachable EDITOR_TOKEN)
@@ -44,7 +32,6 @@ feature {NONE} -- Basic operation
 			l_start_token: EDITOR_TOKEN
 			l_start_line: EDITOR_LINE
 			l_end_token: detachable EDITOR_TOKEN
-			l_end_line: detachable EDITOR_LINE
 			l_next_state: ES_EDITOR_ANALYZER_COMPOUND_STATE
 			l_next: like next_token
 		do
@@ -55,7 +42,6 @@ feature {NONE} -- Basic operation
 			if attached next_token (l_start_token, l_start_line, True, a_end_token, agent is_across_closure (?, ?)) as l_across_closure then
 					-- A until/loop/some/all keyword was found, use it as the terminating token when looking for the iterator construct.
 				l_end_token := l_across_closure.token
-				l_end_line := l_across_closure.line
 			else
 					-- No token, so use the previous set end token.
 				l_end_token := a_end_token
@@ -84,7 +70,7 @@ feature {NONE} -- Basic operation
 		end
 
 ;note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
