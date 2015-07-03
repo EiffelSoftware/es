@@ -5226,11 +5226,14 @@ Src/web/eiffel-org/library/wikidocs/wikidocs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/library/wikidocs/wikidocs.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/codeboard/codeboard-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/contact/contact-safe.ecf svneol=native#text/xml
+Src/web/eiffel-org/modules/contact/site/config/contact.json -text
 Src/web/eiffel-org/modules/eiffel_community/eiffel_community-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/eiffel_download/eiffel_download-safe.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/wiki_docs/site/wdocs.ini -text
-Src/web/eiffel-org/modules/wiki_docs/wiki_docs-safe.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/wiki_docs/wiki_docs.ecf svneol=native#text/xml
+Src/web/eiffel-org/modules/eiffel_download/eiffel_download.ecf svneol=native#text/xml
+Src/web/eiffel-org/modules/eiffel_download/site/downloads_configuration.json -text
+Src/web/eiffel-org/modules/wdocs/site/wdocs.ini -text
+Src/web/eiffel-org/modules/wdocs/wdocs-safe.ecf svneol=native#text/xml
+Src/web/eiffel-org/modules/wdocs/wdocs.ecf svneol=native#text/xml
 Src/web/eiffel-org/site/config/app.ini -text
 Src/web/eiffel-org/site/config/cms.ini -text
 Src/web/eiffel-org/site/config/eiffel_community_site.json -text
