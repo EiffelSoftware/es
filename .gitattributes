@@ -5240,10 +5240,10 @@ Src/web/eiffel-org/site/modules/auth/mail_templates/account_activation.html svne
 Src/web/eiffel-org/site/modules/auth/mail_templates/account_new_password.html svneol=native#text/xml
 Src/web/eiffel-org/site/modules/auth/mail_templates/account_re_activation.html svneol=native#text/xml
 Src/web/eiffel-org/site/modules/auth/mail_templates/account_welcome.html svneol=native#text/xml
-Src/web/eiffel-org/site/modules/auth/oauth2_gmail.json -text
 Src/web/eiffel-org/site/modules/blog/files/css/blog.css -text
 Src/web/eiffel-org/site/modules/blog/files/scss/blog.scss -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
+Src/web/eiffel-org/site/modules/eiffel_download/downloads_configuration.json -text
 Src/web/eiffel-org/site/modules/node/files/css/node.css -text
 Src/web/eiffel-org/site/modules/node/files/scss/node.scss -text
 Src/web/eiffel-org/site/modules/node/scripts/node.sql -text
