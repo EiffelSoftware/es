@@ -35,13 +35,20 @@ feature {NONE} -- Initialize
 		local
 			l_module: CMS_MODULE
 		do
+				-- Initialize formats.
+			initialize_formats
+
+				-- Initialize storage.
 			if attached setup.storage (error_handler) as l_storage then
 				storage := l_storage
 			else
 				create {CMS_STORAGE_NULL} storage
 			end
+
+				-- Complete storage setup.
 			storage.set_api (Current)
 
+				-- Initialize enabled modules.
 			across
 				setup.enabled_modules as ic
 			loop
@@ -55,6 +62,23 @@ feature {NONE} -- Initialize
 				end
 				l_module.initialize (Current)
 			end
+		end
+
+	initialize_formats
+			-- Initialize content formats.
+		local
+			f: CMS_FORMAT
+		do
+				-- Initialize built-in formats
+			create formats.make (4)
+			create f.make_from_format (create {PLAIN_TEXT_CONTENT_FORMAT})
+			formats.extend (f)
+			create f.make_from_format (create {FILTERED_HTML_CONTENT_FORMAT})
+			formats.extend (f)
+			create f.make_from_format (create {FULL_HTML_CONTENT_FORMAT})
+			formats.extend (f)
+			create f.make ("cms_editor", "CMS HTML content")
+			formats.extend (f)
 		end
 
 feature -- Access
@@ -72,9 +96,6 @@ feature -- Formats
 
 	formats: CMS_FORMATS
 			-- Available content formats.
-		once
-			create Result
-		end
 
 	format (a_format_name: detachable READABLE_STRING_GENERAL): detachable CONTENT_FORMAT
 			-- Content format name `a_format_name' if any.
@@ -138,6 +159,12 @@ feature -- Logging
 		end
 
 feature -- Emails
+
+	new_email (a_to_address: READABLE_STRING_8; a_subject: READABLE_STRING_8; a_content: READABLE_STRING_8): CMS_EMAIL
+			-- New email object.
+		do
+			create Result.make (setup.site_email, a_to_address, a_subject, a_content)
+		end
 
 	process_email (e: CMS_EMAIL)
 			-- Process email `e'.
@@ -299,6 +326,18 @@ feature -- Path aliases
 			storage.unset_path_alias (a_source, a_alias)
 		end
 
+	location_alias (a_source: READABLE_STRING_8): READABLE_STRING_8
+			-- Location alias associated with `a_source' or the source itself.
+		do
+			Result := a_source
+			if attached storage.path_alias (Result) as l_path then
+				Result := l_path
+				if Result.starts_with ("/") then
+					Result := Result.substring (2, Result.count)
+				end
+			end
+		end
+
 	path_alias (a_source: READABLE_STRING_8): READABLE_STRING_8
 			-- Path alias associated with `a_source' or the source itself.
 		do
@@ -308,18 +347,17 @@ feature -- Path aliases
 			end
 		end
 
-	source_of_path_alias (a_alias: READABLE_STRING_8): READABLE_STRING_8
+	source_of_path_alias (a_alias: READABLE_STRING_8): detachable READABLE_STRING_8
 			-- Resolved path for alias `a_alias'.
 			--| the CMS supports aliases for path, and then this function simply returns
 			--| the effective target path/url for this `a_alias'.
 			--| For instance: articles/2015/may/this-is-an-article can be an alias to node/123
 			--| This function will return "node/123".
 			--| If the alias is bad (i.e does not alias real path), then this function
-			--| returns the alias itself.
+			--| returns Void.
 		do
-			Result := a_alias
-			if attached storage.source_of_path_alias (Result) as l_path then
-				Result := l_path
+			if attached storage.source_of_path_alias (a_alias) as l_source_path then
+				Result := l_source_path
 			end
 		end
 
@@ -376,15 +414,31 @@ feature -- Environment/ module
 		local
 			p, l_path: detachable PATH
 			l_name: READABLE_STRING_GENERAL
+		do
+				-- Search first in site/config/modules/$module_name/($app|$module_name).(json|ini)
+				-- if none, look as sub configuration if $app /= Void
+				-- and then in site/modules/$module_name/config/($app|$module_name).(json|ini)
+				-- and if non in sub config if $app /= Void
+			p := site_location.extended ("config").extended ("modules").extended (a_module_name)
+			Result := module_configuration_by_name_in_location (a_module_name, p, a_name)
+			if Result = Void then
+				p := module_location_by_name (a_module_name).extended ("config")
+				Result := module_configuration_by_name_in_location (a_module_name, p, a_name)
+			end
+		end
+
+	module_configuration_by_name_in_location (a_module_name: READABLE_STRING_GENERAL; a_dir: PATH; a_name: detachable READABLE_STRING_GENERAL): detachable CONFIG_READER
+			-- Configuration reader from "$a_dir/($a_module_name|$a_name).(json|ini)" location.
+		local
+			p: PATH
+			l_path: PATH
 			ut: FILE_UTILITIES
 		do
 			if a_name = Void then
-				l_name := a_module_name
+				p := a_dir.extended (a_module_name)
 			else
-				l_name := a_name
+				p := a_dir.extended (a_name)
 			end
-			p := module_location_by_name (a_module_name).extended ("config").extended (l_name)
-
 			l_path := p.appended_with_extension ("json")
 			if ut.file_path_exists (l_path) then
 				create {JSON_CONFIG} Result.make_from_file (l_path)
@@ -396,10 +450,8 @@ feature -- Environment/ module
 			end
 			if Result = Void and a_name /= Void then
 					-- Use sub config from default?
-				if attached {CONFIG_READER} module_configuration_by_name (a_module_name, Void) as cfg then
+				if attached {CONFIG_READER} module_configuration_by_name_in_location (a_module_name, a_dir, Void) as cfg then
 					Result := cfg.sub_config (a_name)
-				else
-					-- Maybe try to use the global cms.ini ?
 				end
 			end
 		end

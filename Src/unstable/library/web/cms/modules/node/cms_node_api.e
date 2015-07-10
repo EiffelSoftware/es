@@ -39,9 +39,16 @@ feature {NONE} -- Initialization
 		local
 			ct: CMS_PAGE_NODE_TYPE
 		do
+				-- Initialize content types.			
 			create content_types.make (1)
 			create content_type_webform_managers.make (1)
 			create ct
+				--| For now, add all available formats to content type `ct'.
+			across
+				cms_api.formats as ic
+			loop
+				ct.extend_format (ic.item)
+			end
 			add_content_type (ct)
 			add_content_type_webform_manager (create {CMS_PAGE_NODE_TYPE_WEBFORM_MANAGER}.make (ct))
 		end
@@ -182,7 +189,7 @@ feature -- URL
 		require
 			a_node.has_id
 		do
-			create Result.make (a_node.title, cms_api.path_alias (node_path (a_node)))
+			create Result.make (a_node.title, cms_api.location_alias (node_path (a_node)))
 		end
 
 	node_path (a_node: CMS_NODE): STRING

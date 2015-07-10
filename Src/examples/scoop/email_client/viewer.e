@@ -7,43 +7,38 @@ note
 class
 	VIEWER
 
+inherit
+	TUTORIAL_HELPER
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_messages: like messages; a_controller: like controller)
-			-- Initialize the {VIEWER} object with `messages'.
+	make (c: separate CLIENT)
+			-- Initialize viewer so that it will support viewing messages of `c'.
 		do
-			messages := a_messages
-			controller := a_controller
+			messages := c.messages
+			controller := c.controller
 		end
 
 feature -- Access
 
-	messages: separate LINKED_LIST[separate STRING]
+	messages: separate LIST[STRING]
 			-- The list of email messages to be displayed.
 
 	controller: separate CONTROLLER
 			-- A separate controller which indicates when to stop execution.
 
-	V_temporization: INTEGER_64 = 1
-			-- The wait time in seconds between displaying two messages.
-
 feature -- Status report
 
 	is_over: BOOLEAN
-			-- Shall `Current' stop displaying messages?
-
------------------------------------------------ INLINE SEPARATE PART FOR THIRD PARTY CONTROL, PAGE 24 -----------------------------------------------
---	is_over: BOOLEAN
---			-- Shall `Current' stop displaying messages?
---		do
---			separate controller as c do
---				Result := c.is_viewer_over
---			end
---		end	
-
+			 -- Shall `Current' stop displaying messages?
+		do
+			separate controller as c do
+				Result := c.is_over
+			end
+		end
 
 feature -- Basic operations
 
@@ -51,76 +46,37 @@ feature -- Basic operations
 			-- Simulate a user viewing a message once in a while.
 		do
 			from until is_over loop
-				view_one_fixed
-				wait (V_temporization)
+				view_one
 			end
 		end
 
-	view_one_fixed
+	view_one
 			-- Simulate viewing: if there are messages, display one, chosen randomly.
-		do
-			if attached select_message as l_message then
-				print("Viewing message: " +  l_message + "%N")
-			end
-		end
-
---	view_one (ml: separate LINKED_LIST[separate STRING])
---			-- Simulate viewing: if there are messages, display one, chosen randomly.
---			-- TODO: This feature should be splitted as well, just like download_one.
---		local
---			s_message: separate STRING
---			l_message: STRING
---		do
---			if not ml.is_empty then
---				s_message := ml [random (1, ml.count)]
---				create l_message.make_from_separate (s_message)
---				print("Viewing message: " +  l_message + "%N")
---			end
---		end
-
-
-feature {NONE} -- Implementation
-
-	select_message: detachable STRING
-			-- Get a new message to be displayed from the client.
 		local
-			s_message: separate STRING
+			message: detachable STRING
 		do
-			separate messages as ml do
-				if not ml.is_empty then
-					s_message := ml [random (1, ml.count)]
-					create Result.make_from_separate (s_message)
-				end
+				-- Simulate viewing time.
+				-- Note: Use `wait (1000)' instead to get more deterministic results.
+			random_wait
+
+				-- Select message to be displayed.
+			message := select_one (messages)
+
+				-- Display message, if any.
+			if attached message then
+				print("Viewing message: " +  message + "%N")
 			end
 		end
 
-	wait (sec: INTEGER_64)
-			-- Sleep for `sec' seconds.
+	select_one (ml: separate LIST [STRING]): detachable STRING
+			-- Select a message from `ml'.
 		local
-			environment: EXECUTION_ENVIRONMENT
+			message: separate STRING
 		do
-			create environment
-			environment.sleep (sec * 1_000_000_000)
-		end
-
-	random (a, b: INTEGER): INTEGER
-			-- Generate a pseudo-random number in the interval [a,b].
-		require
-			valid_interval: a <= b
-		do
-			if a = b then
-				Result := a
-			else
-				Result := random_generator.item
-				random_generator.forth
-				Result := (Result \\ (b-a)) + a
+			if not ml.is_empty then
+				message := ml.i_th (random (1, ml.count))
+				create Result.make_from_separate (message)
 			end
-		end
-
-	random_generator: RANDOM
-			-- A pseudo-random number generator.
-		attribute
-			create Result.make
 		end
 
 end

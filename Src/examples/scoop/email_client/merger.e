@@ -9,24 +9,36 @@ class
 
 feature -- Basic operations
 
-	merge(c1,c2: separate CLIENT)
+	merge (c1, c2: separate CLIENT)
 			-- Merge the messages in `c1' and `c2'.
 		do
-			merge_list(c1.messages, c2.messages)
+			merge_list (c1, c2.messages)
 			print("Merge successful!%N")
 		end
 
 feature {NONE} -- Implementation
 
-	merge_list(l1,l2: separate LINKED_LIST[separate STRING])
-			-- Merge the two lists `l1' and `l2'.
+	merge_list (client: separate CLIENT; list: separate LIST [STRING])
+			-- Append the emails in `list' to `client'.
 		do
-			across
-				l2 as e
-			loop
-				l1.extend (e.item)
+			across list as e loop
+				client.extend (e.item)
 			end
-			l2.wipe_out
+			list.wipe_out
+		end
+
+feature -- With inline separate
+
+	merge_with_inline (c1, c2: separate CLIENT)
+			-- Merge the messages in `c1' and `c2'.
+		do
+			separate c1 as client, c2.messages as list do
+				across list as e loop
+					client.extend (e.item)
+				end
+				list.wipe_out
+			end
+			print("Merge successful!%N")
 		end
 
 end

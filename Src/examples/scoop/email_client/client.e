@@ -15,26 +15,25 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			create messages.make
-			create controller
-			create downloader.make (messages, controller)
-			create viewer.make (messages, controller)
-			create mover.make (messages, controller)
+			create {LINKED_LIST [STRING]} messages.make
+			create <NONE> controller
+			create mover.make (Current)
+			create viewer.make (Current)
+			create downloader.make (Current)
 		end
 
 feature -- Access
 
-	messages: LINKED_LIST [separate STRING]
+	messages: LIST [STRING]
 			-- Email messages received.
-			-- Note: The generic argument must be separate!
 
-	downloader: separate DOWNLOADER
+	downloader: detachable separate DOWNLOADER
 			-- Downloading engine.
 
-	viewer: separate VIEWER
+	viewer: detachable separate VIEWER
 			-- Viewing engine.
 
-	mover: separate MOVER
+	mover: detachable separate MOVER
 			-- Archiving engine.
 
 	controller: separate CONTROLLER
@@ -51,5 +50,15 @@ feature -- Access
 			end
 		end
 
+feature -- Basic operations
+
+	extend (email: separate STRING)
+			-- Add `email' to the email storage.
+		local
+			l_email: STRING
+		do
+			create l_email.make_from_separate (email)
+			messages.extend (l_email)
+		end
 
 end

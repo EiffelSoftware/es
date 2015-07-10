@@ -1,6 +1,6 @@
 note
 	description: "[
-			A feature's if block editor analyzer's state, used in processing tokens between across..end tokens.
+			A feature's "across" block editor analyzer's state, used in processing tokens between "across" and "end".
 		]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -52,7 +52,7 @@ feature {NONE} -- Basic operation
 				l_next := next_text_token (l_next.token, l_next.line, True, l_end_token)
 			end
 			if l_end_token /~ a_end_token then
-					--| This mean, the real end token is after a "until", "loop", "some or "all" keyword
+					-- The real end token is after a "until", "loop", "some" or "all" keyword.
 				a_info.set_current_line (l_next.line, l_next.token)
 
 				a_info.increment_current_frame (False)

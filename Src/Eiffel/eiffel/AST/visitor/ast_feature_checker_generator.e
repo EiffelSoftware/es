@@ -2176,17 +2176,20 @@ feature {NONE} -- Type checks
 			target_base_class_id: INTEGER
 			warning_count: INTEGER
 		do
-			if attached callee then
-					-- Regular feature calll.
-				formal_type := callee.arguments [argument_number]
-			else
-					-- Tuple access.
-				formal_type := actual_types [argument_number]
-			end
 			actual_target_type := target_type.actual_type
 			target_base_class := target_base_type.base_class
 			target_base_class_id := target_base_class.class_id
 			current_class := context.current_class
+			if attached callee then
+					-- Regular feature calll.
+				formal_type := callee.arguments [argument_number]
+					-- Adapt formal type of a feature argument.
+				formal_type := formal_type.recomputed_in (actual_target_type.as_implicitly_detachable, current_class.class_id, target_base_type.as_implicitly_detachable, target_base_class_id).actual_type
+			else
+					-- Tuple access.
+				formal_type := actual_types [argument_number]
+			end
+
 			if formal_type.is_like_argument then
 				like_argument_type := formal_type.instantiation_in
 					(actual_target_type.as_implicitly_detachable, target_base_class_id).actual_argument_type
@@ -2208,11 +2211,6 @@ feature {NONE} -- Type checks
 				create {VUAR3} Result.make (context, callee, name, target_base_class, argument_number, formal_type, expression_type, location)
 			elseif system.is_scoop and then expression_type.is_expanded and then not expression_type.is_processor_attachable_to (target_type) then
 				create {VUAR4} Result.make (context, callee, name, target_base_class, argument_number, formal_type, expression_type, location)
-			end
-
-			if attached callee then
-					-- Adapt formal type of a feature argument.
-				formal_type := formal_type.recomputed_in (actual_target_type.as_implicitly_detachable, current_class.class_id, target_base_type.as_implicitly_detachable, target_base_class_id).actual_type
 			end
 
 			warning_count := error_handler.warning_list.count
@@ -5898,6 +5896,9 @@ feature {NONE} -- Visitor
 		end
 
 	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
+			-- <Precursor>
+		local
+			l_call_b: INSTR_CALL_B
 		do
 			break_point_slot_count := break_point_slot_count + 1
 
@@ -5911,6 +5912,13 @@ feature {NONE} -- Visitor
 					-- The source might have been updated to change conversion into account.
 					-- Save these changes for future use.
 				l_as.set_source (s)
+			end
+				-- We need to wrap the NESTED_B instance that was created if type check was
+				-- successful otherwise we would not generate the proper debugger hook.
+			if is_byte_node_enabled and then attached {NESTED_B} last_byte_node as l_call then
+				create l_call_b.make (l_call, l_as.source.start_location.line)
+				l_call_b.set_line_pragma (l_as.line_pragma)
+				last_byte_node := l_call_b
 			end
 			assigner_source := Void
 		end

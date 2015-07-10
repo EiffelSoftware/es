@@ -10,6 +10,8 @@ class
 inherit
 	ARGUMENTS
 
+	TUTORIAL_HELPER
+
 create
 	make
 
@@ -20,12 +22,7 @@ feature {NONE} -- Initialization
 			tutorial: INTEGER
 		do
 			create <NONE> client.make
-
-			separate client as c do
-				downloader := c.downloader
-				viewer := c.viewer
-				mover := c.mover
-			end
+			initialize (client)
 
 			if argument_count = 1 then
 				tutorial := argument (1).to_integer
@@ -51,6 +48,21 @@ feature {NONE} -- Initialization
 			end
 		end
 
+	initialize (c: separate CLIENT)
+			-- Finish initialization of `Current'.
+		do
+			check
+				attached c.downloader as d and
+				attached c.viewer as v and
+				attached c.mover as m
+			then
+				downloader := d
+				viewer := v
+				mover := m
+			end
+			controller := c.controller
+		end
+
 feature -- Access
 
 	client: separate CLIENT
@@ -65,15 +77,25 @@ feature -- Access
 	mover: separate MOVER
 			-- The mover engine.
 
+	controller: separate CONTROLLER
+			-- The third-party controller.
+
 feature -- Tutorial: Main execution feature.
 
 	play1
 			-- Start the downloader, viewer and mover concurrently.
 		do
 			live_all (downloader, viewer, mover)
+
+				-- This makes sure that the application terminates after 20 seconds.
+				-- Note: The wait should happen outside the separate block.
+			wait (20_000)
+			separate controller as c do
+				c.stop
+			end
 		end
 
-	live_all(d: separate DOWNLOADER; v: separate VIEWER; m: separate MOVER)
+	live_all (d: separate DOWNLOADER; v: separate VIEWER; m: separate MOVER)
 			-- Run d, v, and m concurrently.
 		do
 			d.live
@@ -81,15 +103,14 @@ feature -- Tutorial: Main execution feature.
 			m.live
 		end
 
-
 feature -- Tutorial: Order preservation and synchronization.
 
 	play2
 			-- Download two messages.
 		do
 			separate downloader as d do
-				d.download_one_fixed
-				d.download_one_fixed
+				d.download_one
+				d.download_one
 			end
 		end
 
@@ -97,8 +118,8 @@ feature -- Tutorial: Order preservation and synchronization.
 			-- Download a message, view a message.
 		do
 			separate downloader as d, viewer as v do
-				d.download_one_fixed
-				v.view_one_fixed
+				d.download_one
+				v.view_one
 			end
 		end
 
@@ -108,8 +129,8 @@ feature -- Tutorial: Order preservation and synchronization.
 			n: INTEGER
 		do
 			separate downloader as d do
-				d.download_one_fixed
-				d.download_one_fixed
+				d.download_one
+				d.download_one
 				n := d.count
 				print (n)
 			end
@@ -121,8 +142,8 @@ feature -- Tutorial: Order preservation and synchronization.
 			n: INTEGER
 		do
 			separate downloader as d do
-				d.download_one_fixed
-				d.download_one_fixed
+				d.download_one
+				d.download_one
 				n := d.computed_count
 				print (n)
 			end
@@ -137,6 +158,7 @@ feature -- Tutorial: Type system
 		do
 				-- Uncomment to get a compiler error.
 --			c := client
+--			c.messages.extend ("ABC")
 		end
 
 	play7(c: CLIENT)
@@ -156,7 +178,7 @@ feature -- Tutorial: Traitors
 
 	close_friend: detachable PLAYER
 
-	set_close_friend (p: PLAYER)
+	set_close_friend (p: detachable PLAYER)
 			-- Set `close_friend' to `p'.
 		do
 			close_friend := p
@@ -168,9 +190,9 @@ feature -- Tutorial: Traitors
 			remote_friend: separate PLAYER
 		do
 			create remote_friend.make
-			separate remote_friend as l_friend do
+			separate remote_friend as rf do
 					-- Uncomment to get a compiler error.
---				l_friend.set_close_friend (Current)
+--				rf.set_close_friend (Current)
 			end
 		end
 
