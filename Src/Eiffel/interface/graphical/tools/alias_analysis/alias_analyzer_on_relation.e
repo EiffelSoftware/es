@@ -422,6 +422,7 @@ feature {NONE} -- Visitor
 				attached node_type (a.right, context.written_class, context.current_feature, context.current_class) as tr and then not tr.is_reference
 			then
 					-- Skip tilda expressions and those that are of expanded type.
+					Precursor (a) -- but still perform visitor walk
 			else
 				a.left.process (Current)
 				l := last_item

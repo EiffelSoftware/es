@@ -26,6 +26,7 @@ feature {NONE} -- Creation
 	make
 			-- <Precursor>
 		do
+			Precursor
 			create model_dependency.make (0)
 			create missing_model_dependency.make
 			create is_specification_feature_map.make (0)
@@ -92,6 +93,8 @@ feature {NONE} -- Visitor
 	process_access_feat_as (a: ACCESS_FEAT_AS)
 			-- <Precursor>
 		do
+			Precursor (a)
+
 			if a.is_local then
 			elseif a.is_argument then
 			elseif a.is_object_test_local then
@@ -458,7 +461,7 @@ feature {NONE} -- Information about standard features
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 2012-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

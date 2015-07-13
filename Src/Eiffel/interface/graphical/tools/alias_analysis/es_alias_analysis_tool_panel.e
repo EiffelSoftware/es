@@ -46,8 +46,9 @@ feature
 			l_ast_viewer: ALIAS_ANALYZER_AST_VIEWER
 		do
 			create {ALIAS_ANALYZER_ON_RELATION} alias_analyzer.make
-			--create {ALIAS_ANALYZER_ON_GRAPH} alias_analyzer.make
+			-- create {ALIAS_ANALYZER_ON_GRAPH} alias_analyzer.make
 			create {CHANGE_ANALYZER_ON_RELATION} change_analyzer.make
+--			create {CHANGE_SPEC_ANALYZER_ON_RELATION} change_analyzer.make
 			analyzer := change_analyzer
 			propagate_drop_actions (Void)
 
