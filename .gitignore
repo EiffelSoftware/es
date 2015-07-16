@@ -521,8 +521,6 @@ Src/unstable/library/web/cms/src/service/*.bak
 Src/web/eiffel-org/_db
 Src/web/eiffel-org/_storage_
 Src/web/eiffel-org/comp
-Src/web/eiffel-org/data/documentation/archive
-Src/web/eiffel-org/data/documentation/backup
 Src/web/eiffel-org/library/wikidocs/testing/tmp
 Src/web/eiffel-org/replay
 Src/web/eiffel-org/tmp
