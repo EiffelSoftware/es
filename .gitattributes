@@ -5224,6 +5224,7 @@ Src/web/eiffel-org/modules/wdocs/wdocs.ecf svneol=native#text/xml
 Src/web/eiffel-org/site/config/app.ini -text
 Src/web/eiffel-org/site/config/cms.ini -text
 Src/web/eiffel-org/site/config/eiffel_org.json -text
+Src/web/eiffel-org/site/config/modules/wdocs/wdocs.ini -text
 Src/web/eiffel-org/site/modules/auth/auth.json -text
 Src/web/eiffel-org/site/modules/auth/mail_templates/account_activation.html svneol=native#text/xml
 Src/web/eiffel-org/site/modules/auth/mail_templates/account_new_password.html svneol=native#text/xml
