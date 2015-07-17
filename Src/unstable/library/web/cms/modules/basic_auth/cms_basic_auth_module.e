@@ -37,7 +37,8 @@ feature {NONE} -- Initialization
 		do
 			version := "1.0"
 			description := "Service to manage basic authentication"
-			package := "core"
+			package := "authentication"
+			add_dependency ({CMS_AUTHENTICATION_MODULE})
 		end
 
 feature -- Access
@@ -114,7 +115,7 @@ feature -- Hooks
 			-- <Precursor>
 		do
 			if attached current_user (a_response.request) as l_user then
-				a_value.force (l_user, "user")
+				a_value.force ("basic_auth_logoff", "auth_login_strategy")
 			end
 		end
 

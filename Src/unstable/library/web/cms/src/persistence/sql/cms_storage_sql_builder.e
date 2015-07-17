@@ -18,8 +18,7 @@ feature -- Initialization
 	initialize (a_setup: CMS_SETUP; a_storage: CMS_STORAGE_SQL)
 		local
 			u: CMS_USER
-			l_anonymous_role, l_authenticated_role, r: CMS_USER_ROLE
-			l_roles: LIST [CMS_USER_ROLE]
+			l_anonymous_role, l_authenticated_role: CMS_USER_ROLE
 		do
 				--| Schema
 			a_storage.sql_execute_file_script (a_setup.environment.site_path.extended ("scripts").extended ("core.sql"), Void)
@@ -58,38 +57,9 @@ feature -- Initialization
 			l_authenticated_role.add_permission ("delete own page")
 			l_authenticated_role.add_permission ("trash own page")
 			a_storage.save_user_role (l_authenticated_role)
-
-
-			--|-------------------------------------------|--
-			--| For testing purpose, to be removed later. |--
-			--|-------------------------------------------|--
-
-				-- Roles, view role for testing.
-			create r.make ("view")
-			r.add_permission ("view any page")
-			a_storage.save_user_role (r)
-
-			create {ARRAYED_LIST [CMS_USER_ROLE]} l_roles.make (1)
-			l_roles.force (r)
-
-			create u.make ("auth")
-			u.set_password ("enticated#")
-			u.set_email (a_setup.site_email)
-			u.set_status ({CMS_USER}.active)
-			a_storage.new_user (u)
-
-			create u.make ("test")
-			u.set_password ("test#")
-			u.set_email (a_setup.site_email)
-			u.set_status ({CMS_USER}.active)
-			a_storage.new_user (u)
-
-			create u.make ("view")
-			u.set_password ("only#")
-			u.set_email (a_setup.site_email)
-			u.set_status ({CMS_USER}.active)
-			u.set_roles (l_roles)
-			a_storage.new_user (u)
 		end
 
+note
+	copyright: "2011-2015, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end

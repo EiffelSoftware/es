@@ -23,10 +23,14 @@ feature -- Access
 			-- Description of the module.
 
 	package: STRING
-			--
+			-- Associated package.
+			-- Mostly to group modules by package/category.
 
 	version: STRING
 			-- Version od the module?
+
+	dependencies: detachable LIST [TYPE [CMS_MODULE]]
+			-- Optional dependencies.
 
 feature {CMS_API} -- Module Initialization
 
@@ -40,6 +44,19 @@ feature {CMS_API} -- Module Initialization
 			is_initialized := True
 		ensure
 			is_initialized: is_initialized
+		end
+
+	add_dependency (a_type: TYPE [CMS_MODULE])
+			-- Add dependency using type of module `a_type'.
+		local
+			deps: like dependencies
+		do
+			deps := dependencies
+			if deps = Void then
+				create {ARRAYED_LIST [TYPE [CMS_MODULE]]} deps.make (1)
+				dependencies := deps
+			end
+			deps.force (a_type)
 		end
 
 feature -- Status		
@@ -62,21 +79,35 @@ feature {CMS_API} -- Module management
 	is_installed (api: CMS_API): BOOLEAN
 			-- Is Current module installed?
 		do
-			Result := attached api.storage.custom_value ("is_initialized", "module-" + name) as v and then v.is_case_insensitive_equal_general ("yes")
+			if attached api.storage.custom_value ("is_initialized", "module-" + name) as v then
+				if v.is_case_insensitive_equal_general (version) then
+					Result := True
+				elseif v.is_case_insensitive_equal_general ("yes") then
+						-- Backward compatibility.
+					Result := True
+				elseif v.is_case_insensitive_equal_general ("no") then
+						-- Probably a module that was installed, but now uninstalled.
+					Result := False
+				else
+						-- Maybe a different version is installed.
+						-- For now, let's assume this is installed.
+					Result := True
+				end
+			end
 		end
 
 	install (api: CMS_API)
 		require
 			is_not_installed: not is_installed (api)
 		do
-			api.storage.set_custom_value ("is_initialized", "module-" + name, "yes")
+			api.storage.set_custom_value ("is_initialized", version, "module-" + name)
 		end
 
 	uninstall (api: CMS_API)
 		require
 			is_installed: is_installed (api)
 		do
-			api.storage.set_custom_value ("is_initialized", "module-" + name, "no")
+			api.storage.set_custom_value ("is_initialized", "no", "module-" + name)
 		end
 
 feature -- Router
@@ -133,6 +164,10 @@ feature -- Hooks
 			end
 			create Result.make_empty
 		end
+
+invariant
+	name_set: not name.is_whitespace
+	version_set: not version.is_whitespace
 
 note
 	copyright: "2011-2015, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"

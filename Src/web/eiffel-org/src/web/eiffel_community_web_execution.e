@@ -9,6 +9,9 @@ class
 
 inherit
 	CMS_EXECUTION
+		redefine
+			clean
+		end
 
 	EIFFEL_COMMUNITY_SITE_SERVICE
 
@@ -19,6 +22,16 @@ inherit
 create
 	make
 
+feature -- Cleaning
+
+	clean
+			-- Cleaning after request.
+		do
+			if attached api.storage as l_storage then
+				l_storage.close
+			end
+			Precursor
+		end
 
 feature {NONE} -- Implementation
 
@@ -29,6 +42,7 @@ feature {NONE} -- Implementation
 			else
 				create Result.make_default
 			end
+			Result.set_name ("eiffel_org")
 		end
 
 end

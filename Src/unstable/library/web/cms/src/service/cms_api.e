@@ -34,6 +34,8 @@ feature {NONE} -- Initialize
 				-- Initialize the persitent layer.
 		local
 			l_module: CMS_MODULE
+			l_enabled_modules: CMS_MODULE_COLLECTION
+			l_uninstalled_mods: detachable ARRAYED_LIST [CMS_MODULE]
 		do
 				-- Initialize formats.
 			initialize_formats
@@ -45,22 +47,40 @@ feature {NONE} -- Initialize
 				create {CMS_STORAGE_NULL} storage
 			end
 
+				-- Keep enable modules list.
+			l_enabled_modules := setup.enabled_modules
+			enabled_modules := l_enabled_modules
+
 				-- Complete storage setup.
 			storage.set_api (Current)
 
 				-- Initialize enabled modules.
 			across
-				setup.enabled_modules as ic
+				l_enabled_modules as ic
 			loop
 				l_module := ic.item
 					-- FIXME: should we initialize first, and then install
 					-- or the reverse, or merge installation and initialization
 					-- and leave the responsability to the module to know
 					-- if this is installed or not...
-				if not l_module.is_installed (Current) then
-					l_module.install (Current)
+--				if not l_module.is_installed (Current) then
+--					l_module.install (Current)
+--				end
+				if l_module.is_installed (Current) then
+					l_module.initialize (Current)
+				else
+					if l_uninstalled_mods = Void then
+						create l_uninstalled_mods.make (1)
+					end
+					l_uninstalled_mods.force (l_module)
 				end
-				l_module.initialize (Current)
+			end
+			if l_uninstalled_mods /= Void then
+				across
+					l_uninstalled_mods as ic
+				loop
+					l_enabled_modules.remove (ic.item)
+				end
 			end
 		end
 
@@ -79,6 +99,30 @@ feature {NONE} -- Initialize
 			formats.extend (f)
 			create f.make ("cms_editor", "CMS HTML content")
 			formats.extend (f)
+		end
+
+feature {CMS_ACCESS} -- Installation		
+
+	install
+			-- Install CMS or uninstalled module which are enabled.
+		local
+			l_module: CMS_MODULE
+		do
+			across
+				setup.modules as ic
+			loop
+				l_module := ic.item
+					-- FIXME: should we initialize first, and then install
+					-- or the reverse, or merge installation and initialization
+					-- and leave the responsability to the module to know
+					-- if this is installed or not...
+				if not l_module.is_installed (Current) then
+					l_module.install (Current)
+					if l_module.is_enabled then
+						l_module.initialize (Current)
+					end
+				end
+			end
 		end
 
 feature -- Access
@@ -197,32 +241,21 @@ feature -- Permissions system
 
 feature -- Query: module
 
+	is_module_installed (a_module: CMS_MODULE): BOOLEAN
+			-- Is `a_module' installed?
+		do
+			Result := a_module.is_installed (Current)
+		end
+
+	enabled_modules: CMS_MODULE_COLLECTION
+
 	module (a_type: TYPE [CMS_MODULE]): detachable CMS_MODULE
 			-- Enabled module typed `a_type', if any.
 			--| usage: if attached module ({FOO_MODULE}) as mod then ...
-		local
-			l_type: TYPE [detachable CMS_MODULE]
 		do
-			across
-				setup.modules as ic
-			until
-				Result /= Void
-			loop
-				Result := ic.item
-				if not Result.is_enabled then
-					Result := Void
-				else
-					l_type := Result.generating_type
-					if a_type ~ l_type then
-							-- Found
-					elseif
-						attached a_type.attempt (Result) and then attached l_type.generating_type.attempt (a_type)
-					then
-							-- Found
-					else
-						Result := Void
-					end
-				end
+			Result := setup.modules.item (a_type)
+			if Result /= Void and then not Result.is_enabled then
+				Result := Void
 			end
 		ensure
 			Result /= Void implies (Result.is_enabled) -- and a_type.is_conforming_to (Result.generating_type))
@@ -412,8 +445,7 @@ feature -- Environment/ module
 	module_configuration_by_name (a_module_name: READABLE_STRING_GENERAL; a_name: detachable READABLE_STRING_GENERAL): detachable CONFIG_READER
 			-- Configuration reader for `a_module', and if `a_name' is set, using name `a_name'.
 		local
-			p, l_path: detachable PATH
-			l_name: READABLE_STRING_GENERAL
+			p: detachable PATH
 		do
 				-- Search first in site/config/modules/$module_name/($app|$module_name).(json|ini)
 				-- if none, look as sub configuration if $app /= Void

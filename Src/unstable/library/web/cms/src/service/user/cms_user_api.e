@@ -123,6 +123,20 @@ feature -- User roles.
 			Result := storage.user_role_by_id (a_id)
 		end
 
+	user_role_by_name (a_name: READABLE_STRING_GENERAL): detachable CMS_USER_ROLE
+		do
+			Result := storage.user_role_by_name (a_name)
+		end
+
+feature -- Change User role		
+
+	save_user_role (a_user_role: CMS_USER_ROLE)
+		do
+			reset_error
+			storage.save_user_role (a_user_role)
+			error_handler.append (storage.error_handler)
+		end
+
 feature -- Change User
 
 	new_user (a_user: CMS_USER)
@@ -131,15 +145,15 @@ feature -- Change User
 			no_id: not a_user.has_id
 			no_hashed_password: a_user.hashed_password = Void
 		do
+			reset_error
 			if
 				attached a_user.password as l_password and then
 				attached a_user.email as l_email
 			then
 				storage.new_user (a_user)
+				error_handler.append (storage.error_handler)
 			else
-				debug ("refactor_fixme")
-					fixme ("Add error")
-				end
+				error_handler.add_custom_error (0, "bad new user request", "Missing password or email to create new user!")
 			end
 		end
 
@@ -148,7 +162,9 @@ feature -- Change User
 		require
 			has_id: a_user.has_id
 		do
+			reset_error
 			storage.update_user (a_user)
+			error_handler.append (storage.error_handler)
 		end
 
 feature -- User Activation
@@ -190,4 +206,7 @@ feature -- User status
 	Trashed: INTEGER = -1
 			-- The user is trashed (soft delete), ready to be deleted/destroyed from storage.
 
+note
+	copyright: "2011-2015, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end

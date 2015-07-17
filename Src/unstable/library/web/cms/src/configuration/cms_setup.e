@@ -11,6 +11,65 @@ deferred class
 inherit
 	REFACTORING_HELPER
 
+feature {NONE} -- Initialization	
+
+	initialize
+		local
+			l_url: like site_url
+		do
+			site_location := environment.path
+
+				--| Site id, used to identified a site, this could be set to a uuid, or else
+			site_id := text_item_or_default ("site.id", "_EWF_CMS_NO_ID_")
+
+				-- Site url: optional, but ending with a slash
+			l_url := string_8_item ("site_url")
+			if l_url /= Void and then not l_url.is_empty then
+				if l_url [l_url.count] /= '/' then
+					l_url := l_url + "/"
+				end
+			end
+			site_url := l_url
+
+				-- Site name
+			site_name := text_item_or_default ("site.name", "EWF::CMS")
+
+				-- Site email for any internal notification
+				-- Can be also used to precise the "From:" value for email.
+			site_email := text_item_or_default ("site.email", "webmaster")
+
+
+				-- Location for public files
+			if attached text_item ("files-dir") as s then
+				create files_location.make_from_string (s)
+			else
+				files_location := site_location.extended ("files")
+			end
+
+				-- Location for modules folders.
+			if attached text_item ("modules-dir") as s then
+				create modules_location.make_from_string (s)
+			else
+				modules_location := environment.modules_path
+			end
+
+				-- Location for themes folders.
+			if attached text_item ("themes-dir") as s then
+				create themes_location.make_from_string (s)
+			else
+				themes_location := environment.themes_path
+			end
+
+				-- Selected theme's name
+			theme_name := text_item_or_default ("theme", "default")
+
+			debug ("refactor_fixme")
+				fixme ("Review export clause for configuration and environment")
+			end
+
+			theme_location := themes_location.extended (theme_name)
+		end
+
 feature -- Access
 
 	environment: CMS_ENVIRONMENT
@@ -23,6 +82,8 @@ feature -- Access
 			Result := environment
 		end
 
+feature {CMS_API} -- API Access		
+
 	enabled_modules: CMS_MODULE_COLLECTION
 			-- List of enabled modules.
 		local
@@ -33,19 +94,79 @@ feature -- Access
 				modules as ic
 			loop
 				l_module := ic.item
+				update_module_status_from_configuration (l_module)
 				if l_module.is_enabled then
 					Result.extend (l_module)
+				end
+			end
+			across
+				Result as ic
+			loop
+				l_module := ic.item
+				update_module_status_within (l_module, Result)
+				if not l_module.is_enabled then
+					Result.remove (l_module)
 				end
 			end
 		ensure
 			only_enabled_modules: across Result as ic all ic.item.is_enabled end
 		end
 
-feature {CMS_MODULE, CMS_API} -- Restricted access
+feature {CMS_MODULE, CMS_API, CMS_SETUP_ACCESS} -- Restricted access
 
 	modules: CMS_MODULE_COLLECTION
 			-- List of available modules.
 		deferred
+		end
+
+feature {NONE} -- Implementation: update		
+
+	update_module_status_within (a_module: CMS_MODULE; a_collection: CMS_MODULE_COLLECTION)
+			-- Update status of module `a_module', taking into account its dependencies within the collection `a_collection'.
+		require
+			a_module_is_enabled: a_module.is_enabled
+		do
+			if attached a_module.dependencies as deps then
+				across
+					deps as ic
+				until
+					not a_module.is_enabled
+				loop
+					if
+						attached a_collection.item (ic.item) as mod and then
+						mod.is_enabled
+					then
+						update_module_status_within (mod, a_collection)
+					else
+							--| dependency not found or disabled
+						a_module.disable
+					end
+				end
+			end
+		end
+
+	update_module_status_from_configuration (m: CMS_MODULE)
+			-- Update status of module `m' according to configuration.
+		local
+			b: BOOLEAN
+			dft: BOOLEAN
+		do
+				-- By default enabled.
+			if false and attached text_item ("modules.*") as l_mod_status then
+				dft := l_mod_status.is_case_insensitive_equal_general ("on")
+			else
+				dft := True
+			end
+			if attached text_item ("modules." + m.name) as l_mod_status then
+				b := l_mod_status.is_case_insensitive_equal_general ("on")
+			else
+				b := dft
+			end
+			if b then
+				m.enable
+			else
+				m.disable
+			end
 		end
 
 feature -- Access: Site
@@ -145,7 +266,7 @@ feature -- Access: storage
 					attached (create {APPLICATION_JSON_CONFIGURATION_HELPER}).new_database_configuration (environment.application_config_path) as l_database_config and then
 					attached storage_drivers.item (l_database_config.driver) as l_builder
 				then
-					Result := l_builder.storage (Current)
+					Result := l_builder.storage (Current, a_error_handler)
 				end
 			else
 				to_implement ("Workaround code, persistence layer does not implement yet this kind of error handling.")

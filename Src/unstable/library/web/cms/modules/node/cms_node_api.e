@@ -220,11 +220,11 @@ feature -- Access: Node
 			Result := node_storage.nodes
 		end
 
-	trashed_nodes (a_user: CMS_USER): LIST [CMS_NODE]
+	trashed_nodes (a_user: detachable CMS_USER): LIST [CMS_NODE]
 			-- List of nodes with status in {CMS_NODE_API}.trashed.
-			-- if the current user is admin, it will retrieve all the trashed nodes
+			-- if `a_user' is set, return nodes related to this user.
 		do
-			Result := node_storage.trashed_nodes (a_user.id)
+			Result := node_storage.trashed_nodes (a_user)
 		end
 
 	recent_nodes (params: CMS_DATA_QUERY_PARAMETERS): ITERABLE [CMS_NODE]
@@ -298,6 +298,16 @@ feature -- Permission Scope: Node
 				if is_author_of_node (a_user, a_node) then
 					Result := cms_api.user_has_permission (a_user, a_action + " own " + l_type_name)
 				end
+			end
+			fixme ("when admin back end is ready, remove this, as too general.") -- FIXME
+			if not Result then
+				Result := cms_api.user_has_permission (a_user, a_action + " any node")
+				if not Result and a_user /= Void then
+					if is_author_of_node (a_user, a_node) then
+						Result := cms_api.user_has_permission (a_user, a_action + " own node")
+					end
+				end
+
 			end
 		end
 

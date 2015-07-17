@@ -59,7 +59,7 @@ feature {CMS_API} -- Module Initialization
 			cfg: WDOCS_CONFIG
 		do
 			Precursor (api)
-			cfg := configuration (api.module_location (Current))
+			cfg := configuration (api)
 			temp_dir := cfg.temp_dir
 			documentation_dir := cfg.documentation_dir
 			cache_duration := cfg.cache_duration
@@ -84,31 +84,34 @@ feature -- Router
 			a_router.handle ("/documentation", h, a_router.methods_get)
 
 			create h.make (agent handle_wikipage_by_uuid (a_api, ?, ?))
-			a_router.handle ("/book/uuid/{wikipage_uuid}", h, a_router.methods_get)
-			a_router.handle ("/version/{version_id}/book/uuid/{wikipage_uuid}", h, a_router.methods_get)
+			a_router.handle ("/doc/uuid/{wikipage_uuid}", h, a_router.methods_get)
+			a_router.handle ("/doc/version/{version_id}/uuid/{wikipage_uuid}", h, a_router.methods_get)
 
 			create h.make (agent handle_documentation (a_api, ?, ?))
-			a_router.handle ("/book/", h, a_router.methods_get)
-			a_router.handle ("/book/{bookid}", h, a_router.methods_get)
-			a_router.handle ("/version/{version_id}/book/", h, a_router.methods_get)
-			a_router.handle ("/version/{version_id}/book/{bookid}", h, a_router.methods_get)
-
+			a_router.handle ("/doc/", h, a_router.methods_get)
+			a_router.handle ("/doc/version/{version_id}/", h, a_router.methods_get)
+			a_router.handle ("/doc/version/{version_id}/{bookid}", h, a_router.methods_get)
+			a_router.handle ("/doc/{bookid}", h, a_router.methods_get)
 
 			create h.make (agent handle_wikipage (a_api, ?, ?))
-			a_router.handle ("/book/{bookid}/{wikipageid}", h, a_router.methods_get)
-			a_router.handle ("/version/{version_id}/book/{bookid}/{wikipageid}", h, a_router.methods_get)
+			a_router.handle ("/doc/version/{version_id}/{bookid}/{wikipageid}", h, a_router.methods_get)
+			a_router.handle ("/doc/{bookid}/{wikipageid}", h, a_router.methods_get)
 
 			create h.make (agent handle_wiki_image (a_api, ?, ?))
-			a_router.handle ("/book/{bookid}/_images/{filename}", h, a_router.methods_get)
-			a_router.handle ("/version/{version_id}/book/{bookid}/_images/{filename}", h, a_router.methods_get)
-			a_router.handle ("/images/{image_id}", h, a_router.methods_get)
-			a_router.handle ("/version/{version_id}/images/{image_id}", h, a_router.methods_get)
+			a_router.handle ("/doc-image/{image_id}", h, a_router.methods_get)
+			a_router.handle ("/doc-image/version/{version_id}/{image_id}", h, a_router.methods_get)
+			a_router.handle ("/doc-image/version/{version_id}/{bookid}/_images/{filename}", h, a_router.methods_get)
+			a_router.handle ("/doc-image/{bookid}/_images/{filename}", h, a_router.methods_get)
 
 			create h.make (agent handle_wiki_file (a_api, ?, ?))
-			a_router.handle ("/book/{bookid}/file/{filename}", h, a_router.methods_get)
-			a_router.handle ("/version/{version_id}/book/{bookid}/file/{filename}", h, a_router.methods_get)
-			a_router.handle ("/file/{filename}", h, a_router.methods_get)
-			a_router.handle ("/version/{version_id}/file/{filename}", h, a_router.methods_get)
+			a_router.handle ("/doc-file/{filename}", h, a_router.methods_get)
+			a_router.handle ("/doc-file/version/{version_id}/{filename}", h, a_router.methods_get)
+			a_router.handle ("/doc-file/version/{version_id}/{bookid}/{filename}", h, a_router.methods_get)
+			a_router.handle ("/doc-file/{bookid}/{filename}", h, a_router.methods_get)
+
+
+			create h.make (agent handle_clear_cache (a_api, ?, ?))
+			a_router.handle ("/admin/module/"+name+"/clear-cache", h, a_router.methods_get)
 		end
 
 feature -- Hooks configuration
@@ -119,12 +122,29 @@ feature -- Hooks configuration
 			auto_subscribe_to_hooks (a_response)
 		end
 
-feature -- Access: config
+feature {NONE} -- Config
 
-	configuration (a_dir: PATH): WDOCS_CONFIG
+	configuration (api: CMS_API): WDOCS_CONFIG
 			-- Configuration setup.
 		local
-			cfg: detachable WDOCS_CONFIG
+			d: PATH
+		do
+			d := api.site_location.extended ("config").extended ("modules").extended (name)
+			if attached configuration_within (d) as cfg then
+				Result := cfg
+			else
+				d := api.module_location (Current)
+				if attached configuration_within (d) as cfg then
+					Result := cfg
+				else
+						-- Default
+					create {WDOCS_DEFAULT_CONFIG} Result.make_default
+				end
+			end
+		end
+
+	configuration_within (a_dir: PATH): detachable WDOCS_CONFIG
+		local
 			p: detachable PATH
 			ut: FILE_UTILITIES
 		do
@@ -140,31 +160,24 @@ feature -- Access: config
 			if p /= Void then
 				if attached p.extension as ext then
 					if ext.is_case_insensitive_equal_general ("ini") then
-						create {WDOCS_INI_CONFIG} cfg.make (p)
+						create {WDOCS_INI_CONFIG} Result.make (p)
 					elseif ext.is_case_insensitive_equal_general ("json") then
-						create {WDOCS_JSON_CONFIG} cfg.make (p)
+						create {WDOCS_JSON_CONFIG} Result.make (p)
 					end
 				end
-				if cfg = Void then
+				if Result = Void then
 					create {WDOCS_INI_CONFIG} Result.make (p)
 				end
 			else
 				p := a_dir.extended (name).appended_with_extension ("ini")
 				if ut.file_path_exists (p) then
-					create {WDOCS_INI_CONFIG} cfg.make (p)
+					create {WDOCS_INI_CONFIG} Result.make (p)
 				else
 					p := a_dir.extended (name).appended_with_extension ("json")
 					if ut.file_path_exists (p) then
-						create {WDOCS_JSON_CONFIG} cfg.make (p)
+						create {WDOCS_JSON_CONFIG} Result.make (p)
 					end
 				end
-			end
-
-			if cfg /= Void then
-				Result := cfg
-			else
-					-- Default
-				create {WDOCS_DEFAULT_CONFIG} Result.make_default
 			end
 		end
 
@@ -258,7 +271,7 @@ feature -- Hooks
 --							end
 					elseif a_block_id.same_string_general ("wdocs-cards") then
 						if
-							a_response.request.percent_encoded_path_info.same_string ("/book/")
+							a_response.request.percent_encoded_path_info.same_string ("/doc/")
 						then
 							a_response.add_block (wdocs_cards_block (a_block_id, a_response, mng), "content")
 						end
@@ -318,9 +331,9 @@ feature -- Hooks
 				loop
 					if attached book_ic.item as l_book then
 						if attached a_manager.version_id as l_version_id then
-							l_url := a_response.request.script_url ("/version/" + percent_encoder.percent_encoded_string (l_version_id) + "/book/" + percent_encoder.percent_encoded_string (l_book.name) +"/index")
+							l_url := a_response.request.script_url ("/version/" + percent_encoder.percent_encoded_string (l_version_id) + "/doc/" + percent_encoder.percent_encoded_string (l_book.name) +"/index")
 						else
-							l_url := a_response.request.script_url ("/book/" + percent_encoder.percent_encoded_string (l_book.name) +"/index")
+							l_url := a_response.request.script_url ("/doc/" + percent_encoder.percent_encoded_string (l_book.name) +"/index")
 						end
 						if attached l_book.root_page as l_root_page then
 							tb.force (l_root_page, l_url)
@@ -359,6 +372,26 @@ feature -- Hooks
 			if l_page /= Void then
 				wdocs_append_pages_to_link (a_version_id, l_book_name, a_current_page_name, a_book.top_pages, Result, is_full, mng)
 			end
+		end
+
+	reset_cached_wdocs_cms_menu (a_version_id, a_book_name: detachable READABLE_STRING_GENERAL; a_manager: WDOCS_MANAGER)
+		local
+			c: WDOCS_FILE_OBJECT_CACHE [CMS_MENU]
+			p: PATH
+		do
+			p := a_manager.tmp_dir.extended ("cache").extended ("cms_menu__book__")
+			if a_version_id /= Void then
+				p := p.appended (a_version_id)
+				p := p.appended ("_")
+			end
+			if a_book_name /= Void then
+				p := p.appended (a_book_name)
+			else
+				p := p.appended ("all")
+			end
+			p := p.appended_with_extension ("cache")
+			create c.make (p)
+			c.delete
 		end
 
 	cached_wdocs_cms_menu (a_menu_title: detachable READABLE_STRING_32; a_version_id, a_book_name: detachable READABLE_STRING_GENERAL; mng: WDOCS_MANAGER): CMS_MENU
@@ -554,6 +587,40 @@ feature -- Hooks
 
 feature -- Handler		
 
+	handle_clear_cache (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
+		local
+			r: CMS_RESPONSE
+			l_version: detachable READABLE_STRING_GENERAL
+			mng: like manager
+		do
+			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
+			if req.is_get_request_method then
+				if r.has_permissions (<<"admin wdocs", "clear wdocs cache">>) then
+					if attached {WSF_STRING} req.path_parameter ("version") as p_version then
+						l_version := p_version.value
+					end
+					mng := manager (l_version)
+
+						-- Clear wiki catalog
+					mng.refresh_data
+
+						-- Clear cms menu
+					across
+						mng.book_names as ic
+					loop
+						reset_cached_wdocs_cms_menu (l_version, ic.item, mng)
+					end
+
+					r.set_main_content ("Documentation cache: cleared.")
+				else
+					create {FORBIDDEN_ERROR_CMS_RESPONSE} r.make (req, res, api)
+				end
+			else
+				create {BAD_REQUEST_ERROR_CMS_RESPONSE} r.make (req, res, api)
+			end
+			r.execute
+		end
+
 	handle_documentation (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
 		local
 			r: CMS_RESPONSE
@@ -576,7 +643,6 @@ feature -- Handler
 			r.values.force (l_version_id, "wiki_version_id")
 
 			if l_bookid /= Void then
---				r.set_optional_content_type ("doc")
 				r.set_value ("doc", "optional_content_type")
 				r.set_title (l_bookid)
 				r.values.force (l_bookid, "wiki_book_name")
@@ -656,7 +722,7 @@ feature -- Handler
 		end
 
 	handle_wiki_file (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
-			--|	map: "/book/{bookid}/file/{filename}"
+			--|	map: "/doc-file/{bookid}/{filename}"
 		local
 			l_version_id,
 			l_bookid,
@@ -716,7 +782,7 @@ feature -- Handler
 		end
 
 	handle_wiki_image (api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
-			--|	map: "/book/_images/{filename}"
+			--|	map: "/doc/_images/{filename}"
 		local
 			l_version_id,
 			l_bookid,
@@ -809,7 +875,6 @@ feature {WDOCS_EDIT_MODULE, WDOCS_EDIT_FORM_RESPONSE} -- Implementation: request
 				create {NOT_FOUND_ERROR_CMS_RESPONSE} r.make (req, res, api)
 			end
 
---			r.set_optional_content_type ("doc")
 			r.set_value ("doc", "optional_content_type")
 			r.values.force (a_manager.version_id, "wiki_version_id")
 			if a_bookid /= Void then
@@ -1137,14 +1202,12 @@ feature {NONE} -- implementation: wiki docs
 
 	wdocs_book_link_location (a_version_id: detachable READABLE_STRING_GENERAL; a_book_name: READABLE_STRING_GENERAL): STRING
 		do
+			create Result.make_from_string ("doc/")
 			if a_version_id /= Void then
-				create Result.make_from_string ("version/")
+				Result.append ("version/")
 				Result.append (percent_encoder.percent_encoded_string (a_version_id))
 				Result.append_character ('/')
-			else
-				create Result.make_empty
 			end
-			Result.append ("book/")
 			Result.append (percent_encoder.percent_encoded_string (a_book_name))
 		end
 

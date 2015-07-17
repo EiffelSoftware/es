@@ -21,17 +21,16 @@ feature -- Forms ...
 			tselect: WSF_FORM_SELECT
 			opt: WSF_FORM_SELECT_OPTION
 			cms_format: CMS_EDITOR_CONTENT_FORMAT
-			l_uri: detachable READABLE_STRING_8
 		do
 			create cms_format
 
 			create ti.make ("title")
+			ti.enable_required
 			ti.set_label ("Title")
 			ti.set_size (70)
 			if a_node /= Void then
 				ti.set_text_value (a_node.title)
 			end
-			ti.set_is_required (True)
 			f.extend (ti)
 
 			f.extend_html_text ("<br/>")
@@ -95,8 +94,19 @@ feature -- Forms ...
 			f.extend (fset)
 
 				-- Path alias		
+			populate_form_with_path_alias (response, f, a_node)
+		end
+
+	populate_form_with_path_alias (response: NODE_RESPONSE; f: CMS_FORM; a_node: detachable CMS_NODE)
+		local
+			ti: WSF_FORM_TEXT_INPUT
+			l_uri: detachable READABLE_STRING_8
+		do
+				-- Path alias		
 			create ti.make ("path_alias")
 			ti.set_label ("Path")
+			ti.set_pattern ("^([A-Za-z0-9-_+ ]).+")
+			ti.set_description ("Path alias pattern: ^([A-Za-z0-9-_+ ]).+  For example resource/page1 ")
 			ti.set_size (70)
 			if a_node /= Void and then a_node.has_id then
 				if attached a_node.link as lnk then
@@ -106,31 +116,32 @@ feature -- Forms ...
 				end
 				ti.set_text_value (l_uri)
 				ti.set_description ("Optionally specify an alternative URL path by which this content can be accessed. For example, type 'about' when writing an about page. Use a relative path or the URL alias won't work.")
-				ti.set_validation_action (agent (fd: WSF_FORM_DATA; a_response: CMS_RESPONSE)
-						do
-							if
-								attached fd.string_item ("path_alias") as f_path_alias
-							then
-								if a_response.api.is_valid_path_alias (f_path_alias) then
-										-- Ok.
-								elseif f_path_alias.is_empty then
-										-- Ok
-								elseif f_path_alias.starts_with_general ("/") then
-									fd.report_invalid_field ("path_alias", "Path alias should not start with a slash '/' .")
-								elseif f_path_alias.has_substring ("://") then
-									fd.report_invalid_field ("path_alias", "Path alias should not be absolute url .")
-								else
-										-- TODO: implement full path alias validation
-								end
-								if
-									attached a_response.api.source_of_path_alias (f_path_alias) as l_aliased_location
-								then
-									fd.report_invalid_field ("path_alias", "Path is already aliased to location %"" + a_response.link (Void, l_aliased_location, Void) + "%" !")
-								end
-							end
-						end(?, response)
-					)
 			end
+			ti.set_validation_action (agent (fd: WSF_FORM_DATA; ia_response: NODE_RESPONSE; ia_node: detachable CMS_NODE)
+					do
+						if
+							attached fd.string_item ("path_alias") as f_path_alias
+						then
+							if ia_response.api.is_valid_path_alias (f_path_alias) then
+									-- Ok.
+							elseif f_path_alias.is_empty then
+									-- Ok
+							elseif f_path_alias.starts_with_general ("/") then
+								fd.report_invalid_field ("path_alias", "Path alias should not start with a slash '/' .")
+							elseif f_path_alias.has_substring ("://") then
+								fd.report_invalid_field ("path_alias", "Path alias should not be absolute url .")
+							else
+									-- TODO: implement full path alias validation
+							end
+							if
+								attached ia_response.api.source_of_path_alias (f_path_alias) as l_aliased_location and then
+								((ia_node /= Void and then ia_node.has_id) implies not l_aliased_location.same_string (ia_response.node_api.node_path (ia_node)))
+							then
+								fd.report_invalid_field ("path_alias", "Path is already aliased to location %"" + ia_response.link (Void, l_aliased_location, Void) + "%" !")
+							end
+						end
+					end(?, response, a_node)
+				)
 			if
 				attached f.fields_by_name ("title") as l_title_fields and then
 				attached l_title_fields.first as l_title_field
@@ -140,6 +151,7 @@ feature -- Forms ...
 				f.extend (ti)
 			end
 		end
+
 
 	update_node	(response: NODE_RESPONSE; fd: WSF_FORM_DATA; a_node: CMS_NODE)
 		local

@@ -49,7 +49,9 @@ feature {NONE} -- Initialization
 		do
 			version := "1.0"
 			description := "OAuth20 module"
-			package := "Oauth20"
+			package := "authentication"
+
+			add_dependency ({CMS_AUTHENTICATION_MODULE})
 
 			create root_dir.make_current
 			cache_duration := 0
@@ -180,6 +182,8 @@ feature -- Router
 			a_router.handle ("/account/roc-oauth-logout", create {WSF_URI_AGENT_HANDLER}.make (agent handle_logout (a_api, ?, ?)), a_router.methods_get_post)
 			a_router.handle ("/account/login-with-oauth/{callback}", create {WSF_URI_TEMPLATE_AGENT_HANDLER}.make (agent handle_login_with_oauth (a_api,a_user_oauth_api, ?, ?)), a_router.methods_get_post)
 			a_router.handle ("/account/oauth-callback/{callback}", create {WSF_URI_TEMPLATE_AGENT_HANDLER}.make (agent handle_callback_oauth (a_api, a_user_oauth_api, ?, ?)), a_router.methods_get_post)
+			a_router.handle ("/account/oauth-associate", create {WSF_URI_TEMPLATE_AGENT_HANDLER}.make (agent handle_associate (a_api, a_user_oauth_api, ?, ?)), a_router.methods_post)
+			a_router.handle ("/account/oauth-un-associate", create {WSF_URI_TEMPLATE_AGENT_HANDLER}.make (agent handle_un_associate (a_api, a_user_oauth_api, ?, ?)), a_router.methods_post)
 		end
 
 feature -- Hooks configuration
@@ -197,8 +201,11 @@ feature -- Hooks
 	value_table_alter (a_value: CMS_VALUE_TABLE; a_response: CMS_RESPONSE)
 			-- <Precursor>
 		do
-			if attached current_user (a_response.request) as l_user then
-				a_value.force (l_user, "user")
+			if
+				attached a_response.current_user (a_response.request) as u and then
+				attached {WSF_STRING} a_response.request.cookie ({CMS_OAUTH_20_CONSTANTS}.oauth_session)
+			then
+				a_value.force ("account/roc-oauth-logout", "auth_login_strategy")
 			end
 		end
 
@@ -239,7 +246,7 @@ feature -- Hooks
 		local
 			l_string: STRING
 		do
-			Result := <<"login">>
+			Result := <<"login", "account">>
 			debug ("roc")
 				create l_string.make_empty
 				across
@@ -259,6 +266,20 @@ feature -- Hooks
 				a_response.location.starts_with ("account/roc-oauth-login")
 			then
 				get_block_view_login (a_block_id, a_response)
+			elseif a_block_id.is_case_insensitive_equal_general ("account") and then
+				a_response.location.same_string ("account")
+			then
+				if
+					attached template_block ("account_info", a_response) as l_tpl_block and then
+					attached a_response.user as l_user
+				then
+					associate_account (l_user, a_response.values)
+					a_response.add_block (l_tpl_block, "content")
+				else
+					debug ("cms")
+						a_response.add_warning_message ("Error with block [resources_page]")
+					end
+				end
 			end
 		end
 
@@ -290,6 +311,28 @@ feature -- Hooks
 				r.set_status_code ({HTTP_CONSTANTS}.found)
 				r.set_redirection (req.absolute_script_url (""))
 				r.execute
+			end
+		end
+
+feature {NONE} -- Associate
+
+	associate_account (a_user: CMS_USER; a_value: CMS_VALUE_TABLE)
+		local
+			l_associated: LIST [STRING]
+			l_not_associated: LIST [STRING]
+		do
+			if attached user_oauth_api as l_oauth_api then
+				create {ARRAYED_LIST [STRING]}l_associated.make (1)
+				create {ARRAYED_LIST [STRING]}l_not_associated.make (1)
+				across l_oauth_api.oauth2_consumers as ic loop
+					if attached l_oauth_api.user_oauth2_by_id (a_user.id, ic.item) then
+						l_associated.force (ic.item)
+					else
+						l_not_associated.force (ic.item)
+					end
+				end
+				a_value.force (l_associated, "oauth_associated")
+				a_value.force (l_not_associated, "oauth_not_associated")
 			end
 		end
 
@@ -401,7 +444,7 @@ feature -- OAuth2 Login with Provider
 					then
 						if attached l_user_api.user_by_email (l_email) as p_user then
 								-- User with email exist
-							if	attached a_user_oauth_api.user_oauth2_by_id (p_user.id, l_consumer.name)	then
+							if	attached a_user_oauth_api.user_oauth2_by_id (p_user.id, l_consumer.name) then
 									-- Update oauth entry
 								a_user_oauth_api.update_user_oauth2 (l_access_token.token, l_user_profile, p_user, l_consumer.name )
 							else
@@ -412,8 +455,13 @@ feature -- OAuth2 Login with Provider
 							l_cookie.set_max_age (l_access_token.expires_in)
 							l_cookie.set_path ("/")
 							res.add_cookie (l_cookie)
+						elseif attached a_user_oauth_api.user_oauth2_by_email (l_email, l_consumer.name) as p_user then
+							a_user_oauth_api.update_user_oauth2 (l_access_token.token, l_user_profile, p_user, l_consumer.name )
+							create l_cookie.make ({CMS_OAUTH_20_CONSTANTS}.oauth_session, l_access_token.token)
+							l_cookie.set_max_age (l_access_token.expires_in)
+							l_cookie.set_path ("/")
+							res.add_cookie (l_cookie)
 						else
-
 							create {ARRAYED_LIST [CMS_USER_ROLE]} l_roles.make (1)
 							l_roles.force (l_user_api.authenticated_user_role)
 
@@ -447,6 +495,48 @@ feature -- OAuth2 Login with Provider
 			end
 
 		end
+
+	handle_associate (api: CMS_API; a_oauth_api: CMS_OAUTH_20_API; req: WSF_REQUEST; res: WSF_RESPONSE)
+		local
+			r: CMS_RESPONSE
+		do
+			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
+
+			if req.is_post_request_method then
+				if
+					attached {WSF_STRING} req.form_parameter ("consumer") as l_consumer and then
+					attached {WSF_STRING} req.form_parameter ("email") as l_email and then
+					attached current_user (req) as l_user
+				then
+					l_user.set_email (l_email.value)
+					a_oauth_api.new_user_oauth2 ("none", "none", l_user, l_consumer.value )
+					-- TODO send email?
+				end
+			end
+			r.set_redirection (req.absolute_script_url ("/account"))
+			r.execute
+		end
+
+
+	handle_un_associate (api: CMS_API; a_oauth_api: CMS_OAUTH_20_API; req: WSF_REQUEST; res: WSF_RESPONSE)
+		local
+			r: CMS_RESPONSE
+		do
+			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
+			if req.is_post_request_method then
+				if
+					attached {WSF_STRING} req.form_parameter ("consumer") as l_consumer and then
+					attached current_user (req) as l_user
+				then
+					a_oauth_api.remove_user_oauth2 (l_user, l_consumer.value)
+					-- TODO send email?
+				end
+			end
+			r.set_redirection (req.absolute_script_url ("/account"))
+			r.execute
+		end
+
+
 
 feature {NONE} -- Token Generation
 
