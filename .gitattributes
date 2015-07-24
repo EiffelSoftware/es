@@ -6121,6 +6121,7 @@ Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/contact.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/custom.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/docs.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/download_product.scss -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/eiffel_org_nodes.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/variables.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/variables.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/theme.info -text
@@ -7270,6 +7271,8 @@ eweasel/tests/scoop066/Ace svneol=native#text/xml
 eweasel/tests/scoop067/Ace svneol=native#text/xml
 eweasel/tests/scoop068/Ace svneol=native#text/xml
 eweasel/tests/scoop069/Ace svneol=native#text/xml
+eweasel/tests/scoop070/Ace svneol=native#text/xml
+eweasel/tests/scoop071/Ace svneol=native#text/xml
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
 eweasel/tests/store002/notes -text
