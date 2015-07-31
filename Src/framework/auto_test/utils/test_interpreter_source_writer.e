@@ -202,6 +202,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 			l_types: DS_HASH_SET [TYPE_A]
 		do
+			type_parser.set_syntax_version (type_parser.provisional_syntax)
 			type_parser.parse_from_string_32 ("type " + a_type, root_class)
 			error_handler.wipe_out
 			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
@@ -364,7 +365,7 @@ feature -- Predicate evaluation
 
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

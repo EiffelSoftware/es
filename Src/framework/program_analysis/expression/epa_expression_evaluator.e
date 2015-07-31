@@ -159,6 +159,7 @@ feature -- Basic operations
 		do
 			l_parser := etr_expr_parser
 			setup_formal_parameters (l_parser, context_class)
+			Entity_feature_parser.set_syntax_version (Entity_feature_parser.Provisional_syntax)
 			l_parser.parse_from_utf8_string (once "check " + a_string, context_class)
 			check l_parser.expression_node /= Void end
 			evaluate (l_parser.expression_node)

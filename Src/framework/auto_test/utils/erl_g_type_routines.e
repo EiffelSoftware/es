@@ -196,6 +196,7 @@ feature {NONE} -- Parsing class types
 				Result := none_type
 			else
 					-- Parse `l_name' into a type AST node.
+				type_parser.set_syntax_version (type_parser.provisional_syntax)
 				type_parser.parse_from_string_32 ("type " + l_name, Void)
 				l_type_as := type_parser.type_node
 
@@ -352,6 +353,8 @@ feature -- Types
 					type_parser.set_syntax_version ({EIFFEL_SCANNER}.obsolete_syntax)
 				when {CONF_OPTION}.syntax_index_transitional then
 					type_parser.set_syntax_version ({EIFFEL_SCANNER}.transitional_syntax)
+				when {CONF_OPTION}.syntax_index_provisional then
+					type_parser.set_syntax_version ({EIFFEL_SCANNER}.provisional_syntax)
 				else
 					type_parser.set_syntax_version ({EIFFEL_SCANNER}.ecma_syntax)
 				end
@@ -381,6 +384,7 @@ feature -- Types
 			i: INTEGER
 		do
 			fixme ("Refactoring, see header comment.")
+			type_parser.set_syntax_version (type_parser.provisional_syntax)
 			type_parser.parse_from_utf8_string ("type " + a_type, a_context_class)
 			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
 				l_type_a := type_a_generator.evaluate_type (l_type_as, a_context_class)
@@ -446,7 +450,7 @@ feature -- Types
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

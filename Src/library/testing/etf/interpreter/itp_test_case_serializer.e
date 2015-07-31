@@ -783,7 +783,7 @@ feature{NONE} -- Implementation/Test case synthesis
 
 			if a_is_creation then
 				a_buffer.append (once "create {")
-				a_buffer.append (type_with_marks_removed(a_types.item (0)))
+				a_buffer.append (a_types.item (0))
 				a_buffer.append (once "}")
 			end
 
@@ -950,23 +950,9 @@ feature{NONE} -- Implementation/Test case synthesis
 			if a_index = 0 then
 				a_buffer.append (none_type_name)
 			else
-				a_buffer.append (type_with_marks_removed(a_type))
+				a_buffer.append (a_type)
 			end
 			a_buffer.append_character ('%N')
-		end
-
-	type_with_marks_removed (a_type: STRING): STRING
-		do
-			if a_type = Void then
-				Result := a_type
-			else
-				create Result.make_from_string (a_type)
-				Result.replace_substring_all ("!", "")
-				Result.replace_substring_all ("?", "")
-				Result.replace_substring_all ("attached", "")
-				Result.replace_substring_all ("detachable", "")
-				Result.replace_substring_all ("separate", "")
-			end
 		end
 
 invariant

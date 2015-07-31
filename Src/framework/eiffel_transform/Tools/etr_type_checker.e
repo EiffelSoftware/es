@@ -380,6 +380,7 @@ feature -- Type checking
 			l_ast_string := ast_tools.ast_to_string(an_ast)
 			l_parser := etr_expr_parser
 			setup_formal_parameters (l_parser, a_context.context_class)
+			l_parser.set_syntax_version (l_parser.provisional_syntax)
 			l_parser.parse_from_utf8_string ("check "+l_ast_string, a_context.context_class)
 			if l_parser.error_count > 0 then
 				etr_error_handler.add_error (Current, "check_ast_type", "Cannot parse an_ast as EXPR_AS")
@@ -702,7 +703,7 @@ feature -- Quantification
 		end
 
 note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

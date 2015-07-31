@@ -1363,9 +1363,11 @@ feature -- Output
 			end
 
 			if has_attached_mark then
-				s.append_character ('!')
+				s.append ({SHARED_TEXT_ITEMS}.ti_attached_keyword)
+				s.append_character (' ')
 			elseif has_detachable_mark then
-				s.append_character ('?')
+				s.append ({SHARED_TEXT_ITEMS}.ti_detachable_keyword)
+				s.append_character (' ')
 			end
 
 			if has_separate_mark then

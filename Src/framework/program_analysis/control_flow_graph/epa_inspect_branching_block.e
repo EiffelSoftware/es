@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 			end
 			a_intervals.go_to (l_cursor)
 
-			expression_parser.set_syntax_version (expression_parser.transitional_syntax)
+			expression_parser.set_syntax_version (expression_parser.provisional_syntax)
 			expression_parser.parse_from_string_32 (once "check " + l_cond_str, class_)
 			if attached {EXPR_AS} expression_parser.expression_node as l_cond then
 				condition := l_cond

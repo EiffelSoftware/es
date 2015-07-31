@@ -68,6 +68,7 @@ feature -- Operation
 										"%T%T"+l_attr_name+"_set: "+a_postcond+"%N"+
 										"%Tend%N"
 
+					etr_feat_parser.set_syntax_version (etr_feat_parser.provisional_syntax)
 					etr_feat_parser.parse_from_utf8_string (l_setter_string,void)
 
 					if etr_feat_parser.error_count=0 then
@@ -81,7 +82,7 @@ feature -- Operation
 			end
 		end
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

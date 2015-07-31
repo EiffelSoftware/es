@@ -102,7 +102,7 @@ feature -- Access
 
 					-- Get new body for feature
 				l_parser := entity_feature_parser
-				l_parser.set_syntax_version (l_parser.transitional_syntax)
+				l_parser.set_syntax_version (l_parser.provisional_syntax)
 				l_parser.parse_from_utf8_string ("feature " + fix_text, Void)
 				l_do_as := do_as_from_feature_as (l_parser.feature_node)
 				l_do_text := as_to_string (l_do_as, "%T%T")
@@ -268,7 +268,7 @@ feature{NONE} -- Cache
 
 ;
 note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
