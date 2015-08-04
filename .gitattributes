@@ -5230,6 +5230,8 @@ Src/web/eiffel-org/site/config/app.ini -text
 Src/web/eiffel-org/site/config/cms.ini -text
 Src/web/eiffel-org/site/config/eiffel_org.json -text
 Src/web/eiffel-org/site/config/modules/wdocs/wdocs.ini -text
+Src/web/eiffel-org/site/modules/admin/files/css/admin.css -text
+Src/web/eiffel-org/site/modules/admin/files/scss/admin.scss -text
 Src/web/eiffel-org/site/modules/auth/auth.json -text
 Src/web/eiffel-org/site/modules/auth/mail_templates/account_activation.html svneol=native#text/xml
 Src/web/eiffel-org/site/modules/auth/mail_templates/account_new_password.html svneol=native#text/xml
