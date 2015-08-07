@@ -1,5 +1,5 @@
 note
-	description: "CMS module that bring support for NODE management."
+	description: "CMS module bringing support for NODE management."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -7,14 +7,14 @@ class
 	CMS_NODE_MODULE
 
 inherit
-
 	CMS_MODULE
 		redefine
 			register_hooks,
 			initialize,
 			is_installed,
 			install,
-			module_api
+			module_api,
+			permissions
 		end
 
 	CMS_HOOK_MENU_SYSTEM_ALTER
@@ -136,6 +136,36 @@ feature {CMS_API} -- Access: API
 	node_api: detachable CMS_NODE_API
 			-- <Precursor>
 
+feature -- Access			
+
+	permissions: LIST [READABLE_STRING_8]
+			-- <Precursor>.
+		local
+			l_type_name: READABLE_STRING_8
+		do
+			Result := Precursor
+			Result.force ("create any node")
+
+			if attached node_api as l_node_api then
+				across
+					l_node_api.content_types as ic
+				loop
+					l_type_name := ic.item.name
+					if not l_type_name.is_whitespace then
+						Result.force ("create " + l_type_name)
+
+						Result.force ("view any " + l_type_name)
+						Result.force ("edit any " + l_type_name)
+						Result.force ("delete any " + l_type_name)
+
+						Result.force ("view own " + l_type_name)
+						Result.force ("edit own " + l_type_name)
+						Result.force ("delete own " + l_type_name)
+					end
+				end
+			end
+		end
+
 feature -- Access: router
 
 	setup_router (a_router: WSF_ROUTER; a_api: CMS_API)
@@ -213,7 +243,7 @@ feature -- Hooks
 		local
 			lnk: CMS_LOCAL_LINK
 		do
-			debug 
+			debug
 				create lnk.make ("List of nodes", "nodes")
 				a_menu_system.primary_menu.extend (lnk)
 			end
