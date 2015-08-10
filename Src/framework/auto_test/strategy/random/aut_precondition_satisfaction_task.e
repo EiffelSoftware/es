@@ -213,7 +213,6 @@ feature -- Execution
 	should_use_precondition_satisfaction: BOOLEAN
 			-- Should precondition satisfaction be used for `feature_'?
 		local
-			l_invalid_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER; last_tested_time: INTEGER]
 			l_rate: DOUBLE
 			l_set_rate: INTEGER
 			l_second_until_now: INTEGER
@@ -227,8 +226,7 @@ feature -- Execution
 					Result := True
 				else
 					l_rate := l_set_rate.to_double / 100
-					l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
-					if l_invalid_rate /= Void then
+					if feature_invalid_test_case_rate.has (feature_) and then attached feature_invalid_test_case_rate.item (feature_) as l_invalid_rate then
 						l_second_until_now := interpreter.duration_until_now.second_count
 						l_rate := (l_second_until_now - l_invalid_rate.last_tested_time).to_double / l_second_until_now * l_rate
 					end
@@ -641,7 +639,7 @@ invariant
 	last_precondition_satisfaction_level_valid: is_valid_precondition_satisfaction_level (last_precondition_satisfaction_level)
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
