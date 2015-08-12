@@ -5203,6 +5203,7 @@ Src/unstable/library/web/cms/modules/openid/openid-safe.ecf svneol=native#text/x
 Src/unstable/library/web/cms/modules/openid/site/scripts/openid_consumers.sql -text
 Src/unstable/library/web/cms/modules/openid/site/scripts/openid_consumers_initialize.sql -text
 Src/unstable/library/web/cms/modules/openid/site/scripts/openid_items.sql -text
+Src/unstable/library/web/cms/modules/recent_changes/recent_changes-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/eiffel_community_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/eiffel_community_site-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/ewf.ini -text
