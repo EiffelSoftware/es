@@ -343,7 +343,7 @@ feature -- Basic operations
 			l_tried_linear_context: DS_HASH_SET [STRING]
 			l_fixed_vars: like fixed_operand_indexes
 			l_solution_cur: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
-			l_tries: INTEGER
+			l_steps, l_tries: INTEGER
 			l_forced_quit: BOOLEAN
 		do
 			create last_candidates.make
@@ -394,6 +394,7 @@ feature -- Basic operations
 									l_cursor := l_cursors.item_for_iteration
 									l_cursor.update_candidate_with_free_variables
 									l_cursor.forth
+									l_steps := l_steps + 1
 								end
 							else
 									-- We successfully satisfied a new precondition assertion,
@@ -454,6 +455,7 @@ feature -- Basic operations
 										-- There are some predicates that are not checked,
 										-- move forward.
 									l_cursors.forth
+									l_steps := l_steps + 1
 									l_cursor := l_cursors.item_for_iteration
 									l_cursor.calculate_free_variables
 									l_cursor.start
@@ -465,7 +467,7 @@ feature -- Basic operations
 								-- with the risk that we may fail to satisfy some preconditions because we jump out
 								-- of the loop too early.
 							fixme ("Fixe me later. 31.03.2011 Jasonw")
-							if l_tries > 300 then
+							if l_tries > 50 or l_steps > 400 then
 								l_done := True
 								l_forced_quit := True
 							end
@@ -622,7 +624,7 @@ invariant
 	cursor_factory_attached: valuation_cursor_factory /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
