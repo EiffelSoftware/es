@@ -12,7 +12,6 @@ inherit
 		redefine
 			register_hooks,
 			initialize,
-			is_installed,
 			install
 		end
 
@@ -52,12 +51,6 @@ feature {CMS_API} -- Module Initialization
 
 feature {CMS_API} -- Module management
 
-	is_installed (api: CMS_API): BOOLEAN
-			-- Is Current module installed?
-		do
-			Result := attached api.storage.custom_value ("is_initialized", "module-" + name) as v and then v.is_case_insensitive_equal_general ("yes")
-		end
-
 	install (api: CMS_API)
 		local
 			sql: STRING
@@ -94,8 +87,8 @@ feature -- Hooks
 
 	register_hooks (a_response: CMS_RESPONSE)
 		do
-			a_response.subscribe_to_menu_system_alter_hook (Current)
-			a_response.subscribe_to_block_hook (Current)
+			a_response.hooks.subscribe_to_menu_system_alter_hook (Current)
+			a_response.hooks.subscribe_to_block_hook (Current)
 		end
 
 	block_list: ITERABLE [like {CMS_BLOCK}.name]

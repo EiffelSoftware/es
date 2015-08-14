@@ -35,8 +35,14 @@ feature -- Access: node
 		do
 		end
 
-	nodes: LIST[CMS_NODE]
+	nodes: LIST [CMS_NODE]
 			-- List of nodes.
+		do
+			create {ARRAYED_LIST [CMS_NODE]} Result.make (0)
+		end
+
+	node_revisions (a_node: CMS_NODE): LIST [CMS_NODE]
+			-- Revisions of node `a_node'.
 		do
 			create {ARRAYED_LIST [CMS_NODE]} Result.make (0)
 		end
@@ -53,12 +59,23 @@ feature -- Access: node
 			create {ARRAYED_LIST [CMS_NODE]} Result.make (0)
 		end
 
+	recent_node_changes_before (a_lower: INTEGER; a_count: INTEGER; a_date: DATE_TIME): LIST [CMS_NODE]
+			-- List of recent changes, before `a_date', according to `params' settings.
+		do
+			create {ARRAYED_LIST [CMS_NODE]} Result.make (0)
+		end
+
 	node_by_id (a_id: INTEGER_64): detachable CMS_NODE
 			-- <Precursor>
 		do
 		end
 
-	node_author (a_id: like {CMS_NODE}.id): detachable CMS_USER
+	node_by_id_and_revision (a_node_id, a_revision: INTEGER_64): detachable CMS_NODE
+			-- <Precuror>
+		do
+		end
+
+	node_author (a_node: CMS_NODE): detachable CMS_USER
 			-- Node's author. if any.
 		do
 		end

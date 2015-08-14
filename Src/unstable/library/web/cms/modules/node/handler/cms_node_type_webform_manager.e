@@ -37,11 +37,11 @@ feature -- Forms ...
 
 				-- Select field has to be initialized before textareas are replaced, because they depend on the selection of the field
 			create tselect.make ("format")
-			tselect.set_label ("Body's format")
+			tselect.set_label ("Format for content (and summary)")
 			tselect.set_is_required (True)
 
 				-- Main Content
-			create ta.make ("body")
+			create ta.make ("content")
 			ta.set_rows (10)
 			ta.set_cols (70)
 			ta.show_as_editor_if_selected (tselect, cms_format.name)
@@ -66,13 +66,12 @@ feature -- Forms ...
 			sum.set_is_required (False)
 
 			create fset.make
-			fset.set_legend ("Body")
 
 				-- Add summary
 			fset.extend (sum)
 			fset.extend_html_text("<br />")
 
-				-- Add content (body)
+				-- Add content
 			fset.extend (ta)
 			fset.extend_html_text ("<br/>")
 
@@ -165,8 +164,8 @@ feature -- Forms ...
 				a_node.set_title (l_title)
 			end
 
-			if attached fd.string_item ("body") as l_body then
-				b := l_body
+			if attached fd.string_item ("content") as l_content then
+				b := l_content
 			end
 
 			-- Read out the summary field from the form data
@@ -187,7 +186,8 @@ feature -- Forms ...
 				a_node.set_content (b, s, f.name)
 			end
 
-
+			-- Update author
+			a_node.set_author (response.user)
 		end
 
 	new_node (response: NODE_RESPONSE; fd: WSF_FORM_DATA; a_node: detachable CMS_NODE): G
@@ -233,8 +233,8 @@ feature -- Forms ...
 			end
 
 				--Content
-			if attached fd.string_item ("body") as l_body then
-				b := l_body
+			if attached fd.string_item ("content") as l_content then
+				b := l_content
 			end
 
 			if attached fd.string_item ("format") as s_format and then attached response.api.format (s_format) as f_format then
@@ -272,20 +272,25 @@ feature -- Output
 				lnk.set_weight (1)
 				a_response.add_to_primary_tabs (lnk)
 
+
 				if a_node.status = {CMS_NODE_API}.trashed then
 					create lnk.make ("Trash", node_api.node_path (a_node) + "/trash")
 					lnk.set_weight (2)
 					a_response.add_to_primary_tabs (lnk)
-				else
+				elseif a_node /= Void and then a_node.has_id then
 						-- Node in {{CMS_NODE_API}.published} or {CMS_NODE_API}.not_published} status.
 					create lnk.make ("Edit", node_api.node_path (a_node) + "/edit")
 					lnk.set_weight (2)
 					a_response.add_to_primary_tabs (lnk)
+					if
+						node_api.has_permission_for_action_on_node ("view revisions", a_node, l_user)
+					then
+						create lnk.make ("Revisions", node_api.node_path (a_node) + "/revision")
+						lnk.set_weight (3)
+						a_response.add_to_primary_tabs (lnk)
+					end
 
 					if
-						a_node /= Void and then
-						a_node.id > 0 and then
-						attached node_api.node_type_for (a_node) as l_type and then
 						node_api.has_permission_for_action_on_node ("delete", a_node, l_user)
 					then
 						create lnk.make ("Delete", node_api.node_path (a_node) + "/delete")
@@ -295,6 +300,7 @@ feature -- Output
 				end
 			end
 			create s.make_empty
+			s.append ("<div class=%"cms-node node-" + a_node.content_type + "%">")
 			s.append ("<div class=%"info%"> ")
 			if attached a_node.author as l_author then
 				s.append (" by ")
@@ -334,6 +340,7 @@ feature -- Output
 
 				s.append ("</p>")
 			end
+			s.append ("</div>")
 
 			a_response.set_title (a_node.title)
 			a_response.set_main_content (s)

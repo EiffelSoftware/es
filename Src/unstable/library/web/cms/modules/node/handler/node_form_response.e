@@ -54,7 +54,7 @@ feature -- Execution
 						node_api.has_permission_for_action_on_node ("edit", l_node, user)
 					then
 						f := new_edit_form (l_node, url (location, Void), "edit-" + l_type.name, l_type)
-						invoke_form_alter (f, fd)
+						hooks.invoke_form_alter (f, fd, Current)
 						if request.is_post_request_method then
 							f.validation_actions.extend (agent edit_form_validate (?, b))
 							f.submit_actions.extend (agent edit_form_submit (?, l_node, l_type, b))
@@ -80,7 +80,7 @@ feature -- Execution
 						node_api.has_permission_for_action_on_node ("delete", l_node, user)
 					then
 						f := new_delete_form (l_node, url (location, Void), "delete-" + l_type.name, l_type)
-						invoke_form_alter (f, fd)
+						hooks.invoke_form_alter (f, fd, Current)
 						if request.is_post_request_method then
 							f.process (Current)
 							fd := f.last_data
@@ -104,7 +104,7 @@ feature -- Execution
 						node_api.has_permission_for_action_on_node ("trash", l_node, user)
 					then
 						f := new_trash_form (l_node, url (location, Void), "trash-" + l_type.name, l_type)
-						invoke_form_alter (f, fd)
+						hooks.invoke_form_alter (f, fd, Current)
 						if request.is_post_request_method then
 							f.process (Current)
 							fd := f.last_data
@@ -137,7 +137,7 @@ feature -- Execution
 				if has_permissions (<<"create any", "create " +  l_type.name>>) then
 					if attached l_type.new_node (Void) as l_node then
 						f := new_edit_form (l_node, url (location, Void), "edit-" + l_type.name, l_type)
-						invoke_form_alter (f, fd)
+						hooks.invoke_form_alter (f, fd, Current)
 						if request.is_post_request_method then
 							f.validation_actions.extend (agent edit_form_validate (?, b))
 							f.submit_actions.extend (agent edit_form_submit (?, l_node, l_type, b))
@@ -236,17 +236,15 @@ feature -- Form
 				end
 				if a_node /= Void then
 					l_node := a_node
+					apply_form_data_to_node (a_type, fd, a_node)
+
 					if l_node.has_id then
-						change_node (a_type, fd, a_node)
 						s := "modified"
 					else
-						change_node (a_type, fd, a_node)
-						l_node.set_author (user)
 						s := "created"
 					end
 				else
 					l_node := new_node (a_type, fd, Void)
-					l_node.set_author (user)
 					s := "created"
 				end
 
@@ -261,7 +259,11 @@ feature -- Form
 				else
 					api.log ("node", "Anonymous " + s + " node " + a_type.name +" #" + l_node.id.out, 0, node_local_link (l_node, Void))
 				end
-				add_success_message ("Node #" + l_node.id.out + " saved.")
+				if node_api.has_error then
+					add_error_message ("Node #" + l_node.id.out + " failed to save.")
+				else
+					add_success_message ("Node #" + l_node.id.out + " saved.")
+				end
 
 				if
 					attached fd.string_item ("path_alias") as f_path_alias and then
@@ -398,9 +400,10 @@ feature -- Form
 			else
 				Result := a_content_type.new_node (a_node)
 			end
+			Result.set_author (user)
 		end
 
-	change_node (a_content_type: CMS_NODE_TYPE [CMS_NODE]; a_form_data: WSF_FORM_DATA; a_node: CMS_NODE)
+	apply_form_data_to_node (a_content_type: CMS_NODE_TYPE [CMS_NODE]; a_form_data: WSF_FORM_DATA; a_node: CMS_NODE)
 			-- Update node `a_node' with form_data `a_form_data' for the given content type `a_content_type'.
 		do
 			if attached node_api.node_type_webform_manager (a_content_type) as wf then

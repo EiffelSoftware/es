@@ -23,6 +23,8 @@ inherit
 
 	CMS_HOOK_BLOCK
 
+	CMS_RECENT_CHANGES_HOOK
+
 create
 	make
 
@@ -71,7 +73,7 @@ feature {CMS_API} -- Module Initialization
 				-- Add support for CMS_PAGE, which requires a storage extension to store the optional "parent" id.
 				-- For now, we only have extension based on SQL statement.
 			if attached {CMS_NODE_STORAGE_SQL} l_node_api.node_storage as l_sql_node_storage then
-				l_sql_node_storage.register_node_storage_extension (create {CMS_NODE_STORAGE_SQL_PAGE_EXTENSION}.make (l_sql_node_storage))
+				l_sql_node_storage.register_node_storage_extension (create {CMS_NODE_STORAGE_SQL_PAGE_EXTENSION}.make (l_node_api, l_sql_node_storage))
 
 					-- FIXME: the following code is mostly for test purpose/initialization, remove later
 				if l_sql_node_storage.sql_table_items_count ("page_nodes") = 0 then
@@ -157,12 +159,21 @@ feature -- Access
 						Result.force ("view any " + l_type_name)
 						Result.force ("edit any " + l_type_name)
 						Result.force ("delete any " + l_type_name)
+						Result.force ("trash any " + l_type_name)
+						Result.force ("restore any " + l_type_name)
+
+						Result.force ("view revisions any " + l_type_name)
 
 						Result.force ("view own " + l_type_name)
 						Result.force ("edit own " + l_type_name)
 						Result.force ("delete own " + l_type_name)
+						Result.force ("trash own " + l_type_name)
+						Result.force ("restore own " + l_type_name)
+
+						Result.force ("view revisions own " + l_type_name)
 					end
 				end
+				Result.force ("view trash")
 			end
 		end
 
@@ -189,6 +200,7 @@ feature -- Access: router
 			a_router.map (l_uri_mapping, a_router.methods_get_post)
 
 			a_router.handle ("/node/add/{type}", l_node_handler, a_router.methods_get_post)
+			a_router.handle ("/node/{id}/revision", l_node_handler, a_router.methods_get)
 			a_router.handle ("/node/{id}/edit", l_node_handler, a_router.methods_get_post)
 			a_router.handle ("/node/{id}/delete", l_node_handler, a_router.methods_get_post)
 			a_router.handle ("/node/{id}/trash", l_node_handler, a_router.methods_get_post)
@@ -201,8 +213,7 @@ feature -- Access: router
 			create l_uri_mapping.make_trailing_slash_ignored ("/nodes", l_nodes_handler)
 			a_router.map (l_uri_mapping, a_router.methods_get)
 
-				--Trash
-
+				-- Trash
 			create l_trash_handler.make (a_api, a_node_api)
 			create l_uri_mapping.make_trailing_slash_ignored ("/trash", l_trash_handler)
 			a_router.map (l_uri_mapping, a_router.methods_get)
@@ -214,9 +225,12 @@ feature -- Hooks
 	register_hooks (a_response: CMS_RESPONSE)
 			-- <Precursor>
 		do
-			a_response.subscribe_to_menu_system_alter_hook (Current)
-			a_response.subscribe_to_block_hook (Current)
-			a_response.subscribe_to_response_alter_hook (Current)
+			a_response.hooks.subscribe_to_menu_system_alter_hook (Current)
+			a_response.hooks.subscribe_to_block_hook (Current)
+			a_response.hooks.subscribe_to_response_alter_hook (Current)
+
+				-- Module specific hook, if available.
+			a_response.hooks.subscribe_to_hook (Current, {CMS_RECENT_CHANGES_HOOK})
 		end
 
 	response_alter (a_response: CMS_RESPONSE)
@@ -242,16 +256,78 @@ feature -- Hooks
 	menu_system_alter (a_menu_system: CMS_MENU_SYSTEM; a_response: CMS_RESPONSE)
 		local
 			lnk: CMS_LOCAL_LINK
+			perms: ARRAYED_LIST [READABLE_STRING_8]
 		do
 			debug
 				create lnk.make ("List of nodes", "nodes")
-				a_menu_system.primary_menu.extend (lnk)
+				a_menu_system.navigation_menu.extend (lnk)
 			end
 			create lnk.make ("Trash", "trash")
-			a_menu_system.primary_menu.extend (lnk)
+			a_menu_system.navigation_menu.extend (lnk)
+			lnk.set_permission_arguments (<<"view trash">>)
 
 			create lnk.make ("Create ..", "node")
-			a_menu_system.primary_menu.extend (lnk)
+			a_menu_system.navigation_menu.extend (lnk)
+			if attached node_api as l_node_api then
+				create perms.make (2)
+				perms.force ("create any node")
+				across
+					l_node_api.content_types as ic
+				loop
+					perms.force ("create " + ic.item.name)
+				end
+				lnk.set_permission_arguments (perms)
+			end
+		end
+
+	populate_recent_changes (a_changes: CMS_RECENT_CHANGE_CONTAINER; a_sources: LIST [READABLE_STRING_8])
+		local
+			params: CMS_DATA_QUERY_PARAMETERS
+			ch: CMS_RECENT_CHANGE_ITEM
+			n: CMS_NODE
+			l_info: STRING_8
+			l_src: detachable READABLE_STRING_8
+			l_nodes: ITERABLE [CMS_NODE]
+		do
+			create params.make (0, a_changes.limit)
+			if attached node_api as l_node_api then
+				across
+					l_node_api.content_types as ic
+				loop
+					a_sources.force (ic.item.name)
+				end
+				l_src := a_changes.source
+				if attached a_changes.date as l_date then
+					l_nodes := l_node_api.recent_node_changes_before (params, l_date)
+				else
+					l_nodes := l_node_api.recent_node_changes_before (params, create {DATE_TIME}.make_now_utc)
+				end
+				across l_nodes as ic loop
+					n := ic.item
+					if l_src = Void or else l_src.is_case_insensitive_equal_general (n.content_type) then
+						n := l_node_api.full_node (n)
+						create ch.make (n.content_type, create {CMS_LOCAL_LINK}.make (n.title, "node/" + n.id.out), n.modification_date)
+						if n.creation_date ~ n.modification_date then
+							l_info := "new"
+							if not n.is_published then
+								l_info.append (" (unpublished)")
+							end
+						else
+							if n.is_trashed then
+								l_info := "deleted"
+							else
+								l_info := "updated"
+								if not n.is_published then
+									l_info.append (" (unpublished)")
+								end
+							end
+						end
+						ch.set_information (l_info)
+						ch.set_author (n.author)
+						a_changes.force (ch)
+					end
+				end
+			end
 		end
 
 end
