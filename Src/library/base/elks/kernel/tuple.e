@@ -324,7 +324,9 @@ feature -- Status report
 						-- Let's check that type of `v' conforms to specified type of `index'-th
 						-- arguments of current TUPLE.
 					create l_reflector
-					Result := l_reflector.field_conforms_to (v.generating_type.type_id, generating_type.generic_parameter_type (index).type_id)
+						--| FIXME: The following code uses `{ISE_RUNTIME}.dynamic_type (v)' instead of
+						--| v.generating_type.type_id' due to some issue with SCOOP.
+					Result := l_reflector.field_conforms_to ({ISE_RUNTIME}.dynamic_type (v), generating_type.generic_parameter_type (index).type_id)
 				end
 			end
 		end

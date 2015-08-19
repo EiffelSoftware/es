@@ -147,12 +147,15 @@ feature -- Status report
 						l_type := open_operand_type (i)
 							-- If expected type is attached, then we need to verify that the actual
 							-- is indeed attached.
+
+							--| FIXME: The following code uses `{ISE_RUNTIME}.dynamic_type (arg)' instead of
+							--| `type_id_of (arg)' due to some issue with SCOOP.
 						if is_attached_type (l_type) then
 							Result := arg /= Void and then
-								field_conforms_to (type_id_of (arg), l_type)
+								field_conforms_to ({ISE_RUNTIME}.dynamic_type (arg), l_type)
 						else
 							Result := arg = Void or else
-								field_conforms_to (type_id_of (arg), l_type)
+								field_conforms_to ({ISE_RUNTIME}.dynamic_type (arg), l_type)
 						end
 					end
 					i := i + 1
@@ -432,7 +435,7 @@ feature -- Obsolete
 		end
 
 note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
