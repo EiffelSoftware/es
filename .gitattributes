@@ -2956,7 +2956,6 @@ Src/experimental/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/experimental/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/experimental/library/base/test/license.lic -text
 Src/experimental/library/base/testing/license.lic -text
-Src/experimental/library/catcall_safe_code.patch -text
 Src/experimental/library/editor/bitmaps/copy_selection.png -text
 Src/experimental/library/editor/bitmaps/cut_selection.png -text
 Src/experimental/library/editor/bitmaps/icon_close_color.png -text
