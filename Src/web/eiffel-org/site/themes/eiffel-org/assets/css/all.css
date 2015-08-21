@@ -167,7 +167,7 @@ table {
 }
 
 #content .bookcards ul, #nav ul, .add-links ul, .column .libraries ul,
-.column .updates ul, #footer .copyrights, .footer-nav ul, .footer-nav ul li ul, #content .contribute-block ul, #content .about-block ul, #content .promo-block ul, #content .rss-block ul, .widget ul, .social-networks {
+.column .updates ul, #footer .copyrights, .footer-nav ul, .footer-nav ul li ul, #content ul.cards, #content .rss-block ul, .widget ul, .social-networks {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -342,7 +342,7 @@ table {
 }
 
 #content .bookcards ul, #nav ul, .add-links ul, .column .libraries ul,
-.column .updates ul, #footer .copyrights, .footer-nav ul, .footer-nav ul li ul, #content .contribute-block ul, #content .about-block ul, #content .promo-block ul, #content .rss-block ul, .widget ul, .social-networks {
+.column .updates ul, #footer .copyrights, .footer-nav ul, .footer-nav ul li ul, #content ul.cards, #content .rss-block ul, .widget ul, .social-networks {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -730,7 +730,7 @@ table {
 }
 
 #content .bookcards ul, #nav ul, .add-links ul, .column .libraries ul,
-.column .updates ul, #footer .copyrights, .footer-nav ul, .footer-nav ul li ul, #content .contribute-block ul, #content .about-block ul, #content .promo-block ul, #content .rss-block ul, .widget ul, .social-networks {
+.column .updates ul, #footer .copyrights, .footer-nav ul, .footer-nav ul li ul, #content ul.cards, #content .rss-block ul, .widget ul, .social-networks {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1276,7 +1276,7 @@ table.eiffel_org_nodes tbody td {
   font-size: 19px;
   text-transform: uppercase;
   padding: 54px 0 0;
-  width: 641px;
+  width: 617.5px;
 }
 #nav ul {
   margin: 0 -11px;
@@ -1314,7 +1314,7 @@ table.eiffel_org_nodes tbody td {
   color: white;
 }
 #nav ul .drop-slide-wrapper {
-  width: 173px;
+  width: 175.5px;
   left: 50% !important;
   top: 100%;
   margin: 0 0 0 -86px;
@@ -1462,7 +1462,7 @@ table.eiffel_org_nodes tbody td {
 }
 
 .search-form {
-  width: 181px;
+  width: 192.5px;
   padding: 4px 5px 4px 21px;
   height: 18px;
   background: white;
@@ -1480,7 +1480,7 @@ table.eiffel_org_nodes tbody td {
   float: right;
   background: white;
   height: 18px;
-  width: 175px;
+  width: 192.5px;
   outline: none;
   font-size: 12px;
   line-height: 18px;
@@ -1511,6 +1511,10 @@ table.eiffel_org_nodes tbody td {
   right: 0px;
 }
 .promo-area .holder {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
   width: 575px;
   overflow: hidden;
   padding: 10px 0 0 9px;
@@ -1526,7 +1530,11 @@ table.eiffel_org_nodes tbody td {
   letter-spacing: 2px;
 }
 .promo-area .holder .btn-holder {
-  width: 347px;
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 320px;
   border: 1px solid #98dcd4;
   padding: 0 0 16px;
   margin: 0 0 0 2px;
@@ -1545,13 +1553,6 @@ table.eiffel_org_nodes tbody td {
   float: left;
   padding: 0 8px;
 }
-.promo-area .holder .btn-holder .row .date {
-  width: 96px;
-  float: right;
-  text-align: center;
-  font-style: normal;
-  border-left: 1px solid #98dcd4;
-}
 .promo-area .holder .btn-holder .btn-download {
   background-color: #769830;
   background-image: -webkit-linear-gradient(top, #99cc33, #769830);
@@ -1561,7 +1562,7 @@ table.eiffel_org_nodes tbody td {
   background-image: linear-gradient(top, #99cc33, #769830);
   -webkit-border-radius: 4px;
   border-radius: 4px;
-  width: 263px;
+  width: 235px;
   height: 63px;
   display: block;
   margin: 0 auto 13px auto;
@@ -1663,7 +1664,7 @@ table.eiffel_org_nodes tbody td {
 .column .news-holder,
 .column .blog-holder {
   overflow: hidden;
-  width: 275px;
+  width: 277.5px;
   color: #abc4d4;
 }
 .column .news-holder .holder,
@@ -1710,7 +1711,7 @@ table.eiffel_org_nodes tbody td {
 }
 .column .libraries,
 .column .updates {
-  width: 265px;
+  width: 269px;
   overflow: hidden;
   margin: 0 0 34px 55px;
 }
@@ -1805,7 +1806,6 @@ table.eiffel_org_nodes tbody td {
   width: 235px;
   margin-left: 0px;
   margin-right: 0px;
-  width: initial;
 }
 .footer-holder .btn-holder .btn {
   background-color: #769830;
@@ -1816,14 +1816,18 @@ table.eiffel_org_nodes tbody td {
   background-image: linear-gradient(top, #99cc33, #769830);
   -webkit-border-radius: 4px;
   border-radius: 4px;
-  width: 100px;
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 150px;
   height: 32px;
   display: block;
-  margin: 0 0 5px -31px;
+  margin: 0 0 5px 0px;
   color: white;
   letter-spacing: 1px;
   position: relative;
-  padding: 7px 42px 7px 14px;
+  padding: 15px 42px 0px 14px;
   font: 16px/16px "museo_sans500", Arial, Helvetica, sans-serif;
 }
 .footer-holder .btn-holder .btn:after {
@@ -1844,7 +1848,7 @@ table.eiffel_org_nodes tbody td {
   color: white;
 }
 .footer-holder .btn-holder .btn.btn-download:after {
-  background: url(../images/ico-download2.png) no-repeat;
+  background: url(../images/download_b_30x30.png) no-repeat;
 }
 .footer-holder .btn-holder .btn.btn-download:hover {
   background-color: #6a8c28;
@@ -1863,6 +1867,9 @@ table.eiffel_org_nodes tbody td {
   background-image: linear-gradient(top, #2B4054, #12273A);
   color: white;
 }
+.footer-holder .btn-holder .btn.btn-tryonline:after {
+  background: url(../images/play12_b_30x30.png) no-repeat;
+}
 .footer-holder .btn-holder .btn.btn-tryonline:hover {
   background-color: #12273A;
   background-color: #12273A;
@@ -1871,6 +1878,26 @@ table.eiffel_org_nodes tbody td {
   background-image: -ms-linear-gradient(top, #12273A, #12273A);
   background-image: -o-linear-gradient(top, #12273A, #12273A);
   background-image: linear-gradient(top, #12273A, #12273A);
+}
+.footer-holder .btn-holder .btn.btn-contribute {
+  background-color: #2b4175;
+  background-image: -webkit-linear-gradient(top, #3c75d8, #2b4175);
+  background-image: -moz-linear-gradient(top, #3c75d8, #2b4175);
+  background-image: -ms-linear-gradient(top, #3c75d8, #2b4175);
+  background-image: -o-linear-gradient(top, #3c75d8, #2b4175);
+  background-image: linear-gradient(top, #3c75d8, #2b4175);
+  color: white;
+}
+.footer-holder .btn-holder .btn.btn-contribute:after {
+  background: url(../images/arrows_b_30x30.png) no-repeat;
+}
+.footer-holder .btn-holder .btn.btn-contribute:hover {
+  background-color: #2b4175;
+  background-image: -webkit-linear-gradient(top, #2A56A3, #2b4175);
+  background-image: -moz-linear-gradient(top, #2A56A3, #2b4175);
+  background-image: -ms-linear-gradient(top, #2A56A3, #2b4175);
+  background-image: -o-linear-gradient(top, #2A56A3, #2b4175);
+  background-image: linear-gradient(top, #2A56A3, #2b4175);
 }
 .footer-holder .social-holder {
   display: inline;
@@ -1887,9 +1914,8 @@ table.eiffel_org_nodes tbody td {
   margin-left: 10px;
   margin-right: 10px;
   width: 490px;
-  margin-right: 0px;
-  margin-left: 0px;
-  width: 640px;
+  margin-right: auto;
+  margin-left: auto;
 }
 .footer-nav ul {
   overflow: hidden;
@@ -1897,12 +1923,12 @@ table.eiffel_org_nodes tbody td {
   font: 16px "museo_sans500", Arial, Helvetica, sans-serif;
 }
 .footer-nav ul li {
-  width: 152px;
+  width: 150px;
   float: left;
   padding: 0 10px 6px 0;
 }
 .footer-nav ul li:first-child {
-  width: 135px;
+  width: 116px;
 }
 .footer-nav ul li a {
   color: white;
@@ -1932,6 +1958,7 @@ table.eiffel_org_nodes tbody td {
   margin-left: 10px;
   margin-right: 10px;
   width: 1000px;
+  border: none;
   overflow: hidden;
 }
 #content .holder {
@@ -1952,7 +1979,7 @@ table.eiffel_org_nodes tbody td {
   float: left;
   margin-left: 10px;
   margin-right: 10px;
-  width: 320px;
+  width: 490px;
 }
 #content .head {
   overflow: hidden;
@@ -1994,63 +2021,61 @@ table.eiffel_org_nodes tbody td {
 }
 
 /* Content */
-#content .contribute-block, #content .about-block, #content .promo-block {
+#content ul.cards {
   overflow: hidden;
-  padding: 8px 25px 0;
-  margin: 0 65px -46px;
+  padding: 8px 0 0 8px;
+  margin: 0;
 }
-#content .contribute-block ul, #content .about-block ul, #content .promo-block ul {
-  margin: 0 0 0 -73px;
-}
-#content .contribute-block ul li, #content .about-block ul li, #content .promo-block ul li {
+#content ul.cards li {
   background: #e9eced;
-  width: 325px;
+  width: 320px;
   height: 320px;
   float: left;
-  margin: 0 48px 34px 33px;
+  margin: 0 18px 26px 18px;
+  text-align: center;
   -webkit-border-radius: 7px;
   border-radius: 7px;
 }
-#content .contribute-block ul li:hover, #content .about-block ul li:hover, #content .promo-block ul li:hover {
+#content ul.cards li:hover {
   background: #e3e7e8;
 }
-#content .contribute-block ul li a, #content .about-block ul li a, #content .promo-block ul li a {
+#content ul.cards li > a {
   display: block;
-  text-align: center;
-  padding: 20px 5px;
+  padding: 18px 5px 5px 5px;
 }
-#content .contribute-block ul li .ico, #content .about-block ul li .ico, #content .promo-block ul li .ico {
+#content ul.cards li .ico {
   width: 52px;
   height: 52px;
   padding: 10px;
   display: inline-block;
   vertical-align: top;
   background: #1e3b4b;
-  margin: 0 0 30px;
+  margin: 0 0 15px;
   -webkit-border-radius: 100%;
   border-radius: 100%;
 }
-#content .contribute-block ul li h2, #content .about-block ul li h2, #content .promo-block ul li h2 {
+#content ul.cards li h2 {
   color: #99cc33;
-  margin: 0 0 11px;
+  margin: 0 0 8px;
   font: 28px/28px "museo_slab500", Arial, Helvetica, sans-serif;
 }
-#content .contribute-block ul li p, #content .about-block ul li p, #content .promo-block ul li p {
+#content ul.cards li p {
   color: #0C0D0D;
 }
-#content .contribute-block ul li div, #content .about-block ul li div, #content .promo-block ul li div {
-  background: #e9eced;
-  display: block;
-  text-align: center;
-  padding: 20px 5px;
-  -webkit-border-radius: 7px;
-  border-radius: 7px;
-}
-#content .contribute-block ul li div:hover, #content .about-block ul li div:hover, #content .promo-block ul li div:hover {
-  background: #e3e7e8;
-}
-#content .contribute-block ul li div a, #content .about-block ul li div a, #content .promo-block ul li div a {
+#content ul.cards li p a {
   display: inline-block;
+}
+#content ul.cards li.large-card {
+  height: 365px;
+}
+#content ul.cards li.big-card {
+  height: 305px;
+}
+#content ul.cards li.medium-card {
+  height: 225px;
+}
+#content ul.cards li.small-card {
+  height: 165px;
 }
 #content .rss-block {
   overflow: hidden;
@@ -2061,50 +2086,12 @@ table.eiffel_org_nodes tbody td {
   margin: 0 0 0 -70px;
 }
 #content .rss-block ul li {
-  width: 450px;
+  width: 320px;
   float: left;
   margin: 0 0 54px 33px;
-  /*a{
-  	background: #e9eced;
-  	display: block;
-  	text-align: center;
-  	padding: 24px 20px 11px;
-  	@include border-radius(7px);
-  	&:hover{
-  		background: #e3e7e8;
-  	}
-  }*/
-}
-#content .rss-block ul li .ico {
-  width: 52px;
-  height: 52px;
-  padding: 10px;
-  display: inline-block;
-  vertical-align: top;
-  background: #1e3b4b;
-  margin: 0 0 30px;
-  -webkit-border-radius: 100%;
-  border-radius: 100%;
 }
 #content .rss-block ul li h2 {
-  color: #99cc33;
-  margin: 0 0 11px;
   font: 28px-8/28px-8 "museo_slab500", Arial, Helvetica, sans-serif;
-}
-#content .rss-block ul li p {
-  color: #0C0D0D;
-}
-#content .about-block ul li, #content .promo-block ul li, #content .contribute-block ul li {
-  /*height: 320px;*/
-}
-#content .about-block ul li h2, #content .promo-block ul li h2, #content .contribute-block ul li h2 {
-  -webkit-border-radius: 7px;
-  border-radius: 7px;
-  /* background: #2B4054; */
-  padding: 0;
-}
-#content .about-block ul, #content .contribute-block ul {
-  margin: 0 0 0 0px;
 }
 #content .promo-area {
   padding: 0 0 0 0px;
@@ -2174,10 +2161,10 @@ table.eiffel_org_nodes tbody td {
   width: 235px;
   padding: 0;
   position: relative;
-  top: -12px;
+  top: -3px;
   margin: 0px 2px 0 2px;
 }
-#sidebar .holder {
+#sidebar.holder {
   padding: 0 5px 5px 5px;
 }
 #sidebar div.title, #sidebar h2 {
@@ -2195,7 +2182,7 @@ table.eiffel_org_nodes tbody td {
 }
 
 /* Code elements */
-code {
+code, eiffel {
   -webkit-border-radius: 4px;
   border-radius: 4px;
   display: block;
@@ -2207,8 +2194,7 @@ code {
   padding: 10px;
   margin: 2px 0 2px 0;
 }
-
-code.inline {
+code.inline, eiffel.inline {
   -webkit-border-radius: 0;
   border-radius: 0;
   border: dotted 1px #ddd;
@@ -2235,7 +2221,7 @@ code.inline {
 .widget ul li:first-child {
   padding-top: 0;
 }
-.widget ul li .date {
+.widget ul li.date {
   display: inline-block;
   margin: 0 5px 0 0;
   text-transform: uppercase;
