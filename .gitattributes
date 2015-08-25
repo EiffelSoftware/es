@@ -5256,6 +5256,7 @@ Src/web/eiffel-org/modules/wish_list/site/files/scss/markup-mixins.scss -text
 Src/web/eiffel-org/modules/wish_list/site/files/scss/variables.css -text
 Src/web/eiffel-org/modules/wish_list/site/files/scss/variables.scss -text
 Src/web/eiffel-org/modules/wish_list/site/files/scss/wish_list.scss -text
+Src/web/eiffel-org/modules/wish_list/site/scripts/alter_table.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/initialize_wish_list.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/wish_list.sql -text
 Src/web/eiffel-org/site/config/app.ini -text
@@ -5300,6 +5301,7 @@ Src/web/eiffel-org/site/modules/wish_list/files/images/status_3.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/status_4.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/status_5.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/up.gif -text
+Src/web/eiffel-org/site/modules/wish_list/scripts/alter_table.sql -text
 Src/web/eiffel-org/site/modules/wish_list/scripts/initialize_wish_list.sql -text
 Src/web/eiffel-org/site/modules/wish_list/scripts/wish_list.sql -text
 Src/web/eiffel-org/site/scripts/core.sql -text
