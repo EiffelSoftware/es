@@ -6027,10 +6027,12 @@ Src/web/eiffel-org/modules/wish_list/site/files/scss/markup-mixins.scss -text
 Src/web/eiffel-org/modules/wish_list/site/files/scss/variables.css -text
 Src/web/eiffel-org/modules/wish_list/site/files/scss/variables.scss -text
 Src/web/eiffel-org/modules/wish_list/site/files/scss/wish_list.scss -text
+Src/web/eiffel-org/modules/wish_list/site/scripts/alter_table.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/initialize_wish_list.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/wish_list.sql -text
 Src/web/eiffel-org/site/config/app.ini -text
 Src/web/eiffel-org/site/config/cms.ini -text
+Src/web/eiffel-org/site/config/eiffel_community_app.json -text
 Src/web/eiffel-org/site/config/eiffel_org.json -text
 Src/web/eiffel-org/site/config/modules/wdocs/wdocs.ini -text
 Src/web/eiffel-org/site/modules/admin/files/css/admin.css -text
@@ -6070,6 +6072,7 @@ Src/web/eiffel-org/site/modules/wish_list/files/images/status_3.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/status_4.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/status_5.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/up.gif -text
+Src/web/eiffel-org/site/modules/wish_list/scripts/alter_table.sql -text
 Src/web/eiffel-org/site/modules/wish_list/scripts/initialize_wish_list.sql -text
 Src/web/eiffel-org/site/modules/wish_list/scripts/wish_list.sql -text
 Src/web/eiffel-org/site/scripts/core.sql -text
@@ -6122,10 +6125,14 @@ Src/web/eiffel-org/site/themes/eiffel-org/assets/images/info2.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/interface1.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/leaf3.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/light5.png -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/like.png -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/like_30x30.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/logo.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/menu.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/navigation9.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/notes1.png -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/notlike.png -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/notlike_30x30.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/objective.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/open12.png -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/page34.png -text
@@ -6158,9 +6165,11 @@ Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/info2.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/interface1.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/leaf3.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/light5.svg -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/like.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/menu.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/navigation9.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/notes1.svg -text
+Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/notlike.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/objective.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/open12.svg -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/images/svg/page34.svg -text

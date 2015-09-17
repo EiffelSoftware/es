@@ -1,11 +1,37 @@
 <h1 class="sub-header">WISH# {$wish.id/} {$wish.synopsis/} </h1>  
-	{if isset="$edit"}
-	{/if}
+	{if isset="$can_edit"}
 		<div id="primary-tabs" class="menu tabs"><ul class="horizontal">
 			<li class="active"><a href="{$site_url/}resources/wish/{$wish.id/}/form">Edit</a></li></ul>
 		</div>	
-
+	{/if}
 	<div class="row">
+			{if condition="$can_vote"}
+				<form  action="{$site_url/}resources/wish/{$wish.id/}/like" id="wish" method="POST" itemprop="vote">
+					<input type="hidden" name="wishid" value="{$wish.id/}">
+					<label class="class-form-4">Do you like this?</label>
+					<button type="submit" >Like</button>
+				</form>
+				<form  action="{$site_url/}resources/wish/{$wish.id/}/not_like" id="wish" method="POST" itemprop="vote">
+					<input type="hidden" name="wishid" value="{$wish.id/}">
+					<label class="class-form-4">Don't you like this?</label>
+					<button type="submit" >Not Like</button>
+				</form>
+			{/if}
+
+			{if condition="$do_like"}
+				<form  action="{$site_url/}resources/wish/{$wish.id/}/like" id="wish" method="POST" itemprop="vote">
+					<input type="hidden" name="wishid" value="{$wish.id/}">
+					<label class="class-form-4">Do you like this?</label>
+					<button type="submit" >Like</button>
+				</form>
+			{/if}
+			{if condition="$do_not_like"}
+				<form  action="{$site_url/}resources/wish/{$wish.id/}/not_like" id="wish" method="POST" itemprop="vote">
+					<input type="hidden" name="wishid" value="{$wish.id/}">
+					<label class="class-form-4">Don't you like this?</label>
+					<button type="submit" >Not Like</button>
+				</form>
+			{/if}
 			<section>
 				<span  class="class-form-6" itemprop="submitter">Submitter:</span>	<span class="class-form-6">{$wish.contact.name/}</span> <br>
 				<span  class="class-form-6" itemprop="category">Category:</span>	<span class="class-form-6">{$wish.category.synopsis/}</span> <br>
@@ -15,7 +41,7 @@
 				<span  class="class-form-6" itemprop="synopsis">Synopsis:</span> <span class="class-form-6">{$wish.synopsis/}</span> <br>
 			
 				<strong>Description</strong>
-				<textarea class="class-form-textarea" style="border: none ;background-color:white;" rows="17">{$wish.description/}</textarea>
+				<textarea class="class-form-textarea" style="border: none ;background-color:white;" rows="17" readonly>{$wish.description/}</textarea>
 				{foreach from="$wish.attachments" item="elem"}
 								<div class="row">
 									<div class="col-xs-1">
@@ -55,9 +81,11 @@
 </div>
 
 {if isset="$user"}
-	<div class="btn-add-wish">
-		<a href="{$site_url/}resources/wish/detail/{$wish.id/}/interaction_form" class="btn btn-primary" itemprop="create-interaction-form" rel="create-interaction-form">Add Interaction</a>
-	</div>
+	 <div  class="row">
+	 	 <ul class="cms-links">
+			<li><a href="{$site_url/}resources/wish/detail/{$wish.id/}/interaction_form" class="btn btn-primary" itemprop="create-interaction-form" rel="create-interaction-form">Add Interaction</a></li>
+		  </ul>	
+	 </div> 		
 {/if}
 
 

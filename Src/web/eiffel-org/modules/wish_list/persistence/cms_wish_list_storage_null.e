@@ -32,7 +32,7 @@ feature -- Acess : WishList
 			create {ARRAYED_LIST [CMS_WISH_LIST]} Result.make (0)
 		end
 
-	wish_by_id (a_wid: INTEGER): detachable CMS_WISH_LIST
+	wish_by_id (a_wid: INTEGER_64): detachable CMS_WISH_LIST
 			-- <Precursor>
 		do
 		end
@@ -46,6 +46,30 @@ feature -- Acess : WishList
 			-- <Precursor>
 		do
 		end
+
+	wish_author (a_wish: CMS_WISH_LIST): detachable CMS_USER
+			-- <Precursor>
+		do
+		end
+
+	vote_wish (u: CMS_USER; a_wish: CMS_WISH_LIST): INTEGER
+			-- <Precursor>.
+		do
+		end
+
+
+feature -- Change wish vote
+
+	add_wish_like (a_user: CMS_USER; a_wid: INTEGER_64)
+			-- User `a_user' add like to wish `a_wid'.
+		do
+		end
+
+	add_wish_not_like (a_user: CMS_USER; a_wid: INTEGER_64)
+			-- User `a_user' add not like to wish `a_wid'.
+		do
+		end
+
 
 feature -- Change: WishList
 
@@ -76,11 +100,41 @@ feature -- Change: WishList
 
 feature -- Access: Categories
 
+	categories_count: INTEGER
+			-- <Precursor>
+		do
+		end
+
+	recent_categories (a_lower: INTEGER; a_count: INTEGER): LIST [CMS_WISH_LIST_CATEGORY]
+			-- <Precursor>.
+		do
+			create {ARRAYED_LIST [CMS_WISH_LIST_CATEGORY]} Result.make (0)
+		end
+
 	categories: LIST [CMS_WISH_LIST_CATEGORY]
 			-- <Precursor>
 		do
 			create {ARRAYED_LIST [CMS_WISH_LIST_CATEGORY]} Result.make (0)
 		end
+
+	category_by_id (a_id: INTEGER_64): detachable CMS_WISH_LIST_CATEGORY
+			-- <Precursor>.
+		do
+		end
+
+	category_by_name (a_name: READABLE_STRING_32): detachable CMS_WISH_LIST_CATEGORY
+			-- <Precursor>.
+		do
+		end
+
+feature -- Change: Category
+
+	save_category (a_category: CMS_WISH_LIST_CATEGORY)
+			-- <Precursor>.
+		do
+		end
+
+
 
 feature -- Access: Status
 

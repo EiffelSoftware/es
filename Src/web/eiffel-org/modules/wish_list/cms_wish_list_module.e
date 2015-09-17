@@ -15,7 +15,8 @@ inherit
 			register_hooks,
 			initialize,
 			install,
-			wish_list_api
+			wish_list_api,
+			permissions
 		end
 
 	CMS_HOOK_AUTO_REGISTER
@@ -30,6 +31,8 @@ inherit
 	CMS_HOOK_RESPONSE_ALTER
 
 	SHARED_LOGGER
+
+
 
 create
 	make
@@ -141,16 +144,23 @@ feature -- Router
 			l_wish_form_handler: CMS_WISH_FORM_HANDLER
 			l_wish_interaction_form_handler: CMS_WISH_INTERACTION_FORM_HANDLER
 			l_wish_file_download_handler: CMS_WISH_FILE_DOWNLOAD_HANDER
+			l_categories_handler: CMS_WISH_CATEGORIES_HANDLER
+			l_category_handler: CMS_WISH_CATEGORY_HANDLER
+			l_uri_mapping: WSF_URI_MAPPING
+			l_vote_handler: CMS_WISH_VOTE_HANDLER
+
 		do
+
+				-- Wish list
+			create l_wish_handler.make (a_api, a_wish_list_api)
+			a_router.handle ("/resources/wish_list", l_wish_handler, a_router.methods_head_get)
+
 
 				-- Wish Download
 			create l_wish_file_download_handler.make (a_api, a_wish_list_api)
 			a_router.handle ("/resources/wish/{wish_id}/download/{filename}", l_wish_file_download_handler, a_router.methods_get)
 			a_router.handle ("/resources/wish/{wish_id}/interaction/{id}/download/{filename}", l_wish_file_download_handler, a_router.methods_get)
 
-				-- Wish list
-			create l_wish_handler.make (a_api, a_wish_list_api)
-			a_router.handle ("/resources/wish_list", l_wish_handler, a_router.methods_head_get)
 
 				-- Wish Form
 			create l_wish_form_handler.make (a_api, a_wish_list_api)
@@ -163,12 +173,47 @@ feature -- Router
 			a_router.handle ("/resources/wish/detail/{wish_id}/interaction_form/{id}", l_wish_interaction_form_handler, a_router.methods_get_post)
 
 
-				-- Widh details
+				-- Wish details
 			create l_wish_detail_handler.make (a_api, a_wish_list_api)
 			a_router.handle ("/resources/wish/{id}/detail", l_wish_detail_handler, a_router.methods_get_post)
 			a_router.handle ("/resources/wish/detail/{?search}", l_wish_detail_handler, a_router.methods_get_post)
 
 
+				-- Wish Category Administrator
+			create l_categories_handler.make (a_api, a_wish_list_api)
+			create l_uri_mapping.make_trailing_slash_ignored ("/resources/wish/categories", l_categories_handler)
+			a_router.map (l_uri_mapping, a_router.methods_get_post)
+
+
+			create l_category_handler.make (a_api, a_wish_list_api)
+			a_router.handle ("/resources/wish/add/category", l_category_handler, a_router.methods_get_post)
+			a_router.handle ("/resources/wish/category/{id}", l_category_handler, a_router.methods_get)
+			a_router.handle ("/resources/wish/category/{id}/edit", l_category_handler, a_router.methods_get_post)
+--			a_router.handle ("/resources/wish/category/{id}/delete", l_category_handler, a_router.methods_get_post)
+
+			create l_vote_handler.make (a_api, a_wish_list_api)
+			a_router.handle ("/resources/wish/{id}/like", l_vote_handler, a_router.methods_get_post)
+			a_router.handle ("/resources/wish/{id}/not_like", l_vote_handler, a_router.methods_get_post)
+		end
+
+
+feature -- Security
+
+	permissions: LIST [READABLE_STRING_8]
+			-- List of permission ids, used by this module, and declared.
+		do
+			Result := Precursor
+			Result.force ("create wish")
+			Result.force ("view own wish")
+			Result.force ("view any wish")
+			Result.force ("edit own wish")
+			Result.force ("edit any wish")
+			Result.force ("delete own wish")
+			Result.force ("delete any wish")
+			Result.force ("update any wish status")
+			Result.force ("update any wish category")
+			Result.force ("update own wish category")
+			Result.force ("admin wish category")
 		end
 
 feature -- Hooks configuration

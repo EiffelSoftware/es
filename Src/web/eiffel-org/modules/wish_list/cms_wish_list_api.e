@@ -87,6 +87,59 @@ feature -- Access Wish List
 			end
 		end
 
+	is_author_of_wish (u: CMS_USER; a_wish: CMS_WISH_LIST): BOOLEAN
+			-- Is the user `u' owner of the wish `a_wish'.
+		do
+			if attached wish_list_storage.wish_author (a_wish) as l_author then
+				Result := u.same_as (l_author)
+			end
+		end
+
+	vote_wish (u: CMS_USER; a_wish: CMS_WISH_LIST): INTEGER
+			-- Has the user `u' vote for the wish `a_wish'.
+			-- 0 no vote
+			-- 1 like
+			-- -1 not like
+		do
+			Result := wish_list_storage.vote_wish (u, a_wish)
+		end
+
+feature -- Change wish votes
+
+	add_wish_like (a_user: CMS_USER; a_wid: INTEGER_64)
+			-- User `a_user' add like to wish `a_wid'.
+		require
+			valid_user: a_user.has_id
+			valid_wish: a_wid > 0
+		do
+			wish_list_storage.add_wish_like (a_user, a_wid)
+		end
+
+	add_wish_not_like (a_user: CMS_USER; a_wid: INTEGER_64)
+			-- User `a_user' add not like to wish `a_wid'.
+		require
+			valid_user: a_user.has_id
+			valid_wish: a_wid > 0
+		do
+			wish_list_storage.add_wish_not_like (a_user, a_wid)
+		end
+
+feature -- Permission Scope: Node
+
+	has_permission_for_action_on_wish (a_action: READABLE_STRING_8; a_wish: CMS_WISH_LIST; a_user: detachable CMS_USER; ): BOOLEAN
+			-- Has permission to execute action `a_action' on wish `a_wish', by eventual user `a_user'?
+		local
+			l_type_name: READABLE_STRING_8
+		do
+			l_type_name := a_wish.type
+			Result := cms_api.user_has_permission (a_user, a_action + " any " + l_type_name)
+			if not Result and a_user /= Void then
+				if is_author_of_wish (a_user, a_wish) then
+					Result := cms_api.user_has_permission (a_user, a_action + " own " + l_type_name)
+				end
+			end
+		end
+
 feature -- Change wish list
 
 	save_wish (a_wish: CMS_WISH_LIST)
@@ -139,10 +192,42 @@ feature -- Change wish list
 
 feature -- Access - Categories
 
+	categories_count: INTEGER
+			-- Number of categories.
+		do
+			Result := wish_list_storage.categories_count
+		end
+
+	recent_categories (params: CMS_DATA_QUERY_PARAMETERS): ITERABLE [CMS_WISH_LIST_CATEGORY]
+			-- List of the `a_rows' most recent categories starting from `a_offset'.
+		do
+			Result := wish_list_storage.recent_categories (params.offset.to_integer_32, params.size.to_integer_32)
+		end
+
 	categories: LIST [CMS_WISH_LIST_CATEGORY]
 			-- List of wish list categories.
 		do
 			Result := wish_list_storage.categories
+		end
+
+	category_by_id (a_id: INTEGER_64): detachable CMS_WISH_LIST_CATEGORY
+			-- Category for the given id `a_id', if any.
+		do
+			Result := wish_list_storage.category_by_id (a_id)
+		end
+
+	category_by_name (a_name: READABLE_STRING_32): detachable CMS_WISH_LIST_CATEGORY
+			-- Category for the given name`a_name', if any.
+		do
+			Result := wish_list_storage.category_by_name (a_name)
+		end
+
+feature -- Change - Category
+
+	save_category (a_category: CMS_WISH_LIST_CATEGORY)
+			-- Save category `a_category'.
+		do
+			wish_list_storage.save_category (a_category)
 		end
 
 feature -- Access - Status

@@ -1,11 +1,52 @@
 <h1 class="sub-header">WISH# {$wish.id/} {$wish.synopsis/} </h1>  
-	{if isset="$edit"}
-	{/if}
+	{if isset="$can_edit"}
 		<div id="primary-tabs" class="menu tabs"><ul class="horizontal">
 			<li class="active"><a href="{$site_url/}resources/wish/{$wish.id/}/form">Edit</a></li></ul>
 		</div>	
-
+	{/if}
 	<div class="row">
+			{if condition="$can_vote"}
+				<div class="vote-container">
+  			   		 <div class="vote-float">
+							<form  action="{$site_url/}resources/wish/{$wish.id/}/like" id="wish" method="POST" itemprop="vote">
+								<input type="hidden" name="wishid" value="{$wish.id/}">
+								<button class='vote-button vote-btn-blue' type="submit" ><img src="{$site_url/}theme/images/like.png" width="52" height="52" alt="Like"></button>
+							</form>
+				    </div>
+				</div>
+				<div class="vote-container">
+ 				    <div class="vote-float">
+ 				    		<form  action="{$site_url/}resources/wish/{$wish.id/}/not_like" id="wish" method="POST" itemprop="vote">
+							<input type="hidden" name="wishid" value="{$wish.id/}">
+							<button class='vote-button vote-btn-blue' type="submit" ><img src="{$site_url/}theme/images/notlike.png" width="52" height="52" alt="Not Like"></button>
+						</form>
+		
+				    </div>
+				</div>	    	
+		 	{/if}
+
+			<div class="vote-container">
+  			    <div class="vote-float">
+				    	{if condition="$do_like"}
+							<form  action="{$site_url/}resources/wish/{$wish.id/}/like" id="wish" method="POST" itemprop="vote">
+								<input type="hidden" name="wishid" value="{$wish.id/}">
+								<button class='vote-button vote-btn-blue' type="submit" ><img src="{$site_url/}theme/images/like.png" width="52" height="52" alt="Like"></button>
+							</form>
+						{/if}
+				    </div>
+			</div>
+	    	
+			<div class="vote-container">
+  				  <div class="vote-float">
+					{if condition="$do_not_like"}
+						<form  action="{$site_url/}resources/wish/{$wish.id/}/not_like" id="wish" method="POST" itemprop="vote">
+							<input type="hidden" name="wishid" value="{$wish.id/}">
+							<button class='vote-button vote-btn-blue' type="submit" ><img src="{$site_url/}theme/images/notlike.png" width="52" height="52" alt="Not Like"></button>
+						</form>
+					{/if}
+				 </div>
+			</div>
+				
 			<section>
 				<span  class="class-form-6" itemprop="submitter">Submitter:</span>	<span class="class-form-6">{$wish.contact.name/}</span> <br>
 				<span  class="class-form-6" itemprop="category">Category:</span>	<span class="class-form-6">{$wish.category.synopsis/}</span> <br>
@@ -15,7 +56,7 @@
 				<span  class="class-form-6" itemprop="synopsis">Synopsis:</span> <span class="class-form-6">{$wish.synopsis/}</span> <br>
 			
 				<strong>Description</strong>
-				<textarea class="class-form-textarea" style="border: none ;background-color:white;" rows="17">{$wish.description/}</textarea>
+				<textarea class="class-form-textarea" style="border: none ;background-color:white;" rows="17" readonly>{$wish.description/}</textarea>
 				{foreach from="$wish.attachments" item="elem"}
 								<div class="row">
 									<div class="col-xs-1">
@@ -55,9 +96,11 @@
 </div>
 
 {if isset="$user"}
-	<div class="btn-add-wish">
-		<a href="{$site_url/}resources/wish/detail/{$wish.id/}/interaction_form" class="btn btn-primary" itemprop="create-interaction-form" rel="create-interaction-form">Add Interaction</a>
-	</div>
+	 <div  class="row">
+	 	 <ul class="cms-links">
+			<li><a href="{$site_url/}resources/wish/detail/{$wish.id/}/interaction_form" class="btn btn-primary" itemprop="create-interaction-form" rel="create-interaction-form">Add Interaction</a></li>
+		  </ul>	
+	 </div> 		
 {/if}
 
 

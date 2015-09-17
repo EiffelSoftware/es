@@ -704,7 +704,7 @@ feature {NONE} -- Entity access
 						-- Register a local in a dictionary.
 					register_local (i.item)
 						-- Associate it with the default values.
-					set_default_aliases (i.item.actual_type)
+					set_default_aliases (i.item.type.actual_type)
 				end
 			end
 			if attached context.current_feature.arguments as a then

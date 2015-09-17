@@ -73,6 +73,21 @@ feature {NONE} -- Implementation
 				if attached wish_api.wish_by_id (a_id.to_integer) as l_wish then
 					create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
 					if attached template_block ("wish_detail", r) as l_tpl_block then
+						if attached current_user (req) as l_user then
+							if wish_api.has_permission_for_action_on_wish ("edit", l_wish, l_user) then
+								l_tpl_block.set_value (True, "can_edit")
+							end
+							inspect wish_api.vote_wish (l_user, l_wish)
+							when 0 then
+								l_tpl_block.set_value (True, "can_vote")
+							when 1 then
+								l_tpl_block.set_value (True, "do_not_like")
+							when -1 then
+								l_tpl_block.set_value (True, "do_like")
+							else
+								-- nothing
+							end
+						end
 						l_tpl_block.set_value (l_wish, "wish")
 						r.add_block (l_tpl_block, "content")
 					end

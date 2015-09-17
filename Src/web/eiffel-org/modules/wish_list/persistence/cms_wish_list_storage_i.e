@@ -31,7 +31,7 @@ feature -- Access : WishList
 		deferred
 		end
 
-	wish_by_id (a_wid: INTEGER): detachable CMS_WISH_LIST
+	wish_by_id (a_wid: INTEGER_64): detachable CMS_WISH_LIST
 			-- Wish list item for the given id `a_wid', if any.
 		deferred
 		end
@@ -43,6 +43,34 @@ feature -- Access : WishList
 
 	wish_attachments (a_wid: INTEGER_64; a_interaction_id: INTEGER_64): detachable LIST [CMS_WISH_FILE]
 			--  Wish list attachments for a given wish `a_wid', if any.
+		deferred
+		end
+
+
+	wish_author (a_wish: CMS_WISH_LIST): detachable CMS_USER
+			-- Wish's author. if any.
+		require
+			valid_wish: a_wish.has_id
+		deferred
+		end
+
+	vote_wish (u: CMS_USER; a_wish: CMS_WISH_LIST): INTEGER
+			-- Has the user `u' vote for the wish `a_wish'.
+		require
+			valid_wish: a_wish.has_id
+			valid_user: a_wish.has_id
+		deferred
+		end
+
+feature -- Change wish vote
+
+	add_wish_like (a_user: CMS_USER; a_wid: INTEGER_64)
+			-- User `a_user' add like to wish `a_wid'.
+		deferred
+		end
+
+	add_wish_not_like (a_user: CMS_USER; a_wid: INTEGER_64)
+			-- User `a_user' add not like to wish `a_wid'.
 		deferred
 		end
 
@@ -75,11 +103,38 @@ feature -- Change: Wishlist
 
 feature -- Access: Categories
 
+	categories_count: INTEGER
+			-- Number of categories.
+		deferred
+		end
+
+	recent_categories (a_lower: INTEGER; a_count: INTEGER): LIST [CMS_WISH_LIST_CATEGORY]
+			-- List of recent `a_count' users with an offset of `lower'.
+		deferred
+		end
+
 	categories: LIST [CMS_WISH_LIST_CATEGORY]
 			-- List of wish list categories.
 		deferred
 		end
 
+	category_by_id (a_id: INTEGER_64): detachable CMS_WISH_LIST_CATEGORY
+			-- Category id for the given id `a_id', if any.
+		deferred
+		end
+
+
+	category_by_name (a_name: READABLE_STRING_32): detachable CMS_WISH_LIST_CATEGORY
+			-- Category for the given name`a_name', if any.
+		deferred
+		end
+
+feature -- Change: Category
+
+	save_category (a_category: CMS_WISH_LIST_CATEGORY)
+			-- Save category `a_category'.
+		deferred
+		end
 
 feature -- Access: Status
 

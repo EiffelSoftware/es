@@ -72,7 +72,7 @@ rt_shared int rt_private_queue_init (struct rt_private_queue* self, struct rt_pr
 	self->lock_depth = 0;
 	rt_macro_set_saved_result (self, NULL);
 
-	rt_message_init (&self->call_stack_msg, SCOOP_MESSAGE_INVALID, NULL, NULL, NULL);
+	rt_message_init (&self->call_stack_msg);
 	error = rt_message_channel_init (&self->channel, 512);
 
 	return error;
@@ -206,8 +206,7 @@ doc:	</routine>
 */
 rt_shared void rt_private_queue_log_call (struct rt_private_queue* self, struct rt_processor* client, struct call_data* call)
 {
-	EIF_SCP_PID l_sync_pid = call->sync_pid;
-	EIF_BOOLEAN will_sync = l_sync_pid != EIF_NULL_PROCESSOR;
+	EIF_BOOLEAN will_sync = call->is_synchronous;
 	struct rt_message_channel* l_result_notify = client->result_notify_proxy;
 #ifdef WORKBENCH
 	EIF_TYPED_VALUE* l_result = call->result;
@@ -227,8 +226,7 @@ rt_shared void rt_private_queue_log_call (struct rt_private_queue* self, struct 
 		 */
 		
 		/* A separate callback should always be synchronous. */
-		l_sync_pid = client-> pid;
-		call -> sync_pid = client -> pid;
+		call->is_synchronous = EIF_TRUE;
 		will_sync = EIF_TRUE;
 
 		rt_message_channel_send (self->supplier->result_notify_proxy, SCOOP_MESSAGE_CALLBACK, client, call, NULL);
@@ -267,7 +265,7 @@ rt_shared void rt_private_queue_log_call (struct rt_private_queue* self, struct 
 			rt_macro_set_saved_result (self, NULL);
 
 				/* Execute the separate callback on this thread (i.e. the one behind 'client'). */
-			rt_processor_execute_call (client, l_message->sender, l_message->call);
+			rt_processor_execute_call (client, l_message->sender_processor, l_message->call);
 			l_message->call = NULL;
 
 				/* During the next receive we may get the answer to our query,

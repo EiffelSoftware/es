@@ -117,7 +117,7 @@ rt_shared int rt_processor_create (EIF_SCP_PID a_pid, EIF_BOOLEAN is_root_proces
 		self->is_active = EIF_TRUE;
 		self->is_dirty = EIF_FALSE;
 		self->is_impersonation_allowed = EIF_TRUE;
-		rt_message_init (&self->current_msg, SCOOP_MESSAGE_INVALID, NULL, NULL, NULL);
+		rt_message_init (&self->current_msg);
 		self->current_impersonated_call = NULL;
 		self->result_notify_proxy = &self->result_notify;
 			/* Only the root processor's creation procedure is initially "logged". */
@@ -302,7 +302,7 @@ doc:	</routine>
 */
 rt_shared void rt_processor_execute_call (struct rt_processor* self, struct rt_processor* client, struct call_data* call)
 {
-	EIF_BOOLEAN is_synchronous;
+	EIF_BOOLEAN l_is_synchronous;
 	EIF_BOOLEAN is_successful;
 	size_t l_count = 0;
 	int error = T_OK;
@@ -311,12 +311,12 @@ rt_shared void rt_processor_execute_call (struct rt_processor* self, struct rt_p
 	REQUIRE ("client_not_null", client);
 	REQUIRE ("call_not_null", call);
 
-	is_synchronous = (call->sync_pid != EIF_NULL_PROCESSOR);
+	l_is_synchronous = call->is_synchronous;
 
 		/* Only execute the call when the current processor region is clean. */
 	if (!self->is_dirty) {
 
-		if (is_synchronous) {
+		if (l_is_synchronous) {
 				/* Grab all locks held by the client. */
 			error = rt_queue_cache_push (&self->cache, &client->cache);
 		}
@@ -342,14 +342,14 @@ rt_shared void rt_processor_execute_call (struct rt_processor* self, struct rt_p
 				/* The request group stack should be the same after this call. */
 			CHECK ("same_stack_size", rt_processor_request_group_stack_count(self) == l_count);
 
-			if (is_synchronous) {
+			if (l_is_synchronous) {
 					/* Return the previously acquired locks. */
 				rt_queue_cache_pop (&self->cache);
 			}
 		}
 	}
 
-	if (is_synchronous) {
+	if (l_is_synchronous) {
 
 		if (self->is_dirty) {
 			self->is_dirty = EIF_FALSE;
@@ -403,15 +403,13 @@ rt_private void rt_processor_process_private_queue (struct rt_processor* self, s
 		} else if (type == SCOOP_MESSAGE_SYNC) {
 				/* We're a passive processor that got a lock request. */
 			CHECK ("is_passive", self->is_passive_region);
-			rt_message_channel_send (self->current_msg.sender->result_notify_proxy, SCOOP_MESSAGE_RESULT_READY, NULL, NULL, NULL);
+			rt_message_channel_send (self->current_msg.sender_processor->result_notify_proxy, SCOOP_MESSAGE_RESULT_READY, NULL, NULL, NULL);
 		} else {
 
-			rt_processor_execute_call (self, self->current_msg.sender, self->current_msg.call);
+			rt_processor_execute_call (self, self->current_msg.sender_processor, self->current_msg.call);
 
 				/* Make sure the call doesn't get traversed again for GC */
-			self->current_msg.message_type = SCOOP_MESSAGE_INVALID;
-			self->current_msg.sender = NULL;
-			self->current_msg.call = NULL;
+			rt_message_init (&self->current_msg);
 		}
 	}
 }
@@ -505,10 +503,10 @@ rt_shared void rt_processor_application_loop (struct rt_processor* self)
 		if (next_job.message_type == SCOOP_MESSAGE_ADD_QUEUE) {
 			increment_active_processor_count();
 			self->is_active = EIF_TRUE;
-			self->client = next_job.sender->pid;
+			self->client = next_job.sender_processor->pid; /* TODO: This is the only place where we would need the client region ID instead of the processor ID. */
 
 			rt_processor_process_private_queue (self, next_job.queue);
-			rt_processor_publish_wait_condition (self, next_job.sender);
+			rt_processor_publish_wait_condition (self, next_job.sender_processor);
 
 			self->is_active = EIF_FALSE;
 			self->client = EIF_NULL_PROCESSOR;
