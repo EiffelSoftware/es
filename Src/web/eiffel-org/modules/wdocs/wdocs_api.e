@@ -11,9 +11,9 @@ inherit
 	CMS_MODULE_API
 		rename
 			make as make_with_cms_api
-		redefine
-			initialize
 		end
+
+	WDOCS_HELPER
 
 	REFACTORING_HELPER
 
@@ -24,26 +24,18 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_api: CMS_API; a_cfg: WDOCS_CONFIG)
+	make (a_default_version_id: READABLE_STRING_GENERAL; a_api: CMS_API; a_cfg: WDOCS_CONFIG)
+		require
+			a_default_version_id_valid: not a_default_version_id.is_whitespace
 		do
-			configuration := a_cfg
+			default_version_id := a_default_version_id
+			temp_dir := a_cfg.temp_dir
+			documentation_dir := a_cfg.documentation_dir
+--			configuration := a_cfg
 			make_with_cms_api (a_api)
 		end
 
-	initialize
-			-- Initialize Current api.
-		local
-			cfg: detachable WDOCS_CONFIG
-		do
-			Precursor
-
-			cfg := configuration
-			temp_dir := cfg.temp_dir
-			documentation_dir := cfg.documentation_dir
-			default_version_id := cfg.documentation_default_version
-		end
-
-	configuration: WDOCS_CONFIG
+--	configuration: WDOCS_CONFIG
 
 	name: STRING = "wdocs"
 
@@ -57,8 +49,8 @@ feature -- Query
 
 	manager (a_version_id: detachable READABLE_STRING_GENERAL): WDOCS_MANAGER
 		do
-			if a_version_id = Void then
-				create Result.make (documentation_wiki_dir (default_version_id), default_version_id, temp_dir)
+			if a_version_id = Void or else a_version_id.same_string (default_version_id) then
+				create Result.make_default (documentation_wiki_dir (default_version_id), default_version_id, temp_dir)
 			else
 				create Result.make (documentation_wiki_dir (a_version_id), a_version_id, temp_dir)
 			end
@@ -69,6 +61,55 @@ feature -- Query
 			a_version_id_not_blank: not a_version_id.is_whitespace
 		do
 			Result := documentation_dir.extended (a_version_id)
+		end
+
+feature -- Access: cache system
+
+	cache_for_wiki_page_xhtml (a_version_id: READABLE_STRING_GENERAL; a_book_name: detachable READABLE_STRING_GENERAL; a_wiki_page: WIKI_BOOK_PAGE): WDOCS_FILE_STRING_8_CACHE
+		local
+			p: PATH
+			d: DIRECTORY
+		do
+			p := temp_dir.extended ("cache").extended (a_version_id)
+			if a_book_name /= Void then
+				p := p.extended (a_book_name)
+			end
+			create d.make_with_path (p)
+			if not d.exists then
+				d.recursive_create_dir
+			end
+			p := p.extended (normalized_fs_text (a_wiki_page.title)).appended_with_extension ("xhtml")
+			create Result.make (p)
+		end
+
+	cache_for_book_cms_menu (a_version_id: READABLE_STRING_GENERAL; a_book_name: detachable READABLE_STRING_GENERAL): WDOCS_CACHE [CMS_MENU]
+			-- Cache for cms menu related to `a_version_id'/`a_book_name' or "all".
+		local
+			d: DIRECTORY
+			p: PATH
+		do
+			p := temp_dir.extended ("cache")
+			create d.make_with_path (p)
+			if not d.exists then
+				d.recursive_create_dir
+			end
+
+			p := p.extended ("cms_menu__book__")
+			p := p.appended (a_version_id)
+			p := p.appended ("_")
+			if a_book_name /= Void then
+				p := p.appended (a_book_name)
+			else
+				p := p.appended ("all")
+			end
+			p := p.appended_with_extension ("cache")
+			create {WDOCS_FILE_OBJECT_CACHE [CMS_MENU]} Result.make (p)
+		end
+
+	reset_cms_menu_cache_for (a_version_id: READABLE_STRING_GENERAL; a_book_name: detachable READABLE_STRING_GENERAL)
+			-- Reset cache for cms menu related to `a_version_id'/`a_book_name' or "all".
+		do
+			cache_for_book_cms_menu (a_version_id, a_book_name).delete
 		end
 
 feature -- Query: wiki
@@ -142,8 +183,8 @@ feature -- Recent changes
 	recent_changes_before (params: CMS_DATA_QUERY_PARAMETERS; a_date: DATE_TIME; a_version_id: detachable READABLE_STRING_GENERAL): LIST [TUPLE [time: DATE_TIME; author: READABLE_STRING_32; bookid: READABLE_STRING_GENERAL; page: like new_wiki_page; log: READABLE_STRING_8]]
 			-- List of recent changes, before `a_date', according to `params' settings.
 		local
-			svn: SVN_ENGINE
-			opts: detachable SVN_ENGINE_OPTIONS
+			svn: SVN
+			opts: detachable SVN_OPTIONS
 			l_info: SVN_REVISION_INFO
 			loc: PATH
 			l_base_url: detachable STRING_8
@@ -158,16 +199,18 @@ feature -- Recent changes
 
 --			create opts
 
-			create svn
+			create {SVN_ENGINE} svn
 			if attached cms_api.setup.text_item ("tools.subversion.location") as l_svn_loc then
-				svn.set_svn_executable_path (l_svn_loc)
+				create {SVN_ENGINE} svn.make_with_executable_path (l_svn_loc)
 			elseif {PLATFORM}.is_unix then
-				svn.set_svn_executable_path ("/usr/bin/svn")
+				create {SVN_ENGINE} svn.make_with_executable_path ("/usr/bin/svn")
+			else
+				create {SVN_ENGINE} svn
 			end
 			if a_version_id = Void then
-				loc := configuration.documentation_dir.extended (configuration.documentation_default_version)
+				loc := documentation_dir.extended (default_version_id)
 			else
-				loc := configuration.documentation_dir.extended (a_version_id)
+				loc := documentation_dir.extended (a_version_id)
 			end
 
 			if attached svn.repository_info (loc.name, opts) as l_repo_info then
@@ -211,7 +254,7 @@ feature -- Recent changes
 --						end
 						if wbookid /= Void and wp /= Void then
 							wp.update_from_metadata
-							wp.set_src (mnger.wiki_page_uri_path (wp, a_version_id))
+							wp.set_src (mnger.wiki_page_uri_path (wp, wbookid, a_version_id))
 							wp.set_src (wp.src.substring (2, wp.src.count))
 							Result.force ([dt, l_info.author, wbookid, wp, utf.utf_32_string_to_utf_8_string_8 (p_ic.item.action + {STRING_32} "%N -- " + l_info.log_message)])
 						else
@@ -287,7 +330,7 @@ feature -- Factory
 			Result := manager (Void).new_wiki_page (utf.utf_32_string_to_utf_8_string_8 (a_title), a_parent_key)
 		end
 
-	save_wiki_page (a_page: like new_wiki_page; a_source: detachable READABLE_STRING_8; a_path: detachable PATH; a_manager: WDOCS_MANAGER)
+	save_wiki_page (a_page: like new_wiki_page; a_source: detachable READABLE_STRING_8; a_path: detachable PATH; a_book_id: READABLE_STRING_GENERAL; a_manager: WDOCS_MANAGER)
 			-- Save page `a_page' with source `a_source' into file `a_path' or inside folder `a_path' if `a_path' is a folder.
 		local
 			p: detachable PATH
@@ -349,8 +392,16 @@ feature -- Factory
 					end
 
 					save_content_to_file (txt, p)
+					a_page.set_text (create {WIKI_CONTENT_TEXT}.make_from_string (txt))
 					if not has_error then
-						a_manager.refresh_page_data (a_page)
+						a_manager.refresh_page_data (a_book_id, a_page)
+						cache_for_wiki_page_xhtml (a_manager.version_id, a_book_id, a_page).delete
+						if
+							attached a_manager.book (a_book_id) as wb and then
+							attached wb.page_by_key (a_page.parent_key) as l_parent_page
+						then
+							cache_for_wiki_page_xhtml (a_manager.version_id, a_book_id, l_parent_page).delete
+						end
 					end
 				end
 			end
@@ -410,12 +461,17 @@ feature {NONE} -- Implementation
 	save_content_to_file (a_content: READABLE_STRING_8; a_path: PATH)
 		local
 			f: RAW_FILE
+			d: DIRECTORY
 		do
 			create f.make_with_path (a_path)
 			if f.exists and then f.is_access_readable then
 				backup_file (f)
 			end
 			if not f.exists or else f.is_access_writable then
+				create d.make_with_path (a_path.parent)
+				if not d.exists then
+					d.recursive_create_dir
+				end
 				f.open_write
 				f.put_string (a_content)
 				f.close

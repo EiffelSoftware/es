@@ -65,9 +65,44 @@ feature {CMS_API} -- Module Initialization
 			temp_dir := cfg.temp_dir
 			documentation_dir := cfg.documentation_dir
 			cache_duration := cfg.cache_duration
-			default_version_id := cfg.documentation_default_version
+			get_default_version_id (cfg)
+			create wdocs_api.make (default_version_id, api, cfg)
+		end
 
-			create wdocs_api.make (api, cfg)
+	get_default_version_id (cfg: WDOCS_CONFIG)
+			-- Get default version id from `cfg' or "version" file from `documentation_dir'.
+			-- If set via configuration, it has priority over "version" file.
+		local
+			f: PLAIN_TEXT_FILE
+			utf: UTF_CONVERTER
+			s: STRING
+			v: detachable READABLE_STRING_GENERAL
+			retried: BOOLEAN
+		do
+			if not retried then
+				v := cfg.documentation_default_version
+				if v = Void or else v.is_whitespace then
+					create f.make_with_path (documentation_dir.extended ("version"))
+					if f.exists and then f.is_access_readable then
+						f.open_read
+						f.read_line_thread_aware
+						s := f.last_string
+						f.close
+						s.left_adjust
+						s.right_adjust
+						v := utf.utf_8_string_8_to_string_32 (s)
+					end
+				end
+			end
+			if v = Void or else v.is_whitespace then
+				v := "current"
+			end
+			default_version_id := v
+		ensure
+			valid_default_version_id: not default_version_id.is_whitespace
+		rescue
+			retried := True
+			retry
 		end
 
 feature -- Access: API
@@ -113,7 +148,7 @@ feature -- Router
 
 
 			create h.make (agent handle_clear_cache (a_api, ?, ?))
-			a_router.handle ("/admin/module/"+name+"/clear-cache", h, a_router.methods_get)
+			a_router.handle ("/admin/module/" + name + "/clear-cache", h, a_router.methods_get)
 		end
 
 feature -- Hooks configuration
@@ -204,7 +239,7 @@ feature -- Access: docs
 	cache_duration: INTEGER
 			-- Caching duration
 			--|  0: disable
-			--| -1: cache always valie
+			--| -1: cache always valid
 			--| nb: cache expires after nb seconds.
 
 	cache_disabled: BOOLEAN
@@ -214,8 +249,8 @@ feature -- Access: docs
 
 	manager (a_version_id: detachable READABLE_STRING_GENERAL): WDOCS_MANAGER
 		do
-			if a_version_id = Void then
-				create Result.make (documentation_wiki_dir (default_version_id), a_version_id, temp_dir)
+			if a_version_id = Void or else a_version_id.same_string (default_version_id) then
+				create Result.make_default (documentation_wiki_dir (default_version_id), default_version_id, temp_dir)
 			else
 				create Result.make (documentation_wiki_dir (a_version_id), a_version_id, temp_dir)
 			end
@@ -254,6 +289,9 @@ feature -- Hooks
 						l_version_id := t
 					end
 					mng := manager (l_version_id)
+					if l_version_id = Void then
+						l_version_id := mng.version_id
+					end
 					if attached {READABLE_STRING_GENERAL} a_response.values.item ("wiki_book_name") as t then
 						l_book_name := url_encoded_string_to_wiki_name (t)
 					end
@@ -262,18 +300,10 @@ feature -- Hooks
 					end
 
 					if a_block_id.same_string_general ("wdocs-tree") then
--- Uncomment to avoid displaying the tree menu for /learn
---							if
---								a_response.request.percent_encoded_path_info.starts_with ("/learn")
---								or a_response.request.percent_encoded_path_info.same_string ("/book/")
---							then
---									-- Do not display the tree view.
---							else
-							m := cached_wdocs_cms_menu ("Documentation", l_version_id, l_book_name, mng)
-							create l_menublock.make (m)
-							l_menublock.set_title (Void)
-							a_response.add_block (l_menublock, "sidebar_first")
---							end
+						m := cached_wdocs_cms_menu ("Documentation", l_version_id, l_book_name, mng)
+						create l_menublock.make (m)
+						l_menublock.set_title (Void)
+						a_response.add_block (l_menublock, "sidebar_first")
 					elseif a_block_id.same_string_general ("wdocs-cards") then
 						if
 							a_response.request.percent_encoded_path_info.same_string ("/doc/")
@@ -449,48 +479,27 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	reset_cached_wdocs_cms_menu (a_version_id, a_book_name: detachable READABLE_STRING_GENERAL; a_manager: WDOCS_MANAGER)
-		local
-			c: WDOCS_FILE_OBJECT_CACHE [CMS_MENU]
-			p: PATH
+	reset_cached_wdocs_cms_menu (a_version_id: READABLE_STRING_GENERAL; a_book_name: detachable READABLE_STRING_GENERAL; a_manager: WDOCS_MANAGER)
 		do
-			p := a_manager.tmp_dir.extended ("cache").extended ("cms_menu__book__")
-			if a_version_id /= Void then
-				p := p.appended (a_version_id)
-				p := p.appended ("_")
+			if attached wdocs_api as l_wdocs_api then
+				l_wdocs_api.reset_cms_menu_cache_for (a_version_id, a_book_name)
 			end
-			if a_book_name /= Void then
-				p := p.appended (a_book_name)
-			else
-				p := p.appended ("all")
-			end
-			p := p.appended_with_extension ("cache")
-			create c.make (p)
-			c.delete
 		end
 
-	cached_wdocs_cms_menu (a_menu_title: detachable READABLE_STRING_32; a_version_id, a_book_name: detachable READABLE_STRING_GENERAL; mng: WDOCS_MANAGER): CMS_MENU
+	cached_wdocs_cms_menu (a_menu_title: detachable READABLE_STRING_32; a_version_id: READABLE_STRING_GENERAL; a_book_name: detachable READABLE_STRING_GENERAL; mng: WDOCS_MANAGER): CMS_MENU
 		local
-			c: WDOCS_FILE_OBJECT_CACHE [CMS_MENU]
-			p: PATH
+			c: detachable WDOCS_CACHE [CMS_MENU]
 		do
-			p := mng.tmp_dir.extended ("cache").extended ("cms_menu__book__")
-			if a_version_id /= Void then
-				p := p.appended (a_version_id)
-				p := p.appended ("_")
+			if attached wdocs_api as l_wdocs_api then
+				c := l_wdocs_api.cache_for_book_cms_menu (a_version_id, a_book_name)
 			end
-			if a_book_name /= Void then
-				p := p.appended (a_book_name)
-			else
-				p := p.appended ("all")
-			end
-			p := p.appended_with_extension ("cache")
-			create c.make (p)
-			if attached c.item as l_menu then
+			if c /= Void and then attached c.item as l_menu then
 				Result := l_menu
 			else
 				Result := wdocs_cms_menu (a_menu_title, a_version_id, a_book_name, Void, True, mng)
-				c.put (Result)
+				if c /= Void then
+					c.put (Result)
+				end
 			end
 		end
 
@@ -675,6 +684,9 @@ feature -- Handler
 						l_version := p_version.value
 					end
 					mng := manager (l_version)
+					if l_version = Void then
+						l_version := mng.version_id
+					end
 
 						-- Clear wiki catalog
 					mng.refresh_data
@@ -687,6 +699,9 @@ feature -- Handler
 					end
 
 					r.set_main_content ("Documentation cache: cleared.")
+					if attached {WSF_STRING} req.query_parameter ("destination") as p_dest then
+						r.set_redirection (p_dest.url_encoded_value)
+					end
 				else
 					create {FORBIDDEN_ERROR_CMS_RESPONSE} r.make (req, res, api)
 				end
@@ -954,6 +969,7 @@ feature {WDOCS_EDIT_MODULE, WDOCS_EDIT_FORM_RESPONSE} -- Implementation: request
 					a_bookid: detachable READABLE_STRING_GENERAL;
 					api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
 		local
+			pgr: WDOCS_PAGE_CMS_RESPONSE
 			r: CMS_RESPONSE
 			s: STRING
 			l_title: detachable READABLE_STRING_8
@@ -963,7 +979,11 @@ feature {WDOCS_EDIT_MODULE, WDOCS_EDIT_FORM_RESPONSE} -- Implementation: request
 			end
 
 			if req.is_get_request_method then
-				create {WDOCS_PAGE_CMS_RESPONSE} r.make (req, res, api)
+				create pgr.make (req, res, api)
+				pgr.set_page (pg)
+				pgr.set_book_name (a_bookid)
+				pgr.set_version_id (a_manager.version_id)
+				r := pgr
 			else
 				create {NOT_FOUND_ERROR_CMS_RESPONSE} r.make (req, res, api)
 			end
@@ -1116,30 +1136,24 @@ feature {WDOCS_EDIT_MODULE} -- Implementation: wiki render
 			l_cache: detachable WDOCS_FILE_STRING_8_CACHE
 			l_xhtml: detachable STRING_8
 			wvis: WDOCS_WIKI_XHTML_GENERATOR
-			p: PATH
-			d: DIRECTORY
 			f: PLAIN_TEXT_FILE
 			l_wiki_page_date_time: detachable DATE_TIME
 			client_request_no_server_cache: BOOLEAN
-			l_version_id: like version_id
+			l_version_id: detachable READABLE_STRING_GENERAL
 		do
+			-- FIXME: move cache access to `wdocs_api', to give WDOCS_EDIT_MODULE the possibility to reset it.
 			l_version_id := version_id (req, Void)
-			p := wiki_cache_directory (a_manager)
-			if a_book_name /= Void then
-				p := p.extended (a_book_name)
+			if l_version_id = Void then
+				l_version_id := a_manager.version_id
 			end
-			create d.make_with_path (p)
-			if not d.exists then
-				d.recursive_create_dir
-			end
-			p := p.extended (normalized_fs_text (a_wiki_page.title)).appended_with_extension ("xhtml")
-
 			if
 				cache_disabled
 			then
 					-- No cache!
 			else
-				create l_cache.make (p)
+				if attached wdocs_api as l_wdocs_api then
+					l_cache := l_wdocs_api.cache_for_wiki_page_xhtml (l_version_id, a_book_name, a_wiki_page)
+				end
 				if attached a_wiki_page.path as l_pg_path then
 					create f.make_with_path (l_pg_path)
 					if f.exists and then f.is_access_readable then
@@ -1221,19 +1235,6 @@ feature {WDOCS_EDIT_MODULE} -- Implementation: wiki render
 
 feature {NONE} -- implementation: wiki docs
 
-	wiki_cache_directory (a_manager: WDOCS_MANAGER): PATH
-			-- Directory to store wikitext page output.
-		local
-			p: PATH
-		do
-			p := a_manager.wiki_database_path
-			if attached p.entry as r then
-				Result := temp_dir.extended ("cache").extended_path (r)
-			else
-				Result := p.appended_with_extension ("cache")
-			end
-		end
-
 	last_segment (s: READABLE_STRING_8): READABLE_STRING_8
 		local
 			i: INTEGER
@@ -1297,7 +1298,7 @@ feature {NONE} -- implementation: wiki docs
 	wdocs_book_link_location (a_version_id: detachable READABLE_STRING_GENERAL; a_book_name: READABLE_STRING_GENERAL): STRING
 		do
 			create Result.make_from_string ("doc/")
-			if a_version_id /= Void then
+			if a_version_id /= Void and then not  a_version_id.same_string (default_version_id) then
 				Result.append ("version/")
 				Result.append (percent_encoder.percent_encoded_string (a_version_id))
 				Result.append_character ('/')
