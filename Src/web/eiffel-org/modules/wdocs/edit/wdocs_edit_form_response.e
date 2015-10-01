@@ -72,6 +72,7 @@ feature -- Execution
 			mng: WDOCS_MANAGER
 			l_bookid: detachable READABLE_STRING_GENERAL
 			l_text: STRING
+			l_preview: BOOLEAN
 		do
 			create b.make_empty
 			if attached wiki_page_info_from_request as pg_info then
@@ -113,23 +114,45 @@ feature -- Execution
 						f.submit_actions.extend (agent edit_form_submit (?, mng, pg, l_bookid, b))
 						f.process (Current)
 						fd := f.last_data
+
+						if fd /= Void and then fd.is_valid then
+							l_preview := attached {WSF_STRING} fd.item ("op") as l_op and then l_op.same_string ("Preview")
+							if l_preview then
+								f.append_to_html (wsf_theme, b)
+							else
+								if pg /= Void then
+									set_redirection (mng.wiki_page_uri_path (pg, l_bookid, mng.version_id))
+								else
+									set_redirection (view_location)
+								end
+							end
+						else
+							f.append_to_html (wsf_theme, b)
+						end
 					end
 				else
 					f.append_to_html (wsf_theme, b)
 				end
 			elseif
 				location.ends_with_general ("/add-child") and then
-				has_permission ("create wdocs page")
+				has_permission ("create wdocs page") and then
+				l_bookid /= Void and then not l_bookid.is_empty -- FIXME: remove and handle the new Book creation.
 			then
-				if pg /= Void then
-					set_title (formatted_string (translation ("Add child to doc page %"$1%"", Void), [pg.title]))
-				else
-					set_title (translation ("New doc page", Void))
-				end
+--				if l_bookid = Void or else l_bookid.is_empty then
+--						-- Create new book
+--					set_title (translation ("Create Book", Void))
+--					pg := Void
+--				else
+					if pg /= Void then
+						set_title (formatted_string (translation ("Add child to doc page %"$1%"", Void), [pg.title]))
+					else
+						set_title (translation ("New doc page", Void))
+					end
+--				end
 				if pg /= Void then
 					new_pg := mng.new_wiki_child_page ("", pg)
 				else
-					if l_bookid /= Void then
+					if l_bookid /= Void and then not l_bookid.is_empty then
 						new_pg := mng.new_wiki_page ("", utf_8_string (l_bookid))
 					else
 						new_pg := mng.new_wiki_page ("", "")
@@ -177,6 +200,7 @@ feature -- Execution
 								b.append (link ("parent page", view_location, Void))
 								b.append (".</p>")
 							end
+							set_redirection (mng.wiki_page_uri_path (new_pg, l_bookid, mng.version_id))
 						else
 							f.append_to_html (wsf_theme, b)
 						end
@@ -253,6 +277,7 @@ feature -- Form
 			s: STRING
 			e: CMS_EMAIL
 			fn: STRING_32
+			ctx: WDOCS_CHANGE_CONTEXT
 		do
 			l_preview := attached {WSF_STRING} fd.item ("op") as l_op and then l_op.same_string (translation ("Preview", Void))
 			if not l_preview then
@@ -328,7 +353,10 @@ feature -- Form
 							end
 						end
 						l_page.update_from_metadata
-						wdocs_api.save_wiki_page (l_page, l_source_value, l_path, a_bookid, a_manager)
+						create ctx
+						ctx.set_user (user)
+						ctx.set_log ({STRING_32} "Update wikipage " + l_page.title + ".")
+						wdocs_api.save_wiki_page (l_page, l_source_value, l_path, a_bookid, a_manager, ctx)
 						if wdocs_api.has_error then
 							fd.report_error ("Error: could not save wiki page!")
 							add_error_message ("Error: could not save wiki page!")
@@ -342,7 +370,7 @@ feature -- Form
 							s.append (".")
 
 							-- FIXME: hardcoded link to admin wdocs clear-cache ! change that.
-							add_warning_message ("You may need to " + link ("clear the cache", "admin/module/wdocs/clear-cache?destination=" + view_location, Void) + ".")
+							add_warning_message ("You may need to " + link ("clear the cache", "admin/module/wdocs/clear-cache?destination=" + url_encoded (view_location), Void) + ".")
 
 							api.log ("wdocs", "Wiki page changed", 0, create {CMS_LOCAL_LINK}.make (l_page.title, location))
 							add_success_message ("Wiki doc saved.")
@@ -388,6 +416,7 @@ feature -- Form
 			else
 				create f_title.make_with_text ("title", "")
 			end
+			f_title.set_size (40)
 			f_title.set_validation_action (agent (fd: WSF_FORM_DATA)
 					do
 						if
@@ -412,7 +441,7 @@ feature -- Form
 			f.extend (f_link_title)
 
 			create tf.make ("source")
-			tf.set_cols (100)
+			tf.set_cols (90)
 			tf.set_rows (25)
 			tf.set_description ("[
 				<p>

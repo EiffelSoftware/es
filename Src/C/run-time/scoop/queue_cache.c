@@ -338,34 +338,34 @@ rt_shared int rt_queue_cache_push (struct queue_cache* self, struct queue_cache*
 doc:	<routine name="rt_queue_cache_pop" return_type="void" export="shared">
 doc:		<summary> Return all locks that were received during the last rt_queue_cache_push() operation. </summary>
 doc:		<param name="self" type="struct queue_cache*"> The queue cache that has the locks. Must not be NULL. </param>
+doc:		<param name="origin" type="struct queue_cache*"> The queue cache that originally passed the locks. Must not be NULL. </param>
 doc:		<thread_safety> Not safe. </thread_safety>
 doc:		<synchronization> None. </synchronization>
 doc:	</routine>
 */
-rt_shared void rt_queue_cache_pop (struct queue_cache* self)
+rt_shared void rt_queue_cache_pop (struct queue_cache* self, struct queue_cache* origin)
 {
 	struct rt_vector_queue_cache *l_lock_stack = NULL;
-	struct queue_cache* origin = NULL;
 
-	REQUIRE ("not_null", self);
+	REQUIRE ("self_not_null", self);
+	REQUIRE ("origin_not_null", origin);
+	REQUIRE ("not_equal", self != origin);
 	REQUIRE ("invariant_on_self", invariant (self));
+	REQUIRE ("basic_inv_on_origin", basic_invariant (origin));
 	REQUIRE ("lock_stack_not_empty", rt_vector_queue_cache_count (self->lock_stack) > 1);
 
 	l_lock_stack = self->lock_stack;
 
-
 		/* Retrieve the queue cache that initially passed the locks.
 		 * Since the push/pop operations have to be balanced,
-		 * 'self' should be on top of the stack, followed by the
-		 * region where we initially got the locks from. */
+		 * 'self' should be on top of the stack.
+		 * The 'origin' cache may not be the second-last however, because
+		 * there could be a number of impersonated push operations in between. */
 	CHECK ("self_is_last", rt_vector_queue_cache_last (l_lock_stack) == self);
 
 	rt_vector_queue_cache_remove_last (l_lock_stack);
-	origin = rt_vector_queue_cache_last (l_lock_stack);
 
-	CHECK ("not_equal", origin != self);
-	CHECK ("basic_inv_on_origin", basic_invariant (origin));
-		/* lock_stack_status == 1 implies that 'origin' was the first to push away the locks. */
+		/* lock_stack_status == 1 implies that 'origin' was the first to push away the locks (in a non-impersonated push). */
 	CHECK ("balanced", self->lock_stack_status != 1 || l_lock_stack == &origin->storage);
 
 		/* Re-establish the invariant in 'origin'. */
@@ -388,6 +388,64 @@ rt_shared void rt_queue_cache_pop (struct queue_cache* self)
 }
 
 /*
+doc:	<routine name="rt_queue_cache_push_on_impersonation" return_type="int" export="shared">
+doc:		<summary> Pass all locks from 'giver' to 'self'.
+doc: 			The lock stack (with all private queues) from the other processor will be adopted by this cache.
+doc:			The difference between a regular push/pop is that this feature is executed by the client during impersonation,
+doc:			and thus the implementation is a bit simpler.
+doc: 			This should be called in pairs with rt_queue_cache_pop_on_impersonation(). </summary>
+doc:		<param name="self" type="struct queue_cache*"> The queue cache to receive the locks. Must not be NULL. </param>
+doc:		<param name="giver" type="struct queue_cache*"> The queue cache to give away the locks. Must not be NULL. </param>
+doc:		<return> T_OK on success. T_NO_MORE_MEMORY if a memory allocation failure happened. </return>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> None. </synchronization>
+doc:	</routine>
+*/
+rt_shared int rt_queue_cache_push_on_impersonation (struct queue_cache* self, struct queue_cache* giver)
+{
+	int error = T_OK;
+	REQUIRE ("self_not_null", self);
+	REQUIRE ("giver_not_null", giver);
+
+	error = rt_vector_queue_cache_extend (self->lock_stack, giver);
+	return error;
+}
+
+/*
+doc:	<routine name="rt_queue_cache_pop_on_impersonation" return_type="void" export="shared">
+doc:		<summary> Return all locks that were received during the last rt_queue_cache_push_on_impersonation() operation. </summary>
+doc:		<param name="self" type="struct queue_cache*"> The queue cache that has the locks. Must not be NULL. </param>
+doc:		<param name="count" type="size_t"> The number of times the pop() operation should be executed. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> None. </synchronization>
+doc:	</routine>
+*/
+rt_shared void rt_queue_cache_pop_on_impersonation (struct queue_cache* self, size_t count)
+{
+	REQUIRE ("self_not_null", self);
+	REQUIRE ("valid_count", count < rt_vector_queue_cache_count (self->lock_stack));
+	while (count > 0) {
+		rt_vector_queue_cache_remove_last (self->lock_stack);
+		--count;
+	}
+}
+
+/*
+doc:	<routine name="rt_queue_cache_lock_passing_count" return_type="size_t" export="shared">
+doc:		<summary> The current size of the lock stack in the queue_cache objct. </summary>
+doc:		<param name="self" type="struct queue_cache*"> The queue cache object. Must not be NULL. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> None. </synchronization>
+doc:	</routine>
+*/
+rt_shared size_t rt_queue_cache_lock_passing_count (struct queue_cache* self)
+{
+	REQUIRE ("self_not_null", self);
+	return rt_vector_queue_cache_count (self->lock_stack);
+}
+
+
+/*
 doc:	<routine name="rt_queue_cache_has_locks_of" return_type="EIF_BOOLEAN" export="shared">
 doc:		<summary> Check if 'self' has the locks of 'supplier'. This can only be true when 'supplier' has passed the locks to 'client' in a previous call.
 dic:		The result of this query is important to determine if we need to perform a separate callback instead of a regular call. </summary>
@@ -408,7 +466,7 @@ rt_shared EIF_BOOLEAN rt_queue_cache_has_locks_of (struct queue_cache* self, str
 	REQUIRE ("self_not_null", self);
 	REQUIRE ("supplier_not_null", supplier);
 	REQUIRE ("invariant_on_self", invariant (self));
-	REQUIRE ("not_equal", supplier != self->owner);
+	REQUIRE ("different_regions", supplier != rt_vector_queue_cache_last (self->lock_stack)->owner);
 
 		/* Get the lock stack in 'self'. */
 	l_lock_stack = self->lock_stack;

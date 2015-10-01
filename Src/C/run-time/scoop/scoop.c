@@ -112,6 +112,13 @@ rt_private void rt_swap_thread_context (struct rt_processor* first_processor, st
 	first->eif_thr_context_cx->logical_id = second_pid;
 	second->eif_thr_context_cx->logical_id = first_pid;
 
+		/* Also adjust the IDs in the public context.
+		 * Swapping the processor ID is done temporarily until we can switch to the new impersonation mechanism. */
+	first->eif_globals->scoop_region_id = second_pid;
+	second->eif_globals->scoop_region_id = first_pid;
+	first->eif_globals->scoop_processor_id = second_pid;
+	second->eif_globals->scoop_processor_id = first_pid;
+
 		/* Swap the position in global_ctxs. */
 	global_ctxs [first_pid] = second;
 	global_ctxs [second_pid] = first;
@@ -128,8 +135,9 @@ doc:	</routine>
 */
 rt_private void rt_scoop_impersonated_call (struct rt_processor* client, struct rt_processor* supplier, struct call_data* call)
 {
-	size_t l_count = 0;
-	EIF_BOOLEAN is_successful = EIF_FALSE;
+	EIF_GET_CONTEXT
+	EIF_SCP_PID stored_pid = eif_globals->scoop_region_id;
+	int error = 0;
 #ifdef EIF_ASSERTIONS
 	struct rt_private_queue* pq = NULL; /* For assertion checking. */
 #endif
@@ -139,47 +147,47 @@ rt_private void rt_scoop_impersonated_call (struct rt_processor* client, struct 
 	REQUIRE ("queue_available", T_OK == rt_queue_cache_retrieve (&client->cache, supplier, &pq));
 	REQUIRE ("callback_or_synchronized", (supplier->is_passive_region && !supplier->is_creation_procedure_logged) || rt_queue_cache_has_locks_of (&client->cache, supplier) || rt_private_queue_is_synchronized (pq));
 
-		/* Adopt the once values and logical ID of the new thread. */
-	rt_swap_thread_context (client, supplier);
+		/* Perform lock passing. TODO: Error handling */
+	error = rt_queue_cache_push_on_impersonation (&client->cache, &supplier->cache);
 
-		/* Store the size of the request group stack of the impersonated thread. */
-	l_count = rt_processor_request_group_stack_count (supplier);
 
-		/* Perform lock passing. */
-	is_successful = (T_OK == rt_queue_cache_push (&supplier->cache, &client->cache));
+		/* Adjust the region ID */
+	eif_globals->scoop_region_id = supplier->pid;
 
-	if (is_successful) {
+		/* TODO: Adopt the once values of the target region. */
 
-			/* Register the call_data for GC marking, because it may happen in rt_scoop_try_call()
-			* before the Eiffel function starts its execution. */
-		client->current_impersonated_call = call;
+		/* Perform the call. */
+	rt_scoop_execute_call (call);
 
-			/* Safely execute the call and catch exceptions. */
-		is_successful = rt_scoop_try_call (call);
+		/* TODO: Adopt the once values of the current region. */
 
-			/* Unregister the call_data struct. */
-		client->current_impersonated_call = NULL;
+		/* Revert the region ID. */
+	eif_globals->scoop_region_id = stored_pid;
 
-			/* Revoke the locks. */
-		rt_queue_cache_pop (&supplier->cache);
-	}
+		/* Return the locks. */
+	rt_queue_cache_pop_on_impersonation (&client->cache, 1);
 
-		/* Restore the size of the request group stack in the supplier. */
-	rt_processor_request_group_stack_remove (supplier, rt_processor_request_group_stack_count (supplier) - l_count);
-
-		/* Restore the thread context. */
-	rt_swap_thread_context (supplier, client);
-
-		/* Free the call_data struct. */
+		/* Free the call_data struct. TODO: There's a memory leak in case of an exception. */
 	free (call);
-
-		/* Propagate the exception, if any. */
-	if (!is_successful) {
-		eraise ("EVE/Qs dirty processor exception", EN_DIRTY);
-	}
-
 }
 
+/* Before impersonation:
+ * - Perform lock passing
+ * - Adjust region ID
+ * - TODO: Change once values
+ * After impersonation
+ * - Revert lock passing
+ * - Adjust region ID
+ * - TODO: Change once values
+ * - Free call_data struct
+ * On exception recovery
+ * - Restore the lock stack
+ * - Restore request group stack
+ * - Adjust region ID
+ * - TODO: Restore once values
+ * On separate callback
+ * - TODO: If RTS_PID(target) != region_id, impersonate region
+*/
 
 /*
 doc:	<routine name="rt_scoop_is_impersonation_allowed" return_type="void" export="private">
@@ -188,18 +196,14 @@ doc:		<thread_safety> Not safe. </thread_safety>
 doc:		<synchronization> Should only be called by the client while the supplier is synchronized. </synchronization>
 doc:	</routine>
 */
-rt_private rt_inline EIF_BOOLEAN rt_scoop_is_impersonation_allowed (struct rt_processor* client, struct rt_processor* supplier, struct rt_private_queue* queue, struct call_data* call)
+rt_private rt_inline EIF_BOOLEAN rt_scoop_is_impersonation_allowed (struct rt_processor* client_processor, struct rt_processor* supplier, struct rt_private_queue* queue, struct call_data* call)
 {
 	EIF_BOOLEAN result = EIF_TRUE;
 
-		/* First of all, both client and supplier have to agree that they can handle impersonation.
-		 * NOTE: In theory this only depends on the supplier, but we may run into problems with
-		 * separate callbacks if we don't consider both processors. */
-		/* NOTE: This restriction is also true for passive processors!
-		 * As long as there's still a thread, and until we find a better solution, we just
-		 * let the other thread execute the call. This undermines the semantics of passive
-		 * regions, but at least we don't run into a deadlock. */
-	result = client->is_impersonation_allowed && supplier->is_impersonation_allowed;
+		/* First of all, the supplier has to agree that it can handle impersonation.
+		 * There's one exception: when the client processor is currently impersonating another region,
+		 * and now wants to perform a callback into its own region. */
+	result = supplier->is_impersonation_allowed || (supplier->pid == client_processor->pid);
 
 	if (result) {
 
@@ -212,7 +216,7 @@ rt_private rt_inline EIF_BOOLEAN rt_scoop_is_impersonation_allowed (struct rt_pr
 		result = result || (call->is_synchronous &&  rt_private_queue_is_synchronized (queue));
 
 			/* A separate callback is always synchronous, so we can impersonate it. */
-		result = result || rt_queue_cache_has_locks_of (&client->cache, supplier);
+		result = result || rt_queue_cache_has_locks_of (&client_processor->cache, supplier);
 	}
 
 	return result;
@@ -233,9 +237,10 @@ rt_private void fix_call_data (struct call_data* call)
 }
 
 /* Call logging */
-rt_public void eif_log_call (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid, call_data *data)
+rt_public void eif_log_call (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, call_data *data)
 {
-	struct rt_processor *client = rt_get_processor (client_pid);
+	EIF_SCP_PID supplier_pid = RTS_PID (data->target);
+	struct rt_processor *client = rt_get_processor (client_processor_id);
 	struct rt_processor *supplier = rt_get_processor (supplier_pid);
 	struct rt_private_queue *pq = NULL;
 	int error = T_OK;
@@ -322,10 +327,10 @@ rt_public int eif_is_synced_on (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid
 	return (error == T_OK) && rt_private_queue_is_synchronized (pq);
 }
 
-int eif_is_uncontrolled (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
+rt_public int eif_is_uncontrolled (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, EIF_SCP_PID supplier_region_id)
 {
-	struct rt_processor *client = rt_get_processor (client_pid);
-	struct rt_processor *supplier = rt_get_processor (supplier_pid);
+ 	struct rt_processor *client_processor = rt_get_processor (client_processor_id);
+	struct rt_processor *supplier = rt_get_processor (supplier_region_id);
 
 	/*
 	 * An object is only uncontrolled when all of the following apply:
@@ -334,9 +339,9 @@ int eif_is_uncontrolled (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
 	 * - the supplier has not passed its locks to the client in a previous call (separate callbacks).
 	 */
 
-	return client != supplier
-		&& !rt_queue_cache_is_locked (&client->cache, supplier)
-		&& !rt_queue_cache_has_locks_of (&client->cache, supplier);
+	return client_region_id != supplier_region_id
+		&& !rt_queue_cache_is_locked (&client_processor->cache, supplier)
+		&& !rt_queue_cache_has_locks_of (&client_processor->cache, supplier);
 }
 
 /* Entry point for the root thread. */
@@ -408,6 +413,31 @@ rt_public void eif_scoop_lock_request_group (EIF_SCP_PID client_pid)
 	struct rt_processor* client = rt_get_processor (client_pid);
 	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
 	rt_request_group_lock (l_group);
+}
+
+/* Lock stack management */
+
+/* The size of the lock stack in 'processor_id'. */
+rt_public size_t eif_scoop_lock_stack_count (EIF_SCP_PID processor_id)
+{
+	struct rt_processor* proc = rt_get_processor (processor_id);
+	return rt_queue_cache_lock_passing_count (&proc->cache);
+}
+
+/* Push the locks of 'supplier_region_id' onto the lock stack of 'client_processor_id'. */
+rt_public void eif_scoop_lock_stack_impersonated_push (EIF_SCP_PID client_processor_id, EIF_SCP_PID supplier_region_id)
+{
+	struct rt_processor* client = rt_get_processor (client_processor_id);
+	struct rt_processor* supplier = rt_get_processor (supplier_region_id);
+	/* TODO: Error handling */
+	int error = rt_queue_cache_push_on_impersonation (&client->cache, &supplier->cache);
+}
+
+/* Remove 'count' elements from the lock stack of 'client_processor_id'. */
+rt_public void eif_scoop_lock_stack_impersonated_pop (EIF_SCP_PID client_processor_id, size_t count)
+{
+	struct rt_processor* client = rt_get_processor (client_processor_id);
+	rt_queue_cache_pop_on_impersonation (&client->cache, count);
 }
 
 /* Debugger extensions. */

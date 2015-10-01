@@ -22,6 +22,8 @@ inherit
 
 	CMS_HOOK_RESPONSE_ALTER
 
+	CMS_HOOK_MENU_SYSTEM_ALTER
+
 	CMS_RECENT_CHANGES_HOOK
 
 	WDOCS_MODULE_HELPER
@@ -117,14 +119,12 @@ feature -- Router
 		local
 			h: WSF_URI_TEMPLATE_AGENT_HANDLER
 		do
-			create h.make (agent handle_documentation (a_api, ?, ?))
-			a_router.handle ("/documentation", h, a_router.methods_get)
-
 			create h.make (agent handle_wikipage_by_uuid (a_api, ?, ?))
 			a_router.handle ("/doc/uuid/{wikipage_uuid}", h, a_router.methods_get)
 			a_router.handle ("/doc/version/{version_id}/uuid/{wikipage_uuid}", h, a_router.methods_get)
 
 			create h.make (agent handle_documentation (a_api, ?, ?))
+			a_router.handle ("/documentation", h, a_router.methods_get)
 			a_router.handle ("/doc/", h, a_router.methods_get)
 			a_router.handle ("/doc/version/{version_id}/", h, a_router.methods_get)
 			a_router.handle ("/doc/version/{version_id}/{bookid}", h, a_router.methods_get)
@@ -261,6 +261,15 @@ feature -- Hooks
 	response_alter (a_response: CMS_RESPONSE)
 		do
 			a_response.add_javascript_url (a_response.url ("/module/" + name + "/files/js/wdocs.js", Void))
+		end
+
+	menu_system_alter (a_menu_system: CMS_MENU_SYSTEM; a_response: CMS_RESPONSE)
+			-- Hook execution on collection of menu contained by `a_menu_system'
+			-- for related response `a_response'.
+		do
+			if a_response.has_permissions (<<"admin wdocs", "clear wdocs cache">>) then
+				a_menu_system.management_menu.extend (create {CMS_LOCAL_LINK}.make ("Clear Doc cache", "admin/module/" + name + "/clear-cache?destination=" + percent_encoder.percent_encoded_string (a_response.location)))
+			end
 		end
 
 	block_list: ITERABLE [like {CMS_BLOCK}.name]
@@ -433,12 +442,24 @@ feature -- Hook / Recent changes
 							if attached ic.item.log as l_log then
 								i.set_information (l_log)
 									-- Looking for real author "Signed-off-by: Super Developer <super.dev@gmail.com>"
-								pos := l_log.substring_index ("%NSigned-off-by:", 1)
+								pos_eol := 0
+								pos := l_log.substring_index ("(Signed-off-by:", 1)
 								if pos > 0 then
-									pos_eol := l_log.index_of ('%N', pos + 14)
+									pos_eol := l_log.index_of (')', pos + 14)
 									if pos_eol = 0 then
-										pos_eol := l_log.count
+										pos := 0
 									end
+								end
+								if pos = 0 then
+									pos := l_log.substring_index ("%NSigned-off-by:", 1)
+									if pos > 0 then
+										pos_eol := l_log.index_of ('%N', pos + 14)
+										if pos_eol = 0 then
+											pos_eol := l_log.count + 1
+										end
+									end
+								end
+								if pos > 0 then
 									s := l_log.substring (pos + 15, pos_eol - 1)
 									s.right_adjust
 									s.left_adjust
@@ -777,13 +798,13 @@ feature -- Handler
 				create b.make_empty
 				wp := mnger.index_page
 				if wp /= Void then
-					append_wiki_page_xhtml_to (wp, Void, Void, mnger, b, req)
+					send_wikipage (wp, mnger, "", api, req, res)
+				else
+					r.set_value ("doc", "optional_content_type")
+					r.set_title (Void) --"Documentation")
+					r.set_main_content (b)
+					r.execute
 				end
-
-				r.set_value ("doc", "optional_content_type")
-				r.set_title (Void) --"Documentation")
-				r.set_main_content (b)
-				r.execute
 			end
 		end
 
@@ -966,7 +987,7 @@ feature {WDOCS_EDIT_MODULE, WDOCS_EDIT_FORM_RESPONSE} -- Implementation: request
 
 	send_wikipage (pg: attached like {WDOCS_MANAGER}.page;
 					a_manager: WDOCS_MANAGER;
-					a_bookid: detachable READABLE_STRING_GENERAL;
+					a_bookid: READABLE_STRING_GENERAL;
 					api: CMS_API; req: WSF_REQUEST; res: WSF_RESPONSE)
 		local
 			pgr: WDOCS_PAGE_CMS_RESPONSE
@@ -979,10 +1000,7 @@ feature {WDOCS_EDIT_MODULE, WDOCS_EDIT_FORM_RESPONSE} -- Implementation: request
 			end
 
 			if req.is_get_request_method then
-				create pgr.make (req, res, api)
-				pgr.set_page (pg)
-				pgr.set_book_name (a_bookid)
-				pgr.set_version_id (a_manager.version_id)
+				create pgr.make_with_page (a_bookid, pg, a_manager.version_id, req, res, api)
 				r := pgr
 			else
 				create {NOT_FOUND_ERROR_CMS_RESPONSE} r.make (req, res, api)

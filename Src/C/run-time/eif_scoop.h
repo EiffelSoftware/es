@@ -80,7 +80,7 @@ typedef struct call_data {
 	EIF_TYPED_VALUE argument [1];	/* Arguments excluding target object */
 } call_data;
 
-RT_LNK void eif_log_call (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid, call_data* data);
+RT_LNK void eif_log_call (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, call_data* data);
 RT_LNK void eif_call_const (call_data * a);
 
 /* Scoop Macros
@@ -90,7 +90,7 @@ RT_LNK void eif_call_const (call_data * a);
 
 /* Processor properties */
 RT_LNK void eif_new_processor(EIF_REFERENCE obj, EIF_BOOLEAN is_passive);
-RT_LNK int eif_is_uncontrolled (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid);
+RT_LNK int eif_is_uncontrolled (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, EIF_SCP_PID supplier_region_id);
 RT_LNK int eif_is_synced_on (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid);
 RT_LNK void eif_wait_for_all_processors(void);
 
@@ -101,6 +101,11 @@ RT_LNK size_t eif_scoop_request_group_stack_count (EIF_SCP_PID client_pid);
 RT_LNK void eif_scoop_wait_request_group (EIF_SCP_PID client_pid);
 RT_LNK void eif_scoop_add_supplier_request_group (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid);
 RT_LNK void eif_scoop_lock_request_group (EIF_SCP_PID client_pid);
+
+/* Lock stack management */
+RT_LNK size_t eif_scoop_lock_stack_count (EIF_SCP_PID processor_id);
+RT_LNK void eif_scoop_lock_stack_impersonated_push (EIF_SCP_PID client_processor_id, EIF_SCP_PID supplier_region_id);
+RT_LNK void eif_scoop_lock_stack_impersonated_pop (EIF_SCP_PID client_processor_id, size_t count);
 
 /* Debugger extensions. */
 RT_LNK EIF_SCP_PID eif_scoop_client_of (EIF_SCP_PID supplier);

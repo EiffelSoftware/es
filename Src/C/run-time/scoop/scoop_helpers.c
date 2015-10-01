@@ -119,6 +119,22 @@ rt_private void rt_apply_wcall (call_data *data)
 }
 #endif
 
+/*
+doc:	<routine name="rt_scoop_try_call" export="shared">
+doc:		<summary> Execute the feature in 'call' and do not catch exceptions. </summary>
+doc:		<param name="call" type="struct call_data*"> The feature to apply. Must not be NULL. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> None </synchronization>
+doc:	</routine>
+*/
+void rt_scoop_execute_call (call_data* call)
+{
+#ifdef WORKBENCH
+	rt_apply_wcall (call);
+#else
+	call->pattern (call);
+#endif
+}
 
 /*
 doc:	<routine name="rt_scoop_try_call" return_type="EIF_BOOLEAN" export="shared">
@@ -143,6 +159,8 @@ rt_shared EIF_BOOLEAN rt_scoop_try_call (call_data *call)
 	RTLXL;
 #endif
 
+	RTS_SDX; /* Record the request group stack count, the lock stack count, and the current region ID. */
+
 		/* TODO: We used to keep track of last_exception in this function,
 		 * which caused a call into Eiffel code. Therefore it was necessary
 		 * register the call_data struct somewhere for GC traversal.
@@ -154,11 +172,8 @@ rt_shared EIF_BOOLEAN rt_scoop_try_call (call_data *call)
 
 	if (!setjmp(exenv)) {
 			/* Execute the Eiffel function. */
-#ifdef WORKBENCH
-		rt_apply_wcall (call);
-#else
-		call->pattern (call);
-#endif
+		rt_scoop_execute_call (call);
+
 		success = EIF_TRUE;
 
 		expop(&eif_stack);
@@ -167,8 +182,11 @@ rt_shared EIF_BOOLEAN rt_scoop_try_call (call_data *call)
 		RTLXE;
 #endif
 		RTXSC;
+		RTS_SRR; /* Restore the two stacks and the region ID. */
 		success = EIF_FALSE;
 	}
+	CHECK ("same_request_group_stack", eif_scoop_request_group_stack_count (l_scoop_processor_id) == l_scoop_request_group_stack_count);
+	CHECK ("same_lock_stack", eif_scoop_lock_stack_count (l_scoop_processor_id) == l_scoop_lock_stack_count);
 
 	return success;
 }
