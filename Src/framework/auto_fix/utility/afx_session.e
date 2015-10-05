@@ -132,6 +132,11 @@ feature -- Directory structure
 			end
 		end
 
+	report_dir: PATH
+		do
+			Result := report_file_path.parent
+		end
+
 	afx_tmp_directory: PATH
 			-- Directory for putting temporary .e files during fixing.
 		do
@@ -194,9 +199,21 @@ feature -- Directory structure
 			prepare_empty_directory (regular_tests_directory)
 			prepare_empty_directory (relaxed_tests_directory)
 			empty_directory (override_directory)
+			prepare_directory (report_dir)
 		end
 
 feature{NONE} -- Directory structure (implementation)
+
+	prepare_directory (a_dir: PATH)
+			-- Prepare directory `a_dir' (Create one if not already exists).
+		local
+			l_dir: KL_DIRECTORY
+		do
+			create l_dir.make (a_dir.out)
+			if not l_dir.exists then
+				l_dir.recursive_create_directory
+			end
+		end
 
 	prepare_empty_directory (a_dir: PATH)
 			-- Prepare the empty directory `a_dir' (Create one if not already exists).
@@ -353,6 +370,7 @@ feature -- Logging
 			-- Initialize logging.
 		local
 			l_file: PLAIN_TEXT_FILE
+			l_logging_level: INTEGER
 		do
 			create progression_monitor.make
 			event_actions.subscribe_action_listener (progression_monitor)
@@ -360,10 +378,16 @@ feature -- Logging
 			create result_logger.make ({AFX_EVENT_LISTENER}.Notification_level_essential, report_file_path.out)
 			event_actions.subscribe_action_listener (result_logger)
 
-			create proxy_logger.make({AFX_EVENT_LISTENER}.Notification_level_supplemental, proxy_log_path.out)
+			if config.should_log_for_debugging then
+				l_logging_level := {AFX_EVENT_LISTENER}.Notification_level_supplemental
+			else
+				l_logging_level := {AFX_EVENT_LISTENER}.Notification_level_general
+			end
+
+			create proxy_logger.make(l_logging_level, proxy_log_path.out)
 			event_actions.subscribe_action_listener (proxy_logger)
 
-			create console_logger.make({AFX_EVENT_LISTENER}.Notification_level_general, "stdout")
+			create console_logger.make(l_logging_level, "stdout")
 			event_actions.subscribe_action_listener (console_logger)
 		end
 

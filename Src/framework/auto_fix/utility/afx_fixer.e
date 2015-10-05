@@ -50,10 +50,12 @@ feature -- Basic operation
 		local
 			l_traces_before_fixing, l_traces_before_fixing_twin, l_traces_after_relaxing, l_traces_for_validation: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
 			l_fixing_targets: DS_ARRAYED_LIST [AFX_FIXING_TARGET]
+			l_index: INTEGER
 			l_contract_fixes: DS_ARRAYED_LIST [AFX_CONTRACT_FIX_TO_FAULT]
 			l_code_fixes, l_valid_code_fixes: DS_ARRAYED_LIST [AFX_CODE_FIX_TO_FAULT]
 			l_feature_to_relax: AFX_FEATURE_TO_MONITOR
 			l_features_to_relax: DS_ARRAYED_LIST [AFX_FEATURE_TO_MONITOR]
+			l_exception_code: INTEGER
 		do
 			disable_catcall_warnings
 			create fixes.make_equal (30)
@@ -72,18 +74,66 @@ feature -- Basic operation
 
 			if config.is_fixing_implementation then
 				l_fixing_targets := localize_faulty_targets (l_traces_before_fixing)
+				if config.should_log_for_debugging then
+						-- Log at most the first 100 fixing targets.
+					event_actions.notify_on_supplemental_notification_issued ("LOGGING FIXING TARGETS")
+					from
+						l_fixing_targets.start
+						l_index := 0
+					until
+						l_index >= 100 or l_fixing_targets.after
+					loop
+						event_actions.notify_on_supplemental_notification_issued (l_fixing_targets.item_for_iteration.debug_output)
+						l_fixing_targets.forth
+						l_index := l_index + 1
+					end
+				end
+
 				l_code_fixes := generate_implementation_fixes (l_fixing_targets)
+				if config.should_log_for_debugging then
+					event_actions.notify_on_supplemental_notification_issued ("LOGGING ALL CODE FIXES")
+					from l_code_fixes.start
+					until
+						l_code_fixes.after
+					loop
+						event_actions.notify_on_supplemental_notification_issued (l_code_fixes.item_for_iteration.out)
+						l_code_fixes.forth
+					end
+				end
+
 				l_valid_code_fixes := validate_implementation_fixes (l_traces_before_fixing, l_code_fixes)
+				if config.should_log_for_debugging then
+					event_actions.notify_on_supplemental_notification_issued ("LOGGING VALID CODE FIXES")
+					from l_valid_code_fixes.start
+					until
+						l_valid_code_fixes.after
+					loop
+						event_actions.notify_on_supplemental_notification_issued (l_valid_code_fixes.item_for_iteration.out)
+						l_valid_code_fixes.forth
+					end
+				end
+
 				fixes.append_last (l_valid_code_fixes)
 			end
 
-			if config.is_fixing_contract then
+			l_exception_code := session.exception_from_execution.exception_code
+			if config.is_fixing_contract and then (l_exception_code = 3 or l_exception_code = 4) then
 				create l_feature_to_relax.make_from_feature_with_context_class (session.exception_from_execution.exception_feature_with_context)
 				l_feature_to_relax.set_monitor_contracts (True)
 				l_feature_to_relax.set_monitor_body (False)
 				l_traces_after_relaxing := collect_behavior_of_relaxed_tests (l_feature_to_relax)
 
 				l_contract_fixes := generate_contract_fixes (l_traces_before_fixing_twin, l_traces_after_relaxing)
+				if config.should_log_for_debugging then
+					event_actions.notify_on_supplemental_notification_issued ("LOGGING CONTRACT FIXES")
+					from l_contract_fixes.start
+					until
+						l_contract_fixes.after
+					loop
+						event_actions.notify_on_supplemental_notification_issued (l_contract_fixes.item_for_iteration.out)
+						l_contract_fixes.forth
+					end
+				end
 				validate_contract_fixes (l_contract_fixes)
 				sort_contract_fixes (l_contract_fixes)
 				fixes.append_last (l_contract_fixes)

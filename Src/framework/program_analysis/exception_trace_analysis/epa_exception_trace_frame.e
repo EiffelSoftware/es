@@ -196,6 +196,12 @@ feature -- Status report
 			Result := nature_of_exception ~ Nature_feature_call_on_void_target
 		end
 
+	is_nature_unmatched_inspect_value: BOOLEAN
+		do
+			Result := nature_of_exception ~ Nature_unmatched_inspect_value
+		end
+
+
 feature -- Status set
 
 	set_context_class_name (a_name: STRING)
@@ -277,6 +283,8 @@ feature -- Constant
 	Nature_assertion_violated: STRING = "Assertion violated."
 
 	Nature_feature_call_on_void_target: STRING = "Feature call on void target."
+
+	Nature_unmatched_inspect_value: STRING = "Unmatched inspect value."
 
 feature{NONE} -- Cache
 

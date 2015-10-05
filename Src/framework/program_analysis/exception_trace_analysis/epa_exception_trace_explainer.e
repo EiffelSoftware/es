@@ -58,6 +58,8 @@ feature -- Basic operation
 					explain_class_invariant_violation
 				elseif l_frame.is_nature_feature_call_on_void_target then
 					explain_feature_call_on_void_target
+				elseif l_frame.is_nature_unmatched_inspect_value then
+					explain_unmatched_inspect_value
 				elseif l_frame.is_rescue_frame then
 					quit (Msg_rescue_block_not_supported)
 				else
@@ -114,6 +116,18 @@ feature{NONE} -- Implementation
 							and then last_trace_frames.first.is_nature_assertion_violation
 		do
 			last_exception_code := check_instruction
+
+			explain_non_invariant_related_violations
+		end
+
+	explain_unmatched_inspect_value
+			-- Explain exception due to unmatched inspect value.
+		require
+			last_trace_frames /= Void
+					and then last_trace_frames.count >= 2
+					and then last_trace_frames.first.is_nature_unmatched_inspect_value
+		do
+			last_exception_code := Incorrect_inspect_value
 
 			explain_non_invariant_related_violations
 		end

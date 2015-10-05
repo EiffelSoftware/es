@@ -42,7 +42,7 @@ feature -- Status report
 		do
 			Result := is_precondition_violation or else is_postcondition_violation
 					or else is_class_invariant_violation or else is_assertion_violation
-					or else is_void_call_target
+					or else is_void_call_target or else is_unmatched_inspect_value
 		end
 
 	is_precondition_violation: BOOLEAN
@@ -73,6 +73,11 @@ feature -- Status report
 			-- Is this summary about a void call target?
 		do
 			Result := exception_code = Void_call_target
+		end
+
+	is_unmatched_inspect_value: BOOLEAN
+		do
+			Result := exception_code = Incorrect_inspect_value
 		end
 
 feature -- Hash

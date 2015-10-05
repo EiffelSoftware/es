@@ -70,6 +70,9 @@ feature -- Basic operations
 			l_postmortem_analysis_of_fixes: AP_STRING_OPTION
 			l_postmortem_analysis_output_dir: AP_STRING_OPTION
 
+				-- Log for debugging
+			l_should_log_for_debugging: AP_FLAG
+
 				-- Enabling experimental features
 			l_enable_experimental: AP_FLAG
 		do
@@ -163,6 +166,11 @@ feature -- Basic operations
 			create l_postmortem_analysis_output_dir.make_with_long_form ("postmortem-analysis-output")
 			l_postmortem_analysis_output_dir.set_description ("Directory to store the results from postmortem analysis. %N%TOptional.")
 			l_parser.options.force_last (l_postmortem_analysis_output_dir)
+
+				-- Log for debugging
+			create l_should_log_for_debugging.make_with_long_form ("log-for-debugging")
+			l_should_log_for_debugging.set_description ("Enable verbose logging for the sake of debugging.")
+			l_parser.options.force_last (l_should_log_for_debugging)
 
 				-- Experimental.
 			create l_enable_experimental.make_with_long_form ("enable-experimental")
@@ -282,6 +290,8 @@ feature -- Basic operations
 			end
 
 			config.set_experimental_enabled (l_enable_experimental.was_found)
+
+			config.set_log_for_debugging (l_should_log_for_debugging.was_found)
 		end
 
 end

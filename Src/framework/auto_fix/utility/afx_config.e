@@ -111,6 +111,15 @@ feature -- Type of tasks: Set
 			experimental_enabled := a_flag
 		end
 
+	set_log_for_debugging (a_flag: BOOLEAN)
+		do
+			should_log_for_debugging := a_flag
+		end
+
+feature -- Logging
+
+	should_log_for_debugging: BOOLEAN
+
 feature -- Experimental features
 
 	experimental_enabled: BOOLEAN
