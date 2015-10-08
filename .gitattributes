@@ -5226,6 +5226,12 @@ Src/unstable/library/web/cms/modules/recent_changes/recent_changes.ecf svneol=na
 Src/web/eiffel-org/eiffel_community_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/eiffel_community_site-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/ewf.ini -text
+Src/web/eiffel-org/library/gcse/gcse-safe.ecf svneol=native#text/xml
+Src/web/eiffel-org/library/gcse/gcse.ecf svneol=native#text/xml
+Src/web/eiffel-org/library/gcse/license.lic -text
+Src/web/eiffel-org/library/gcse/test/test.ecf svneol=native#text/xml
+Src/web/eiffel-org/library/http_client_extension/http_client_extension-safe.ecf svneol=native#text/xml
+Src/web/eiffel-org/library/http_client_extension/http_client_extension.ecf svneol=native#text/xml
 Src/web/eiffel-org/library/recaptcha/license.lic -text
 Src/web/eiffel-org/library/recaptcha/recaptcha-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/library/recaptcha/recaptcha.ecf svneol=native#text/xml
@@ -5292,6 +5298,7 @@ Src/web/eiffel-org/site/modules/auth/mail_templates/account_welcome.html svneol=
 Src/web/eiffel-org/site/modules/blog/files/css/blog.css -text
 Src/web/eiffel-org/site/modules/blog/files/scss/blog.scss -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
+Src/web/eiffel-org/site/modules/custom_search/config/custom_search.json -text
 Src/web/eiffel-org/site/modules/eiffel_download/downloads_configuration.json -text
 Src/web/eiffel-org/site/modules/node/files/css/node.css -text
 Src/web/eiffel-org/site/modules/node/files/scss/node.scss -text
