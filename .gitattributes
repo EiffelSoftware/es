@@ -5243,6 +5243,8 @@ Src/web/eiffel-org/library/wikidocs/wikidocs.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/codeboard/codeboard-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/contact/contact-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/contact/site/config/contact.json -text
+Src/web/eiffel-org/modules/custom_search/custom_search.ecf svneol=native#text/xml
+Src/web/eiffel-org/modules/custom_search/site/config/custom_search.json -text
 Src/web/eiffel-org/modules/eiffel_community/eiffel_community-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/eiffel_download/eiffel_download-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/eiffel_download/eiffel_download.ecf svneol=native#text/xml
