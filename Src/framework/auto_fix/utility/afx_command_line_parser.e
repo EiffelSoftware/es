@@ -105,7 +105,7 @@ feature -- Basic operations
 			l_parser.options.force_last (l_test_case_dir)
 
 			create l_fault_signature_id.make_with_long_form ("fault-signature-id")
-			l_fault_signature_id.set_description ("Signature id of a failing test case revealing the fault to fix.")
+			l_fault_signature_id.set_description ("Signature id of a failing test case revealing the fault to fix. Format: class_under_test.feature_under_test.exception_code.breakpoint_slot.recipient_class.recipient_feature.tag")
 			l_parser.options.force_last (l_fault_signature_id)
 
 			create l_max_passing_test_case_number_option.make_with_long_form ("max-passing-tc-number")

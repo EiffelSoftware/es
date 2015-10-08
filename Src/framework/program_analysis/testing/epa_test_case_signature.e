@@ -313,6 +313,7 @@ feature{NONE} -- Implementation
 			id.append (recipient_class)
 			id.append_character ('.')
 			id.append (recipient)
+			id.append ("." + tag)
 		end
 
 end
