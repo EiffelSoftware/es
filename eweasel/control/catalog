@@ -558,6 +558,7 @@ test	missing-vuar2-error-2		valid283 tcf pass validity anchored_type system-vali
 test	missing-vjar-error			valid284 tcf pass validity anchored_type system-validity
 test	missing-vjar-error-2		valid285 tcf pass validity anchored_type system-validity
 test	parenthesis-alias-tuple-vuar	valid286 tcf pass validity parenthesis_alias conversion tuple conformance
+test	conversion-on-separate-target	valid287 tcf fail validity conversion scoop
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -1456,12 +1457,12 @@ test	scoop-passive-processor-exception		scoop067 tcf pass scoop multithreaded ex
 test	scoop-estring_crash						scoop068 tcf fail scoop multithreaded execution
 test	scoop-generic-argument-check			scoop069 tcf fail scoop multithreaded validity
 test	scoop-impersonation-region-id			scoop070 tcf pass scoop multithreaded execution
-test	scoop-once-value-adoption				scoop071 tcf fail scoop multithreaded execution
+test	scoop-once-value-adoption				scoop071 tcf pass scoop multithreaded execution
 test	scoop-asynchronous-expanded				scoop072 tcf pass scoop multithreaded execution
 test	scoop-locking-expanded-argument			scoop073 tcf pass scoop multithreaded execution
 test	scoop-controlled-object-test			scoop074 tcf pass scoop multithreaded object_test validity execution
 test	scoop-temporary-pointer-variable		scoop075 tcf pass scoop multithreaded execution
-test	scoop-callback-region-adoption			scoop076 tcf fail scoop multithreaded execution
+test	scoop-callback-region-adoption			scoop076 tcf pass scoop multithreaded execution
 
 test	deadlock-simple-symmetric-cycle			deadlock001 tcf manual scoop multithreaded deadlock
 test	deadlock-simple-asymmetric-cycle		deadlock002 tcf manual scoop multithreaded deadlock
@@ -2306,6 +2307,7 @@ test	attached-tuple-element-validity	tuple015	tcf pass tuple
 test	tuple-basic-to-reference		tuple016 tcf pass tuple basic_types
 test	named-tuple-in-generic-constraint	tuple017 tcf fail tuple formal multiconstraint generic
 test	named-tuple-constraint-validity		tuple018 tcf fail tuple formal multiconstraint generic validity
+test	tuple-field-non-conforming-assignment	tuple019 tcf pass tuple assigner validity
 
 -- ~ operator test
 test	tilde-on-basic-type		tilde001	tcf pass tilde
