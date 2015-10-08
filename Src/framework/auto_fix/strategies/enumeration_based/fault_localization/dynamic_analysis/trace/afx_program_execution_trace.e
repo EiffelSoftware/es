@@ -65,7 +65,7 @@ feature -- Trace interpretation
 	update_values_of_old_expressions (a_map: DS_HASH_TABLE [AFX_FEATURE_TO_MONITOR, STRING])
 		local
 			l_state_cursor: LINKED_LIST_ITERATION_CURSOR [AFX_PROGRAM_EXECUTION_STATE]
-			l_state, l_pre_state: AFX_PROGRAM_EXECUTION_STATE
+			l_state, l_pre_state, l_current_state: AFX_PROGRAM_EXECUTION_STATE
 			l_bp, l_pre_bp: INTEGER
 			l_feature_name, l_pre_feature_name: STRING
 			l_feature: AFX_FEATURE_TO_MONITOR
@@ -91,35 +91,59 @@ feature -- Trace interpretation
 				l_bp := l_state.location.breakpoint_index
 				l_evaluation := l_state.state
 
+
+					-- FIXME: direct recursive calls are not handled.
 				if l_feature.should_monitor_contracts then
 					if l_bp = l_feature.breakpoint_to_evaluate_precondition then
-						l_stack.force (l_state)
-					elseif l_bp = l_feature.breakpoint_to_evaluate_postcondition then
-						check not l_stack.is_empty then
-								-- Exit state of feature
-							l_pre_state := l_stack.item
-							l_pre_evaluation := l_pre_state.state
-							l_pre_bp := l_pre_state.location.breakpoint_index
-							l_pre_feature_name := l_pre_state.location.context.qualified_feature_name
-
-							check l_pre_feature_name ~ l_feature_name and l_pre_bp = l_feature.breakpoint_to_evaluate_precondition then
-									-- Matching entry state available
-								from l_evaluation.start
-								until l_evaluation.after
-								loop
-									l_equation := l_evaluation.item_for_iteration
-									l_expression_text := l_equation.expression.text
-									if l_expression_text.has_substring ("old") and then l_equation.value.is_nonsensical then
-										l_old_expression_evaluator.evaluate (l_feature, l_expression_text, l_evaluation, l_pre_evaluation)
-										l_value := l_old_expression_evaluator.last_value
-										if l_value /= Void and then not l_value.is_nonsensical then
-											l_equation.set_value (l_value)
-										end
-									end
-
-									l_evaluation.forth
-								end
+						if l_stack.is_empty or else l_stack.item.location.context.qualified_feature_name /~ l_feature_name then
+							l_stack.force (l_state)
+						end
+					else
+							-- 'l_state' should be in the same routine as 'l_stack.item'.
+							-- Pop items from 'l_stack' until this is the case.
+							--
+							-- This is necessary because pre- and post-conditions being 'True' will take breakpoint slots
+							--     but not get executed, so some items on 'l_stack' don't get popped when their features return.
+						if not l_stack.is_empty then
+							from
+								l_current_state := l_stack.item
+							until
+								l_stack.is_empty or else l_current_state.location.context.qualified_feature_name ~ l_state.location.context.qualified_feature_name
+							loop
 								l_stack.remove
+								if not l_stack.is_empty then
+									l_current_state := l_stack.item
+								end
+							end
+						end
+
+						if l_bp = l_feature.breakpoint_to_evaluate_postcondition then
+							check not l_stack.is_empty then
+									-- Exit state of feature
+								l_pre_state := l_stack.item
+								l_pre_evaluation := l_pre_state.state
+								l_pre_bp := l_pre_state.location.breakpoint_index
+								l_pre_feature_name := l_pre_state.location.context.qualified_feature_name
+
+								check l_pre_feature_name ~ l_feature_name and l_pre_bp = l_feature.breakpoint_to_evaluate_precondition then
+										-- Matching entry state available
+									from l_evaluation.start
+									until l_evaluation.after
+									loop
+										l_equation := l_evaluation.item_for_iteration
+										l_expression_text := l_equation.expression.text
+										if l_expression_text.has_substring ("old") and then l_equation.value.is_nonsensical then
+											l_old_expression_evaluator.evaluate (l_feature, l_expression_text, l_evaluation, l_pre_evaluation)
+											l_value := l_old_expression_evaluator.last_value
+											if l_value /= Void and then not l_value.is_nonsensical then
+												l_equation.set_value (l_value)
+											end
+										end
+
+										l_evaluation.forth
+									end
+									l_stack.remove
+								end
 							end
 						end
 					end
