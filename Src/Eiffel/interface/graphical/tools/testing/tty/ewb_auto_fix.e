@@ -77,31 +77,35 @@ feature -- Properties
 						-- Build project for fixing.
 					create l_fixing_project_builder
 					l_fixing_project_builder.collect_test_cases
-						-- Directory structure is specific to the exception under consideration.
-					session.set_failure_from_trace (l_fixing_project_builder.current_exception_trace_summary)
-					session.set_number_of_test_cases_for_fixing (l_fixing_project_builder.number_of_test_cases_to_use_for_fixing)
-					session.prepare_directories
-					l_fixing_project_builder.build_project (System)
---					check fixing_project_root_exists: l_fixing_project_builder.new_root_exists end
---					if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
---						system.add_explicit_root (Void, afx_project_root_class, afx_project_root_feature)
-----						system.add_explicit_root (l_fixing_project_builder.cluster_of_new_root, afx_project_root_class, afx_project_root_feature)
---					end
---					l_fixing_project_builder.compile_project (l_fixing_project_builder.eiffel_project, True)
+					if l_fixing_project_builder.current_failing_test_signature /= Void then
+							-- Directory structure is specific to the exception under consideration.
+						session.set_failure_from_trace (l_fixing_project_builder.current_exception_trace_summary)
+						session.set_number_of_test_cases_for_fixing (l_fixing_project_builder.number_of_test_cases_to_use_for_fixing)
+						session.prepare_directories
+						l_fixing_project_builder.build_project (System)
+--						check fixing_project_root_exists: l_fixing_project_builder.new_root_exists end
+--						if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
+--							system.add_explicit_root (Void, afx_project_root_class, afx_project_root_feature)
+--	--						system.add_explicit_root (l_fixing_project_builder.cluster_of_new_root, afx_project_root_class, afx_project_root_feature)
+--						end
+--						l_fixing_project_builder.compile_project (l_fixing_project_builder.eiffel_project, True)
 
-					create l_fixer
-					l_fixer.execute
+						create l_fixer
+						l_fixer.execute
 
---					if session.config.is_fixing_contract then
---						create l_contract_fixer
---						l_contract_fixer.execute
---					else
---						create l_fix_proposer
---						l_fix_proposer.execute
---					end
+--						if session.config.is_fixing_contract then
+--							create l_contract_fixer
+--							l_contract_fixer.execute
+--						else
+--							create l_fix_proposer
+--							l_fix_proposer.execute
+--						end
 
-					system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
-					system.make_update (False)
+						system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
+						system.make_update (False)
+					else
+						Io.put_string ("No failing test case found.")
+					end
 				elseif session.config.is_not_fixing then
 					perform_non_fixing_task()
 				end
@@ -126,7 +130,7 @@ feature -- Properties
 		end
 
 note
-	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

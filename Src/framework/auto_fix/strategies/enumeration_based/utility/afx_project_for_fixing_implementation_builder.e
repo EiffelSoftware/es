@@ -123,57 +123,61 @@ feature -- Basic operation
 					l_signature_id_cursor.forth
 				end
 			end
-			if current_failing_test_signature = Void then
+
+				-- Fix the first fault from the test case directory, if the target fault is not specified.
+			if current_failing_test_signature = Void and then not l_test_case_file_selector.failing_test_signatures.is_empty then
 				current_failing_test_signature := l_test_case_file_selector.failing_test_signatures.first
 			end
 
-				-- Select test cases
-			l_test_case_file_selector.set_max_passing_test_case_number (config.max_passing_test_case_number)
-			l_test_case_file_selector.set_max_failing_test_case_number (config.max_failing_test_case_number)
+			if current_failing_test_signature /= Void then
+					-- Select test cases
+				l_test_case_file_selector.set_max_passing_test_case_number (config.max_passing_test_case_number)
+				l_test_case_file_selector.set_max_failing_test_case_number (config.max_failing_test_case_number)
 
-			current_passing_test_cases := l_test_case_file_selector.selected_tests (True,
-					agent (a_failure, a_match: EPA_TEST_CASE_SIGNATURE): BOOLEAN
-						do
-							Result := a_failure.feature_under_test ~ a_match.feature_under_test
-									and then a_failure.class_under_test ~ a_match.class_under_test
-						end (current_failing_test_signature, ?))
-			current_failing_test_cases := l_test_case_file_selector.selected_tests (False,
-					agent (a_failure, a_match: EPA_TEST_CASE_SIGNATURE): BOOLEAN
-						do
-							Result := a_failure.id ~ a_match.id
-						end (current_failing_test_signature, ?))
-			current_exception_trace_summary := exception_summary_from_trace_file (current_failing_test_cases.first)
-			number_of_test_cases_to_use_for_fixing := (current_passing_test_cases.count + 1)// 2 + (current_failing_test_cases.count + 1) // 2
-
-			if config.is_fixing_contract then
-					-- Path to relaxed test cases.
-				l_failure_from_trace := current_exception_trace_summary
-				create l_failing_feature.make (l_failure_from_trace.failing_feature, l_failure_from_trace.failing_context_class)
-				create l_path_to_relaxed_test_cases.make_from_string (config.relaxed_test_case_path)
-				l_path_to_relaxed_test_cases := l_path_to_relaxed_test_cases.extended (l_failing_feature.context_class.name).extended (l_failing_feature.feature_.feature_name)
-
-					-- Select relaxed test cases
-				create l_relaxed_test_case_file_selector
-				l_relaxed_test_case_file_selector.collect_test_cases (l_path_to_relaxed_test_cases.out, Void)
-				l_relaxed_test_case_file_selector.set_max_passing_test_case_number (config.max_passing_test_case_number)
-				l_relaxed_test_case_file_selector.set_max_failing_test_case_number (config.max_failing_test_case_number)
-				l_relaxed_test_case_file_selector.use_random_selection (config.is_using_random_test_case_selection)
-				l_relaxed_test_case_file_selector.use_state_based_selection (config.is_using_state_based_test_case_selection)
-				current_relaxed_passing_test_cases := l_relaxed_test_case_file_selector.selected_tests (True,
-						agent (a_target: EPA_FEATURE_WITH_CONTEXT_CLASS; a_match: EPA_TEST_CASE_SIGNATURE): BOOLEAN
+				current_passing_test_cases := l_test_case_file_selector.selected_tests (True,
+						agent (a_failure, a_match: EPA_TEST_CASE_SIGNATURE): BOOLEAN
 							do
-								Result := a_target.feature_.feature_name ~ a_match.feature_under_test
-										and then a_target.context_class.name ~ a_match.class_under_test
-							end (l_failing_feature, ?))
-				current_relaxed_failing_test_cases := l_relaxed_test_case_file_selector.selected_tests (False,
-						agent (a_target: EPA_FEATURE_WITH_CONTEXT_CLASS; a_match: EPA_TEST_CASE_SIGNATURE): BOOLEAN
+								Result := a_failure.feature_under_test ~ a_match.feature_under_test
+										and then a_failure.class_under_test ~ a_match.class_under_test
+							end (current_failing_test_signature, ?))
+				current_failing_test_cases := l_test_case_file_selector.selected_tests (False,
+						agent (a_failure, a_match: EPA_TEST_CASE_SIGNATURE): BOOLEAN
 							do
-								Result := a_target.feature_.feature_name ~ a_match.feature_under_test
-										and then a_target.context_class.name ~ a_match.class_under_test
-							end (l_failing_feature, ?))
-			else
-				create current_relaxed_failing_test_cases.make_equal (1)
-				create current_relaxed_passing_test_cases.make_equal (1)
+								Result := a_failure.id ~ a_match.id
+							end (current_failing_test_signature, ?))
+				current_exception_trace_summary := exception_summary_from_trace_file (current_failing_test_cases.first)
+				number_of_test_cases_to_use_for_fixing := (current_passing_test_cases.count + 1)// 2 + (current_failing_test_cases.count + 1) // 2
+
+				if config.is_fixing_contract and then (current_failing_test_signature.exception_code = 3 or current_failing_test_signature.exception_code = 4) then
+						-- Path to relaxed test cases.
+					l_failure_from_trace := current_exception_trace_summary
+					create l_failing_feature.make (l_failure_from_trace.failing_feature, l_failure_from_trace.failing_context_class)
+					create l_path_to_relaxed_test_cases.make_from_string (config.relaxed_test_case_path)
+					l_path_to_relaxed_test_cases := l_path_to_relaxed_test_cases.extended (l_failing_feature.context_class.name).extended (l_failing_feature.feature_.feature_name)
+
+						-- Select relaxed test cases
+					create l_relaxed_test_case_file_selector
+					l_relaxed_test_case_file_selector.collect_test_cases (l_path_to_relaxed_test_cases.out, Void)
+					l_relaxed_test_case_file_selector.set_max_passing_test_case_number (config.max_passing_test_case_number)
+					l_relaxed_test_case_file_selector.set_max_failing_test_case_number (config.max_failing_test_case_number)
+					l_relaxed_test_case_file_selector.use_random_selection (config.is_using_random_test_case_selection)
+					l_relaxed_test_case_file_selector.use_state_based_selection (config.is_using_state_based_test_case_selection)
+					current_relaxed_passing_test_cases := l_relaxed_test_case_file_selector.selected_tests (True,
+							agent (a_target: EPA_FEATURE_WITH_CONTEXT_CLASS; a_match: EPA_TEST_CASE_SIGNATURE): BOOLEAN
+								do
+									Result := a_target.feature_.feature_name ~ a_match.feature_under_test
+											and then a_target.context_class.name ~ a_match.class_under_test
+								end (l_failing_feature, ?))
+					current_relaxed_failing_test_cases := l_relaxed_test_case_file_selector.selected_tests (False,
+							agent (a_target: EPA_FEATURE_WITH_CONTEXT_CLASS; a_match: EPA_TEST_CASE_SIGNATURE): BOOLEAN
+								do
+									Result := a_target.feature_.feature_name ~ a_match.feature_under_test
+											and then a_target.context_class.name ~ a_match.class_under_test
+								end (l_failing_feature, ?))
+				else
+					create current_relaxed_failing_test_cases.make_equal (1)
+					create current_relaxed_passing_test_cases.make_equal (1)
+				end
 			end
 		end
 
