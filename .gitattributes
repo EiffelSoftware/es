@@ -5295,6 +5295,7 @@ Src/web/eiffel-org/site/config/app.ini -text
 Src/web/eiffel-org/site/config/cms.ini -text
 Src/web/eiffel-org/site/config/eiffel_community_app.json -text
 Src/web/eiffel-org/site/config/eiffel_org.json -text
+Src/web/eiffel-org/site/config/modules/feed_aggregator/feeds.json -text
 Src/web/eiffel-org/site/config/modules/wdocs/wdocs.ini -text
 Src/web/eiffel-org/site/modules/admin/files/css/admin.css -text
 Src/web/eiffel-org/site/modules/admin/files/scss/admin.scss -text
@@ -5308,6 +5309,8 @@ Src/web/eiffel-org/site/modules/blog/files/scss/blog.scss -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
 Src/web/eiffel-org/site/modules/custom_search/config/custom_search.json -text
 Src/web/eiffel-org/site/modules/eiffel_download/downloads_configuration.json -text
+Src/web/eiffel-org/site/modules/feed_aggregator/files/css/feed_aggregator.css -text
+Src/web/eiffel-org/site/modules/feed_aggregator/files/scss/feed_aggregator.scss -text
 Src/web/eiffel-org/site/modules/node/files/css/node.css -text
 Src/web/eiffel-org/site/modules/node/files/scss/node.scss -text
 Src/web/eiffel-org/site/modules/node/scripts/node.sql -text
