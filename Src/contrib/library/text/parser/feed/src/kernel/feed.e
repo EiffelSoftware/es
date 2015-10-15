@@ -80,18 +80,38 @@ feature -- Element change
 
 	set_updated_date_with_text (a_date_text: detachable READABLE_STRING_32)
 			-- Set `date' from date string representation `a_date_text'.
+		obsolete 
+			"Use set_date_with_text [oct/2015]"
+		do
+			set_date_with_text (a_date_text)
+		end
+
+	set_date_with_text (a_date_text: detachable READABLE_STRING_32)
+			-- Set `date' from date string representation `a_date_text'.
 		do
 			if a_date_text = Void then
-				date := Void
+				set_date (Void)
 			else
-				date := date_time (a_date_text)
+				set_date (date_time (a_date_text))
 			end
+		end
+
+	set_date (a_date: detachable DATE_TIME)
+			-- Set `date' from `a_date'.
+		do
+			date := a_date
 		end
 
 	extend (a_item: FEED_ITEM)
 			-- Add item `a_item' to feed `items'.
 		do
 			items.force (a_item)
+		end
+
+	prune (a_item: FEED_ITEM)
+			-- Remove feed item `a_item' from Current list of feed items.
+		do
+			items.prune (a_item)
 		end
 
 	extended alias "+" (a_feed: FEED): FEED

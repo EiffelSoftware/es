@@ -24,23 +24,23 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_default_version_id: READABLE_STRING_GENERAL; a_api: CMS_API; a_cfg: WDOCS_CONFIG)
+	make (a_default_version_id: READABLE_STRING_GENERAL; a_api: CMS_API; a_setup: WDOCS_SETUP)
 		require
 			a_default_version_id_valid: not a_default_version_id.is_whitespace
 		do
 			default_version_id := a_default_version_id
-			temp_dir := a_cfg.temp_dir
-			documentation_dir := a_cfg.documentation_dir
-			configuration := a_cfg
+			temp_dir := a_setup.temp_dir
+			documentation_dir := a_setup.documentation_dir
+			settings := a_setup
 			make_with_cms_api (a_api)
 		end
-
-	configuration: WDOCS_CONFIG
-			-- Associated configuration.
 
 	name: STRING = "wdocs"
 
 feature -- Access
+
+	settings: WDOCS_SETUP
+			-- Associated configuration.
 
 	documentation_dir: PATH
 
@@ -49,11 +49,27 @@ feature -- Access
 feature -- Query
 
 	manager (a_version_id: detachable READABLE_STRING_GENERAL): WDOCS_MANAGER
+			-- Wikidocs manager for version `a_version_id'.
+		local
+			v: READABLE_STRING_GENERAL
 		do
-			if a_version_id = Void or else a_version_id.same_string (default_version_id) then
-				create Result.make_default (documentation_wiki_dir (default_version_id), default_version_id, temp_dir)
+			if a_version_id /= Void then
+				v := a_version_id
 			else
-				create Result.make (documentation_wiki_dir (a_version_id), a_version_id, temp_dir)
+				v := default_version_id
+			end
+			if
+				attached internal_managers as tb and then
+				attached tb.item (v) as mng
+			then
+				Result := mng
+			else
+				if a_version_id = Void or else a_version_id.same_string (default_version_id) then
+					create Result.make_default (documentation_wiki_dir (default_version_id), default_version_id, temp_dir)
+				else
+					create Result.make (documentation_wiki_dir (a_version_id), a_version_id, temp_dir)
+				end
+				remember_manager (Result)
 			end
 		end
 
@@ -63,6 +79,24 @@ feature -- Query
 		do
 			Result := documentation_dir.extended (a_version_id)
 		end
+
+feature {NONE} -- Query: cache		
+
+	remember_manager (mng: like manager)
+			-- Cache in memory wdocs manager `mng'.
+		local
+			tb: like internal_managers
+		do
+			tb := internal_managers
+			if tb = Void then
+				create tb.make (1)
+				internal_managers := tb
+			end
+			tb.force (mng, mng.version_id)
+		end
+
+	internal_managers: detachable STRING_TABLE [WDOCS_MANAGER]
+			-- wdocs manager cache.
 
 feature -- Access: cache system
 
@@ -195,6 +229,7 @@ feature -- Recent changes
 			svn: SVN
 			opts: detachable SVN_OPTIONS
 			l_info: SVN_REVISION_INFO
+			l_log: READABLE_STRING_8
 			loc: PATH
 			l_base_url: detachable STRING_8
 			s: STRING_32
@@ -203,10 +238,17 @@ feature -- Recent changes
 			wbookid: detachable READABLE_STRING_GENERAL
 			mnger: like manager
 			dt: DATE_TIME
+			l_prev: detachable like recent_changes_before.item
+			l_logs: detachable LIST [SVN_REVISION_INFO]
+			l_result_count: INTEGER
+			nb: INTEGER
+			done: BOOLEAN
 		do
 			create {ARRAYED_LIST [like recent_changes_before.item]} Result.make (params.size.as_integer_32)
 
 --			create opts
+
+			mnger := manager (a_version_id)
 
 			svn := new_svn
 			if a_version_id = Void then
@@ -227,40 +269,73 @@ feature -- Recent changes
 			if l_base_url = Void then
 				create l_base_url.make_empty
 			end
-			if attached svn.logs (loc.name, True, a_date, 1, params.size.to_integer_32, opts) as l_logs then
-				across
-					l_logs as ic
-				loop
-					l_info := ic.item
-					dt := svn_log_date_to_date_time (l_info.date)
+			from
+				nb := params.size.to_integer_32
+				done := False
+				dt := a_date
+			until
+				Result.count >= nb or done
+			loop
+				l_result_count := Result.count
+				l_logs := svn.logs (loc.name, True, dt, 1, nb - l_result_count, opts)
+				if l_logs = Void or else l_logs.count = 0 then
+					done := True
+				else
+					done := l_logs.count < nb - l_result_count
 					across
-						l_info.paths as p_ic
+						l_logs as ic
+					until
+						done
 					loop
-						s := p_ic.item.path
-						if s.starts_with (l_base_url) then
-							s.remove_head (l_base_url.count + 1)
-						end
-						if not s.is_empty and then s.item (1) = '/' then
-							s.remove_head (1)
-						end
-						if not s.is_empty then
-							wp := Void
-							wbookid := Void
-							mnger := manager (a_version_id)
-							if attached mnger.book_and_page_by_path (loc.extended (s)) as l_wb_and_wp then
-								wp := l_wb_and_wp.page
-								wbookid := l_wb_and_wp.bookid
+						l_info := ic.item
+						dt := svn_log_date_to_date_time (l_info.date)
+						across
+							l_info.paths as p_ic
+						loop
+							s := p_ic.item.path
+							if s.starts_with (l_base_url) then
+								s.remove_head (l_base_url.count + 1)
 							end
-							if wbookid /= Void and wp /= Void then
-								wp.update_from_metadata
-								wp.set_src (mnger.wiki_page_uri_path (wp, wbookid, a_version_id))
-								wp.set_src (wp.src.substring (2, wp.src.count))
-								Result.force ([dt, l_info.author, wbookid, wp, utf.utf_32_string_to_utf_8_string_8 (p_ic.item.action + {STRING_32} "%N -- " + l_info.log_message)])
-							else
-									-- FIXME: Either not a doc item, or issue. To handle.
+							if not s.is_empty and then s.item (1) = '/' then
+								s.remove_head (1)
+							end
+							if not s.is_empty then
+								wp := Void
+								wbookid := Void
+								if attached mnger.book_and_page_by_path (loc.extended (s)) as l_wb_and_wp then
+									wp := l_wb_and_wp.page
+									wbookid := l_wb_and_wp.bookid
+								end
+								if wbookid /= Void and wp /= Void then
+									wp.update_from_metadata
+									wp.set_src (mnger.wiki_page_uri_path (wp, wbookid, a_version_id))
+									wp.set_src (wp.src.substring (2, wp.src.count))
+									l_log := utf.utf_32_string_to_utf_8_string_8 (p_ic.item.action + {STRING_32} "%N -- " + l_info.log_message)
+									if
+										l_prev /= Void and then
+										wbookid.same_string (l_prev.bookid) and then
+										l_prev.page ~ wp
+									then
+											-- Update previous data
+										l_prev.time := dt
+										l_prev.author := l_info.author
+										l_prev.bookid := wbookid
+										if not l_prev.log.same_string (l_log) then
+											l_prev.log := l_prev.log + l_log
+										end
+									else
+										l_prev := [dt, l_info.author, wbookid, wp, l_log]
+										Result.force (l_prev)
+									end
+								else
+										-- FIXME: Either not a doc item, or issue. To handle.
+								end
 							end
 						end
+						done := done or Result.count >= nb
 					end
+						-- Stop if no new change were added (prevent very long processing) that may occurs with "svn copy ...".
+					done := done or Result.count = l_result_count
 				end
 			end
 		end
@@ -330,7 +405,7 @@ feature -- Factory
 			Result := manager (Void).new_wiki_page (utf.utf_32_string_to_utf_8_string_8 (a_title), a_parent_key)
 		end
 
-	save_wiki_page (a_page: like new_wiki_page; a_source: detachable READABLE_STRING_8; a_path: detachable PATH; a_book_id: READABLE_STRING_GENERAL; a_manager: WDOCS_MANAGER; a_context: detachable WDOCS_CHANGE_CONTEXT)
+	save_wiki_page (a_page: like new_wiki_page; a_parent_page: detachable like new_wiki_page; a_source: detachable READABLE_STRING_8; a_path: detachable PATH; a_book_id: READABLE_STRING_GENERAL; a_manager: WDOCS_MANAGER; a_context: detachable WDOCS_CHANGE_CONTEXT)
 			-- Save page `a_page' with source `a_source' into file `a_path' or inside folder `a_path' if `a_path' is a folder.
 		local
 			p: detachable PATH
@@ -340,6 +415,7 @@ feature -- Factory
 			utf: UTF_CONVERTER
 			wut: WSF_FILE_UTILITIES [RAW_FILE]
 			fn: STRING
+			l_changelist: SVN_CHANGELIST
 		do
 			reset_error
 
@@ -392,14 +468,17 @@ feature -- Factory
 					end
 					if (create {FILE_UTILITIES}).file_path_exists (p) then
 						save_content_to_file (txt, p)
+						create l_changelist.make_with_path (p)
 					else
+						create l_changelist.make_with_path (p)
+						prepare_wiki_parent_directory (p.parent, a_parent_page, l_changelist)
 						save_content_to_file (txt, p)
 						svn_add (p)
 					end
 					if a_context /= Void then
-						svn_commit (p, a_context.username, a_context.log)
+						svn_commit (l_changelist, a_context.username, a_context.log)
 					else
-						svn_commit (p, Void, Void)
+						svn_commit (l_changelist, Void, Void)
 					end
 					a_page.set_text (create {WIKI_CONTENT_TEXT}.make_from_string (txt))
 					if not has_error then
@@ -414,6 +493,46 @@ feature -- Factory
 							cache_for_wiki_page_xhtml (a_manager.version_id, a_book_id, l_parent_page).delete
 						end
 					end
+				end
+			end
+		end
+
+	prepare_wiki_parent_directory (p: PATH; a_parent_page: detachable like new_wiki_page; a_changelist: SVN_CHANGELIST)
+			-- Prepare parent directory for a new sub wiki page.
+		local
+			dir: DIRECTORY
+			l_index_path: detachable PATH
+			fut: FILE_UTILITIES
+			f: PLAIN_TEXT_FILE
+		do
+			create dir.make_with_path (p)
+			if not dir.exists then
+				a_changelist.extend_path (p)
+				dir.recursive_create_dir
+				svn_add (p)
+				if a_parent_page /= Void then
+					if
+						attached a_parent_page.path as pp and then
+						fut.file_path_exists (pp)
+					then
+						l_index_path := pp
+					else
+						l_index_path := p.parent.extended (a_parent_page.parent_key).appended_with_extension ("wiki")
+					end
+				end
+				if
+					l_index_path /= Void and then
+					fut.file_path_exists (l_index_path)
+				then
+					svn_move (l_index_path, p.extended ("index.wiki"))
+					a_changelist.extend_path (l_index_path)
+				else
+					l_index_path := p.extended ("index.wiki")
+					create f.make_with_path (l_index_path)
+					f.create_read_write
+					f.put_new_line
+					f.close
+					svn_add (l_index_path)
 				end
 			end
 		end
@@ -499,9 +618,12 @@ feature -- Subversion helpers
 			svn: SVN
 			opts: detachable SVN_OPTIONS
 		do
+			error_handler.reset
 			svn := new_svn
 			if attached svn.update (p, Void, opts) as res then
-				-- FIXME: handle error
+				if res.failed then
+					error_handler.add_custom_error (1, "svn update failed", res.message)
+				end
 			end
 		end
 
@@ -510,19 +632,42 @@ feature -- Subversion helpers
 			svn: SVN
 			opts: detachable SVN_OPTIONS
 		do
+			error_handler.reset
 			svn := new_svn
+			create opts
+			opts.set_parameters ("--parents")
 			if attached svn.add (p, opts) as res then
-				-- FIXME: handle error
+				if res.failed then
+					error_handler.add_custom_error (1, "svn add failed", res.message)
+				end
 			end
 		end
 
-	svn_commit (p: PATH; a_username: detachable READABLE_STRING_32; a_log: detachable READABLE_STRING_32)
+	svn_move (p, a_new_location: PATH)
+			-- Svn move node at `p' to new location `a_new_location'.
+		local
+			svn: SVN
+			opts: detachable SVN_OPTIONS
+		do
+			error_handler.reset
+			svn := new_svn
+			create opts
+			opts.set_parameters ("--parents")
+			if attached svn.move (p.name, a_new_location.name, opts) as res then
+				if res.failed then
+					error_handler.add_custom_error (1, "svn add failed", res.message)
+				end
+			end
+		end
+
+	svn_commit (a_changelist: SVN_CHANGELIST; a_username: detachable READABLE_STRING_32; a_log: detachable READABLE_STRING_32)
 		local
 			svn: SVN
 			opts: detachable SVN_OPTIONS
 			s: STRING
 			utf: UTF_CONVERTER
 		do
+			error_handler.reset
 			svn := new_svn
 			if
 				attached cms_api.setup.text_item ("tools.subversion.username") as l_svn_username and
@@ -543,8 +688,10 @@ feature -- Subversion helpers
 				s.append (utf.utf_32_string_to_utf_8_string_8 (a_username))
 				s.append (").")
 			end
-			if attached svn.commit (p, s, opts) as res then
-				-- FIXME: handle error
+			if attached svn.commit (a_changelist, s, opts) as res then
+				if res.failed then
+					error_handler.add_custom_error (1, "svn commit failed", res.message)
+				end
 			end
 		end
 

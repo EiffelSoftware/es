@@ -104,7 +104,6 @@ feature -- Hook: menu_alter
 			end
 		end
 
-
 feature -- Hook: form_alter
 
 	subscribe_to_form_alter_hook (h: CMS_HOOK_FORM_ALTER)
@@ -138,6 +137,11 @@ feature -- Hook: block
 
 	invoke_block (a_response: CMS_RESPONSE)
 			-- Invoke block hook for response `a_response' in order to get block from modules.
+		local
+			bl: READABLE_STRING_8
+			bl_optional: BOOLEAN
+			l_ok: BOOLEAN
+			l_block_cache: detachable TUPLE [block: CMS_CACHE_BLOCK; region: READABLE_STRING_8; expired: BOOLEAN]
 		do
 			if attached subscribers ({CMS_HOOK_BLOCK}) as lst then
 				across
@@ -147,10 +151,53 @@ feature -- Hook: block
 						across
 							h.block_list as blst
 						loop
-							h.get_block_view (blst.item, a_response)
+							l_ok := False
+							bl := blst.item
+							bl_optional := bl.count > 0 and bl[1] = '?'
+							if bl_optional then
+								bl := bl.substring (2, bl.count)
+								if a_response.is_block_included (bl, False) then
+									l_ok := True
+								end
+							else
+								l_ok := True
+							end
+							if l_ok then
+								l_block_cache := a_response.block_cache (bl)
+								if l_block_cache /= Void and then not l_block_cache.expired then
+									a_response.add_block (l_block_cache.block, l_block_cache.region)
+								else
+									h.get_block_view (bl, a_response)
+								end
+							end
 						end
 					end
 				end
+			end
+		end
+
+feature -- Hook: cache
+
+	subscribe_to_cache_hook (h: CMS_HOOK_CACHE)
+			-- Add `h' as subscriber of cache hooks CMS_HOOK_CACHE,
+			-- and response `a_response'.
+		do
+			subscribe_to_hook (h, {CMS_HOOK_CACHE})
+		end
+
+	invoke_clear_cache (a_cache_id_list: detachable ITERABLE [READABLE_STRING_GENERAL]; a_response: CMS_RESPONSE)
+			-- Invoke cache hook for identifiers `a_cache_id_list'.
+		do
+			if attached subscribers ({CMS_HOOK_CACHE}) as lst then
+				across
+					lst as c
+				loop
+					if attached {CMS_HOOK_CACHE} c.item as h then
+						h.clear_cache (a_cache_id_list, a_response)
+					end
+				end
+
+				a_response.clear_block_caches (a_cache_id_list)
 			end
 		end
 
