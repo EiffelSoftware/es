@@ -2546,6 +2546,11 @@ Src/contrib/library/graphic/toolkit/wex/examples/wex/Framework_example/app.ico s
 Src/contrib/library/graphic/toolkit/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
 Src/contrib/library/network/authentication/http_authorization/http_authorization-safe.ecf svneol=native#text/xml
 Src/contrib/library/network/authentication/http_authorization/http_authorization.ecf svneol=native#text/xml
+Src/contrib/library/network/http_client/libcurl_http_client-safe.ecf svneol=native#text/xml
+Src/contrib/library/network/http_client/libcurl_http_client.ecf svneol=native#text/xml
+Src/contrib/library/network/http_client/net_http_client-safe.ecf svneol=native#text/xml
+Src/contrib/library/network/http_client/net_http_client.ecf svneol=native#text/xml
+Src/contrib/library/network/http_client/tests/logo.jpg -text
 Src/contrib/library/network/server/nino/example/SimpleWebServer/webroot/demo1/img/gradient_light.jpg -text
 Src/contrib/library/network/server/nino/example/SimpleWebServer/webroot/demo2/img/background.jpg -text
 Src/contrib/library/network/server/nino/example/SimpleWebServer/webroot/demo2/img/button_bg.jpg -text
@@ -5967,6 +5972,7 @@ Src/unstable/library/web/cms/library/model/license.lic -text
 Src/unstable/library/web/cms/library/persistence/mysql/scripts/core.sql -text
 Src/unstable/library/web/cms/library/persistence/mysql/scripts/node.sql -text
 Src/unstable/library/web/cms/library/persistence/mysql/scripts/user.sql -text
+Src/unstable/library/web/cms/library/persistence/sqlite3/sqlite3-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/persistence/store_mysql/store_mysql-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/persistence/store_mysql/tests/tests.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/library/persistence/store_odbc/store_odbc-safe.ecf svneol=native#text/xml
@@ -6002,6 +6008,9 @@ Src/unstable/library/web/cms/modules/openid/site/scripts/openid_consumers_initia
 Src/unstable/library/web/cms/modules/openid/site/scripts/openid_items.sql -text
 Src/unstable/library/web/cms/modules/recent_changes/recent_changes-safe.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/modules/recent_changes/recent_changes.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/tools/roc/license.lic -text
+Src/unstable/library/web/cms/tools/roc/roc.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/tools/roc/roc.rc -text
 Src/web/eiffel-org/eiffel_community_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/eiffel_community_site-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/ewf.ini -text
@@ -6082,6 +6091,7 @@ Src/web/eiffel-org/site/modules/blog/files/scss/blog.scss -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
 Src/web/eiffel-org/site/modules/custom_search/config/custom_search.json -text
 Src/web/eiffel-org/site/modules/eiffel_download/downloads_configuration.json -text
+Src/web/eiffel-org/site/modules/feed_aggregator/config/feeds.json.example -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/css/feed_aggregator.css -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/scss/feed_aggregator.scss -text
 Src/web/eiffel-org/site/modules/node/files/css/node.css -text
@@ -6094,6 +6104,7 @@ Src/web/eiffel-org/site/modules/openid/scripts/openid_consumers_initialize.sql -
 Src/web/eiffel-org/site/modules/openid/scripts/openid_items.sql -text
 Src/web/eiffel-org/site/modules/wdocs/wdocs.ini -text
 Src/web/eiffel-org/site/modules/wish_list/files/css/wish_list.css -text
+Src/web/eiffel-org/site/modules/wish_list/files/favicon.ico -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/ajax-loader.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/down.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/favicon.ico -text
@@ -6110,6 +6121,11 @@ Src/web/eiffel-org/site/modules/wish_list/files/images/status_3.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/status_4.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/status_5.gif -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/up.gif -text
+Src/web/eiffel-org/site/modules/wish_list/files/scss/960.scss -text
+Src/web/eiffel-org/site/modules/wish_list/files/scss/base/base-reset.scss -text
+Src/web/eiffel-org/site/modules/wish_list/files/scss/markup-mixins.scss -text
+Src/web/eiffel-org/site/modules/wish_list/files/scss/variables.scss -text
+Src/web/eiffel-org/site/modules/wish_list/files/scss/wish_list.scss -text
 Src/web/eiffel-org/site/modules/wish_list/scripts/alter_table.sql -text
 Src/web/eiffel-org/site/modules/wish_list/scripts/initialize_wish_list.sql -text
 Src/web/eiffel-org/site/modules/wish_list/scripts/wish_list.sql -text

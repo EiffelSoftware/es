@@ -1,6 +1,9 @@
 note
 	description: "[
 				Specific implementation of HTTP_CLIENT_SESSION based on Eiffel cURL library
+				
+				WARNING: Do not forget to have the dynamic libraries libcurl (.dll or .so) 
+				and related accessible to the executable (i.e in same directory, or in the PATH)
 			]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -34,19 +37,22 @@ feature -- Status report
 feature -- Custom
 
 	custom (a_method: READABLE_STRING_8; a_path: READABLE_STRING_8; ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		local
 			req: HTTP_CLIENT_REQUEST
 		do
 			create {LIBCURL_HTTP_CLIENT_REQUEST} req.make (base_url + a_path, a_method, Current, ctx)
-			Result := req.execute
+			Result := req.response
 		end
 
 	custom_with_upload_data (a_method: READABLE_STRING_8; a_path: READABLE_STRING_8; a_ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT; data: READABLE_STRING_8): HTTP_CLIENT_RESPONSE
+			-- Same as `custom' but including upload data `a_data'.
 		do
 			Result := impl_custom (a_method, a_path, a_ctx, data, Void)
 		end
 
 	custom_with_upload_file (a_method: READABLE_STRING_8; a_path: READABLE_STRING_8; a_ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT; fn: READABLE_STRING_8): HTTP_CLIENT_RESPONSE
+			-- Same as `custom' but including upload file `fn'.
 		do
 			Result := impl_custom (a_method, a_path, a_ctx, Void, fn)
 		end
@@ -54,46 +60,55 @@ feature -- Custom
 feature -- Helper
 
 	get (a_path: READABLE_STRING_8; ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		do
 			Result := custom ("GET", a_path, ctx)
 		end
 
 	head (a_path: READABLE_STRING_8; ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		do
 			Result := custom ("HEAD", a_path, ctx)
 		end
 
 	post (a_path: READABLE_STRING_8; a_ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT; data: detachable READABLE_STRING_8): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		do
 			Result := impl_custom ("POST", a_path, a_ctx, data, Void)
 		end
 
 	post_file (a_path: READABLE_STRING_8; a_ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT; fn: detachable READABLE_STRING_8): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		do
 			Result := impl_custom ("POST", a_path, a_ctx, Void, fn)
 		end
 
 	patch (a_path: READABLE_STRING_8; a_ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT; data: detachable READABLE_STRING_8): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		do
 			Result := impl_custom ("PATCH", a_path, a_ctx, data, Void)
 		end
 
 	patch_file (a_path: READABLE_STRING_8; a_ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT; fn: detachable READABLE_STRING_8): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		do
 			Result := impl_custom ("PATCH", a_path, a_ctx, Void, fn)
 		end
 
 	put (a_path: READABLE_STRING_8; a_ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT; data: detachable READABLE_STRING_8): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		do
 			Result := impl_custom ("PUT", a_path, a_ctx, data, Void)
 		end
 
 	put_file (a_path: READABLE_STRING_8; a_ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT; fn: detachable READABLE_STRING_8): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		do
 			Result := impl_custom ("PUT", a_path, a_ctx, Void, fn)
 		end
 
 	delete (a_path: READABLE_STRING_8; ctx: detachable HTTP_CLIENT_REQUEST_CONTEXT): HTTP_CLIENT_RESPONSE
+			-- <Precursor>
 		do
 			Result := custom ("DELETE", a_path, ctx)
 		end
@@ -140,7 +155,7 @@ feature {NONE} -- Implementation
 			end
 
 			create {LIBCURL_HTTP_CLIENT_REQUEST} req.make (base_url + a_path, a_method, Current, ctx)
-			Result := req.execute
+			Result := req.response
 
 			if f /= Void then
 				f.delete
@@ -161,7 +176,7 @@ feature {LIBCURL_HTTP_CLIENT_REQUEST} -- Curl implementation
 
 
 ;note
-	copyright: "2011-2013, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2015, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

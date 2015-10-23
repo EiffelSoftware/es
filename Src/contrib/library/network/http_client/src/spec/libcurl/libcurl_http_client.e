@@ -1,6 +1,9 @@
 note
 	description : "[
 				Specific implementation of HTTP_CLIENT based on Eiffel cURL library
+				
+				WARNING: Do not forget to have the dynamic libraries libcurl (.dll or .so) 
+				and related accessible to the executable (i.e in same directory, or in the PATH)
 			]"
 	author      : "$Author$"
 	date        : "$Date$"
@@ -13,6 +16,7 @@ inherit
 	HTTP_CLIENT
 
 create
+	default_create,
 	make
 
 feature {NONE} -- Initialization
@@ -20,6 +24,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize `Current'.
 		do
+			default_create
 		end
 
 feature -- Status
@@ -30,7 +35,7 @@ feature -- Status
 		end
 
 note
-	copyright: "2011-2012, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2015, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
