@@ -320,9 +320,10 @@ feature -- Analyzis
 					if l_context.workbench_mode or system.check_for_catcall_at_runtime then
 						l_name_id := l_context.current_feature.feature_name_id
 						l_any_class_id := system.any_id
-						l_is_catcall_checking_enabled := (l_context.current_feature.written_in /= l_any_class_id or else
-							(l_name_id /= {PREDEFINED_NAMES}.equal_name_id or
-							l_name_id /= {PREDEFINED_NAMES}.standard_equal_name_id))
+						l_is_catcall_checking_enabled :=
+							l_context.current_feature.written_in /= l_any_class_id or
+							l_name_id /= {PREDEFINED_NAMES}.equal_name_id or
+							l_name_id /= {PREDEFINED_NAMES}.standard_equal_name_id
 					end
 				until
 					i > nb
@@ -1175,11 +1176,10 @@ end
 	generate_precondition
 			-- Generate precondition check if needed
 		local
-			workbench_mode	: BOOLEAN
-			have_assert		: BOOLEAN
-			inh_assert		: INHERITED_ASSERTION
-			buf				: GENERATION_BUFFER
-			i: like arguments.count
+			workbench_mode: BOOLEAN
+			have_assert: BOOLEAN
+			inh_assert: INHERITED_ASSERTION
+			buf: GENERATION_BUFFER
 			has_wait_condition: BOOLEAN
 		do
 			buf := buffer
@@ -1270,7 +1270,7 @@ end
 			workbench_mode := context.workbench_mode
 			if workbench_mode or else context.system.keep_assertions then
 				inh_assert := Context.inherited_assertion
-				have_assert := (postcondition /= Void or else inh_assert.has_postcondition)
+				have_assert := postcondition /= Void or else inh_assert.has_postcondition
 				if have_assert then
 					buf := buffer
 					context.set_assertion_type (In_postcondition)
@@ -1375,7 +1375,6 @@ end
 	generate_rescue
 			-- Generate the rescue clause
 		local
-			nb_refs: INTEGER
 			buf: GENERATION_BUFFER
 		do
 			if rescue_clause = Void then
@@ -1390,7 +1389,6 @@ end
 					buf.put_string ("RTLXE;")
 				end
 					-- Resynchronize local variables stack
-				nb_refs := context.ref_var_used
 				buf.put_new_line
 				buf.put_string ("RTXSC;")
 				context.generate_request_chain_restore
@@ -1760,7 +1758,7 @@ feature {NONE} -- C code generation
 			if attached arguments as a and then context.has_request_chain then
 				from
 						-- The variable that tells if an argument is uncontrolled
-						-- is generated in the form "uargK = (EIF_BOOLEAN) RTS_OU (Current, argK);"
+						-- is generated in the form "uargK = (EIF_BOOLEAN) RTS_OU (argK);"
 						-- The variable to detect if a request chain is required
 						-- is generated in the form "uarg = uargA || uargB || ... || uargZ;".
 					uarg := ""
@@ -1775,7 +1773,7 @@ feature {NONE} -- C code generation
 						l_buf.put_new_line
 						l_buf.put_string ("uarg")
 						l_buf.put_integer (i)
-						l_buf.put_string (" = (EIF_BOOLEAN) RTS_OU (Current, arg")
+						l_buf.put_string (" = (EIF_BOOLEAN) RTS_OU (arg")
 						l_buf.put_integer (i)
 						l_buf.put_two_character (')', ';')
 							-- Update expression to compute a variable that tells whether a request chain is required.

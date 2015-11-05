@@ -525,7 +525,7 @@ rt_private void initialize_request_chain (void)
 	for (n = argnum; n > 0; n--) {
 		EIF_TYPED_VALUE *last = arg(n);
 			/* TODO: RS: Why only register arguments when they're uncontrolled in the interpreter? */
-		if ((last -> type & SK_HEAD) == SK_REF && RTS_OU (icurrent -> it_ref, last -> it_ref)) {
+		if ((last -> type & SK_HEAD) == SK_REF && RTS_OU (last -> it_ref)) {
 			RTS_RS (last->it_ref);
 		}
 	}
@@ -585,6 +585,7 @@ rt_private void interpret(int flag, int where)
 	char volatile has_wait_condition = '\0';        /* Is there a wait condition? */
 	char volatile has_uncontrolled_argument = '\0'; /* Is uncontrolled argument used? */
 	RTS_SDX;			/* Declarations for SCOOP */
+	RTS_SDC;
 #endif
 	BODY_INDEX body_id = 0;		/* Body id of routine */
 	int routine_id = 0;
@@ -672,7 +673,7 @@ rt_private void interpret(int flag, int where)
 					break;
 				case EIF_REFERENCE_CODE:
 #ifdef EIF_THREADS
-					if (RTS_OU(icurrent->it_ref, ref)) {
+					if (RTS_OU(ref)) {
 						usep |= ((EIF_NATURAL_64) 1) << (n - 1);
 						uarg++;
 					}
@@ -1884,7 +1885,7 @@ rt_private void interpret(int flag, int where)
 				/* Add processors of uncontrolled separate arguments to the reuest group. */
 			for (; argument_count > 0; -- argument_count) {
 				last = eif_opstack_pop_address(&op_stack);
-				if ((last -> type & SK_HEAD) == SK_REF && RTS_OU (icurrent->it_ref, last->it_ref)) {
+				if ((last -> type & SK_HEAD) == SK_REF && RTS_OU (last->it_ref)) {
 					RTS_RS (last->it_ref);
 				}
 			}
@@ -2479,7 +2480,6 @@ rt_private void interpret(int flag, int where)
 					uint32 l_type;
 					unsigned long stagval;
 					unsigned char * OLD_IC;
-					call_data * a;
 						/* Retrieve tuple access data. */
 					IC++;
 					pos = get_int32(&IC);            /* Position of access. */
@@ -2488,9 +2488,10 @@ rt_private void interpret(int flag, int where)
 					stagval = tagval;                /* Save tag value. */
 					OLD_IC  = IC;                    /* Save IC. */
 
-					RTS_AC (0, target -> it_ref, a); /* Create call structure. */
-					last = target;                   /* Reuse target cell for result. */
-					RTS_CTR (pos, l_type, a, *last);   /* Make separate access to a tuple. */
+					RTS_AC (0, target -> it_ref); /* Create call structure. */
+					last = target;                  /* Reuse target cell for result. */
+					RTS_CALL (-pos, l_type);         /* Make separate access to a tuple. */
+					*last = l_scoop_result;
 					if (tagval != stagval)           /* Interpreted function was called. */
 						sync_registers(MTC scur, stop);
 					IC = OLD_IC;
@@ -2507,7 +2508,6 @@ rt_private void interpret(int flag, int where)
 					int pos;
 					unsigned long stagval;
 					unsigned char * OLD_IC;
-					call_data * a;
 					EIF_TYPED_VALUE *source;
 						/* Retrieve tuple access data. */
 					IC++;
@@ -2516,18 +2516,14 @@ rt_private void interpret(int flag, int where)
 					stagval = tagval;                /* Save tag value. */
 					OLD_IC  = IC;                    /* Save IC. */
 
-					RTS_AC (1, target -> it_ref, a); /* Create call structure. */
+					RTS_AC (1, target -> it_ref); /* Create call structure. */
 
 					(void) eif_opstack_pop_address(&op_stack);                  /* Remove target from the evaluation stack. */
 					source = eif_opstack_pop_address(&op_stack);                 /* Get source value. */
-					if ((source -> type & SK_HEAD) == SK_REF) {
-						RTS_AS(*source, it_r, source->type, 1, a); /* Record a possibly separate argument. */
-					} else {
-							/* We use `0' for the second argument because the macro does not actually use it
-							 * in workbench mode. */
-						RTS_AA(*source, 0, source -> type, 1, a); /* Record a non-separate argument. */
-					}
-					RTS_CTW (pos, a);                /* Make separate access to a tuple. */
+						/* We use `0' for the second argument because the macro does not actually use it
+							* in workbench mode. */
+					RTS_AA(*source, 0, source -> type, 1); /* Record an argument. */
+					RTS_CALL (-pos, SK_VOID);		/* Make separate access to a tuple. */
 					if (tagval != stagval)           /* Interpreted function was called. */
 						sync_registers(MTC scur, stop);
 					IC = OLD_IC;
@@ -2571,19 +2567,14 @@ rt_private void interpret(int flag, int where)
 					/* Perform a separate call. */
 				unsigned long   stagval = tagval; /* Save tag value */
 				unsigned char * OLD_IC  = NULL;   /* Saved IC */
-				call_data *     a = NULL;                /* Call structure */
 
-				RTS_AC (n, target -> it_ref, a); /* Create call structure. */
+				RTS_AC (n, target -> it_ref); /* Create call structure. */
 				eif_opstack_pop_address(&op_stack);                /* Remove target of a call. */
 				while (n > 0) {         /* Record arguments of a call. */
 					EIF_TYPED_VALUE * p = eif_opstack_pop_address(&op_stack);
-					if ((p -> type & SK_HEAD) == SK_REF) {
-						RTS_AS(*p, it_r, p->type, n, a); /* Record a possibly separate argument. */
-					} else {
-							/* We use `0' for the second argument because the macro does not actually use it
-							 * in workbench mode. */
-						RTS_AA(*p, 0, p -> type, n, a); /* Record non-separate argument. */
-					}
+						/* We use `0' for the second argument because the macro does not actually use it
+							* in workbench mode. */
+					RTS_AA(*p, 0, p -> type, n); /* Record an argument. */
 					n--;
 				};
 				switch (code = *IC++)
@@ -2595,18 +2586,19 @@ rt_private void interpret(int flag, int where)
 					GET_PTYPE;                     /* Get precursor type. */
 					OLD_IC = IC;
 					if (q) {
-						last = eif_opstack_push_empty(&op_stack);                             /* Allocate a cell to store result of a call. */
+						last = eif_opstack_push_empty(&op_stack);    /* Allocate a cell to store result of a call. */
 						last -> type = SK_POINTER;                  /* Avoid GC on result until it is ready.      */
-						RTS_CF (routine_id, string, target->it_ref, a, *last); /* Make a separate call to a function. */
+						RTS_CALL (routine_id, SK_POINTER);           /* Make a separate call to a function. */
+						*last = l_scoop_result;
 					} else {
-						RTS_CP (routine_id, string, target->it_ref, a);       /* Make a separate call to a procedure. */
+						RTS_CALL (routine_id, SK_VOID);  /* Make a separate call to a procedure. */
 					}
 					break;
 				case BC_CREATION:
 					routine_id = get_int32(&IC);       /* Get the feature id. */
 					GET_PTYPE;                         /* Get precursor type. */
 					OLD_IC = IC;
-					RTS_CC (routine_id, target->it_ref, a);       /* Make a separate call to a creation procedure. */
+					RTS_CALL (routine_id, SK_VOID);    /* Make a separate call to a creation procedure. */
 					break;
 				default:
 					OLD_IC  = IC;

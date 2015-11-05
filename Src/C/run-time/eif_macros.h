@@ -1278,77 +1278,57 @@ RT_LNK void eif_exit_eiffel_code(void);
  * Macros for SCOOP 
  */
 
-/* Define RTS_SCP_CAPABLE for use by eplug to determine whether SCOOP can be initialized. */
-#ifndef RTS_SCP_CAPABLE
-#ifdef EIF_THREADS
-#define RTS_SCP_CAPABLE 1 
-#else
-#define RTS_SCP_CAPABLE 0 
-#endif
-#endif
-
-#define RTS_PID(o) HEADER(o)->ov_pid
-
-#define eif_scoop_access(x) (x)
-
-/* 
- * TODO: This is an obsolete macro which was used for Scott's
- * impersonation mechanism, but is still emitted by the compiler.
- */
-#define RTS_IMPERSONATE(pid) (void) 0
-
 /*
- * Object status:
- * EIF_IS_DIFFERENT_PROCESSOR (o1, o2) - tells if o1 and o2 run on different processors
- * RTS_OS(c,o) - tells if object o is separate relative to object c (i.e. they run on different processors)
- * RTS_OU(c,o) - tells if object o is uncontrolled by the processor associated with object c
- */
-
-#define EIF_IS_SYNCED_ON(c,s) 0
-#define EIF_IS_DIFFERENT_PROCESSOR(o1,o2) ((RTS_PID (o1) != RTS_PID (o2)))
-#define EIF_IS_DIFFERENT_PROCESSOR_FOR_QUERY(o1,o2) ((RTS_PID (o1) != RTS_PID (o2)) && !(EIF_IS_SYNCED_ON(o1,o2)))
-
-#define RTS_EIF_ACCESS(r) (r ? eif_scoop_access (r) : NULL) 
-#define RTS_OS(c,o) (RTS_PID (c) != RTS_PID (o))
-
-#define RTS_OU(c,o) ((o) && eif_is_uncontrolled (l_scoop_processor_id, l_scoop_region_id, RTS_PID (o)))
-
-#define EIF_SET_ACTIVE(o) ; /*  "SCOOP/Qs: set_active not implemented" o; */
-#define EIF_SET_PASSIVE(o) ; /*  "SCOOP/Qs: set_passive not implemented" o; */
-#define EIF_IS_PASSIVE(o) 0 /* "SCOOP/Qs: is_passive not implemented" o; */
-
-/*
- * Processor:
- * RTS_PA(o) - associate a fresh processor with an object o
- * RTS_PP(o) - create a new passive region for object o
- */
-#define RTS_PA(o) eif_new_processor (o, EIF_FALSE);
-#define RTS_PP(o) eif_new_processor (o, EIF_TRUE);
-
-
-
-/*
- * SCOOP feature initialization macros:
+ * Variable declaration macros:
  *
- * RTS_SD - Declare variables for SCOOP separate calls.
- * RTS_SDX - Declare variables for separate calls and to keep track of the request group and lock stacks. Variation of RTS_SD for features with a rescue clause.
- * RTS_SRR - Restore the SCOOP stacks and region ID when entering a rescue clause because of an exception.
+ * RTS_SD - Declare SCOOP variables for the current processor and region.
+ * RTS_SDX - Declare SCOOP variables for the current processor and region and to keep track of the request group and lock stacks. Variation of RTS_SD for features with a rescue clause.
+ * RTS_SDC - Declare SCOOP variables used for a separate call.
  */
 #define RTS_SD \
 	EIF_SCP_PID l_scoop_processor_id = eif_globals->scoop_processor_id;\
-	EIF_SCP_PID l_scoop_region_id = eif_globals->scoop_region_id;\
-	struct call_data* l_scoop_call_data
+	EIF_SCP_PID l_scoop_region_id = eif_globals->scoop_region_id
 
 #define RTS_SDX \
 	RTS_SD;\
 	size_t l_scoop_request_group_stack_count = eif_scoop_request_group_stack_count (l_scoop_processor_id);\
 	size_t l_scoop_lock_stack_count = eif_scoop_lock_stack_count (l_scoop_processor_id)
 
-#define RTS_SRR \
-	eif_scoop_impersonate (eif_globals, l_scoop_region_id); \
-	eif_delete_scoop_request_group (l_scoop_processor_id, eif_scoop_request_group_stack_count (l_scoop_processor_id) - l_scoop_request_group_stack_count); \
-	eif_scoop_lock_stack_impersonated_pop (l_scoop_processor_id, eif_scoop_lock_stack_count (l_scoop_processor_id) - l_scoop_lock_stack_count);
+#ifdef WORKBENCH
+#define RTS_SDC \
+	struct call_data* l_scoop_call_data = NULL; \
+	EIF_TYPED_VALUE l_scoop_result
+#else
+#define RTS_SDC \
+	struct call_data* l_scoop_call_data = NULL
+#endif
 
+/*
+ * Object status:
+ *
+ * RTS_PID(o) - Return the region ID of object o.
+ * RTS_OS(c,o) - Tells if object o is separate relative to object c (i.e. they are placed in different processors).
+ * RTS_OU(c,o) - Tells if object o is uncontrolled by the current region.
+ */
+#define RTS_PID(o) HEADER(o)->ov_pid
+#define RTS_OS(c,o) (RTS_PID (c) != RTS_PID (o))
+#define RTS_OU(o) ((o) && eif_is_uncontrolled (l_scoop_processor_id, l_scoop_region_id, RTS_PID (o)))
+
+/*
+ * Processor creation:
+ *
+ * RTS_PA(o) - associate a fresh processor with an object o
+ * RTS_PP(o) - create a new passive region for object o
+ *
+ * NOTE: Since the evaluation order in an assignment is not defined in C,
+ * we need to introduce a local variable to avoid writing to an object that has moved.
+ */
+#define RTS_PA(o) { \
+	EIF_SCP_PID l_scoop_new_pid = eif_new_processor (EIF_FALSE); \
+	RTS_PID (o) = l_scoop_new_pid;}
+#define RTS_PP(o) { \
+	EIF_SCP_PID l_scoop_new_pid = eif_new_processor (EIF_TRUE); \
+	RTS_PID (o) = l_scoop_new_pid;}
 
 /*
  * Request group management:
@@ -1373,133 +1353,81 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTS_RD eif_delete_scoop_request_group(l_scoop_processor_id, 1)
 
 /*
- * Separate call, the first two arguments to them have a different meaning between workbench and finalized mode):
- * RTS_CF(rid,n,t,a,r) - call a function on a routine ID id and name n on a target t and arguments a and result r
- * RTS_CP(rid,n,t,a)   - call a procedure on a routine ID id and name n on a target t and arguments a
- * RTS_CC(rid,d,a)     - call a creation procedure (asynchronous) on a routine ID id on a target of dynamic type d and arguments a
- * RTS_CA(o,p,t,a,r)   - call an attribute at offset o using pattern p on target t with arguments a and result r
- * RTS_CS(t,a)         - call a constant on target t with call structure a
- * RTS_CTR(o,s,a,r)    - read access to a tuple field at position o of SK type s (a pattern in finalized mode) with call data a and result r
- * RTS_CTW(o,p,a)      - write access to a tuple field at position o and pattern p (finalized mode only) with call data a
- */
-
+ * RTS_CALL: Invoke a separate call.
+ * The arguments have a different meaning between workbench and finalized mode:
+ * Workbench: Routine ID and SK_* type of the result.
+ * Finalized: Name of the function, SCOOP pattern, offset of the attribute, pointer to the result.
+ * In finalized mode, some or even all of the arguments may take default values.
+*/
 #ifdef WORKBENCH
-#define RTS_CF(rid,n,t,a,r) \
-	{                                                         \
-		l_scoop_call_data -> routine_id = rid;            \
-		l_scoop_call_data -> result = &(r);               \
-		l_scoop_call_data -> is_synchronous = EIF_TRUE; \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data); \
-	}
+#define RTS_CALL(rid, rtype) \
+	l_scoop_call_data->routine_id = (rid); \
+	l_scoop_call_data->result = &l_scoop_result;\
+	l_scoop_result.type = rtype; \
+	l_scoop_result.it_r = 0; \
+	eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data)
+#else
+#define RTS_CALL(fptr, p, o, r) \
+	l_scoop_call_data->address = (fnptr) fptr; \
+	l_scoop_call_data->pattern = p; \
+	l_scoop_call_data->offset = o; \
+	l_scoop_call_data->result = (r); \
+	eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data)
+#endif
 
-#define RTS_CP(rid,n,t,a) {\
-		l_scoop_call_data -> routine_id = rid; \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data); \
-	}
-#define RTS_CC(rid,t,a) RTS_CP(rid,NULL,((call_data*)a)->target,a)
-#define RTS_CTR(p,s,a,r) \
-	{                                                         \
-		l_scoop_call_data -> routine_id = -p;             \
-		(r).type = s;                                     \
-		(r).it_r = 0;                                     \
-		l_scoop_call_data -> result = &(r);               \
-		l_scoop_call_data -> is_synchronous = EIF_TRUE; \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data); \
-	}
-#define RTS_CTW(p,a) {\
-		l_scoop_call_data -> routine_id = -p; \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data); \
-	}
-#else /* WORKBENCH */
-#define RTS_CF(fptr,p,t,a,r) \
-	{                                                         \
-		l_scoop_call_data -> feature.address = (fnptr) fptr; \
-		l_scoop_call_data -> pattern = p;                 \
-		l_scoop_call_data -> result = &(r);               \
-		l_scoop_call_data -> is_synchronous = EIF_TRUE; \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data);    \
-	}
-#define RTS_CP(fptr,p,t,a) \
-	{                                                         \
-		l_scoop_call_data -> feature.address = (fnptr) fptr; \
-		l_scoop_call_data -> pattern = p;                 \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data);    \
-	}
-#define RTS_CC(fptr,p,t,a) RTS_CP(fptr,p,t,a)
-#define RTS_CA(o,p,t,a,r) \
-	{                                                         \
-		l_scoop_call_data -> feature.offset = o;          \
-		l_scoop_call_data -> pattern = p;                 \
-		l_scoop_call_data -> result = &(r);               \
-		l_scoop_call_data -> is_synchronous = EIF_TRUE; \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data);    \
-	}
-#define RTS_CS(t,a) \
-	{                                                         \
-		l_scoop_call_data -> pattern = eif_call_const;    \
-		l_scoop_call_data -> is_synchronous = EIF_TRUE; \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data);    \
-	}
-#define RTS_CTR(o,p,a,r) \
-	{                                                         \
-		l_scoop_call_data -> feature.offset = o;          \
-		l_scoop_call_data -> pattern = p;                 \
-		l_scoop_call_data -> result = &(r);               \
-		l_scoop_call_data -> is_synchronous = EIF_TRUE; \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data); \
-	}
-#define RTS_CTW(o,p,a) {\
-		l_scoop_call_data -> feature.offset = o;          \
-		l_scoop_call_data -> pattern = p;                 \
-		eif_log_call (l_scoop_processor_id, l_scoop_region_id, l_scoop_call_data); \
-	}
-#endif /* WORKBENCH */
+/*
+ * Impersonation macros:
+ * RTS_CI (is_query, target) - Can a separate call to 'target' be impersonated?
+ * RTS_BI (target) - Impersonate the region of 'target'.
+ * RTS_EI - Switch back to the current region.
+ */
+#define RTS_CI(is_query, target) (l_scoop_region_id == RTS_PID (target)) || eif_scoop_can_impersonate (l_scoop_processor_id, RTS_PID (target), is_query)
+#define RTS_BI(target) \
+	if (l_scoop_region_id != RTS_PID(target)) {\
+		eif_scoop_lock_stack_impersonated_push (l_scoop_processor_id, RTS_PID(target));\
+		eif_scoop_impersonate (eif_globals, RTS_PID(target)); \
+	} else (void) 0
+
+#define RTS_EI \
+	if (l_scoop_region_id != eif_globals->scoop_region_id) {\
+		eif_scoop_impersonate (eif_globals, l_scoop_region_id); \
+		eif_scoop_lock_stack_impersonated_pop (l_scoop_processor_id, 1);\
+	} else (void) 0
 
 /*
  * Separate call arguments:
  * RTS_AC(n,t,a) - allocate container a that can hold n arguments for target t
- * RTS_AA(v,f,t,n,a) - register argument v corresponding to field f of type t at position n in a
- * RTS_AS(v,f,t,n,a) - same as RTS_AA except that that argument is checked if it is controlled or not that is recorded to make synchronous call if required
- * 
- * TODO: Change the compiler to always emit RTS_AA for queries, because they're synchronous anyway.
+ * RTS_AA(v,f,t,n,a) - register argument v corresponding to field f of type t at position n
  */
-#define RTS_AC(n,t,a) \
+#define RTS_AC(n,t) \
 	{ \
 		l_scoop_call_data = malloc (sizeof (struct call_data) + sizeof (EIF_TYPED_VALUE) * (size_t) (n) - sizeof (EIF_TYPED_VALUE)); \
 		l_scoop_call_data -> target = (t); \
 		l_scoop_call_data -> count = (n); \
-		l_scoop_call_data -> result = NULL; \
 		l_scoop_call_data -> is_synchronous = EIF_FALSE; \
 	}
 #ifdef WORKBENCH
-#define RTS_AA(v,f,t,n,a) l_scoop_call_data -> argument [(n) - 1] = (v);
+#define RTS_AA(v,f,t,n) l_scoop_call_data -> argument [(n) - 1] = (v);
 #else
-#define RTS_AA(v,f,t,n,a) \
+#define RTS_AA(v,f,t,n) \
 		{ \
 			l_scoop_call_data -> argument [(n) - 1].f = (v);  \
 			l_scoop_call_data -> argument [(n) - 1].type = (t); \
 		}
 #endif
-#define RTS_AS(v,f,t,n,a) \
-		{ \
-			EIF_REFERENCE val; \
-			RTS_AA(v,f,t,n,a); \
-			val = l_scoop_call_data->argument [(n) - 1].f; \
-			if (val) { \
-				if (!eif_is_expanded (HEADER(val)->ov_flags) && !RTS_OU(Current, val)) { \
-					if (EIF_IS_DIFFERENT_PROCESSOR (l_scoop_call_data->target, val)) { \
-						l_scoop_call_data -> is_synchronous = EIF_TRUE; \
-					} \
-				} \
-			} \
-		}
 
+/*
+ * Miscellaneous SCOOP macros:
+ *
+ * RTS_WPR - For root thread only: Enter the listening loop and answer reply to SCOOP separate calls when done with the root creation procedure.
+ * RTS_SRR - Restore the SCOOP stacks and region ID when entering a rescue clause because of an exception.
+ */
 #define RTS_WPR eif_wait_for_all_processors();
 
-#define RTS_SEMAPHORE_CLIENT_WAIT(semaddr) EIF_ENTER_C; eif_pthread_sem_wait(semaddr); EIF_EXIT_C; RTGC;
-#define RTS_SEMAPHORE_SUPPLIER_SIGNAL(semaddr) eif_pthread_sem_post(semaddr);
-
-#define RTS_PROCESSOR_CPU_YIELD EIF_ENTER_C; eif_pthread_yield(); EIF_EXIT_C; RTGC;
+#define RTS_SRR \
+	eif_scoop_impersonate (eif_globals, l_scoop_region_id); \
+	eif_delete_scoop_request_group (l_scoop_processor_id, eif_scoop_request_group_stack_count (l_scoop_processor_id) - l_scoop_request_group_stack_count); \
+	eif_scoop_lock_stack_impersonated_pop (l_scoop_processor_id, eif_scoop_lock_stack_count (l_scoop_processor_id) - l_scoop_lock_stack_count);
 
  /*
  * Macros for workbench

@@ -367,19 +367,15 @@ feature -- Basic operations
 
 feature -- SCOOP
 	frozen set_handler_active (a_obj: separate ANY)
-			--
-		external
-			"C inline use %"eif_macros.h%""
-		alias
-			"EIF_SET_ACTIVE(eif_access($a_obj))"
+		obsolete
+			"removed: active is default"
+		do
 		end
 
 	frozen set_handler_passive (a_obj: separate ANY)
-			--
-		external
-			"C inline use %"eif_macros.h%""
-		alias
-			"EIF_SET_PASSIVE(eif_access($a_obj))"
+		obsolete
+			"removed: use create <NONE> a_sep.make"
+		do
 		end
 	
 invariant
