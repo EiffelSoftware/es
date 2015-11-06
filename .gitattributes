@@ -5260,8 +5260,6 @@ Src/unstable/library/web/cms/tools/roc/roc.rc -text
 Src/web/eiffel-org/eiffel_community_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/eiffel_community_site-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/ewf.ini -text
-Src/web/eiffel-org/library/http_client_extension/http_client_extension-safe.ecf svneol=native#text/xml
-Src/web/eiffel-org/library/http_client_extension/http_client_extension.ecf svneol=native#text/xml
 Src/web/eiffel-org/library/recaptcha/license.lic -text
 Src/web/eiffel-org/library/recaptcha/recaptcha-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/library/recaptcha/recaptcha.ecf svneol=native#text/xml
