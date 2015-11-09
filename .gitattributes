@@ -1754,6 +1754,7 @@ Src/Delivery/studio/bitmaps/png/logo.png -text
 Src/Delivery/studio/bitmaps/png/splash.png -text
 Src/Delivery/studio/bitmaps/png/splash_shadow.png -text
 Src/Delivery/studio/config/windows/msc/appl.ico -text
+Src/Delivery/studio/eifinit/code_analysis.xml -text
 Src/Delivery/studio/eifinit/libraries.cfg -text
 Src/Delivery/studio/eifinit/precompiles.cfg -text
 Src/Delivery/studio/help/errors/short/V1SE -text
