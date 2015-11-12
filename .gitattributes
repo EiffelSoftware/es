@@ -5278,10 +5278,6 @@ Src/web/eiffel-org/modules/eiffel_download/eiffel_download.ecf svneol=native#tex
 Src/web/eiffel-org/modules/eiffel_download/site/downloads_configuration.json -text
 Src/web/eiffel-org/modules/embedded_video/test/testing-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/embedded_video/video-safe.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/google_search/custom_search.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/google_search/google_search-safe.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/google_search/google_search.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/google_search/site/config/google_search.json -text
 Src/web/eiffel-org/modules/wdocs/site/wdocs.ini -text
 Src/web/eiffel-org/modules/wdocs/wdocs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/wdocs/wdocs.ecf svneol=native#text/xml
