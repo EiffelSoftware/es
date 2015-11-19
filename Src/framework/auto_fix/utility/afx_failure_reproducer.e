@@ -82,6 +82,9 @@ feature{NONE} -- Exception analysis
 			elseif l_exception_code = {EXCEP_CONST}.Check_instruction then
 				create {AFX_CHECK_VIOLATION_SIGNATURE}l_exception_signature.make (
 						l_current_class, l_current_feature, l_current_breakpoint)
+			elseif l_exception_code = {EXCEP_CONST}.Incorrect_inspect_value then
+				create {AFX_UNMATCHED_INSPECT_VALUE_EXCEPTION_SIGNATURE}l_exception_signature.make(
+						l_current_class, l_current_feature, l_current_breakpoint)
 			end
 			session.set_exception_from_execution (l_exception_signature)
 		end

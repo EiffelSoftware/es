@@ -193,7 +193,7 @@ feature{NONE} -- Implementation
 			l_text.append (type_in_text_from_a_type (a_type.instantiated_in(class_.constraint_actual_type)))
 
 			l_parser := entity_declaration_parser
-			l_parser.set_syntax_version (l_parser.transitional_syntax)
+			l_parser.set_syntax_version (l_parser.Provisional_syntax)
 			l_parser.parse_from_ascii_string (l_text, Void)
 			l_vars_def := l_parser.entity_declaration_node
 			if a_universal then

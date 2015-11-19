@@ -68,6 +68,7 @@ feature	-- Basic operation
 			l_retried: BOOLEAN
 		do
 			if not l_retried then
+				create trace_repository.make_default
 				if session.should_continue then
 					set_up
 					start_debugger

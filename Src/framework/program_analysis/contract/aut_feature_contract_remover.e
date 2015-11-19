@@ -221,7 +221,7 @@ feature{NONE} -- Access
 					Result.force_last (l_rout.postcondition.assertions)
 				end
 				collect_checks_from_feature (a_feature)
-				Result.extend_last (check_lists)
+				Result.append_last (check_lists)
 			end
 		end
 

@@ -265,7 +265,7 @@ feature{NONE} -- Implementation
 					add_all_tagged_as (l_rout.postcondition.assertions, Result)
 				end
 				collect_checks_from_feature (a_feature)
-				Result.extend_last (check_lists)
+				Result.append_last (check_lists)
 			end
 		end
 

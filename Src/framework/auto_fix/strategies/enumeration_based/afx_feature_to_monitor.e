@@ -212,6 +212,14 @@ feature -- Monitoring body execution
 				sub_expression_collector_from_expression.collect_from_expressions (Current, extra_expressions)
 				l_base_expressions.merge (Sub_expression_collector_from_expression.last_sub_expressions)
 
+--					-- Exception condition
+--				if session.exception_from_execution.is_precondition_violation
+--						and then Current.qualified_feature_name ~ session.exception_from_execution.recipient_feature_with_context.qualified_feature_name
+--						and then attached session.exception_from_execution.exception_condition_in_recipient as lt_failing_condition
+--				then
+--					l_base_expressions.force (lt_failing_condition)
+--				end
+
 					-- Expressions to monitor based on the basic expressions.
 				create l_constructor
 				l_constructor.construct_from (l_base_expressions)
@@ -276,6 +284,7 @@ feature -- Monitoring entry & exit states
 				create l_all_contracts.make_equal (10)
 				l_all_contracts.merge (contracts.pre)
 				l_all_contracts.merge (contracts.post)
+				l_all_contracts.append (extra_expressions)
 				sub_expression_collector_from_expression.collect_from_expressions (Current, l_all_contracts)
 				l_post_contracts := sub_expression_collector_from_expression.last_sub_expressions
 
@@ -326,11 +335,14 @@ feature -- Monitoring entry & exit states
 --??			l_postcondition_expressions.append (variant_postconditions)
 
 --					-- Include also the violated condition if feature_under_test is the exception recipient.
---				if session.exception_from_execution.is_precondition_violation and then Current ~ features_on_stack.item (2) and then attached session.exception_from_execution.exception_condition_in_recipient as lt_failing_condition then
+--				if session.exception_from_execution.is_precondition_violation
+--						and then Current.qualified_feature_name ~ session.exception_from_execution.recipient_feature_with_context.qualified_feature_name
+--						and then attached session.exception_from_execution.exception_condition_in_recipient as lt_failing_condition
+--				then
 --					l_precondition_expressions.force (lt_failing_condition)
 --					l_postcondition_expressions.force (lt_failing_condition)
 --				end
---				contract_expressions_for_features.force ( [l_precondition_expressions, l_postcondition_expressions], Current)
+
 				expressions_to_monitor_at_entry_and_exit_cache := [l_precondition_expressions, l_postcondition_expressions]
 			end
 			Result := expressions_to_monitor_at_entry_and_exit_cache

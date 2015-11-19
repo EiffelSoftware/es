@@ -54,7 +54,7 @@ feature -- Basic operation
 			l_contract_fixes: DS_ARRAYED_LIST [AFX_CONTRACT_FIX_TO_FAULT]
 			l_code_fixes, l_valid_code_fixes: DS_ARRAYED_LIST [AFX_CODE_FIX_TO_FAULT]
 			l_feature_to_relax: AFX_FEATURE_TO_MONITOR
-			l_features_to_relax: DS_ARRAYED_LIST [AFX_FEATURE_TO_MONITOR]
+			l_features_to_relax, l_features_to_monitor: DS_ARRAYED_LIST [AFX_FEATURE_TO_MONITOR]
 			l_exception_code: INTEGER
 		do
 			disable_catcall_warnings
@@ -69,10 +69,25 @@ feature -- Basic operation
 			event_actions.notify_on_session_started
 
 			reproduce_failure
+
+				-- Replace recipient feature with 'session.exception_from_execution.recipient_feature_with_context',
+				-- because the latter have extra expressions to monitor during trace collection.
+			from
+				l_features_to_monitor := features_to_monitor
+				l_features_to_monitor.start
+			until
+				l_features_to_monitor.after
+			loop
+				if l_features_to_monitor.item_for_iteration.qualified_feature_name ~ session.exception_from_execution.recipient_feature_with_context.qualified_feature_name then
+					l_features_to_monitor.item_for_iteration.add_extra_expressions (session.exception_from_execution.recipient_feature_with_context.extra_expressions)
+				end
+				l_features_to_monitor.forth
+			end
+
 			l_traces_before_fixing := collect_behavior_of_regular_tests
 			l_traces_before_fixing_twin := l_traces_before_fixing.twin
 
-			if config.is_fixing_implementation then
+			if not config.is_fixing_implementation then
 				l_fixing_targets := localize_faulty_targets (l_traces_before_fixing)
 				if config.should_log_for_debugging then
 						-- Log at most the first 100 fixing targets.
