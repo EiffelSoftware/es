@@ -5654,6 +5654,9 @@ Src/web/support/api/site/www/static/js/jquery-1.10.2.min.map -text
 Src/web/support/api/site/www/static/profile/esa_api.xml svneol=native#text/xml
 Src/web/support/api/site/www/static/profile/esa_html.html svneol=native#text/xml
 Src/web/support/api/src/esa_template/logs/emails.logs -text
+Src/web/support/client/esa_client.ecf svneol=native#text/xml
+Src/web/support/client/test/esa_config.json -text
+Src/web/support/client/test/test.ecf svneol=native#text/xml
 Src/web/support/core/esa_core.ecf svneol=native#text/xml
 Src/web/support/database/mssql/data_countries.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/data_problem_report_categories.sql -text svneol=unset#application/octet-stream
