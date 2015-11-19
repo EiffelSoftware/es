@@ -14,7 +14,7 @@ feature
 
 	oper alias "&" (val: STRING): AAT_OVER_OPER_B
 		do
-			create Result
+			Result := Current
 		end
 
 note

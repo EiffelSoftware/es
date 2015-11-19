@@ -20,7 +20,7 @@ feature {NONE}
 	make (
 				a_routine: PROCEDURE_I;
 				a_last_breakpoint: EDITOR_TOKEN_ALIAS_BREAKPOINT;
-				a_gui_refresh_agent: PROCEDURE [ANY, TUPLE];
+				a_gui_refresh_agent: PROCEDURE [ANY, TUPLE]
 			)
 		require
 			a_routine /= Void
@@ -29,8 +29,6 @@ feature {NONE}
 			l_cur: EDITOR_TOKEN_ALIAS_BREAKPOINT
 		do
 			routine := a_routine
-			index := 1
-			report := "[No report taken?!]";
 			if a_last_breakpoint /= Void then
 				create breakpoints.make_filled (Void, 1, a_last_breakpoint.pebble.index)
 				from
@@ -45,10 +43,10 @@ feature {NONE}
 					l_cur := l_cur.previous_alias_breakpoint
 				end
 				gui_refresh_agent := a_gui_refresh_agent
-
-				breakpoints[index].active := True
-				gui_refresh_agent.call
 			end
+
+			index := 1
+			step_until (1)
 		ensure
 			index = 1
 		end
@@ -60,7 +58,7 @@ feature
 	index: INTEGER_32
 		-- analysis will execute this breakpoint index next
 
-	report: STRING_32
+	as_string, as_graph: STRING_8
 
 	step_over
 		require
@@ -82,49 +80,41 @@ feature
 			a_index >= index
 			a_index <= routine.number_of_breakpoint_slots
 		local
-			l_analyzer: ALIAS_ANALYZER_ON_RELATION
+			l_visitor: ALIAS_ANALYSIS_VISITOR
 		do
 			if breakpoints /= Void then
 				breakpoints[index].active := False
 			end
 
 			index := a_index
-			report := "[No report taken?!]";
+			as_string := "[No report taken?!]"
+			as_graph := ""
 
-			create l_analyzer.make
 			if index = routine.number_of_breakpoint_slots then
-				l_analyzer.process_feature (
-						routine,
-						routine.written_class,
-						agent (ag_data: ANY) do end
-					)
-				report := l_analyzer.report
+				create l_visitor.make (routine, Void)
+				routine.body.process (l_visitor)
+				as_string := l_visitor.alias_graph.to_string
+				as_graph := l_visitor.alias_graph.to_graph
 			else
-				l_analyzer.process_feature (
+				create l_visitor.make (
 						routine,
-						routine.written_class,
-						agent (ag_analyzer: ALIAS_ANALYZER_ON_RELATION; ag_data: ANY)
+						agent (ag_node: AST_EIFFEL; ag_alias_graph: ALIAS_GRAPH)
 							do
-								if attached {AST_EIFFEL} ag_data as ag_ast then
-									if ag_ast.breakpoint_slot = 0 then
-										(create {ETR_BP_SLOT_INITIALIZER}).init_with_context (
-													routine.e_feature.ast,
-													routine.written_class
-												)
-									end
-									if index = ag_ast.breakpoint_slot then
-										--Io.put_string ("Taking report before " + ag_ast.generator + " (slot " + index.out + ").%N")
-										report := ag_analyzer.report
-									end
+								if ag_node.breakpoint_slot = 0 then
+									(create {ETR_BP_SLOT_INITIALIZER}).init_with_context (
+												routine.e_feature.ast,
+												routine.written_class
+											)
 								end
-							end (l_analyzer, ?)
+								if index = ag_node.breakpoint_slot then
+									--Io.put_string ("Taking report before " + ag_node.generator + " (slot " + index.out + ").%N")
+									as_string := ag_alias_graph.to_string
+									as_graph := ag_alias_graph.to_graph
+								end
+							end
 					)
+				routine.body.process (l_visitor)
 			end
-
-			-- cleanup workaround for the current implementation from Alexander
-			report.replace_substring_all ("NonVoid: any", "")
-			report.replace_substring_all ("Void: any", "")
-			report.left_adjust
 
 			if breakpoints /= Void then
 				breakpoints[index].active := True

@@ -16,54 +16,36 @@ note
 class
 	AAT_OVER_OPER_A
 
-create
-	make
-
-feature --Initialisation
-
-	object_b: AAT_OVER_OPER_B
-
-	make
-		do
-			create object_b
-		end
+feature
 
 	test1
 		note
-			aliasing:
-				"[
-				    {AAT_OVER_OPER_A}.object_b.{AAT_OVER_OPER_B}.oper: NonVoid
-				    {AAT_OVER_OPER_B}.oper: {AAT_OVER_OPER_A}.object_b
-				    {AAT_OVER_OPER_A}.object_b: {AAT_OVER_OPER_B}.oper
-				]"
+			aliasing: "{AAT_OVER_OPER_A}.test1.l_a, {AAT_OVER_OPER_A}.test1.l_b"
+		local
+			l_a, l_b: AAT_OVER_OPER_B
 		do
-			object_b := object_b.oper("")
+			create l_a
+			l_b := l_a.oper("")
 		end
 
 	test2
 		note
-			aliasing:
-				"[
-				    {AAT_OVER_OPER_A}.object_b.{AAT_OVER_OPER_B}.oper: NonVoid
-				    {AAT_OVER_OPER_B}.oper: {AAT_OVER_OPER_A}.object_b
-				    {AAT_OVER_OPER_A}.object_b: {AAT_OVER_OPER_B}.oper
-				]"
+			aliasing: "{AAT_OVER_OPER_A}.test2.l_a, {AAT_OVER_OPER_A}.test2.l_b"
+		local
+			l_a, l_b: AAT_OVER_OPER_B
 		do
-			object_b := object_b & ""
+			create l_a
+			l_b := l_a & ""
 		end
 
 	test3
-			-- `l_a' and `l_b' are not aliased.
 		note
-			aliasing3: ""
+			aliasing: "{AAT_OVER_OPER_A}.test3.l_a, {AAT_OVER_OPER_A}.test3.l_b"
 		local
-			l_a: AAT_OVER_OPER_B
-			l_b: AAT_OVER_OPER_B
+			l_a, l_b: AAT_OVER_OPER_B
 		do
-			l_a := object_b.oper("")
-			l_b := object_b.oper("")
-
-			l_a := l_a -- dummy; check aliasing before this (local variables)
+			l_a := (create {AAT_OVER_OPER_B}) & ""
+			l_b := l_a.oper("")
 		end
 
 note

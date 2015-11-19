@@ -19,6 +19,7 @@ feature {NONE}
 	feature_view: EB_ROUTINE_FLAT_FORMATTER
 	step_over_button: EV_BUTTON
 	step_out_button: EV_BUTTON
+	show_graph_button: EV_BUTTON
 	alias_info_text: EV_TEXT
 
 	alias_analysis_runner: ALIAS_ANALYSIS_RUNNER
@@ -48,6 +49,10 @@ feature {NONE}
 			step_out_button.set_pixmap ((create {EB_SHARED_PIXMAPS}).icon_pixmaps.debug_step_out_icon)
 			step_out_button.disable_sensitive
 
+			create show_graph_button.make_with_text_and_action ("SG", agent on_show_graph)
+			show_graph_button.set_tooltip ("Show Graph")
+			show_graph_button.disable_sensitive
+
 			create alias_info_text
 			alias_info_text.disable_edit
 
@@ -55,6 +60,8 @@ feature {NONE}
 			l_button_box.extend (step_over_button)
 			l_button_box.disable_item_expand (l_button_box.last)
 			l_button_box.extend (step_out_button)
+			l_button_box.disable_item_expand (l_button_box.last)
+			l_button_box.extend (show_graph_button)
 			l_button_box.disable_item_expand (l_button_box.last)
 
 			extend (feature_view.editor.widget)
@@ -68,6 +75,7 @@ feature {NONE}
 			feature_view.editor.clear_window
 			step_over_button.disable_sensitive
 			step_out_button.disable_sensitive
+			show_graph_button.disable_sensitive
 			alias_info_text.set_text ("")
 			alias_analysis_runner := Void
 		end
@@ -91,6 +99,7 @@ feature {NONE}
 				feature_view.set_stone (a_stone)
 				step_over_button.enable_sensitive
 				step_out_button.enable_sensitive
+				show_graph_button.enable_sensitive
 				from
 					l_el := feature_view.editor.text_displayed.first_line
 					l_line_number := 1
@@ -132,7 +141,7 @@ feature {NONE}
 	on_step_over
 		do
 			alias_analysis_runner.step_over
-			alias_info_text.set_text (alias_analysis_runner.report)
+			alias_info_text.set_text (alias_analysis_runner.as_string)
 			if alias_analysis_runner.is_done then
 				step_over_button.disable_sensitive
 				step_out_button.disable_sensitive
@@ -142,17 +151,25 @@ feature {NONE}
 	on_step_out
 		do
 			alias_analysis_runner.step_out
-			alias_info_text.set_text (alias_analysis_runner.report)
+			alias_info_text.set_text (alias_analysis_runner.as_string)
 			if alias_analysis_runner.is_done then
 				step_over_button.disable_sensitive
 				step_out_button.disable_sensitive
 			end
 		end
 
+	on_show_graph
+		do
+			(create {EXECUTION_ENVIRONMENT}).launch (
+					"echo %"" + alias_analysis_runner.as_graph + "%" | dot -Tpdf | okular - 2>/dev/null"
+				)
+		end
+
 invariant
 	feature_view /= Void
 	step_over_button /= Void
 	step_out_button /= Void
+	show_graph_button /= Void
 
 note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"

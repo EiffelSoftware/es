@@ -1,32 +1,59 @@
-note
-	description: "[
-			[Alias Analysis] Test suite main class.
-
-			To run the test suite:
-			- Add the directory of this class as a cluster to your Eiffel project.
-			- Reference this class somewhere in your code. E.g.:
-			  dummy: detachable ALIAS_ANALYSIS_TESTSUITE
-			- Click on the "TS" button in the Alias Analysis view.
-		]"
+﻿note
+	description: "The panel of the alias analysis tool."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ALIAS_ANALYSIS_TESTSUITE
+	ES_ALIAS_ANALYSIS_TOOL_PANEL
+
+inherit
+	ES_DOCKABLE_STONABLE_TOOL_PANEL [EV_NOTEBOOK]
+
+create
+	make
+
+feature
+
+	create_widget: EV_NOTEBOOK
+		local
+			l_gui: ALIAS_ANALYZER_GUI
+			l_test_suite: ALIAS_ANALYZER_TEST_SUITE
+			l_ast_viewer: ALIAS_ANALYZER_AST_VIEWER
+		do
+			create Result
+
+			create l_gui.make (develop_window)
+			Result.extend (l_gui)
+			Result.set_item_text (l_gui, "GUI")
+
+			create l_test_suite.make
+			Result.extend (l_test_suite)
+			Result.set_item_text (l_test_suite, "Test Suite")
+
+			create l_ast_viewer.make
+			Result.extend (l_ast_viewer)
+			Result.set_item_text (l_ast_viewer, "AST Viewer")
+		end
 
 feature {NONE}
 
-	-- Add all classes with tests here:
-	c1: detachable AAT_BASIC
-	c2: detachable AAT_QUALIFIED
-	c3: detachable AAT_OVER_OPER_A
-	c4: detachable AAT_STRING_ARG
+	build_tool_interface (root_widget: EV_NOTEBOOK)
+		do
+		end
 
-;note
+	create_tool_bar_items: detachable ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+		do
+		end
+
+	on_stone_changed (s: detachable like stone)
+		do
+		end
+
+note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"
-	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.

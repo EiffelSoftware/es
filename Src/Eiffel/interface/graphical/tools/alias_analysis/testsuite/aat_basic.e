@@ -12,58 +12,34 @@ feature
 
 	a, b, c: detachable STRING_8
 
-	test_globals
+	test_simple_assignment
 		note
-			aliasing:
-				"[
-					{AAT_BASIC}.a: {AAT_BASIC}.b
-					{AAT_BASIC}.b: {AAT_BASIC}.a
-				]"
-		do
-			a := "a"
-			b := a
-		end
-
-	test_locals
-		note
-			aliasing1: ""
-			aliasing2: ""
-			aliasing3:
-				"[
-					{AAT_BASIC}.test_locals.l_a: {AAT_BASIC}.test_locals.l_b
-					{AAT_BASIC}.test_locals.l_b: {AAT_BASIC}.test_locals.l_a
-				]"
-			aliasing4:
-				"[
-					{AAT_BASIC}.test_locals.l_a: {AAT_BASIC}.test_locals.l_b, {AAT_BASIC}.a
-					{AAT_BASIC}.test_locals.l_b: {AAT_BASIC}.a, {AAT_BASIC}.test_locals.l_a
-					{AAT_BASIC}.a: {AAT_BASIC}.test_locals.l_b, {AAT_BASIC}.test_locals.l_a
-				]"
-			aliasing5: ""
+			aliasing: "{AAT_BASIC}.test_simple_assignment.l_a, {AAT_BASIC}.test_simple_assignment.l_b"
 		local
-			l_a: STRING_8
-			l_b: STRING_8
+			l_a: detachable STRING_8
+			l_b: detachable STRING_8
 		do
-			l_a := "ab"
+			l_a := "a"
 			l_b := l_a
-			a := l_b
-
-			a := a
 		end
 
 	test_void_assignment
 		note
-			aliasing: ""
+			aliasing: "{AAT_BASIC}.test_void_assignment.l_a, {AAT_BASIC}.test_void_assignment.l_c"
+		local
+			l_a: detachable STRING_8
+			l_b: detachable STRING_8
+			l_c: detachable STRING_8
 		do
-			a := b
+			l_a := "a"
+			l_b := l_a
+			l_c := l_b
+			l_b := Void
 		end
 
 	test_void_assignment_2
 		note
-			aliasing3: "[
-					{AAT_BASIC}.a: {AAT_BASIC}.b
-					{AAT_BASIC}.b: {AAT_BASIC}.a
-				]"
+			aliasing3: "{AAT_BASIC}.a, {AAT_BASIC}.b"
 			aliasing: ""
 		do
 			a := "a"
@@ -73,20 +49,124 @@ feature
 
 	test_void_assignment_3
 		note
-			aliasing4: "[
-					{AAT_BASIC}.a: {AAT_BASIC}.b, {AAT_BASIC}.c
-					{AAT_BASIC}.b: {AAT_BASIC}.c, {AAT_BASIC}.a
-					{AAT_BASIC}.c: {AAT_BASIC}.b, {AAT_BASIC}.a
-				]"
-			aliasing: "[
-					{AAT_BASIC}.a: {AAT_BASIC}.c
-					{AAT_BASIC}.c: {AAT_BASIC}.a
-				]"
+			aliasing4: "{AAT_BASIC}.a, {AAT_BASIC}.b, {AAT_BASIC}.c"
+			aliasing: "{AAT_BASIC}.a, {AAT_BASIC}.c"
 		do
 			a := "a"
 			b := a
 			c := b
 			b := Void
+		end
+
+--	test_if (a_b: BOOLEAN)
+--		note
+--			aliasing: "{AAT_BASIC}.test_if.l_a, {AAT_BASIC}.test_if.l_b"
+--		local
+--			l_a: detachable STRING_8
+--			l_b: detachable STRING_8
+--		do
+--			if a_b then
+--				l_a := "a"
+--				l_b := l_a
+--			else
+--				-- nothing
+--			end
+--		end
+
+--	test_if_2 (a_b: BOOLEAN)
+--		note
+--			aliasing: "{AAT_BASIC}.test_if_2.l_a, {AAT_BASIC}.test_if_2.l_b"
+--		local
+--			l_a: detachable STRING_8
+--			l_b: detachable STRING_8
+--		do
+--			if a_b then
+--				l_a := "a"
+--				l_b := l_a
+--			else
+--				l_a := Void
+--				l_b := Void
+--			end
+--		end
+
+--	test_if_3 (a_i: INTEGER_32)
+--		note
+--			aliasing: "[
+--					{AAT_BASIC}.test_if_3.l_a: {AAT_BASIC}.test_if_3.l_b
+--					{AAT_BASIC}.test_if_3.l_b: {AAT_BASIC}.test_if_3.l_a, {AAT_BASIC}.test_if_3.l_c
+--					{AAT_BASIC}.test_if_3.l_c: {AAT_BASIC}.test_if_3.l_b
+--				]"
+--		local
+--			l_a: detachable STRING_8
+--			l_b: detachable STRING_8
+--			l_c: detachable STRING_8
+--		do
+--			if a_i = 1 then
+--				l_a := "a"
+--				l_b := l_a
+--			elseif a_i = 2 then
+--				l_a := Void
+--				l_b := Void
+--				l_c := Void
+--			else
+--				l_b := "b"
+--				l_c := l_b
+--			end
+--		end
+
+	test_void_var
+		note
+			aliasing: ""
+		local
+			l_a: detachable STRING_8
+			l_b: detachable STRING_8
+			l_c: detachable STRING_8
+		do
+			l_b := l_a
+			l_c := l_b
+		end
+
+	test_expanded_types
+		note
+			aliasing: ""
+		local
+			l_a, l_b: INTEGER_32
+		do
+			l_a := 1
+			l_b := l_a
+		end
+
+	test_expanded_types2
+		note
+			aliasing: "{AAT_BASIC}.test_expanded_types2.l_a.{AATH_EXPANDED}.str2, {AAT_BASIC}.test_expanded_types2.l_b.{AATH_EXPANDED}.str2"
+		local
+			l_a, l_b: AATH_EXPANDED
+		do
+			l_a.set_values (Void, "str2", 11, 22)
+			l_b := l_a
+		end
+
+	test_globals
+		note
+			aliasing: "{AAT_BASIC}.a, {AAT_BASIC}.b"
+		do
+			a := "a"
+			b := a
+		end
+
+	test_function_call
+		note
+			aliasing: "{AAT_BASIC}.test_function_call.l_a, {AAT_BASIC}.test_function_call.l_b"
+		local
+			l_a, l_b: STRING_8
+		do
+			l_a := "a"
+			l_b := test_function_call_helper (l_a)
+		end
+
+	test_function_call_helper (a_a: STRING_8): STRING_8
+		do
+			Result := a_a
 		end
 
 note

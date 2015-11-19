@@ -21,36 +21,28 @@ feature -- Initialisation
 
 feature
 
-	obj : AAT_STRING_ARG
-	v : STRING
+	obj: AAT_STRING_ARG
+	v: STRING
 
-	set_v(w : STRING)
+	set_v (w: STRING)
 		do
 			v := w
 		end
 
 	test1
 		note
-				aliasing:
-					"[
-						Void: any
-						NonVoid: any
-						{AAT_STRING_ARG}.v: {AAT_STRING_ARG}.obj.{AAT_STRING_ARG}.v
-						{AAT_STRING_ARG}.obj.{AAT_STRING_ARG}.v: {AAT_STRING_ARG}.v
-					]"
+			aliasing: "{AAT_STRING_ARG}.obj.{AAT_STRING_ARG}.v, {AAT_STRING_ARG}.v"
 		do
-			obj.set_v(v)
+			make
+			obj.set_v (v)
 		end
 
 	test2
 		note
-				aliasing:
-					"[
-						Void: any
-						NonVoid: any
-					]"
+			aliasing: ""
 		do
-			obj.set_v("")
+			make
+			obj.set_v ("")
 		end
 
 note

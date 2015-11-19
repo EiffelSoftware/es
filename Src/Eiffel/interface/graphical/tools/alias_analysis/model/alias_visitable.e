@@ -1,30 +1,44 @@
+deferred class
+	ALIAS_VISITABLE
+
+inherit
+	ANY
+		undefine
+			out
+		end
+
+feature {ANY}
+
+	variables: HASH_TABLE [ALIAS_OBJECT, STRING_8]
+
+	visited: BOOLEAN assign set_visited
+
+	visiting_data: TWO_WAY_LIST [STRING_8]
+
+feature {ANY}
+
+	set_visited (a_visited: like visited)
+		do
+			visited := a_visited
+		end
+
+	add_visiting_data (a_data: STRING_8)
+		do
+			if visiting_data = Void then
+				create visiting_data.make
+			end
+			visiting_data.extend (a_data)
+		end
+	
+	clear_visiting_data
+		do
+			visiting_data := Void
+		end
+
+invariant
+	variables /= Void
+
 note
-	description: "[
-			[Alias Analysis] Test suite main class.
-
-			To run the test suite:
-			- Add the directory of this class as a cluster to your Eiffel project.
-			- Reference this class somewhere in your code. E.g.:
-			  dummy: detachable ALIAS_ANALYSIS_TESTSUITE
-			- Click on the "TS" button in the Alias Analysis view.
-		]"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	date: "$Date$"
-	revision: "$Revision$"
-
-class
-	ALIAS_ANALYSIS_TESTSUITE
-
-feature {NONE}
-
-	-- Add all classes with tests here:
-	c1: detachable AAT_BASIC
-	c2: detachable AAT_QUALIFIED
-	c3: detachable AAT_OVER_OPER_A
-	c4: detachable AAT_STRING_ARG
-
-;note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

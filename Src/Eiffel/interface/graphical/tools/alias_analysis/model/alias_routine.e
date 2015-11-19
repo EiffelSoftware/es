@@ -1,30 +1,50 @@
-note
-	description: "[
-			[Alias Analysis] Test suite main class.
-
-			To run the test suite:
-			- Add the directory of this class as a cluster to your Eiffel project.
-			- Reference this class somewhere in your code. E.g.:
-			  dummy: detachable ALIAS_ANALYSIS_TESTSUITE
-			- Click on the "TS" button in the Alias Analysis view.
-		]"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	date: "$Date$"
-	revision: "$Revision$"
-
 class
-	ALIAS_ANALYSIS_TESTSUITE
+	ALIAS_ROUTINE
+
+inherit
+	ALIAS_VISITABLE
+		rename
+			variables as locals
+		end
+
+create {ALIAS_GRAPH}
+	make
 
 feature {NONE}
 
-	-- Add all classes with tests here:
-	c1: detachable AAT_BASIC
-	c2: detachable AAT_QUALIFIED
-	c3: detachable AAT_OVER_OPER_A
-	c4: detachable AAT_STRING_ARG
+	make (a_current_object: like current_object; a_routine: like routine; a_locals: like locals)
+		require
+			a_current_object /= Void
+			a_routine /= Void
+			a_locals /= Void
+		do
+			current_object := a_current_object
+			routine := a_routine
+			locals := a_locals
+		ensure
+			current_object = a_current_object
+			routine = a_routine
+			locals = a_locals
+		end
 
-;note
+feature {ANY}
+
+	current_object: ALIAS_OBJECT
+
+	routine: PROCEDURE_I
+
+feature {ANY}
+
+	out: STRING_8
+		do
+			Result := current_object.out + "." + routine.feature_name_32
+		end
+
+invariant
+	routine /= Void
+	current_object /= Void
+
+note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
