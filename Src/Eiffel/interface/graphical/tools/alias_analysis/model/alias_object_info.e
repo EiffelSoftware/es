@@ -93,9 +93,12 @@ feature {ANY}
 			if variable_name.is_equal ("Result") then
 				-- Result
 				l_type := context_routine.type
-			elseif attached context_routine.written_class.feature_named_32 (variable_name) as attr then
+			elseif attached context_routine.written_class.feature_named_32 (variable_name) as l_tmp then
 				-- attribute
-				l_type := attr.type
+				l_type := l_tmp.type
+			elseif attached argument_type as l_tmp then
+				-- argument
+				l_type := l_tmp
 			else
 				-- local variable
 				l_context := (create {SHARED_AST_CONTEXT}).context
@@ -121,10 +124,31 @@ feature {ANY}
 				l_context.clear_all
 			end
 
-			if attached {CL_TYPE_A} l_type as l_correct_type then
-				Result := l_correct_type
+			if attached {CL_TYPE_A} l_type as l_tmp then
+				Result := l_tmp
+			elseif attached {LIKE_CURRENT} l_type as l_tmp then
+				create Result.make (context_routine.written_class.class_id)
 			else
 				Io.put_string ("Unkown type: " + l_type.generator + "%N")
+			end
+		end
+
+feature {NONE}
+
+	argument_type: TYPE_A
+		local
+			l_i, l_count: INTEGER_32
+		do
+			from
+				l_i := 1
+				l_count := context_routine.argument_count
+			until
+				l_i > l_count or Result /= Void
+			loop
+				if context_routine.arguments.item_name (l_i).is_equal (variable_name) then
+					Result := context_routine.arguments.i_th (l_i)
+				end
+				l_i := l_i + 1
 			end
 		end
 

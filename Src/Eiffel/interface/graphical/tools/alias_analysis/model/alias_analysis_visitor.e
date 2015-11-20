@@ -180,6 +180,10 @@ feature {NONE} -- utilities
 		do
 			if attached {VOID_AS} a_node as l_node then
 				create Result.make_void
+			elseif attached {CHAR_AS} a_node as l_node then
+				create Result.make_object (
+						create {ALIAS_OBJECT}.make (create {CL_TYPE_A}.make (System.character_8_class.compiled_class.class_id))
+					)
 			elseif attached {INTEGER_AS} a_node as l_node then
 				create Result.make_object (
 						create {ALIAS_OBJECT}.make (create {CL_TYPE_A}.make (System.integer_32_class.compiled_class.class_id))
@@ -243,7 +247,7 @@ feature {NONE} -- utilities
 					end
 					Result := get_alias_info (l_target.alias_object, l_node.message)
 				end
-			elseif attached {BIN_FREE_AS} a_node as l_node then
+			elseif attached {BINARY_AS} a_node as l_node then
 				if
 					attached get_alias_info (a_target, l_node.left) as l_target and then
 					attached find_routine (l_node) as l_routine
@@ -252,6 +256,10 @@ feature {NONE} -- utilities
 				end
 			elseif attached {EXPR_CALL_AS} a_node as l_node then
 				Result := get_alias_info (a_target, l_node.call)
+			elseif attached {NESTED_EXPR_AS} a_node as l_node then
+				if attached get_alias_info (a_target, l_node.target) as l_target then
+					Result := get_alias_info (l_target.alias_object, l_node.message)
+				end
 			elseif attached {PARAN_AS} a_node as l_node then
 				Result := get_alias_info (a_target, l_node.expr)
 			end
@@ -269,7 +277,7 @@ feature {NONE} -- utilities
 			inspect a_node.routine_ids.count
 			when 0 then
 				-- local variable -> return Void
-			when 1 then
+			else
 				if attached {PROCEDURE_I} System.class_of_id (a_node.class_id).feature_of_rout_id (a_node.routine_ids.first) as l_r then
 					-- routine
 					Result := l_r

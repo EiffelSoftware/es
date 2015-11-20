@@ -23,18 +23,16 @@ feature
 
 	test_simple_alias
 		note
-			aliasing: "{AAT_BASIC_CHECKS}.b, {AAT_BASIC_CHECKS}.a"
+			aliasing:
+				"[
+					{AAT_BASIC_CHECKS}.a, {AAT_BASIC_CHECKS}.b
+					{AAT_BASIC_CHECKS}.a.{STRING_8}.area, {AAT_BASIC_CHECKS}.b.{STRING_8}.area
+					{AAT_BASIC_CHECKS}.a.{STRING_8}.internal_hash_code, {AAT_BASIC_CHECKS}.b.{STRING_8}.internal_hash_code
+				]"
 		do
 			a := "a"
 			b := a
-
-				-- Bug Report
-					-- Minor: The test does not pass. It expects "{AAT_BASIC_CHECKS}.a, {AAT_BASIC_CHECKS}.b"
-					--						 instead of "{AAT_BASIC_CHECKS}.b, {AAT_BASIC_CHECKS}.a"
-
-					-- Uncommenting the following line and running the TestSuite or right clicking on the feature
-					--					and dragging it to the GUI tab will arise an execption: BAD_INSPECT_VALUE raised
-			--b.append ("something else")
+			b.append ("something else")
 		end
 
 note
