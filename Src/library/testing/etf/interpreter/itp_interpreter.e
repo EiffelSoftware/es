@@ -39,6 +39,8 @@ inherit
 
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 
+	DT_SHARED_SYSTEM_CLOCK
+
 create
 	execute
 
@@ -169,6 +171,8 @@ feature {NONE} -- Initialization
 			socket.connect
 			socket.set_blocking
 			socket.set_nodelay
+			start_time := System_clock.date_time_now
+
 				-- Wait for test cases and then execute test cases in a loop.
 			log_message ("<session>%N")
 			main_loop
@@ -448,6 +452,7 @@ end
 						log_message (once "report_execute_request start%N")
 					end
 
+
 						-- Inject received byte-code into byte-code array of Current process.
 					create l_cstring.make (l_bcode)
 					override_byte_code_of_body (
@@ -460,7 +465,9 @@ end
 					if is_test_case_serialization_enabled
 							and then not is_test_case_agent_creation
 					then
+log_message_with_timestamp ("* REPORT START *")
 						retrieve_test_case_prestate (l_last_request.l_data)
+log_message_with_timestamp ("* REPORT END *")
 					end
 
 						-- Run the feature with newly injected byte-code.
@@ -495,8 +502,10 @@ end
 					if is_test_case_serialization_enabled
 							and then not is_test_case_agent_creation
 					then
+log_message_with_timestamp ("* REPORT START *")
 						retrieve_post_test_case_state
 						log_test_case_serialization
+log_message_with_timestamp ("* REPORT END *")
 					end
 				end
 			else
@@ -576,6 +585,17 @@ feature {ITP_TEST_CASE_SERIALIZER} -- Logging
 			log_file.put_string (a_message)
 --			log_file.flush
 		end
+
+	log_message_with_timestamp (a_msg: STRING)
+		local
+			duration: DT_DATE_TIME_DURATION
+		do
+			duration := System_clock.date_time_now.duration (start_time)
+			duration.set_time_canonical
+			log_message (duration.millisecond_count.out + ":" + a_msg + "%N")
+		end
+
+	start_time: DT_DATE_TIME
 
 	report_trace
 			-- Report trace information into `error_buffer'.
@@ -751,6 +771,9 @@ feature {NONE} -- Socket IPC
 			l_retried: BOOLEAN
 		do
 			if not l_retried then
+log_message_with_timestamp ("* REQUEST PROCESSED *")
+log_message_with_timestamp ("* EXTRA *")
+
 				socket.put_natural_32 (last_response_flag)
 				log_message("%TResponse_flag: " + last_response_flag.out + "%N")
 				if attached last_response as l_last_response then
@@ -848,7 +871,9 @@ feature {NONE} -- Byte code
 			end
 		rescue
 			failed := True
+log_message_with_timestamp ("* REPORT START *")
 			report_trace
+log_message_with_timestamp ("* REPORT END *")
 
 				-- Book keeps found faults.
 			if not is_last_invariant_violated then
@@ -895,9 +920,11 @@ feature {NONE} -- Byte code
 			loop
 				wipe_out_buffer
 				retrieve_request
+log_message_with_timestamp ("* REQUEST RECEIVED *")
 				if not has_error then
 					parse
 				end
+
 				has_error := False
 			end
 		end

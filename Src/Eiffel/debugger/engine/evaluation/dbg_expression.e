@@ -332,7 +332,7 @@ feature {DBG_EXPRESSION, DBG_EXPRESSION_EVALUATION, DBG_EXPRESSION_EVALUATOR, AS
 				else
 					create sp
 					p := sp.expression_parser
-					p.set_syntax_version (p.transitional_syntax)
+					p.set_syntax_version (p.Provisional_syntax)
 					check expression_not_void: text /= Void end
 					create s32.make (text.count + 10)
 					s32.append_string_general ("check ")
@@ -420,7 +420,7 @@ invariant
 	valid_context: context.is_coherent
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

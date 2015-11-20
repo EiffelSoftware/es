@@ -481,6 +481,8 @@ feature -- Execution
 			normal_response:AUT_NORMAL_RESPONSE
 			l_request:AUT_CREATE_AGENT_REQUEST
 		do
+log_time_stamp ("* TEST START *")
+
 			create l_request.make (system, a_receiver, a_receiver_type, a_feature, a_operands)
 			last_request := l_request
 			last_request.process (socket_data_printer)
@@ -488,10 +490,14 @@ feature -- Execution
 			set_test_case_index (l_request)
 
 			proxy_log_printers.set_start_time (test_duration)
+log_time_stamp ("* REQUEST SET *")
+
 			flush_process
 			parse_invoke_response
 			last_request.set_response (last_response)
 			proxy_log_printers.set_end_time (test_duration)
+log_time_stamp ("* RESPONSE SET * create_agent")
+log_time_stamp ("* EXTRA *")
 
 			proxy_log_printers.report_request (Current, last_request)
 			if not last_response.is_bad then
@@ -544,6 +550,9 @@ feature -- Execution
 			if l_arg_list = Void then
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} l_arg_list.make
 			end
+
+log_time_stamp ("* TEST START *")
+
 			create l_request.make (system, a_receiver, a_type, a_procedure, l_arg_list)
 			if a_feature /= Void then
 				l_request.set_feature_id (a_feature.id)
@@ -560,9 +569,14 @@ feature -- Execution
 			last_request := l_request
 			last_request.process (socket_data_printer)
 			proxy_log_printers.set_start_time (test_duration)
+log_time_stamp ("* REQUEST SET *")
+
 			flush_process
 			parse_invoke_response
 			last_request.set_response (last_response)
+log_time_stamp ("* RESPONSE SET * create_object")
+log_time_stamp ("* EXTRA *")
+
 			l_test_duration := test_duration
 			proxy_log_printers.set_end_time (l_test_duration)
 			proxy_log_printers.report_request (Current, last_request)
@@ -619,6 +633,7 @@ feature -- Execution
 			l_target_type := variable_table.variable_type (a_target)
 			l_feature := l_target_type.base_class.feature_of_rout_id (a_feature.rout_id_set.first)
 
+log_time_stamp ("* TEST START *")
 				-- Adjust feature according to the actual type of `a_target'.
 				-- This is needed because of feature renaming. If we don't do this,
 				-- in the replay mode, there will be a problem, either because some feature is not found,
@@ -639,9 +654,14 @@ feature -- Execution
 			last_request.process (socket_data_printer)
 			l_test_duration := test_duration
 			proxy_log_printers.set_start_time (l_test_duration)
+log_time_stamp ("* REQUEST SET *")
+
 			flush_process
 			parse_invoke_response
 			last_request.set_response (last_response)
+log_time_stamp ("* RESPONSE SET * invoke_feature")
+log_time_stamp ("* EXTRA *")
+
 			l_test_duration := test_duration
 			proxy_log_printers.set_end_time (l_test_duration)
 			proxy_log_printers.report_request (Current, last_request)
@@ -682,6 +702,7 @@ feature -- Execution
 			l_test_duration: INTEGER
 		do
 			is_last_test_case_executed := False
+log_time_stamp ("* TEST START *")
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
 			if a_feature /= Void then
 				l_invoke_request.set_feature_id (a_feature.id)
@@ -698,9 +719,13 @@ feature -- Execution
 			last_request := l_invoke_request
 			last_request.process (socket_data_printer)
 			proxy_log_printers.set_start_time (test_duration)
+log_time_stamp ("* REQUEST SET *")
+
 			flush_process
 			parse_invoke_response
 			last_request.set_response (last_response)
+log_time_stamp ("* RESPONSE SET * invoke_and_assign_feature")
+log_time_stamp ("* EXTRA *")
 			l_test_duration := test_duration
 			proxy_log_printers.set_end_time (l_test_duration)
 			proxy_log_printers.report_request (Current, last_request)
@@ -743,12 +768,18 @@ feature -- Execution
 			a_receiver_not_void: a_receiver /= Void
 			a_constant_not_void: an_expression /= Void
 		do
+log_time_stamp ("* TEST START *")
 			create {AUT_ASSIGN_EXPRESSION_REQUEST} last_request.make (system, a_receiver, an_expression)
 
 			last_request.process (socket_data_printer)
+log_time_stamp ("* REQUEST SET *")
+
 			flush_process
 			parse_invoke_response
 			last_request.set_response (last_response)
+log_time_stamp ("* RESPONSE SET * assign_expression")
+log_time_stamp ("* EXTRA *")
+
 			proxy_log_printers.report_request (Current, last_request)
 			if not last_response.is_bad or last_response.is_error  then
 --				is_ready := True
@@ -786,12 +817,16 @@ feature -- Execution
 			l_starting_index, l_ending_index: INTEGER
 			l_argument_variables: DS_ARRAYED_LIST [ITP_VARIABLE]
 		do
+log_time_stamp ("* TEST START *")
 			create {AUT_BATCH_ASSIGNMENT_REQUEST} last_request.make (system, a_object_types, a_serialized_objects)
 
 			last_request.process (socket_data_printer)
+log_time_stamp ("* REQUEST SET *")
 			flush_process
 			parse_invoke_response
 			last_request.set_response (last_response)
+log_time_stamp ("* RESPONSE SET * batch_assign_variables")
+log_time_stamp ("* EXTRA *")
 			proxy_log_printers.report_request (Current, last_request)
 
 			if last_response.is_bad or last_response.is_error then
@@ -824,13 +859,17 @@ feature -- Execution
 			l_value_str: STRING
 			l_type: TYPE_A
 		do
+log_time_stamp ("* TEST START *")
 			create {AUT_TYPE_REQUEST} last_request.make (system, a_variable)
 			last_request.process (socket_data_printer)
+log_time_stamp ("* REQUEST SET *")
 			flush_process
 			is_waiting_for_type := True
 			parse_type_of_variable_response
 			is_waiting_for_type := False
 			last_request.set_response (last_response)
+log_time_stamp ("* RESPONSE SET * retrieve_type_of_variable")
+log_time_stamp ("* EXTRA *")
 			proxy_log_printers.report_request (Current, last_request)
 			if not last_response.is_bad then
 --				is_ready := True
