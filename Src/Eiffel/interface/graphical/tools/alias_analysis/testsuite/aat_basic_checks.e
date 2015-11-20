@@ -1,31 +1,43 @@
 note
-	description: "[
-			[Alias Analysis] Test suite main class.
-
-			To run the test suite:
-			- Add the directory of this class as a cluster to your Eiffel project.
-			- Reference this class somewhere in your code. E.g.:
-			  dummy: detachable ALIAS_ANALYSIS_TESTSUITE
-			- Click on the "TS" button in the Alias Analysis view.
-		]"
+	description: "[AAT_BASIC_CHECKS] basic tests."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	ALIAS_ANALYSIS_TESTSUITE
+	AAT_BASIC_CHECKS
 
-feature {NONE}
+create
+	make
 
-	-- Add all classes with tests here:
-	c1: detachable AAT_BASIC
-	c2: detachable AAT_QUALIFIED
-	c3: detachable AAT_OVER_OPER_A
-	c4: detachable AAT_STRING_ARG
-	c5: detachable AAT_BASIC_CHECKS
+feature
 
-;note
+	make
+		do
+				a := ""
+				b := ""
+		end
+
+	a, b: STRING_8
+
+	test_simple_alias
+		note
+			aliasing: "{AAT_BASIC_CHECKS}.b, {AAT_BASIC_CHECKS}.a"
+		do
+			a := "a"
+			b := a
+
+				-- Bug Report
+					-- Minor: The test does not pass. It expects "{AAT_BASIC_CHECKS}.a, {AAT_BASIC_CHECKS}.b"
+					--						 instead of "{AAT_BASIC_CHECKS}.b, {AAT_BASIC_CHECKS}.a"
+
+					-- Uncommenting the following line and running the TestSuite or right clicking on the feature
+					--					and dragging it to the GUI tab will arise an execption: BAD_INSPECT_VALUE raised
+			--b.append ("something else")
+		end
+
+note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
