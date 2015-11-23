@@ -37,11 +37,9 @@ feature
 
 	test_simple_alias2
 		note
-			aliasing:
-				"[
-					{AAT_BASIC_CHECKS}.a, {AAT_BASIC_CHECKS}.b
-				]"
+			aliasing: "{AAT_BASIC_CHECKS}.a, {AAT_BASIC_CHECKS}.b"
 		do
+			make
 			b := a
 		end
 
