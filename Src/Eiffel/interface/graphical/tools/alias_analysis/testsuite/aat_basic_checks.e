@@ -35,6 +35,16 @@ feature
 			b.append ("something else")
 		end
 
+	test_simple_alias2
+		note
+			aliasing:
+				"[
+					{AAT_BASIC_CHECKS}.a, {AAT_BASIC_CHECKS}.b
+				]"
+		do
+			b := a
+		end
+
 note
 	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
