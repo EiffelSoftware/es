@@ -4045,6 +4045,12 @@ Src/tools/iron/delivery/VERSIONS/14.11/alter/C_library/zlib/clibs_zlib-safe.ecf 
 Src/tools/iron/delivery/VERSIONS/14.11/alter/C_library/zlib/clibs_zlib.ecf svneol=native#text/xml
 Src/tools/iron/delivery/VERSIONS/14.11/alter/library/vision2/vision2-safe.ecf svneol=native#text/xml
 Src/tools/iron/delivery/VERSIONS/14.11/alter/library/vision2/vision2.ecf svneol=native#text/xml
+Src/tools/iron/delivery/VERSIONS/alter/C_library/libpng/clibs_libpng-safe.ecf svneol=native#text/xml
+Src/tools/iron/delivery/VERSIONS/alter/C_library/libpng/clibs_libpng.ecf svneol=native#text/xml
+Src/tools/iron/delivery/VERSIONS/alter/C_library/zlib/clibs_zlib-safe.ecf svneol=native#text/xml
+Src/tools/iron/delivery/VERSIONS/alter/C_library/zlib/clibs_zlib.ecf svneol=native#text/xml
+Src/tools/iron/delivery/VERSIONS/alter/library/vision2/vision2-safe.ecf svneol=native#text/xml
+Src/tools/iron/delivery/VERSIONS/alter/library/vision2/vision2.ecf svneol=native#text/xml
 Src/tools/iron/delivery/credential.py-template -text
 Src/tools/iron/delivery/iron/spec/unix/bin/iron_build_archive -text
 Src/tools/iron/delivery/iron/spec/unix/bin/iron_extract_archive -text
