@@ -502,7 +502,6 @@ Src/tools/iron/.comp
 Src/tools/iron/client/db
 Src/tools/iron/client/iron
 Src/tools/iron/client/iron-new
-Src/tools/iron/delivery/VERSIONS/13.11/contrib
 Src/tools/iron/server/_iron
 Src/tools/iron/testing/_*
 Src/tools/quick_finalize/*.wb
