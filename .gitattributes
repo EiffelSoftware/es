@@ -6005,6 +6005,10 @@ eweasel/tests/config036/Ace svneol=native#text/xml
 eweasel/tests/config036/eweasel.ecf svneol=native#text/xml
 eweasel/tests/config038/Ace svneol=native#text/xml
 eweasel/tests/config039/Ace2 -text
+eweasel/tests/config039/Ace3 -text
+eweasel/tests/config039/Ace4 -text
+eweasel/tests/config039/Ace5 -text
+eweasel/tests/config039/Ace6 -text
 eweasel/tests/conform007/Ace -text
 eweasel/tests/dotnet018/cas.cs -text
 eweasel/tests/dotnet018/cas.dll -text
