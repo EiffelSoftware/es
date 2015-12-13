@@ -6163,6 +6163,7 @@ eweasel/tests/exec283/Ace -text
 eweasel/tests/exec315/Ace -text
 eweasel/tests/exec359/Ace svneol=native#text/xml
 eweasel/tests/exec360/Ace svneol=native#text/xml
+eweasel/tests/exec364/Ace svneol=native#text/xml
 eweasel/tests/fake001/notes -text
 eweasel/tests/fake002/notes -text
 eweasel/tests/fake003/notes -text
