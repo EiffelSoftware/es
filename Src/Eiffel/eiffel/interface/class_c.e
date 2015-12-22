@@ -1626,7 +1626,16 @@ feature -- Parent checking
 	remove_types
 			-- Removes all types from system
 		do
+				-- Types are now invalid, we have to request a clean up
+				-- any invalid instantiation. Do not move this inside the
+				-- condition `has_types' as during incremental recompilation
+				-- we may have removed the types, nevertheless we still need
+				-- to clean the instantiator as temporary types, now invalid,
+				-- may have been inserted during an incremental recompilation
+				-- with errors (See eweasel test#incr331).
+			system.instantiator.request_clean_up
 			if has_types then
+					-- Remove all the class types.
 				from
 					types.start
 				until
@@ -2268,7 +2277,10 @@ feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual
 						new_actuals := new_actuals.duplicate (actual_count)
 							-- Replace extra arguments with a tuple.
 						create tuple_actual.make (system.tuple_id, wrapped_actuals)
-						tuple_actual.set_is_attached
+						if not lace_class.is_void_unsafe then
+								-- Do not set any marks for non-void safe code.
+							tuple_actual.set_is_attached
+						end
 						new_actuals.put_i_th (tuple_actual, tuple_parameter_number)
 							-- Remove extra arguments.
 						from
@@ -2295,7 +2307,10 @@ feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual
 						create wrapped_actuals.make (0)
 						new_actuals.go_i_th (tuple_parameter_number)
 						create tuple_actual.make (system.tuple_id, wrapped_actuals)
-						tuple_actual.set_is_attached
+						if not lace_class.is_void_unsafe then
+								-- Do not set any marks for non-void safe code.
+							tuple_actual.set_is_attached
+						end
 						new_actuals.put_left (tuple_actual)
 							-- Adjust number of actual arguments.
 						actual_count := formal_count
@@ -2314,7 +2329,7 @@ feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual
 			actual_type_not_void: Result /= Void
 		end
 
-feature {GEN_TYPE_A} -- Tuple paramter unfolding
+feature -- Tuple paramter unfolding
 
 	tuple_parameter_index: INTEGER
 			-- Index of a formal parameter constrained to a tuple type or 0 if there is none or several such parameters.
@@ -2787,10 +2802,6 @@ end
 			class_filters_cursor: INTEGER
 		do
 			class_filters := filters
-				-- Propagation along the filters since we have a new type
-				-- Clean the filters. Some of the filters can be obsolete
-				-- if the base class has been removed from the system
-			class_filters.clean (Current)
 			from
 				class_filters.start
 			until
@@ -2827,10 +2838,6 @@ feature {CLASS_C} -- Incrementality
 			class_filters_cursor: INTEGER
 		do
 			class_filters := filters
-				-- Propagation along the filters since we have a new type
-				-- Clean the filters. Some of the filters can be obsolete
-				-- if the base class has been removed from the system
-			class_filters.clean (Current)
 			from
 				class_filters.start
 			until
@@ -4959,6 +4966,14 @@ feature {DEGREE_4, NAMED_TUPLE_TYPE_A, TYPE_A_CHECKER} -- Degree 4
 			degree_4_processed_set: degree_4_processed
 		end
 
+	unset_degree_4_processed
+			-- Set `degree_4_processed' to `False'.
+		do
+			degree_4_processed := False
+		ensure
+			degree_4_processed_set: not degree_4_processed
+		end
+
 	set_expanded_modified
 			-- Set `expanded_modifed' to True.
 		do
@@ -5046,7 +5061,7 @@ feature {CLASS_C, DEGREE_4} -- Degree 3 and 4 recompilation
 
 feature {CLASS_C} -- Degree 3 and 4 recompilation
 
-	recompile_descendants_with_condition (condition: PREDICATE [CLASS_C, TUPLE [CLASS_C]]; is_degree_4_required: BOOLEAN; c: CLASS_C)
+	recompile_descendants_with_condition (condition: PREDICATE [CLASS_C]; is_degree_4_required: BOOLEAN; c: CLASS_C)
 			-- Mark all descendants of class `c' that match `condition' for complete recompilation,
 			-- including degree 4 when `is_degree_4 = True'.
 		require

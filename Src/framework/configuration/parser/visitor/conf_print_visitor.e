@@ -560,7 +560,10 @@ feature {NONE} -- Implementation
 					if multiline and then c = '%N' then
 						text.append_character ('%N')
 					else
-						if ' ' <= c and then c <= '%/127/' then
+						if
+							'%T' = c or else
+							(' ' <= c and then c <= '%/127/')
+						then
 							text.append_character (c.to_character_8)
 						else
 							text.append_character ('&')
@@ -597,7 +600,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	append_condition_list (condition: attached like {CONF_CONDITION}.platform; get_name: FUNCTION [ANY, TUPLE [INTEGER], STRING]; name: READABLE_STRING_8)
+	append_condition_list (condition: attached like {CONF_CONDITION}.platform; get_name: FUNCTION [INTEGER, STRING]; name: READABLE_STRING_8)
 			-- Append condition of name `name' with values specified by `condition' with printable elements that can be obtained using `get_name'.
 		require
 			condition_attached: attached condition
@@ -826,7 +829,6 @@ feature {NONE} -- Implementation
 	append_file_rule (a_file_rules: ARRAYED_LIST [CONF_FILE_RULE])
 			-- Append `a_file_rule'
 		local
-			l_pattern: like {CONF_FILE_RULE}.include
 			l_rule: CONF_FILE_RULE
 		do
 			from
@@ -840,26 +842,15 @@ feature {NONE} -- Implementation
 					append_text_indent ("<file_rule>%N")
 					indent := indent + 1
 					append_description_tag (l_rule.description)
-					l_pattern := l_rule.exclude
-					if l_pattern /= Void then
-						from
-							l_pattern.start
-						until
-							l_pattern.after
-						loop
-							append_tag ("exclude", l_pattern.item_for_iteration, Void, Void)
-							l_pattern.forth
+						-- Save patterns lexicographically ordered.
+					if attached l_rule.ordered_exclude as p then
+						across p as pc loop
+							append_tag ("exclude", pc.item, Void, Void)
 						end
 					end
-					l_pattern := l_rule.include
-					if l_pattern /= Void then
-						from
-							l_pattern.start
-						until
-							l_pattern.after
-						loop
-							append_tag ("include", l_pattern.item_for_iteration, Void, Void)
-							l_pattern.forth
+					if attached l_rule.ordered_include as p then
+						across p as pc loop
+							append_tag ("include", pc.item, Void, Void)
 						end
 					end
 					append_conditionals (l_rule.internal_conditions, False)
@@ -1195,22 +1186,22 @@ feature {NONE} -- Implementation
 		require
 			a_cluster_not_void: a_cluster /= Void
 		local
-			l_deps: detachable SEARCH_TABLE [CONF_GROUP]
 			l_visible: detachable STRING_TABLE [EQUALITY_TUPLE [TUPLE [STRING_32, detachable STRING_TABLE [STRING_32]]]]
 		do
 			append_file_rule (a_cluster.internal_file_rule)
 			append_mapping (a_cluster.internal_mapping)
-			l_deps := a_cluster.internal_dependencies
-			if l_deps /= Void then
-				from
-					l_deps.start
-				until
-					l_deps.after
+			if
+				attached a_cluster.internal_dependencies as l_deps and then
+				attached l_deps.linear_representation as g
+			then
+					-- Save group names lexicographically ordered.
+				(create {QUICK_SORTER [CONF_GROUP]}.make (create {COMPARABLE_COMPARATOR [CONF_GROUP]})).sort (g)
+				across
+					g as gc
 				loop
 					append_text_indent ("<uses")
-					append_text_attribute ("group", l_deps.item_for_iteration.name)
+					append_text_attribute ("group", gc.item.name)
 					append_text ("/>%N")
-					l_deps.forth
 				end
 			end
 			l_visible := a_cluster.visible

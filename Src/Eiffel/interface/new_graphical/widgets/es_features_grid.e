@@ -188,7 +188,7 @@ feature -- Basic operations
 			update_verification_status
 		end
 
-	recursive_do_all (ag: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+	recursive_do_all (ag: PROCEDURE [EV_GRID_ROW])
 			-- Recursively call `ag' on each row
 		local
 			r,n: INTEGER

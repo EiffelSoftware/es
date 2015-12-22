@@ -9,14 +9,17 @@ note
 class
 	GB_ABOUT_DIALOG_CONSTANTS
 
+inherit
+	EIFFEL_CONSTANTS
+
 feature -- Access
 
 	t_version_info: STRING
 		once
 			Result := "EiffelBuild "
-			Result.append_integer ({EIFFEL_CONSTANTS}.major_version)
+			Result.append_string (two_digit_minimum_major_version)
 			Result.append_character ('.')
-			Result.append_integer ({EIFFEL_CONSTANTS}.minor_version)
+			Result.append_string (two_digit_minimum_minor_version)
 			Result.append_character ('.')
 				-- We put (9999 + 1) because if we were to put 10000 the 4 zeros
 				-- will get replaced by the delivery scripts (see comments for `snv_revision').
@@ -28,7 +31,7 @@ feature -- Access
 	t_Copyright_info: STRING
 		once
 			Result :=
-				"Copyright (C) 1985-2007 Eiffel Software Inc.%N%
+				"Copyright (C) 1985-2015 Eiffel Software Inc.%N%
 				%All rights reserved"
 		end
 
@@ -36,11 +39,11 @@ feature -- Access
 		once
 			create Result.make (500)
 			Result.append (
-				"Eiffel Software Inc.%N%
-				%ISE Building%N%
-				%356 Storke Road, Goleta, CA 93117 USA%N%
-				%Telephone: 805-685-1006, Fax 805-685-6869%N%
-				% %N%
+				"Eiffel Software%N%
+				%5949 Hollister Ave., Goleta, CA 93117 USA%N%
+				%Telephone: 805-685-1006%N%
+				%Fax 805-685-6869%N%
+				%%N%
 				%Web Customer Support: http://support.eiffel.com%N%
 				%Visit Eiffel on the Web: http://www.eiffel.com%N"
 			)

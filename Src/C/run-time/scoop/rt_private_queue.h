@@ -49,28 +49,23 @@ doc:		<summary> The private queue struct.
 doc:
 doc:			This structure serves as a central part of communication between
 doc:			a client and a supplier. It contains an rt_message_channel for the
-doc:			client to send new call data structs.
+doc:			client to send new SCOOP separate calls.
 doc:
 doc:			The struct also serves as a lock for the client on the supplier:
-doc:			As long as a private queue is inside the queue-of-queues of  the supplier
-doc:			the client has exclusive access.
+doc:			As long as a private queue is inside the queue-of-queues
+doc:			of the supplier, the client has exclusive access.
 doc:
 doc:			Note that the client processor may change during lock passing, i.e.
 doc:			it's not guaranteed to be always the client that created the queue.
 doc:		</summary>
-doc:		<field name="call_stack_msg" type="struct rt_message"> The call being executed right now. Accessed only by the supplier or by the GC. </field>
 doc:		<field name="channel" type="struct rt_message_channel"> The message channel used for communication. </field>
 doc:		<field name="supplier" type="struct rt_processor*"> The supplier to whom messages will be sent. This field is constant. Accessed only by the client. </field>
 doc:		<field name="lock_depth" type="int"> The current lock depth (for recursive locking). Accessed only by the client. </field>
 doc:		<field name="synced" type="EIF_BOOLEAN"> Whether the supplier is synchronized with the client. Accessed only by the client. </field>
 doc:		<field name="saved_result" type="EIF_TYPED_VALUE*"> The typed Eiffel value where the result of a query gets stored. This is only needed in workbench mode to update a reference during GC. </field>
-doc:		<fixme> It may be possible to improve performance slightly with some careful alignment to cache lines (also within rt_message_channel) </fixme>
 doc:	</struct>
 */
 struct rt_private_queue {
-		/* Consumer (or supplier) part. */
-	struct rt_message call_stack_msg;
-
 		/* Shared part. */
 	struct rt_message_channel channel;
 
@@ -95,7 +90,6 @@ rt_shared void rt_private_queue_lock (struct rt_private_queue* self, struct rt_p
 rt_shared void rt_private_queue_unlock (struct rt_private_queue* self, EIF_BOOLEAN is_wait_condition_failure);
 rt_shared int rt_private_queue_register_wait (struct rt_private_queue* self, struct rt_processor* client);
 
-rt_shared void rt_private_queue_log_call (struct rt_private_queue* self, struct rt_processor* client, struct call_data* call);
-rt_shared void rt_private_queue_synchronize (struct rt_private_queue* self, struct rt_processor* client);
+rt_shared void rt_private_queue_log_call (struct rt_private_queue* self, struct rt_processor* client, struct eif_scoop_call_data* call);
 
 #endif /* _rt_private_queue_h_ */

@@ -9,7 +9,7 @@ class
 inherit
 	CMS_MODULE
 		redefine
-			register_hooks,
+			setup_hooks,
 			initialize,
 			is_installed,
 			install,
@@ -25,6 +25,12 @@ inherit
 
 	CMS_RECENT_CHANGES_HOOK
 
+	CMS_TAXONOMY_HOOK
+
+	CMS_HOOK_EXPORT
+
+	CMS_EXPORT_NODE_UTILITIES
+
 create
 	make
 
@@ -37,6 +43,9 @@ feature {NONE} -- Initialization
 			description := "Service to manage content based on 'node'"
 			package := "core"
 			config := a_setup
+				-- Optional dependencies, mainly for information.
+			put_dependency ({CMS_RECENT_CHANGES_MODULE}, False)
+			put_dependency ({CMS_TAXONOMY_MODULE}, False)
 		end
 
 	config: CMS_SETUP
@@ -59,7 +68,7 @@ feature {CMS_API} -- Module Initialization
 			Precursor (a_api)
 
 				-- Storage initialization
-			if attached {CMS_STORAGE_SQL_I} a_api.storage as l_storage_sql then
+			if attached a_api.storage.as_sql_storage as l_storage_sql then
 				create {CMS_NODE_STORAGE_SQL} l_node_storage.make (l_storage_sql)
 			else
 				-- FIXME: in case of NULL storage, should Current be disabled?
@@ -107,7 +116,7 @@ feature {CMS_API} -- Module management
 			-- Is Current module installed?
 		do
 			Result := Precursor (a_api)
-			if Result and attached {CMS_STORAGE_SQL_I} a_api.storage as l_sql_storage then
+			if Result and attached a_api.storage.as_sql_storage as l_sql_storage then
 				Result := l_sql_storage.sql_table_exists ("nodes") and
 					l_sql_storage.sql_table_exists ("page_nodes")
 			end
@@ -116,7 +125,7 @@ feature {CMS_API} -- Module management
 	install (a_api: CMS_API)
 		do
 				-- Schema
-			if attached {CMS_STORAGE_SQL_I} a_api.storage as l_sql_storage then
+			if attached a_api.storage.as_sql_storage as l_sql_storage then
 				l_sql_storage.sql_execute_file_script (a_api.module_resource_location (Current, (create {PATH}.make_from_string ("scripts")).extended (name).appended_with_extension ("sql")), Void)
 			end
 			Precursor {CMS_MODULE}(a_api)
@@ -147,10 +156,11 @@ feature -- Access
 		do
 			Result := Precursor
 			Result.force ("create any node")
+			Result.force ("export any node")
 
 			if attached node_api as l_node_api then
 				across
-					l_node_api.content_types as ic
+					l_node_api.node_types as ic
 				loop
 					l_type_name := ic.item.name
 					if not l_type_name.is_whitespace then
@@ -173,6 +183,8 @@ feature -- Access
 						Result.force ("view unpublished " + l_type_name)
 
 						Result.force ("view revisions own " + l_type_name)
+
+						Result.force ("export " + l_type_name)
 					end
 				end
 				Result.force ("view trash")
@@ -224,15 +236,17 @@ feature -- Access: router
 
 feature -- Hooks
 
-	register_hooks (a_response: CMS_RESPONSE)
+	setup_hooks (a_hooks: CMS_HOOK_CORE_MANAGER)
 			-- <Precursor>
 		do
-			a_response.hooks.subscribe_to_menu_system_alter_hook (Current)
-			a_response.hooks.subscribe_to_block_hook (Current)
-			a_response.hooks.subscribe_to_response_alter_hook (Current)
+			a_hooks.subscribe_to_menu_system_alter_hook (Current)
+			a_hooks.subscribe_to_block_hook (Current)
+			a_hooks.subscribe_to_response_alter_hook (Current)
+			a_hooks.subscribe_to_export_hook (Current)
 
 				-- Module specific hook, if available.
-			a_response.hooks.subscribe_to_hook (Current, {CMS_RECENT_CHANGES_HOOK})
+			a_hooks.subscribe_to_hook (Current, {CMS_RECENT_CHANGES_HOOK})
+			a_hooks.subscribe_to_hook (Current, {CMS_TAXONOMY_HOOK})
 		end
 
 	response_alter (a_response: CMS_RESPONSE)
@@ -274,7 +288,7 @@ feature -- Hooks
 				create perms.make (2)
 				perms.force ("create any node")
 				across
-					l_node_api.content_types as ic
+					l_node_api.node_types as ic
 				loop
 					perms.force ("create " + ic.item.name)
 				end
@@ -289,7 +303,7 @@ feature -- Hooks
 		do
 			if
 				attached node_api as l_node_api and then
-				attached l_node_api.content_types as l_types and then
+				attached l_node_api.node_types as l_types and then
 				not l_types.is_empty
 			then
 				create lst.make (l_types.count)
@@ -350,6 +364,141 @@ feature -- Hooks
 						end
 					end
 				end
+			end
+		end
+
+	populate_content_associated_with_term (t: CMS_TERM; a_contents: CMS_TAXONOMY_ENTITY_CONTAINER)
+		local
+			l_node_typenames: ARRAYED_LIST [READABLE_STRING_8]
+			nid: INTEGER_64
+			l_info_to_remove: ARRAYED_LIST [TUPLE [entity: READABLE_STRING_32; typename: detachable READABLE_STRING_32]]
+		do
+			if
+				attached node_api as l_node_api and then
+				attached l_node_api.node_types as l_node_types and then
+				not l_node_types.is_empty
+			then
+				create l_node_typenames.make (l_node_types.count)
+				across
+					l_node_types as ic
+				loop
+					l_node_typenames.force (ic.item.name)
+				end
+				create l_info_to_remove.make (0)
+				across
+					a_contents.taxonomy_info as ic
+				loop
+					if
+						attached ic.item.typename as l_typename and then
+						across l_node_typenames as t_ic some t_ic.item.same_string (l_typename) end
+					then
+						if ic.item.entity.is_integer then
+							nid := ic.item.entity.to_integer_64
+							if nid > 0 and then attached l_node_api.node (nid) as l_node then
+								if l_node.link = Void then
+									l_node.set_link (l_node_api.node_link (l_node))
+								end
+								a_contents.force (create {CMS_TAXONOMY_ENTITY}.make (l_node, l_node.modification_date))
+								l_info_to_remove.force (ic.item)
+							end
+						end
+					end
+				end
+				across
+					l_info_to_remove as ic
+				loop
+					a_contents.taxonomy_info.prune_all (ic.item)
+				end
+			end
+		end
+
+	export_to (a_export_id_list: detachable ITERABLE [READABLE_STRING_GENERAL]; a_export_parameters: CMS_EXPORT_PARAMETERS; a_response: CMS_RESPONSE)
+			-- Export data identified by `a_export_id_list',
+			-- or export all data if `a_export_id_list' is Void.
+		local
+			l_node_type: CMS_CONTENT_TYPE
+			n: CMS_NODE
+			p: PATH
+			d: DIRECTORY
+			f: PLAIN_TEXT_FILE
+			lst: LIST [CMS_NODE]
+		do
+			if attached node_api as l_node_api then
+				across
+					l_node_api.node_types as types_ic
+				loop
+					l_node_type := types_ic.item
+					if
+						a_response.has_permissions (<<"export any node", "export " + l_node_type.name>>) and then
+						l_node_type.name.same_string_general ("page") and then
+						(	a_export_id_list = Void
+							or else across a_export_id_list as ic some ic.item.same_string (l_node_type.name) end
+						)
+					then
+
+							-- For now, handle only page from this node module.
+						lst := l_node_api.nodes_of_type (l_node_type)
+						a_export_parameters.log ("Exporting " + lst.count.out + " nodes of type " + l_node_type.name)
+						p := a_export_parameters.location.extended ("nodes").extended (l_node_type.name)
+						create d.make_with_path (p)
+						if not d.exists then
+							d.recursive_create_dir
+						end
+						across
+							lst as ic
+						loop
+							n := l_node_api.full_node (ic.item)
+							a_export_parameters.log (l_node_type.name + " #" + n.id.out + " rev=" + n.revision.out)
+							create f.make_with_path (p.extended (n.id.out).appended_with_extension ("json"))
+							if not f.exists or else f.is_access_writable then
+								f.open_write
+								if attached {CMS_PAGE} n as l_page then
+									f.put_string (json_to_string (page_node_to_json (l_page)))
+								else
+									f.put_string (json_to_string (node_to_json (n)))
+								end
+								f.close
+							end
+								-- Revisions.
+							if attached l_node_api.node_revisions (n) as l_revisions and then l_revisions.count > 1 then
+								a_export_parameters.log (l_node_type.name + " " + l_revisions.count.out + " revisions.")
+								p := a_export_parameters.location.extended ("nodes").extended (l_node_type.name).extended (n.id.out)
+								create d.make_with_path (p)
+								if not d.exists then
+									d.recursive_create_dir
+								end
+								across
+									l_revisions as revs_ic
+								loop
+									n := revs_ic.item
+									create f.make_with_path (p.extended ("rev-" + n.revision.out).appended_with_extension ("json"))
+									if not f.exists or else f.is_access_writable then
+										f.open_write
+										if attached {CMS_PAGE} n as l_page then
+											f.put_string (json_to_string (page_node_to_json (l_page)))
+										else
+											f.put_string (json_to_string (node_to_json (n)))
+										end
+										f.close
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+	page_node_to_json (a_page: CMS_PAGE): JSON_OBJECT
+		local
+			j: JSON_OBJECT
+		do
+			Result := node_to_json (a_page)
+			if attached a_page.parent as l_parent_page then
+				create j.make_empty
+				j.put_string (l_parent_page.content_type, "type")
+				j.put_integer (l_parent_page.id, "nid")
+				Result.put (j, "parent")
 			end
 		end
 

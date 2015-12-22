@@ -15,7 +15,7 @@ inherit
 		rename
 			module_api as contact_api
 		redefine
-			register_hooks,
+			setup_hooks,
 			is_installed,
 			install,
 			initialize,
@@ -72,10 +72,11 @@ feature {CMS_API} -- Module Initialization
 		do
 			Precursor (api)
 			p := file_system_storage_path (api)
+--			if attached api.storage.as_sql_storage as l_storage_sql then
+--				create {CONTACT_STORAGE_SQL} contact_storage.make (l_storage_sql)
+--			else
 			if ut.directory_path_exists (p) then
 				create {CONTACT_STORAGE_FS} contact_storage.make (p, api)
---			elseif attached {CMS_STORAGE_SQL_I} storage as l_storage_sql then
---				create {CONTACT_STORAGE_SQL} contact_storage.make (l_storage_sql)
 			else
 				create {CONTACT_STORAGE_NULL} contact_storage.make
 			end
@@ -111,7 +112,7 @@ feature {CMS_API} -- Module management
 	file_system_storage_path (api: CMS_API): PATH
 			-- Location of eventual file system based storage for contact messages.
 		do
-			Result := api.site_location.extended ("db").extended ("contact_messages")
+			Result := api.site_location.extended ("db").extended (name).extended ("messages")
 		end
 
 feature {CMS_API} -- Access: API
@@ -161,11 +162,11 @@ feature -- Recaptcha
 
 feature -- Hooks configuration
 
-	register_hooks (a_response: CMS_RESPONSE)
+	setup_hooks (a_hooks: CMS_HOOK_CORE_MANAGER)
 			-- Module hooks configuration.
 		do
-			auto_subscribe_to_hooks (a_response)
-			a_response.hooks.subscribe_to_block_hook (Current)
+			auto_subscribe_to_hooks (a_hooks)
+			a_hooks.subscribe_to_block_hook (Current)
 		end
 
 feature -- Hooks

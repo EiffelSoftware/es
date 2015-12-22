@@ -7,31 +7,10 @@ class
 	CMS_USER_FORM_RESPONSE
 
 inherit
-
 	CMS_RESPONSE
-		redefine
-			make,
-			initialize
-		end
 
 create
 	make
-
-feature {NONE} -- Initialization
-
-	make (req: WSF_REQUEST; res: WSF_RESPONSE; a_api: like api)
-		do
-			create {WSF_NULL_THEME} wsf_theme.make
-			Precursor (req, res, a_api)
-		end
-
-	initialize
-		do
-			Precursor
-			create {CMS_TO_WSF_THEME} wsf_theme.make (Current, theme)
-		end
-
-	wsf_theme: WSF_THEME
 
 feature -- Query
 
@@ -86,7 +65,7 @@ feature -- Process Edit
 		do
 			create b.make_empty
 			f := new_edit_form (a_user, url (location, Void), "edit-user")
-			hooks.invoke_form_alter (f, fd, Current)
+			api.hooks.invoke_form_alter (f, fd, Current)
 			if request.is_post_request_method then
 				f.submit_actions.extend (agent edit_form_submit (?, a_user, b))
 				f.process (Current)
@@ -118,7 +97,7 @@ feature -- Process Delete
 		do
 			create b.make_empty
 			f := new_delete_form (a_user, url (location, Void), "edit-user")
-			hooks.invoke_form_alter (f, fd, Current)
+			api.hooks.invoke_form_alter (f, fd, Current)
 			if request.is_post_request_method then
 				f.process (Current)
 				fd := f.last_data
@@ -151,7 +130,7 @@ feature -- Process New
 		do
 			create b.make_empty
 			f := new_edit_form (l_user, url (location, Void), "create-user")
-			hooks.invoke_form_alter (f, fd, Current)
+			api.hooks.invoke_form_alter (f, fd, Current)
 			if request.is_post_request_method then
 				f.validation_actions.extend (agent new_form_validate (?, b))
 				f.submit_actions.extend (agent edit_form_submit (?, l_user, b))

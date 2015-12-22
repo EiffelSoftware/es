@@ -1,4 +1,4 @@
-indexing
+note
 	description	: "TIMER for debugger on Carbon"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -55,12 +55,12 @@ feature {NONE} -- Implementation
 
 	timeout_connection_id: INTEGER
 
-	marshal (action: PROCEDURE [ANY, TUPLE]; n_args: INTEGER_32; args: POINTER)
+	marshal (action: PROCEDURE; n_args: INTEGER_32; args: POINTER)
 		do
 			action.call (Void)
 		end
 
-indexing
+note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

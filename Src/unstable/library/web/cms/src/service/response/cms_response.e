@@ -33,8 +33,7 @@ feature {NONE} -- Initialization
 			get_theme
 			create menu_system.make
 			initialize_block_region_settings
-			create hooks.make
-			register_hooks
+			obsolete_register_hooks
 		end
 
 	initialize_site_url
@@ -66,7 +65,9 @@ feature {NONE} -- Initialization
 			site_url_ends_with_slash: site_url.ends_with_general ("/")
 		end
 
-	register_hooks
+	obsolete_register_hooks
+			-- Obsolete code to initialize hooks.
+			-- Dangerous, since those hooks would be available only under CMS_RESPONSE context.
 		local
 			l_module: CMS_MODULE
 			l_enabled_modules: CMS_MODULE_COLLECTION
@@ -76,9 +77,6 @@ feature {NONE} -- Initialization
 				l_enabled_modules as ic
 			loop
 				l_module := ic.item
-				if attached {CMS_HOOK_AUTO_REGISTER} l_module as l_auto then
-					l_auto.auto_subscribe_to_hooks (Current)
-				end
 				l_module.register_hooks (Current)
 			end
 		end
@@ -113,26 +111,6 @@ feature -- Access
 			if not Result.is_empty and then Result[1] = '/' then
 				Result.remove_head (1)
 			end
-		end
-
-feature -- Internationalization (i18n)
-
-	translation (a_text: READABLE_STRING_GENERAL; opts: detachable CMS_API_OPTIONS): STRING_32
-			-- Translated text `a_text' according to expected context (lang, ...)
-			-- and adapt according to options eventually set by `opts'.
-		do
-			to_implement ("Implement i18n support [2015-may]")
-			Result := a_text.as_string_32
-		end
-
-	formatted_string (a_text: READABLE_STRING_GENERAL; args: TUPLE): STRING_32
-			-- Format `a_text' using arguments `args'.
-			--| ex: formatted_string ("hello $1, see page $title.", ["bob", "contact"] -> "hello bob, see page contact"
-		local
-			l_formatter: CMS_STRING_FORMATTER
-		do
-			create l_formatter
-			Result := l_formatter.formatted_string (a_text, args)
 		end
 
 feature -- API
@@ -751,7 +729,7 @@ feature -- Blocks
 			-- Get blocks provided by modules.
 		do
 				-- Get block from modules, and related alias.
-			hooks.invoke_block (Current)
+			api.hooks.invoke_block (Current)
 		end
 
 	primary_menu_block: detachable CMS_MENU_BLOCK
@@ -868,6 +846,11 @@ feature -- Hooks
 
 	hooks: CMS_HOOK_CORE_MANAGER
 			-- Manager handling hook subscriptions.
+		obsolete
+			"Use api.hooks [dec/2015]"
+		do
+			Result := api.hooks
+		end
 
 feature -- Menu: change
 
@@ -891,6 +874,22 @@ feature -- Menu: change
 	add_to_menu (lnk: CMS_LINK; m: CMS_MENU)
 		do
 			m.extend (lnk)
+		end
+
+feature -- Internationalization (i18n)
+
+	translation (a_text: READABLE_STRING_GENERAL; opts: detachable CMS_API_OPTIONS): STRING_32
+			-- Translated text `a_text' according to expected context (lang, ...)
+			-- and adapt according to options eventually set by `opts'.
+		do
+			Result := api.translation (a_text, opts)
+		end
+
+	formatted_string (a_text: READABLE_STRING_GENERAL; args: TUPLE): STRING_32
+			-- Format `a_text' using arguments `args'.
+			--| ex: formatted_string ("hello $1, see page $title.", ["bob", "contact"] -> "hello bob, see page contact"
+		do
+			Result := api.formatted_string (a_text, args)
 		end
 
 feature -- Message
@@ -980,6 +979,26 @@ feature -- Theme
 			end
 		end
 
+feature -- Theme helpers
+
+	wsf_theme: WSF_THEME
+			-- WSF Theme from CMS `theme' for Current response.
+		local
+			t: like internal_wsf_theme
+		do
+			t := internal_wsf_theme
+			if t = Void then
+				create {CMS_TO_WSF_THEME} t.make (Current, theme)
+				internal_wsf_theme := t
+			end
+			Result := t
+		end
+
+feature {NONE} -- Theme helpers		
+
+	internal_wsf_theme: detachable WSF_THEME
+			-- Once per object for `wsf_theme'.
+
 feature -- Element Change
 
 	set_status_code (a_status: INTEGER)
@@ -1018,7 +1037,7 @@ feature -- Generation
 			create {CMS_LOCAL_LINK} lnk.make ("Home", "")
 			lnk.set_weight (-10)
 			add_to_primary_menu (lnk)
-			hooks.invoke_menu_system_alter (menu_system, Current)
+			api.hooks.invoke_menu_system_alter (menu_system, Current)
 
 			if api.enabled_modules.count = 0 then
 				add_to_primary_menu (create {CMS_LOCAL_LINK}.make ("Install", "admin/install"))
@@ -1076,10 +1095,10 @@ feature -- Generation
 			custom_prepare (page)
 
 				-- Cms response
-			hooks.invoke_response_alter (Current)
+			api.hooks.invoke_response_alter (Current)
 
 				-- Cms values
-			hooks.invoke_value_table_alter (values, Current)
+			api.hooks.invoke_value_table_alter (values, Current)
 
 				-- Predefined values
 			page.register_variable (page, "page") -- DO NOT REMOVE
@@ -1248,6 +1267,34 @@ feature -- Generation
 			end
 			a_lnk.set_is_active (l_is_active)
 			a_lnk.set_is_forbidden (not has_permission_on_link (a_lnk))
+		end
+
+feature -- Helpers: cms link
+
+	local_link (a_title: READABLE_STRING_GENERAL; a_location: READABLE_STRING_8): CMS_LOCAL_LINK
+		do
+			create Result.make (a_title, a_location)
+		end
+
+	user_local_link (u: CMS_USER; a_opt_title: detachable READABLE_STRING_GENERAL): CMS_LOCAL_LINK
+		do
+			if a_opt_title /= Void then
+				create Result.make (a_opt_title, user_url (u))
+			else
+				create Result.make (u.name, user_url (u))
+			end
+		end
+
+	user_html_link (u: CMS_USER): like link
+		do
+			Result := link (u.name, "user/" + u.id.out, Void)
+		end
+
+	user_url (u: CMS_USER): like url
+		require
+			u_with_id: u.has_id
+		do
+			Result := url ("user/" + u.id.out, Void)
 		end
 
 feature -- Execution

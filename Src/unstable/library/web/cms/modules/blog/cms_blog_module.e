@@ -12,7 +12,7 @@ inherit
 		rename
 			module_api as blog_api
 		redefine
-			register_hooks,
+			setup_hooks,
 			initialize,
 			install,
 			blog_api
@@ -21,6 +21,10 @@ inherit
 	CMS_HOOK_MENU_SYSTEM_ALTER
 
 	CMS_HOOK_RESPONSE_ALTER
+
+	CMS_HOOK_EXPORT
+
+	CMS_EXPORT_NODE_UTILITIES
 
 create
 	make
@@ -61,8 +65,8 @@ feature {CMS_API} -- Module Initialization
 				loop
 					ct.extend_format (ic.item)
 				end
-				l_node_api.add_content_type (ct)
-				l_node_api.add_content_type_webform_manager (create {CMS_BLOG_NODE_TYPE_WEBFORM_MANAGER}.make (ct))
+				l_node_api.add_node_type (ct)
+				l_node_api.add_node_type_webform_manager (create {CMS_BLOG_NODE_TYPE_WEBFORM_MANAGER}.make (ct, l_node_api))
 
 					-- Add support for CMS_BLOG, which requires a storage extension to store the optional "tags" value
 					-- For now, we only have extension based on SQL statement.
@@ -79,7 +83,7 @@ feature {CMS_API} -- Module management
 			sql: STRING
 		do
 				-- Schema
-			if attached {CMS_STORAGE_SQL_I} api.storage as l_sql_storage then
+			if attached api.storage.as_sql_storage as l_sql_storage then
 				if not l_sql_storage.sql_table_exists ("blog_post_nodes") then
 					sql := "[
 CREATE TABLE blog_post_nodes(
@@ -149,10 +153,11 @@ feature -- Access: router
 
 feature -- Hooks
 
-	register_hooks (a_response: CMS_RESPONSE)
+	setup_hooks (a_hooks: CMS_HOOK_CORE_MANAGER)
 		do
-			a_response.hooks.subscribe_to_menu_system_alter_hook (Current)
-			a_response.hooks.subscribe_to_response_alter_hook (Current)
+			a_hooks.subscribe_to_menu_system_alter_hook (Current)
+			a_hooks.subscribe_to_response_alter_hook (Current)
+			a_hooks.subscribe_to_export_hook (Current)
 		end
 
 	response_alter (a_response: CMS_RESPONSE)
@@ -167,5 +172,75 @@ feature -- Hooks
 				-- Add the link to the blog to the main menu
 			create lnk.make ("Blogs", "blogs/")
 			a_menu_system.primary_menu.extend (lnk)
+		end
+
+	export_to (a_export_id_list: detachable ITERABLE [READABLE_STRING_GENERAL]; a_export_parameters: CMS_EXPORT_PARAMETERS; a_response: CMS_RESPONSE)
+			-- Export data identified by `a_export_id_list',
+			-- or export all data if `a_export_id_list' is Void.
+		local
+			n: CMS_BLOG
+			p: PATH
+			d: DIRECTORY
+			f: PLAIN_TEXT_FILE
+			lst: LIST [CMS_BLOG]
+		do
+			if
+				a_export_id_list = Void
+				or else across a_export_id_list as ic some ic.item.same_string ("blog") end
+			then
+				if
+					a_response.has_permissions (<<"export any node", "export blog">>) and then
+					attached blog_api as l_blog_api
+				then
+					lst := l_blog_api.blogs_order_created_desc
+					a_export_parameters.log ("Exporting " + lst.count.out + " blogs")
+					across
+						lst as ic
+					loop
+						n := l_blog_api.full_blog_node (ic.item)
+						a_export_parameters.log (n.content_type + " #" + n.id.out)
+						p := a_export_parameters.location.extended ("nodes").extended (n.content_type).extended (n.id.out)
+						create d.make_with_path (p.parent)
+						if not d.exists then
+							d.recursive_create_dir
+						end
+						create f.make_with_path (p)
+						if not f.exists or else f.is_access_writable then
+							f.open_write
+							f.put_string (json_to_string (blog_node_to_json (n)))
+							f.close
+						end
+							-- Revisions.
+						if
+							attached node_api as l_node_api and then
+							attached l_node_api.node_revisions (n) as l_revisions and then l_revisions.count > 1
+						then
+							a_export_parameters.log (n.content_type + " " + l_revisions.count.out + " revisions.")
+							p := a_export_parameters.location.extended ("nodes").extended (n.content_type).extended (n.id.out)
+							create d.make_with_path (p)
+							if not d.exists then
+								d.recursive_create_dir
+							end
+							across
+								l_revisions as revs_ic
+							loop
+								if attached {CMS_BLOG} revs_ic.item as l_blog then
+									create f.make_with_path (p.extended ("rev-" + n.revision.out).appended_with_extension ("json"))
+									if not f.exists or else f.is_access_writable then
+										f.open_write
+										f.put_string (json_to_string (blog_node_to_json (l_blog)))
+									end
+									f.close
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+	blog_node_to_json (a_blog: CMS_BLOG): JSON_OBJECT
+		do
+			Result := node_to_json (a_blog)
 		end
 end

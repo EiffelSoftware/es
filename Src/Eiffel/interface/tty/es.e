@@ -1,4 +1,4 @@
-note
+﻿note
 
 	description: "Batch compiler without invoking the -loop. This is the root%
 		%class for the personal version (which does allow c compilation)."
@@ -1270,9 +1270,11 @@ feature -- Update
 				end
 
 			elseif option.same_string_general ("-auto_test") then
-				l_at_args := arguments_in_range (current_option + 1, argument_count)
+					-- FIXME: This only works if `-auto_test' is the last argument, as otherwise it will
+					-- override the compilation option that was previously set.
+				create {EWB_AUTO_TEST} command.make_with_arguments
+					(arguments_in_range_32 (current_option + 1, argument_count))
 				current_option := argument_count + 1
-				create {EWB_AUTO_TEST} command.make_with_arguments (convert_to_string_32_list (l_at_args))
 				command_option := option
 			elseif option.is_equal ("-auto_fix") then
 				create l_at_args.make
@@ -1313,9 +1315,11 @@ feature -- Update
 				current_option := argument_count + 1
 				create {EWB_AUTOTEACH} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-code-analysis") then
-				l_at_args := arguments_in_range (current_option + 1, argument_count)
+			elseif option.same_string_general ("-code-analysis") then
+					-- FIXME: This only works if `-code-analysis' is the last argument.
+				create {EWB_CODE_ANALYSIS} command.make_with_arguments
+					(arguments_in_range (current_option + 1, argument_count))
 				current_option := argument_count + 1
-				create {EWB_CODE_ANALYSIS} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-js_compile") then
 				create {EWB_JAVASCRIPT_COMPILATION} command
 			elseif option.is_equal ("-dead_plan") then
@@ -1446,7 +1450,7 @@ feature {NONE} -- Implementation
 			io.put_string (l_unit)
 		end
 
-	arguments_in_range_32 (a_lower, a_upper: INTEGER): LINKED_LIST [STRING_32]
+	arguments_in_range_32 (a_lower, a_upper: INTEGER): LINKED_LIST [READABLE_STRING_32]
 			-- Arguments from position `a_lower' to `a_upper'
 		require
 			a_lower_valid: a_lower > 0 and a_lower <= argument_count + 1
@@ -1528,4 +1532,4 @@ note
 			Customer support http://support.eiffel.com
 		]"
 
-end -- class ES
+end

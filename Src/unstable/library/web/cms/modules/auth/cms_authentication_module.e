@@ -9,9 +9,9 @@ class
 inherit
 	CMS_MODULE
 		redefine
-			register_hooks
+			setup_hooks,
+			permissions
 		end
-
 
 	CMS_HOOK_AUTO_REGISTER
 
@@ -52,6 +52,13 @@ feature -- Access
 
 	name: STRING = "auth"
 
+	permissions: LIST [READABLE_STRING_8]
+			-- List of permission ids, used by this module, and declared.
+		do
+			Result := Precursor
+			Result.force ("account register")
+		end
+
 feature -- Access: docs
 
 	root_dir: PATH
@@ -91,12 +98,12 @@ feature -- Router
 
 feature -- Hooks configuration
 
-	register_hooks (a_response: CMS_RESPONSE)
+	setup_hooks (a_hooks: CMS_HOOK_CORE_MANAGER)
 			-- Module hooks configuration.
 		do
-			auto_subscribe_to_hooks (a_response)
-			a_response.hooks.subscribe_to_block_hook (Current)
-			a_response.hooks.subscribe_to_value_table_alter_hook (Current)
+			auto_subscribe_to_hooks (a_hooks)
+			a_hooks.subscribe_to_block_hook (Current)
+			a_hooks.subscribe_to_value_table_alter_hook (Current)
 		end
 
 	value_table_alter (a_value: CMS_VALUE_TABLE; a_response: CMS_RESPONSE)
@@ -123,6 +130,7 @@ feature -- Hooks configuration
 				lnk.set_weight (98)
 				a_menu_system.primary_menu.extend (lnk)
 			end
+
 		end
 
 feature -- Handler
@@ -227,6 +235,7 @@ feature -- Handler
 				end
 			else
 				create {FORBIDDEN_ERROR_CMS_RESPONSE} r.make (req, res, api)
+				r.set_main_content ("You can also contact the webmaster to ask for an account.")
 			end
 
 			r.execute

@@ -55,16 +55,27 @@ doc:<file name="scoop.c" header="eif_scoop.h" version="$Id$" summary="Main funct
 #error "SCOOP is currenly supported only in multithreaded mode."
 #endif
 
+#ifdef EIF_ASSERTIONS
+/* Helper function to check whether a SCOOP call is executed on the thread that handles processor 'processor_id' */
+rt_private EIF_BOOLEAN is_correct_thread (EIF_SCP_PID processor_id)
+{
+	EIF_GET_CONTEXT
+	return processor_id == eif_globals->scoop_processor_id;
+
+}
+#endif
+
 /*
 doc:	<routine name="rt_scoop_impersonated_call" return_type="void" export="private">
 doc:		<summary> Execute the separate call 'call' on the client processor, while assuming the identity of 'supplier'. </summary>
 doc:		<param name="client" type="struct rt_processor*"> The client processor. Must not be NULL. </param>
-doc:		<param name="second_pid" type="EIF_SCP_PID"> The supplier processor whose identity is temporarily adopted. Must not be NULL. </param>
+doc:		<param name="supplier" type="struct rt_processor*"> The supplier processor whose identity is temporarily adopted. Must not be NULL. </param>
+doc:		<param name="call" type="struct eif_scoop_call_data*"> The call to be executed. Must not be NULL. </param>
 doc:		<thread_safety> Not safe. </thread_safety>
 doc:		<synchronization> Should only be called by the client while the supplier is synchronized. </synchronization>
 doc:	</routine>
 */
-rt_private void rt_scoop_impersonated_call (struct rt_processor* client, struct rt_processor* supplier, struct call_data* call)
+rt_private void rt_scoop_impersonated_call (struct rt_processor* client, struct rt_processor* supplier, struct eif_scoop_call_data* call)
 {
 	EIF_GET_CONTEXT
 	EIF_SCP_PID stored_pid = eif_globals->scoop_region_id;
@@ -89,8 +100,8 @@ rt_private void rt_scoop_impersonated_call (struct rt_processor* client, struct 
 	eif_scoop_impersonate (eif_globals, supplier->pid);
 
 		/* Perform the call. We perform a safe call here because we need
-		 * to free the call_data struct afterwards. */
-	is_successful = rt_scoop_try_call (call);
+		 * to free the eif_scoop_call_data struct afterwards. */
+	is_successful = rt_try_execute_scoop_call (call);
 
 		/* Adopt the once values of the current region and revert the region ID. */
 	eif_scoop_impersonate (eif_globals, stored_pid);
@@ -98,7 +109,7 @@ rt_private void rt_scoop_impersonated_call (struct rt_processor* client, struct 
 		/* Return the locks. */
 	rt_queue_cache_pop_on_impersonation (&client->cache, 1);
 
-		/* Free the call_data struct. */
+		/* Free the call structure. */
 	free (call);
 
 		/* If there was an error, raise an exception now. */
@@ -107,6 +118,18 @@ rt_private void rt_scoop_impersonated_call (struct rt_processor* client, struct 
 	}
 }
 
+
+/*
+doc:	<routine name="eif_scoop_can_impersonate" return_type="EIF_BOOLEAN" export="public">
+doc:		<summary> Can a separate call from 'client_processor_id' to 'supplier_region_id' be impersonated? </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The ID of the client processor. </param>
+doc:		<param name="supplier_region_id" type="EIF_SCP_PID"> The ID of the supplier region. </param>
+doc:		<param name="is_synchronous" type="EIF_BOOLEAN"> Whether the call is synchronous (e.g. a query). </param>
+doc:		<return> A boolean indicating whether the separate call can be impersonated. </return>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'. </synchronization>
+doc:	</routine>
+*/
 rt_public EIF_BOOLEAN eif_scoop_can_impersonate (EIF_SCP_PID client_processor_id, EIF_SCP_PID supplier_region_id, EIF_BOOLEAN is_synchronous)
 {
 	struct rt_processor* supplier = rt_get_processor (supplier_region_id);
@@ -114,6 +137,7 @@ rt_public EIF_BOOLEAN eif_scoop_can_impersonate (EIF_SCP_PID client_processor_id
 	struct rt_private_queue *queue = NULL;
 	EIF_BOOLEAN result;
 
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
 	CHECK ("passive_implies_impersonable", !supplier->is_passive_region || supplier->is_impersonation_allowed);
 
 		/* First of all, the supplier has to agree that it can handle impersonation.
@@ -143,21 +167,20 @@ rt_public EIF_BOOLEAN eif_scoop_can_impersonate (EIF_SCP_PID client_processor_id
 			result = result || rt_queue_cache_has_locks_of (&client->cache, supplier);
 		}
 	}
-
 	return result;
 }
 
 /*
-doc:	<routine name="rt_scoop_prepare_call" return_type="void" export="private">
+doc:	<routine name="prepare_separate_call" return_type="void" export="private">
 doc:		<summary> Prepare the call data structure: Calculate whether the call is synchronous and set the correct PID for expanded objects. </summary>
 doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The ID of the client processor. </param>
 doc:		<param name="client_region_id" type="EIF_SCP_PID"> The ID of the client region. </param>
-doc:		<param name="call" type="struct call_data"> The call data structure. </param>
+doc:		<param name="call" type="struct eif_scoop_call_data"> The separate call to be prepared. </param>
 doc:		<thread_safety> Not safe. </thread_safety>
 doc:		<synchronization> None </synchronization>
 doc:	</routine>
 */
-rt_private void rt_scoop_prepare_call (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, struct call_data* call)
+rt_private void prepare_separate_call (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, struct eif_scoop_call_data* call)
 {
 	EIF_REFERENCE obj = NULL;
 	EIF_SCP_PID supplier_id = RTS_PID (call->target);
@@ -191,7 +214,7 @@ rt_private void rt_scoop_prepare_call (EIF_SCP_PID client_processor_id, EIF_SCP_
 					/* Mark the call as synchronous if there is an argument
 					 * that is controlled by the current processor. */
 					if (!call->is_synchronous && RTS_PID (obj) != supplier_id
-						&& !eif_is_uncontrolled (client_processor_id, client_region_id, RTS_PID(obj)))
+						&& !eif_scoop_is_uncontrolled (client_processor_id, client_region_id, RTS_PID(obj)))
 					{
 						call->is_synchronous = EIF_TRUE;
 					}
@@ -202,16 +225,16 @@ rt_private void rt_scoop_prepare_call (EIF_SCP_PID client_processor_id, EIF_SCP_
 }
 
 /*
-doc:	<routine name="eif_log_call" return_type="void" export="public">
+doc:	<routine name="eif_scoop_log_call" return_type="void" export="public">
 doc:		<summary> Log the separate call 'data' and wait for the result if necessary. </summary>
 doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor ID of the client. </param>
 doc:		<param name="client_region_id" type="EIF_SCP_PID"> The region ID of the client. </param>
-doc:		<param name="data" type="struct call_data"> The separate call to be logged and executed. </param>
+doc:		<param name="data" type="struct eif_scoop_call_data*"> The separate call to be logged and executed. </param>
 doc:		<thread_safety> Safe. </thread_safety>
 doc:		<synchronization> None for creation procedures. For regular calls, make sure that the supplier region is locked within an rt_request_group. </synchronization>
 doc:	</routine>
 */
-rt_public void eif_log_call (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, call_data *data)
+rt_public void eif_scoop_log_call (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, struct eif_scoop_call_data *data)
 {
 	EIF_SCP_PID supplier_pid = RTS_PID (data->target);
 	struct rt_processor *client = rt_get_processor (client_processor_id);
@@ -222,7 +245,7 @@ rt_public void eif_log_call (EIF_SCP_PID client_processor_id, EIF_SCP_PID client
 	REQUIRE("different_regions", client_region_id != supplier_pid);
 
 		/* Calculate whether this call is synchronous. */
-	rt_scoop_prepare_call (client_processor_id, client_region_id, data);
+	prepare_separate_call (client_processor_id, client_region_id, data);
 
 		/* Check whether we can impersonate the call. At this stage,
 		 * we may still encounter some impersonable calls from the interpreter
@@ -275,8 +298,14 @@ rt_public void eif_scoop_impersonate (eif_global_context_t* eif_globals, EIF_SCP
 #endif
 }
 
-
-rt_public void eif_call_const (call_data * a)
+/*
+doc:	<routine name="eif_call_const" return_type="void" export="public">
+doc:		<summary> Stub pattern for separate calls to constants in finalized mode (constants are hardcoded and propagated at compile time). </summary>
+doc:		<thread_safety> Safe </thread_safety>
+doc:		<synchronization> None </synchronization>
+doc:	</routine>
+*/
+rt_public void eif_call_const (struct eif_scoop_call_data* a)
 {
 	/* Constant value is hard-coded in the generated code: nothing to do here. */
 	/* Avoid C compiler error about unreferenced parameter. */
@@ -284,7 +313,7 @@ rt_public void eif_call_const (call_data * a)
 }
 
 /*
-doc:	<routine name="eif_new_processor" return_type="EIF_SCP_PID" export="public">
+doc:	<routine name="eif_scoop_new_processor" return_type="EIF_SCP_PID" export="public">
 doc:		<summary> Create a new SCOOP region. If there's no free region ID, the function will trigger a GC run and then wait for a new ID. </summary>
 doc:		<param name="is_passive" type="EIF_BOOLEAN"> Whether a passive region shall be created. </param>
 doc:		<return> The ID of the newly created region. </return>
@@ -292,7 +321,7 @@ doc:		<thread_safety> Safe. </thread_safety>
 doc:		<synchronization> Done internally. Careful: May trigger garbage collection. </synchronization>
 doc:	</routine>
 */
-rt_public EIF_SCP_PID eif_new_processor (EIF_BOOLEAN is_passive)
+rt_public EIF_SCP_PID eif_scoop_new_processor (EIF_BOOLEAN is_passive)
 {
 	EIF_SCP_PID new_pid = 0;
 	int error = T_OK;
@@ -318,67 +347,118 @@ rt_public EIF_SCP_PID eif_new_processor (EIF_BOOLEAN is_passive)
 
 /* Status report */
 
-rt_public int eif_is_uncontrolled (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, EIF_SCP_PID supplier_region_id)
+/*
+doc:	<routine name="eif_scoop_is_uncontrolled" return_type="EIF_BOOLEAN" export="public">
+doc:		<summary> Is the region with ID 'supplier_region_id' uncontrolled by the current region?
+doc:			A region is only uncontrolled when all of the following apply:
+doc:				- The region is different from the current region.
+doc:				- The client processor has no lock on the region yet.
+doc:				- No separate callback: The client doesn't own the locks of the supplier (i.e. the supplier has not passed its locks to the client in a previous call). </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor ID of the client. </param>
+doc:		<param name="client_region_id" type="EIF_SCP_PID"> The region ID of the client. May be different from the processor ID when there's impersonation. </param>
+doc:		<param name="supplier_region_id" type="EIF_SCP_PID"> The region ID of the supplier. </param>
+doc:		<return> Whether 'supplier_region_id' is uncontrolled by the client. </return>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'. Careful: May trigger garbage collection. </synchronization>
+doc:	</routine>
+*/
+rt_public EIF_BOOLEAN eif_scoop_is_uncontrolled (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, EIF_SCP_PID supplier_region_id)
 {
  	struct rt_processor *client_processor = rt_get_processor (client_processor_id);
 	struct rt_processor *supplier = rt_get_processor (supplier_region_id);
 
-	/*
-	 * An object is only uncontrolled when all of the following apply:
-	 * - the handlers are different
-	 * - the client has no lock on the supplier yet
-	 * - the supplier has not passed its locks to the client in a previous call (separate callbacks).
-	 */
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
 
 	return client_region_id != supplier_region_id
 		&& !rt_queue_cache_is_locked (&client_processor->cache, supplier)
 		&& !rt_queue_cache_has_locks_of (&client_processor->cache, supplier);
 }
 
-/* Entry point for the root thread. */
-
-rt_public void eif_wait_for_all_processors(void)
+/*
+doc:	<routine name="eif_scoop_wait_for_all_processors" return_type="void" export="public">
+doc:		<summary> Enter the SCOOP application loop and wait for all processors to finish. NOTE: Entry point for the root thread. </summary>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the root thread. </synchronization>
+doc:	</routine>
+*/
+rt_public void eif_scoop_wait_for_all_processors(void)
 {
 	rt_processor_registry_quit_root_processor ();
 }
 
 /*Functions to manipulate the request group stack */
 
-/* RTS_RC (o) - create request group for o */
-rt_public void eif_new_scoop_request_group (EIF_SCP_PID client_pid)
+/*
+doc:	<routine name="eif_scoop_new_request_group" return_type="void" export="public">
+doc:		<summary> Create a new request group and put it at the end of the request group stack of processor 'client_processor_id'. </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The client processor that wants to allocate a new request group. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'.</synchronization>
+doc:	</routine>
+*/
+rt_public void eif_scoop_new_request_group (EIF_SCP_PID client_processor_id)
 {
-	struct rt_processor* client = rt_get_processor (client_pid);
-	int error = rt_processor_request_group_stack_extend (client);
-	if (error != T_OK) {
+	struct rt_processor* client = rt_get_processor (client_processor_id);
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
+
+	if (T_OK != rt_processor_request_group_stack_extend (client)) {
 		enomem();
 	}
 }
 
-/* Get current size of request group stack. */
-rt_public size_t eif_scoop_request_group_stack_count (EIF_SCP_PID client_pid)
+/*
+doc:	<routine name="eif_scoop_request_group_stack_count" return_type="size_t" export="public">
+doc:		<summary> Return the current size of the request group stack of 'client_processor_id'. </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor that owns the request group stack. </param>
+doc:		<return> The size of the request group stack. </return>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'. </synchronization>
+doc:	</routine>
+*/
+rt_public size_t eif_scoop_request_group_stack_count (EIF_SCP_PID client_processor_id)
 {
-	struct rt_processor* client = rt_get_processor (client_pid);
+	struct rt_processor* client = rt_get_processor (client_processor_id);
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
+
 	return rt_processor_request_group_stack_count (client);
 }
 
-/* RTS_RD (o) - delete request group of o and release any locks */
-rt_public void eif_delete_scoop_request_group (EIF_SCP_PID client_pid, size_t count)
+/*
+doc:	<routine name="eif_scoop_delete_request_group" return_type="void" export="public">
+doc:		<summary> Delete the last 'count' elements of the request group stack of 'client_processor_id' and release any locks within. </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor that owns the request group stack. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'. </synchronization>
+doc:	</routine>
+*/
+rt_public void eif_scoop_delete_request_group (EIF_SCP_PID client_processor_id, size_t count)
 {
-	struct rt_processor* client = rt_get_processor (client_pid);
-
+	struct rt_processor* client = rt_get_processor (client_processor_id);
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
 		/* Unlock, deallocate and remove the request group. */
 	rt_processor_request_group_stack_remove (client, count);
 }
 
-/* RTS_RF (o) - wait condition fails */
-rt_public void eif_scoop_wait_request_group (EIF_SCP_PID client_pid)
+/*
+doc:	<routine name="eif_scoop_wait_request_group" return_type="void" export="public">
+doc:		<summary> Handle a wait condition failure in 'client_processor_id':
+doc:			Subscribe for wait condition change notifications.
+doc:			Release the locks in the last element of the request group stack.
+doc:			Go to sleep until there's a notification.
+doc:			Acquire the previously released locks again. </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor that owns the request group stack. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'. </synchronization>
+doc:	</routine>
+*/
+rt_public void eif_scoop_wait_request_group (EIF_SCP_PID client_processor_id)
 {
-	struct rt_processor* client = rt_get_processor (client_pid);
+	struct rt_processor* client = rt_get_processor (client_processor_id);
 	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
 
-	int error = rt_request_group_wait (l_group);
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
 
-	if (error == T_OK) {
+	if (rt_request_group_wait (l_group) == T_OK) {
 			/* Lock the request group again for re-evaluation. */
 		rt_request_group_lock (l_group);
 	} else {
@@ -388,53 +468,102 @@ rt_public void eif_scoop_wait_request_group (EIF_SCP_PID client_pid)
 	}
 }
 
-/* RTS_RS (c, s) - add supplier s to current group for c */
-rt_public void eif_scoop_add_supplier_request_group (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid)
+/*
+doc:	<routine name="eif_scoop_add_supplier_request_group" return_type="void" export="public">
+doc:		<summary> Add the new supplier 'supplier_region_id' to the top element of the request group stack of 'client_processor_id'. </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor that owns the request group stack. </param>
+doc:		<param name="supplier_region_id" type="EIF_SCP_PID"> The region ID of the new supplier. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'.</synchronization>
+doc:	</routine>
+*/
+rt_public void eif_scoop_add_supplier_request_group (EIF_SCP_PID client_processor_id, EIF_SCP_PID supplier_region_id)
 {
-	struct rt_processor* client = rt_get_processor (client_pid);
-	struct rt_processor* supplier = rt_get_processor (supplier_pid);
-
+	struct rt_processor* client = rt_get_processor (client_processor_id);
+	struct rt_processor* supplier = rt_get_processor (supplier_region_id);
 	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
-	int error = rt_request_group_add (l_group, supplier);
+
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
 
 		/* Raise an exception if we get a memory allocation failure. */
-	if (error != T_OK) {
+	if (T_OK != rt_request_group_add (l_group, supplier)) {
 		enomem();
 	}
 }
 
-/* RTS_RW (o) - sort all suppliers in the group and get exclusive access */
-rt_public void eif_scoop_lock_request_group (EIF_SCP_PID client_pid)
+/*
+doc:	<routine name="eif_scoop_lock_request_group" return_type="void" export="public">
+doc:		<summary> Atomically acquire the lock to all suppliers in the top element of the request group stack of 'client_processor_id'.
+doc:			For active regions, this means adding the private queues to the queue-of-queue of the supplier. </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor that owns the request group stack. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'.</synchronization>
+doc:	</routine>
+*/
+rt_public void eif_scoop_lock_request_group (EIF_SCP_PID client_processor_id)
 {
-	struct rt_processor* client = rt_get_processor (client_pid);
+	struct rt_processor* client = rt_get_processor (client_processor_id);
 	struct rt_request_group* l_group = rt_processor_request_group_stack_last (client);
+
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
+
 	rt_request_group_lock (l_group);
 }
 
 /* Lock stack management */
 
-/* The size of the lock stack in 'processor_id'. */
-rt_public size_t eif_scoop_lock_stack_count (EIF_SCP_PID processor_id)
+/*
+doc:	<routine name="eif_scoop_lock_stack_count" return_type="size_t" export="public">
+doc:		<summary> Return the current size of the lock stack of 'client_processor_id'. </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor that owns the lock stack. </param>
+doc:		<return> The size of the lock stack. </return>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'. </synchronization>
+doc:	</routine>
+*/
+rt_public size_t eif_scoop_lock_stack_count (EIF_SCP_PID client_processor_id)
 {
-	struct rt_processor* proc = rt_get_processor (processor_id);
+	struct rt_processor* proc = rt_get_processor (client_processor_id);
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
+
 	return rt_queue_cache_lock_passing_count (&proc->cache);
 }
 
-/* Push the locks of 'supplier_region_id' onto the lock stack of 'client_processor_id'. */
+/*
+doc:	<routine name="eif_scoop_lock_stack_impersonated_push" return_type="void" export="public">
+doc:		<summary> Push the locks of 'supplier_region_id' onto the lock stack of 'client_processor_id'. </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor that owns the lock stack. </param>
+doc:		<param name="supplier_region_id" type="EIF_SCP_PID"> The region whose locks shall be taken. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id', and only when the supplier is either synced or passive.</synchronization>
+doc:	</routine>
+*/
 rt_public void eif_scoop_lock_stack_impersonated_push (EIF_SCP_PID client_processor_id, EIF_SCP_PID supplier_region_id)
 {
 	struct rt_processor* client = rt_get_processor (client_processor_id);
 	struct rt_processor* supplier = rt_get_processor (supplier_region_id);
-	int error = rt_queue_cache_push_on_impersonation (&client->cache, &supplier->cache);
-	if (error != T_OK) {
+
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
+
+	if (T_OK != rt_queue_cache_push_on_impersonation (&client->cache, &supplier->cache)) {
 		enomem();
 	}
 }
 
-/* Remove 'count' elements from the lock stack of 'client_processor_id'. */
+/*
+doc:	<routine name="eif_scoop_lock_stack_impersonated_pop" return_type="void" export="public">
+doc:		<summary> Remove the top 'count' elements from the lock stack of 'client_processor_id'. </summary>
+doc:		<param name="client_processor_id" type="EIF_SCP_PID"> The processor that owns the lock stack. </param>
+doc:		<param name="count" type="size_t"> The number of elements to be removed. </param>
+doc:		<thread_safety> Not safe. </thread_safety>
+doc:		<synchronization> Should only be called by the thread that handles 'client_processor_id'. </synchronization>
+doc:	</routine>
+*/
 rt_public void eif_scoop_lock_stack_impersonated_pop (EIF_SCP_PID client_processor_id, size_t count)
 {
 	struct rt_processor* client = rt_get_processor (client_processor_id);
+	REQUIRE ("correct_thread", is_correct_thread (client_processor_id));
+
 	rt_queue_cache_pop_on_impersonation (&client->cache, count);
 }
 

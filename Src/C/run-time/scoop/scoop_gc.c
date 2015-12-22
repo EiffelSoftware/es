@@ -65,7 +65,6 @@ doc:<file name="scoop_gc.c" header="rt_scoop_gc.h" version="$Id$" summary="SCOOP
 
 #include "rt_processor_registry.h"
 #include "rt_processor.h"
-#include "eif_atomops.h"
 
 #define PID_MAP_ITEM_TYPE uint32                       /* Type of items in `live_pid_map'. (It must be unsigned.) */
 #define PID_MAP_ITEM_SIZE (sizeof (PID_MAP_ITEM_TYPE)) /* Size of one element in `live_pid_map' in bytes. */
@@ -278,7 +277,7 @@ rt_shared void rt_prepare_live_index ()
 		rt_thr_context * c = t [i] -> eif_thr_context_cx;
 		if (c -> is_processor) {
 				/* The thread is allocated for a processor. */
-				/* Liveness of processor will be reported by SCOOP manager and detected during GC. */
+				/* Liveness of processor will be reported by rt_enumerate_live_processors and detected during GC. */
 				/* Record "PID->index" relation for future use. */
 			if (c->logical_id != EIF_NULL_PROCESSOR) {
 				pid_index [c -> logical_id] = i;
@@ -385,7 +384,7 @@ rt_shared void rt_complement_live_index (void)
 
 /*
 doc:	<routine name="rt_report_live_index" export="shared">
-doc:		<summary>Notify SCOOP manager about live indexes.</summary>
+doc:		<summary>Notify the processor registry about live indexes.</summary>
 doc:		<thread_safety>Unsafe</thread_safety>
 doc:		<synchronization>Ensured by the caller using `eif_gc_mutex'.</synchronization>
 doc:	</routine>
@@ -395,21 +394,24 @@ rt_shared void rt_report_live_index (void)
 	size_t i;
 	rt_global_context_t ** t = (rt_global_context_t **) rt_globals_list.threads.data;
 	size_t count = rt_globals_list.count; /* Total number of indexes. */
+	rt_global_context_t* l_context = NULL;
+	EIF_SCP_PID l_processor_id;
 
-	/* Iterate over all dead indexes and report processor IDs to the SCOOP manager. */
+	/* Iterate over all dead indexes and report processor IDs to the processor registry. */
 	for (i = live_index_count; i < count; i++) {
-		rt_thr_context * c = t [thread_index [i]] -> eif_thr_context_cx;
-			/* Notify SCOOP manager that the processor is not used anymore. */
+
+		l_context = t [thread_index [i]];
+		l_processor_id = l_context->eif_thr_context_cx->logical_id;
+
+			/* Notify processor registry that the processor is not used anymore. */
 			/* Note: Processors with a EIF_NULL_PROCESSOR are about to destroy themselves.
 			 * No need to send the shutdown signal again. */
-		if (c->logical_id != EIF_NULL_PROCESSOR) {
-			rt_processor_registry_deactivate (c->logical_id);
+		if (l_processor_id != EIF_NULL_PROCESSOR) {
+			rt_processor_registry_deactivate (l_processor_id, l_context);
 		}
 	}
-	/* Notify SCOOP manager that the GC cycle is over. */
-	/* Unused currently, don't want to come up with another replacement
-		 macro for this as well. */
-	/* RTS_TCB(scoop_task_update_statistics, 0, 0, 0); */
+		/* Tell the processor registry to remove passive regions. */
+	rt_processor_registry_cleanup ();
 }
 
 /*
@@ -422,31 +424,17 @@ doc:	</routine>
 */
 rt_shared void rt_mark_all_processors (MARKER marking)
 {
-	static volatile EIF_INTEGER_32 rt_is_marking = 0;
 	struct rt_processor* proc = NULL;
-
-	EIF_INTEGER_32 new_value = 1;
-	EIF_INTEGER_32 expected = 0;
-	EIF_INTEGER_32 previous;
+	EIF_SCP_PID i = 0;
 
 	REQUIRE ("marking_not_null", marking);
 
-		/* Use compare-exchange to determine whether marking is necessary. */
-		/* TODO: RS: Why is it necessary to use CAS here? As far as I can see this
-		 * operation is called exactly once and only by a single thread during GC... */
-	previous = RTS_ACAS_I32 (&rt_is_marking, new_value, expected);
+	for (i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; ++i) {
+		proc = rt_lookup_processor (i);
 
-	if (previous == expected) {
-		EIF_SCP_PID i;
-		for (i = 0; i < RT_MAX_SCOOP_PROCESSOR_COUNT; i++) {
-
-			proc = rt_lookup_processor (i);
-			if (proc) {
-				rt_processor_mark (proc, marking);
-			}
+		if (proc) {
+			rt_processor_mark (proc, marking);
 		}
-			/* Reset rt_is_marking to zero. */
-		RTS_AS_I32 (&rt_is_marking, 0);
 	}
 }
 /*

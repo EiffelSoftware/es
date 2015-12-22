@@ -68,6 +68,10 @@ feature -- CMS modules
 			create {CMS_BLOG_MODULE} m.make
 			a_setup.register_module (m)
 
+				-- Taxonomy
+			create {CMS_TAXONOMY_MODULE} m.make
+			a_setup.register_module (m)
+
 				-- Recent changes
 			create {CMS_RECENT_CHANGES_MODULE} m.make
 			a_setup.register_module (m)
@@ -84,6 +88,9 @@ feature -- CMS modules
 			a_setup.register_module (m)
 
 			create {GOOGLE_CUSTOM_SEARCH_MODULE} m.make
+			a_setup.register_module (m)
+
+			create {CMS_SESSION_AUTH_MODULE} m.make
 			a_setup.register_module (m)
 		end
 

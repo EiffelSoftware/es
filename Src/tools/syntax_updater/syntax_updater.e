@@ -15,9 +15,13 @@ inherit
 
 	STRING_HANDLER
 
+	SYSTEM_ENCODINGS
+
+	LOCALIZED_PRINTER
+
 	KL_SHARED_EXECUTION_ENVIRONMENT
 
-	SYSTEM_ENCODINGS
+	CONF_ACCESS
 
 create
 	make
@@ -38,7 +42,6 @@ feature {NONE} -- Initialization
 
 			create string_buffer.make (102400)
 
-				--
 			argument_make (False, True)
 			is_using_builtin_switches := False
 			argument_execute (agent execute)
@@ -49,12 +52,19 @@ feature {NONE} -- File discovering and processing
 	execute
 			-- Process all files under directories specified on the command line arguments.
 		local
-			dir: KL_DIRECTORY
+			dir: DIRECTORY
 			l_dir: STRING
 			l_values: LIST [STRING]
 			l_has_error: BOOLEAN
 			l_processed_values: ARRAYED_LIST [STRING]
 		do
+				-- Set settings from command line
+			visitor.set_is_updating_agents (is_updating_agents)
+			fast_factory.set_is_updating_agents (is_updating_agents)
+
+				-- Reset `is_eiffel_class_updated' to its default value, False.
+			is_eiffel_class_updated := False
+
 				-- Ensure directories exist.
 			from
 				l_values := values
@@ -105,55 +115,117 @@ feature {NONE} -- File discovering and processing
 			end
 		end
 
-	test_recursive (a_dir: KL_DIRECTORY)
+	test_recursive (a_dir: DIRECTORY)
 			-- Process files and directories under `a_dir'.
 		require
 			a_dir_not_void: a_dir /= Void
 			a_dir_exists: a_dir.exists
 		local
-			dir_names, file_names: ARRAY [STRING]
+			dir_names: ARRAYED_LIST [PATH]
+			l_file: RAW_FILE
+			l_dir: DIRECTORY
+			l_previous_modified: like is_eiffel_class_updated
+			l_ecf_lists: ARRAYED_LIST [PATH]
 		do
-			dir_names := a_dir.directory_names
+			dir_names := a_dir.entries
 			if dir_names /= Void then
-				dir_names.do_all (agent (a_path: STRING; a_dir_name: STRING)
-					local
-						l_dir: KL_DIRECTORY
-					do
-						create l_dir.make (a_path + operating_environment.Directory_separator.out + a_dir_name)
-						if l_dir.exists then
-							test_recursive (l_dir)
+				l_previous_modified := is_eiffel_class_updated
+				is_eiffel_class_updated := False
+				create l_ecf_lists.make (10)
+				across
+					dir_names as dir
+				loop
+					if not dir.item.is_current_symbol and then not dir.item.is_parent_symbol  then
+						create l_file.make_with_path (a_dir.path.extended_path (dir.item))
+						if l_file.exists then
+							if l_file.is_directory then
+								create l_dir.make_with_path (l_file.path)
+								if l_dir.is_readable then
+									test_recursive (l_dir)
+								end
+							elseif l_file.is_readable and l_file.is_plain then
+								update_eiffel_class (l_file.path)
+									-- We do not process ECFs if no Eiffel classes have been modified in `a_dir',
+									-- so we have to store all the ECFs we encounter before converting them.
+								if
+									is_updating_ecfs and then
+									attached l_file.path.extension as l_extension and then l_extension.count = 3 and then
+									l_extension.same_caseless_characters_general ("ecf", 1, 3, 1)
+								then
+									l_ecf_lists.extend (l_file.path)
+								end
+							end
 						end
-					end (a_dir.name, ?))
-			end
-
-			a_dir.open_read
-			file_names := a_dir.filenames
-			if file_names /= Void then
-				file_names.do_all (agent (a_path: STRING; a_dir_name: STRING)
-					do
-						update_eiffel_class (
-							a_path + operating_environment.Directory_separator.out + a_dir_name)
-					end (a_dir.name, ?))
+					end
+				end
+				if is_eiffel_class_updated then
+						-- Only update ECFs if some Eiffel classes have been modified.
+					across
+						l_ecf_lists as ecf
+					loop
+						process_configuration (ecf.item)
+					end
+				end
+				is_eiffel_class_updated := l_previous_modified or else is_eiffel_class_updated
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	update_eiffel_class (file_name: STRING)
+	process_configuration (a_file: PATH)
+			-- Process configuration file `a_file' located in `a_dir'
+		require
+			is_updating_ecfs: is_updating_ecfs
+			a_file_ok: a_file /= Void and then not a_file.is_empty
+			a_file_is_ecf: attached a_file.extension as l_extension and then l_extension.count = 3 and then
+				l_extension.same_caseless_characters_general ("ecf", 1, 3, 1)
+		local
+			l_loader: CONF_LOAD
+			l_saver: CONF_PRINT_VISITOR
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_loader.make (create {CONF_PARSE_FACTORY})
+			l_loader.retrieve_configuration (a_file.name)
+			if l_loader.is_error then
+				display_error ({STRING_32} "Could not retrieve configuration " + a_file.name + "!")
+				display_error (l_loader.last_error.text)
+			else
+					-- Remove the `is_obsolete_routine_type' option if present on all targets.
+				if is_updating_agents then
+					across l_loader.last_system.targets as l_target loop
+						if attached l_target.item.internal_options as l_options then
+							l_options.unset_is_obsolete_routine_type
+						end
+					end
+				end
+					-- Resave the file in the right format
+				create l_saver.make
+				l_saver.process_system (l_loader.last_system)
+				create l_file.make_with_path (a_file)
+				safe_open_write (l_file)
+				l_file.put_string (l_saver.text)
+				l_file.close
+			end
+		end
+
+	update_eiffel_class (file_name: PATH)
 		require
 			file_name_not_void: file_name /= Void
 		local
-			file: KL_BINARY_INPUT_FILE
-			outfile: KL_BINARY_OUTPUT_FILE
+			file: RAW_FILE
+			outfile: RAW_FILE
 			count, nb: INTEGER
 			l_text: STRING
 			l_generate_output: BOOLEAN
 			l_converted: BOOLEAN
 		do
-			if file_name.substring (file_name.count - 1, file_name.count).is_case_insensitive_equal (".e") then
-				create file.make (file_name)
+			if
+				attached file_name.extension as l_extension and then l_extension.count = 1 and then
+				l_extension.same_caseless_characters_general ("e", 1, 1, 1)
+			then
+				create file.make_with_path (file_name)
 				count := file.count
-				file.open_read
+				safe_open_read (file)
 				if file.is_open_read then
 					if string_buffer.count < count then
 						string_buffer.resize (count)
@@ -168,11 +240,15 @@ feature {NONE} -- Implementation
 					if error_handler.has_error then
 							-- We ignore syntax errors since we want to test roundtrip parsing
 							-- on valid Eiffel classes.
-						io.error.put_string ("Syntax error in file: " + file_name)
+
 						if attached {SYNTAX_ERROR} error_handler.error_list.last as l_syntax1 then
-							io.error.put_string (" (" + l_syntax1.line.out + ", " + l_syntax1.column.out + ")" + l_syntax1.error_message)
+							display_error ({STRING_32} "Syntax error at (" + l_syntax1.line.out + ", " + l_syntax1.column.out + ") in file: " + file_name.name)
+							if not l_syntax1.error_message.is_empty then
+								display_error ({STRING} "    " + l_syntax1.error_message)
+							end
+						else
+							display_error ({STRING_32} "Syntax error in file: " + file_name.name)
 						end
-						io.error.put_new_line
 						error_handler.wipe_out
 					elseif fast_factory.has_obsolete_constructs then
 							-- Slow parsing to rewrite the class using the new constructs.
@@ -186,22 +262,22 @@ feature {NONE} -- Implementation
 							-- Perform the visiting
 						visitor.process_ast_node (visitor.parsed_class)
 						if visitor.is_updated then
+							is_eiffel_class_updated := True
 							l_text := visitor.text
 							parse_eiffel_class (fast_parser, l_text, True)
 							if error_handler.has_error then
 									-- We ignore syntax errors since we want to test roundtrip parsing
 									-- on valid Eiffel classes.
-								io.error.put_string ("After conversion syntax error in file: " + file_name)
+								display_error ({STRING_32} "After conversion syntax error in file: " + file_name.name)
 								if attached {SYNTAX_ERROR} error_handler.error_list.last as l_syntax2 then
-									io.error.put_string (" (" + l_syntax2.line.out + ", " + l_syntax2.column.out + ")" + l_syntax2.error_message)
+									display_error ({STRING_32} " (" + l_syntax2.line.out + ", " + l_syntax2.column.out + ")" + l_syntax2.error_message)
 								end
 								if has_option (force_switch) then
 									l_generate_output := True
-									io.error.put_string (" (converted)")
+									display_error (" (converted)")
 								else
 									l_generate_output := False
 								end
-								io.error.put_new_line
 								error_handler.wipe_out
 							else
 								l_generate_output := True
@@ -213,25 +289,22 @@ feature {NONE} -- Implementation
 										l_text := utf8.last_converted_stream
 										l_converted := True
 									else
-										io.error.put_string ("Encoding conversion failed: UTF-8 to " + l_encoding.code_page)
-										io.error.put_new_line
+										display_error ("Encoding conversion failed: UTF-8 to " + l_encoding.code_page)
 									end
 								end
-								create outfile.make (file_name)
-								outfile.open_write
-								if outfile.is_open_write then
+								create outfile.make_with_path (file_name)
+								safe_open_write (outfile)
+								if last_open_successful then
 									if l_converted and then attached original_bom as l_bom then
 										outfile.put_string (l_bom)
 									end
 									outfile.put_string (l_text)
 									outfile.close
 									if has_option (verbose_switch) then
-										io.put_string ("Converted: " + file_name)
-										io.put_new_line
+										display_message ({STRING_32} "Converted: " + file_name.name)
 									end
 								else
-									io.error.put_string ("Could not write to: " + file_name)
-									io.error.put_new_line
+									display_error ({STRING_32} "Could not write to: " + file_name.name)
 								end
 							end
 						end
@@ -239,8 +312,7 @@ feature {NONE} -- Implementation
 						visitor.reset
 					end
 				else
-					io.error.put_string ("Couldn't open: " + file_name)
-					io.error.put_new_line
+					display_error ({STRING_32} "Couldn't open: " + file_name.name)
 				end
 			end
 		end
@@ -285,6 +357,42 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	safe_open_read (a_file: FILE)
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				a_file.open_read
+				last_open_successful := True
+			else
+				last_open_successful := False
+			end
+		rescue
+			retried := True
+			retry
+		end
+
+	safe_open_write (a_file: FILE)
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				a_file.open_write
+				last_open_successful := True
+			else
+				last_open_successful := False
+			end
+		rescue
+			retried := True
+			retry
+		end
+
+	last_open_successful: BOOLEAN
+			-- Was last call to `safe_open_read|write' successful?
+
+	is_eiffel_class_updated: BOOLEAN
+			-- Was a class updated?
+
 feature {NONE} -- Encoding
 
 	original_encoding: detachable ENCODING
@@ -305,7 +413,39 @@ feature {NONE}
 	string_buffer: STRING
 			-- Buffer for reading Eiffel classes.
 
+feature {NONE} -- Error handling
+
+	display_error (a_message: READABLE_STRING_GENERAL)
+			-- Process `a_message'.
+		require
+			a_message_ok: a_message /= Void and then not a_message.is_empty
+		do
+			localized_print_error (a_message)
+			io.error.new_line
+		end
+
+	display_message (a_message: READABLE_STRING_GENERAL)
+			-- Process `a_message'.
+		require
+			a_message_ok: a_message /= Void and then not a_message.is_empty
+		do
+			localized_print (a_message)
+			io.new_line
+		end
+
 feature {NONE} -- Arguments processing
+
+	is_updating_agents: BOOLEAN
+			-- Will agent types be updated?
+		do
+			Result := has_option (agents_switch)
+		end
+
+	is_updating_ecfs: BOOLEAN
+			-- Will ECFs be updated?
+		do
+			Result := has_option (ecf_switch) or else is_updating_agents
+		end
 
 	name: STRING = "Eiffel Syntax Updater"
 	version: STRING = "6.4.1"
@@ -318,6 +458,10 @@ feature {NONE} -- Arguments processing
 	verbose_switch_description: STRING = "Verbose output of processing"
 	force_switch: STRING = "f|force"
 	force_switch_description: STRING = "Force generation of syntactically incorrect classes"
+	agents_switch: STRING = "a|agents"
+	agents_swith_description: STRING = "Update type of agents to new 15.11 definition. Implies -e."
+	ecf_switch: STRING = "e|ecf"
+	ecf_switch_description: STRING = "Update ECF if Eiffel classes have been updated"
 			-- Our arguments
 
 	switches: ARRAYED_LIST [ARGUMENT_SWITCH]
@@ -325,6 +469,8 @@ feature {NONE} -- Arguments processing
 			create Result.make (2)
 			Result.extend (create {ARGUMENT_SWITCH}.make (verbose_switch, verbose_switch_description, True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (force_switch, force_switch_description, True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (ecf_switch, ecf_switch_description, True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (agents_switch, agents_swith_description, True, False))
 		end
 
 invariant
@@ -336,7 +482,7 @@ invariant
 	string_buffer_not_void: string_buffer /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

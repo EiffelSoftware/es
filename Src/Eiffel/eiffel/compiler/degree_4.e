@@ -184,7 +184,26 @@ feature -- Processing
 				-- anymore (see eweasel test#incr282). It used to be done before calling
 				-- `execute' but this would trigger some assertion violations if some of the
 				-- constraints in the new system are not valid. See eweasel test#incr386.
-			instantiator.clean_standalone
+			if instantiator.is_clean_up_requested then
+				instantiator.clean_all
+			end
+
+				-- Unmark classes as processed to take into account the case when
+				-- they have been marked as processed but then an error has been raised.
+				-- (This fixes several incrementality bugs, including test#inct417, test#incr418, test#incr419.)
+			from
+				nb := 0
+				i := 1
+			until
+				nb = count
+			loop
+				a_class := classes.item (i)
+				if a_class /= Void and then a_class.degree_4_needed then
+					a_class.unset_degree_4_processed
+					nb := nb + 1
+				end
+				i := i + 1
+			end
 
 			empty_temp_remaining_validity_checking_list
 
@@ -505,13 +524,13 @@ feature -- Actions to be done at the end of degree
 			current_class_attached: attached system.current_class
 		do
 			if attached actions as a then
-				a.extend ([create {ARRAYED_LIST [PROCEDURE [ANY, TUPLE]]}.make (1), system.current_class.class_id])
+				a.extend ([create {ARRAYED_LIST [PROCEDURE]}.make (1), system.current_class.class_id])
 			end
 		ensure
 			is_action_class_set: is_action_class_set
 		end
 
-	put_action (a: PROCEDURE [ANY, TUPLE])
+	put_action (a: PROCEDURE)
 			-- Record action `a' to be executed at the end of degree.
 		require
 			a_attached: attached a
@@ -529,7 +548,7 @@ feature {NONE} -- Actions to be done at the end of degree
 	delayed_classes: SEARCH_TABLE [CLASS_C]
 			-- Classes marked for recompilation during this degree
 
-	actions: ARRAYED_LIST [TUPLE [actions: ARRAYED_LIST [PROCEDURE [ANY, TUPLE]]; class_id: INTEGER_32]]
+	actions: ARRAYED_LIST [TUPLE [actions: ARRAYED_LIST [PROCEDURE]; class_id: INTEGER_32]]
 			-- Actions to be done at the end of degree for the class identified by class ID
 
 feature {NONE} -- Processing
@@ -1026,7 +1045,7 @@ invariant
 	delayed_classes_attached: attached delayed_classes
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -36,7 +36,7 @@ feature {NONE} -- Initialization
 			Precursor
 
 				-- Create the node storage for type blog
-			if attached {CMS_STORAGE_SQL_I} storage as l_storage_sql then
+			if attached storage.as_sql_storage as l_storage_sql then
 				create {CMS_BLOG_STORAGE_SQL} blog_storage.make (l_storage_sql)
 			else
 				create {CMS_BLOG_STORAGE_NULL} blog_storage.make
@@ -95,6 +95,21 @@ feature -- Access node
 		do
 				-- load all posts and add the authors to each post
 			Result := nodes_to_blogs (blog_storage.blogs_from_user_limited (a_user, a_limit, a_offset))
+		end
+
+feature -- Conversion
+
+	full_blog_node (a_blog: CMS_BLOG): CMS_BLOG
+			-- If `a_blog' is partial, return the full blog node from `a_blog',
+			-- otherwise return directly `a_blog'.
+		require
+			a_blog_set: a_blog /= Void
+		do
+			if attached {CMS_BLOG} node_api.full_node (a_blog) as l_full_blog then
+				Result := l_full_blog
+			else
+				Result := a_blog
+			end
 		end
 
 feature {NONE} -- Helpers

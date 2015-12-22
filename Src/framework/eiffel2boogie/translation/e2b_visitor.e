@@ -519,6 +519,12 @@ feature {BYTE_NODE} -- Visitors
 			check not_implemented: False end
 		end
 
+	process_null_conversion_b (a_node: NULL_CONVERSION_B)
+			-- Process `a_node'.
+		do
+			check not_implemented: False end
+		end
+		
 	process_string_b (a_node: STRING_B)
 			-- Process `a_node'.
 		do

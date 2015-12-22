@@ -13,12 +13,12 @@ inherit
 			make as cl_make
 		redefine
 			generics, valid_generic, parent_type, dump, ext_append_to,
-			has_like, has_like_argument, has_like_current, is_loose, duplicate, good_generics,
+			has_like, has_like_argument, has_like_current, is_loose, good_generics,
 			error_generics, check_constraints, has_formal_generic, formal_instantiated_in,
 			instantiated_in, recomputed_in,
 			has_expanded, internal_is_valid_for_class, expanded_deferred, valid_expanded_creation,
 			same_as, is_equivalent, description, description_with_detachable_type, instantiated_description, is_explicit,
-			deep_actual_type, context_free_type, instantiation_in, has_actual,
+			deep_actual_type, deanchored_form_marks_free, context_free_type, instantiation_in, has_actual,
 			actual_argument_type, update_dependance, hash_code,
 			is_full_named_type, is_known, process, evaluated_type_in_descendant,
 			generate_cid, generate_cid_array, generate_cid_init,
@@ -143,7 +143,7 @@ feature -- Access
 
 	hash_code: INTEGER
 		local
-			l_rotate, l_bytes, i: INTEGER
+			i: INTEGER
 			l_generics: like generics
 		do
 			Result := Precursor
@@ -154,14 +154,9 @@ feature -- Access
 				until
 					i = 0
 				loop
-					l_rotate := l_generics.i_th (i).hash_code
-					l_bytes := 4 * (1 + i \\ 8)
-					l_rotate := (l_rotate |<< l_bytes) | (l_rotate |>> (32 - l_bytes))
-					Result := Result.bit_xor (l_generics.i_th (i).hash_code)
+					Result := combined_hash_code (Result, l_generics.i_th (i).hash_code)
 					i := i - 1
 				end
-					-- To prevent negative values.
-				Result := Result.hash_code
 			end
 		end
 
@@ -323,13 +318,23 @@ feature -- Output
 			-- <Precursor>
 		local
 			i, count: INTEGER
+			tuple_index: INTEGER
+			is_comma_needed: BOOLEAN
+			t: TYPE_A
 		do
 				-- Append classname "TUPLE"
 			Precursor {CL_TYPE_A} (a_text_formatter, a_context_class)
 
-			count := generics.count
 				-- TUPLE may have zero generic parameters
-			if count > 0 then
+			count := generics.count
+				-- A type may also have a single tuple parameter without any actual generics.
+			tuple_index := base_class.tuple_parameter_index
+			if count > 0 and then
+				(tuple_index /= 1 or else
+				count > 1 or else
+				not attached {TUPLE_TYPE_A} generics [1] as tt or else
+				(attached tt.generics as g and then not g.is_empty))
+			then
 				a_text_formatter.add_space
 				a_text_formatter.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_L_bracket)
 				from
@@ -337,10 +342,43 @@ feature -- Output
 				until
 					i > count
 				loop
-					generics.i_th (i).ext_append_to (a_text_formatter, a_context_class)
-					if i /= count then
+					if is_comma_needed then
 						a_text_formatter.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_Comma)
 						a_text_formatter.add_space
+					end
+					is_comma_needed := True
+					t := generics [i]
+					if tuple_index = i then
+							-- Fold the tuple parameter.
+						if not t.is_tuple then
+								-- The actual generic is not a tuple.
+								-- This could be because a type formatter did not wrap the actual generic into a tuple.
+								-- Preserve the actual parameter as is.
+							t.ext_append_to (a_text_formatter, a_context_class)
+						elseif not attached t.generics as g or else g.is_empty then
+								-- Omit the parameter altogether.
+							is_comma_needed := False
+						elseif g.count = 1 and then g [1].is_tuple then
+								-- Preserve tuple actual parameter for the cases like "A [TUPLE [TUPLE [...]]]".
+							t.ext_append_to (a_text_formatter, a_context_class)
+						else
+								-- Remove tuple wrapping.
+								-- If there is a parameter before tuple parameter, a comma is already printed.
+							is_comma_needed := False
+							across
+								g as gg
+							loop
+								if is_comma_needed then
+									a_text_formatter.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_Comma)
+									a_text_formatter.add_space
+								end
+								is_comma_needed := True
+								gg.item.ext_append_to (a_text_formatter, a_context_class)
+							end
+						end
+					else
+							-- Apply general formatting rules.
+						t.ext_append_to (a_text_formatter, a_context_class)
 					end
 					i := i + 1
 				end
@@ -467,7 +505,7 @@ feature -- Generic conformance
 			il_generator.generate_generic_type_instance (n)
 		end
 
-	frozen enumerate_interfaces (processor: PROCEDURE [ANY, TUPLE [CLASS_TYPE]])
+	frozen enumerate_interfaces (processor: PROCEDURE [CLASS_TYPE])
 			-- Enumerate all class types for which an object of this type can be attached to.
 			-- FIXME: To be put in GEN_TYPE_A when refactoring complete.
 		require
@@ -669,7 +707,7 @@ feature {TYPE_A} -- Helpers
 			end
 		end
 
-	enumerate_interfaces_recursively (processor: PROCEDURE [ANY, TUPLE [CLASS_TYPE]]; n: INTEGER)
+	enumerate_interfaces_recursively (processor: PROCEDURE [CLASS_TYPE]; n: INTEGER)
 			-- Enumerate all class types for which an object of this type can be attached to
 			-- using `n' as an upper bound for generic parameters that can be changed.
 		require
@@ -758,39 +796,24 @@ feature {TYPE_A} -- Helpers
 	internal_generic_derivation (a_level: INTEGER): like Current
 			-- Precise generic derivation of current type.
 		local
-			i, count: INTEGER
-			l_generics, l_new_generics: like generics
-			l_attachment_bits: like attachment_bits
-			l_variant_bits: like variant_bits
-			s: like has_separate_mark
-			l_type: TYPE_A
+			i: INTEGER
+			l_old_generics, l_new_generics: like generics
+			l_new_type, l_prev_type: TYPE_A
 		do
+			Result := as_marks_free
 			from
-					-- Duplicate current without the attachment and separateness information
-					-- since it does not matter for a generic derivation.
-				l_attachment_bits := attachment_bits
-				l_variant_bits := variant_bits
-				attachment_bits := 0
-				variant_bits := 0
-				s := has_separate_mark
-				has_separate_mark := False
-				Result := duplicate_for_instantiation
-				has_separate_mark := s
-				attachment_bits := l_attachment_bits
-				variant_bits := l_variant_bits
-
-				l_generics := generics
-				l_new_generics := Result.generics
-				i := 1
-				count := l_generics.count
+				l_old_generics := Result.generics
+				i := l_old_generics.count
 			until
-				i > count
+				i <= 0
 			loop
-				l_type := l_generics.i_th (i)
-				if l_type.actual_type.is_formal or l_type.is_reference then
+				l_prev_type := l_old_generics.i_th (i)
+					-- For generic derivation we have to tweak the types so that
+					-- they are either expandeds or formals.
+				if l_prev_type.actual_type.is_formal or l_prev_type.is_reference then
 					if a_level = 0 then
 							-- We are now analyzing the B part in A [B]
-						l_new_generics.put_i_th (create {FORMAL_A}.make (False, False, i), i)
+						create {FORMAL_A} l_new_type.make (False, False, i)
 					else
 							-- We are now analyzing the X part in A [B [X]]
 							-- which can only happen if B [X] is expanded. In that case, we
@@ -799,19 +822,29 @@ feature {TYPE_A} -- Helpers
 							-- we put the first constraint in the list as we use this for sorting
 							-- the CLASS_TYPE for code generation (See eweasel test#multicon060).
 						if base_class.generics.i_th (i).is_multi_constrained (base_class.generics) then
-							l_new_generics.put_i_th (base_class.constrained_types (i).first.type, i)
+							l_new_type := base_class.constrained_types (i).first.type
 						else
-							l_new_generics.put_i_th (base_class.constrained_type (i).as_marks_free, i)
+							l_new_type := base_class.constrained_type (i)
 						end
 					end
 				else
-						-- We have a basic type, as an optimization, we
-						-- store the basic type data, rather than a formal
-						-- generic paramter to save some time at run-time
-						-- when computing the dynamic type.
-					l_new_generics.put_i_th (l_type.internal_generic_derivation (a_level + 1), i)
+					l_new_type := l_prev_type
 				end
-				i := i + 1
+					-- Recurse now.
+				l_new_type := l_new_type.internal_generic_derivation (a_level + 1)
+				if l_prev_type /= l_new_type then
+					if l_new_generics = Void then
+							-- Void modifying original type.
+						if Result = Current then
+							Result := Result.duplicate_for_instantiation
+						else
+							Result.set_generics (generics.twin)
+						end
+						l_new_generics := Result.generics
+					end
+					l_new_generics.put_i_th (l_new_type, i)
+				end
+				i := i - 1
 			end
 		end
 
@@ -853,9 +886,7 @@ feature {TYPE_A} -- Helpers
 						l_type := current_type.generics.i_th (l_formal.position)
 					end
 					if current_type /= Void and then attached {LIKE_CURRENT} l_type.actual_type as l_like_current then
-							-- If actual generic parameter is `like Current' and that we have a context type, then
-							-- its type is clearly the context type `current_type'.
-						l_type := current_type
+						l_type := l_like_current.conformance_type
 					end
 					if l_type.actual_type.is_formal or l_type.is_reference then
 						if a_level = 0 then
@@ -1023,6 +1054,38 @@ feature -- Primitives
 					if l_new_generics = Void then
 							-- Void modifying original type.
 						Result := Result.duplicate_for_instantiation
+						l_new_generics := Result.generics
+					end
+					l_new_generics.put_i_th (l_new_type, i)
+				end
+				i := i - 1
+			end
+		end
+
+	deanchored_form_marks_free: like Current
+			-- <Precursor>
+		local
+			i: INTEGER
+			l_old_generics, l_new_generics: like generics
+			l_prev_type, l_new_type: TYPE_A
+		do
+			Result := as_marks_free
+			from
+				l_old_generics := Result.generics
+				i := l_old_generics.count
+			until
+				i <= 0
+			loop
+				l_prev_type := l_old_generics.i_th (i)
+				l_new_type := l_prev_type.deanchored_form_marks_free
+				if l_prev_type /= l_new_type then
+					if l_new_generics = Void then
+							-- Void modifying original type.
+						if Result = Current then
+							Result := Result.duplicate_for_instantiation
+						else
+							Result.set_generics (generics.twin)
+						end
 						l_new_generics := Result.generics
 					end
 					l_new_generics.put_i_th (l_new_type, i)
@@ -1436,26 +1499,6 @@ feature -- Primitives
 			end
 		end
 
-	duplicate: like Current
-			-- Duplication
-		local
-			i, count: INTEGER
-			duplicate_generics: like generics
-		do
-			from
-				i := 1
-				count := generics.count
-				create duplicate_generics.make (count)
-			until
-				i > count
-			loop
-				duplicate_generics.extend (generics.i_th (i).duplicate)
-				i := i + 1
-			end
-			Result := twin
-			Result.set_generics (duplicate_generics)
-		end
-
 	duplicate_for_instantiation: like Current
 			-- Duplication for instantiation routines.
 		do
@@ -1634,7 +1677,10 @@ feature -- Primitives
 						wrapped_actuals.extend (l_generic_parameter)
 							-- Replace extra arguments with a tuple.
 						create tuple_actual.make (system.tuple_id, wrapped_actuals)
-						tuple_actual.set_is_attached
+						if not a_type_context.lace_class.is_void_unsafe then
+								-- Do not set any marks for non-void safe code.
+							tuple_actual.set_is_attached
+						end
 						l_generic_parameter := tuple_actual
 						l_constraints.start
 					else

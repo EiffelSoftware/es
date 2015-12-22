@@ -58,8 +58,7 @@ feature -- Access
 	hash_code: INTEGER
 			-- <Precursor>
 		do
-				-- Avoid collisions with `{FORMAL_A}.hash_code'.
-			Result := ({SHARED_HASH_CODE}.other_code - position).abs
+			Result := combined_hash_code({SHARED_GEN_CONF_LEVEL}.max_dtype, position)
 		end
 
 feature -- Comparison
@@ -266,7 +265,7 @@ feature {NONE} -- Modification
 		other: TYPE_A;
 		in_generic: BOOLEAN;
 		is_conforming: like conform_to_agent;
-		other_bound: FUNCTION [ANY, TUPLE [LOCAL_TYPE_A], like lower_bound])
+		other_bound: FUNCTION [LOCAL_TYPE_A, like lower_bound])
 			-- Add type `other' as a bound of the type in `context_class' to `bound'
 			-- using `is_conforming' to check that one type conforms to another one
 			-- and a function `other_bound' to access the corresponding bound of `other'
@@ -332,7 +331,7 @@ feature {NONE} -- Modification
 
 feature {NONE} -- Helper
 
-	conform_to_agent: PREDICATE [ANY, TUPLE [s: TYPE_A; t: TYPE_A; c: CLASS_C]]
+	conform_to_agent: PREDICATE [TUPLE [s: TYPE_A; t: TYPE_A; c: CLASS_C]]
 			-- A predicate to check that `s' conforms to `t' in class `c'?
 		once
 			Result :=
@@ -342,7 +341,7 @@ feature {NONE} -- Helper
 					end
 		end
 
-	reverse_conform_to_agent: PREDICATE [ANY, TUPLE [s: TYPE_A; t: TYPE_A; c: CLASS_C]]
+	reverse_conform_to_agent: PREDICATE [TUPLE [s: TYPE_A; t: TYPE_A; c: CLASS_C]]
 			-- A predicate to check that `t' conforms to `s' in class `c'?
 		once
 			Result :=
@@ -361,7 +360,7 @@ feature {NONE} -- Helper
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

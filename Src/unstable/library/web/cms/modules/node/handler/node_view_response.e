@@ -8,29 +8,9 @@ class
 
 inherit
 	NODE_RESPONSE
-		redefine
-			make,
-			initialize
-		end
 
 create
 	make
-
-feature {NONE} -- Initialization
-
-	make (req: WSF_REQUEST; res: WSF_RESPONSE; a_api: like api; a_node_api: like node_api)
-		do
-			create {WSF_NULL_THEME} wsf_theme.make
-			Precursor (req, res, a_api, a_node_api)
-		end
-
-	initialize
-		do
-			Precursor
-			create {CMS_TO_WSF_THEME} wsf_theme.make (Current, theme)
-		end
-
-	wsf_theme: WSF_THEME
 
 feature -- Access
 
@@ -71,7 +51,7 @@ feature -- Execution
 					attached node_api.node_type_for (l_node) as l_content_type and then
 					attached node_api.node_type_webform_manager (l_content_type) as l_manager
 				then
-					l_manager.append_html_output_to (l_node, Current)
+					l_manager.append_content_as_html_to_page (l_node, Current)
 				end
 			elseif revision > 0 then
 				set_main_content ("Missing revision node!")

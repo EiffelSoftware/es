@@ -1076,13 +1076,13 @@ feature -- Access
 feature -- Duplication
 
 	duplicate: like Current
-			-- Duplication
+			-- Shallow duplication.
 		do
 			Result := twin
 		end
 
-	as_separate: like Current
-			-- Separate version of this type
+	frozen as_separate: like Current
+			-- Separate version of this type.
 		require
 			not_separate: not is_separate
 		do
@@ -1090,8 +1090,8 @@ feature -- Duplication
 			Result.set_separate_mark
 		end
 
-	as_non_separate: like Current
-			-- Non-separate version of this type
+	frozen as_non_separate: like Current
+			-- Non-separate version of this type.
 		require
 			is_separate: is_separate
 		do
@@ -1099,8 +1099,8 @@ feature -- Duplication
 			Result.reset_separate_mark
 		end
 
-	as_attached_type: like Current
-			-- Attached variant of the current type
+	frozen as_attached_type: like Current
+			-- Attached variant of the current type.
 		require
 			not_is_attached: not is_attached
 		do
@@ -1110,18 +1110,14 @@ feature -- Duplication
 			result_attached: Result /= Void
 		end
 
-	as_implicitly_attached: like Current
-			-- Implicitly attached type
+	frozen as_implicitly_attached: like Current
+			-- Implicitly attached type.
 		require
 			not_is_attached: not is_attached
 			not_is_implicitly_attached: not is_implicitly_attached
 		do
-			if is_implicitly_attached then
-				Result := Current
-			else
-				Result := duplicate
-				Result.set_is_implicitly_attached
-			end
+			Result := duplicate
+			Result.set_is_implicitly_attached
 		ensure
 			result_attached: Result /= Void
 			result_not_attached: not Result.is_attached
@@ -1129,7 +1125,7 @@ feature -- Duplication
 			result_is_attachable_to_attached: Result.is_attachable_to (as_attached_type)
 		end
 
-	as_attached_in (c: CLASS_C): like Current
+	frozen as_attached_in (c: CLASS_C): like Current
 			-- Attached or implicitly attached variant of current type depending on the void safety status of contextual class `c'.
 		require
 			c_attached: c /= Void
@@ -1148,8 +1144,8 @@ feature -- Duplication
 			result_is_implicitly_attached: not is_none implies (Result.is_attached or else Result.is_implicitly_attached)
 		end
 
-	as_implicitly_detachable: like Current
-			-- Implicitly detachable type
+	frozen as_implicitly_detachable: like Current
+			-- Implicitly detachable type.
 		do
 			if not is_attached and then is_implicitly_attached then
 				Result := duplicate
@@ -1161,8 +1157,8 @@ feature -- Duplication
 			result_attached: Result /= Void
 		end
 
-	as_detachable_type: like Current
-			-- detachable type
+	frozen as_detachable_type: like Current
+			-- Detachable type.
 		do
 			if not has_detachable_mark then
 				Result := duplicate
@@ -1173,7 +1169,7 @@ feature -- Duplication
 		end
 
 	as_attachment_mark_free: like Current
-			-- Same as Current but without any attachment mark
+			-- Same as `Current' but without any attachment mark.
 		local
 			l_bits: like attachment_bits
 		do
@@ -1191,32 +1187,52 @@ feature -- Duplication
 			result_has_no_detachable_mark: not Result.has_detachable_mark
 		end
 
-	as_marks_free: like Current
-			-- Same as Current but without any attachment and separate marks
+	frozen as_marks_free: like Current
+			-- Same as `Current' but without any attachment, separate, variant marks.
 		local
 			a: like attachment_bits
 			s: BOOLEAN
+			b: like variant_bits
 		do
 			a := attachment_bits
 			s := has_separate_mark
-			if a = 0 and then not s then
+			b := variant_bits
+			if a = 0 and then not s and b = 0 then
 				Result := Current
 			else
 				has_separate_mark := False
 				attachment_bits := 0
+				variant_bits := 0
 				Result := duplicate
 				attachment_bits := a
 				has_separate_mark := s
+				variant_bits := b
 			end
 		ensure
 			as_marks_free_attached: attached Result
 			result_has_no_attached_mark: not Result.has_attached_mark
 			result_has_no_detachable_mark: not Result.has_detachable_mark
 			result_has_no_separate_mark: not Result.has_separate_mark
+			result_has_no_variance_mark: not Result.has_variant_mark
+			result_has_no_frozen_mark: not Result.has_frozen_mark and not Result.is_implicitly_frozen
+		end
+
+	deanchored_form_marks_free: TYPE_A
+			-- Deanchored form of current without any marks.
+		do
+			Result := as_marks_free
+		ensure
+			as_marks_free_attached: attached Result
+			result_has_no_attached_mark: not Result.has_attached_mark and then (attached Result.generics as l_gen implies across l_gen as l_actual all not l_actual.item.has_attached_mark end)
+			result_has_no_detachable_mark: not Result.has_detachable_mark and then (attached Result.generics as l_gen implies across l_gen as l_actual all not l_actual.item.has_detachable_mark end)
+			result_has_no_separate_mark: not Result.has_separate_mark and then (attached Result.generics as l_gen implies across l_gen as l_actual all not l_actual.item.has_separate_mark end)
+			result_has_no_variance_mark: not Result.has_variant_mark and then (attached Result.generics as l_gen implies across l_gen as l_actual all not l_actual.item.has_variant_mark end)
+			result_has_no_frozen_mark: (not Result.has_frozen_mark and not Result.is_implicitly_frozen) and then
+				(attached Result.generics as l_gen implies across l_gen as l_actual all not l_actual.item.has_frozen_mark and not l_actual.item.is_implicitly_frozen end)
 		end
 
 	as_same_variant_bits (a_bits: like variant_bits): like Current
-			-- Attached variant of the current type
+			-- Attached variant of the current type.
 		local
 			a: like variant_bits
 		do
@@ -1233,7 +1249,7 @@ feature -- Duplication
 		end
 
 	as_variant_free: like Current
-			-- Same as Current but without any variance mark.
+			-- Same as `Current' but without any variance mark.
 		do
 			Result := as_same_variant_bits (0)
 		ensure
@@ -1241,7 +1257,7 @@ feature -- Duplication
 		end
 
 	to_other_attachment (other: TYPE_A): like Current
-			-- Current type to which attachment status of `other' is applied
+			-- Current type to which attachment status of `other' is applied.
 		require
 			other_attached: other /= Void
 		local
@@ -1269,7 +1285,7 @@ feature -- Duplication
 
 	to_other_immediate_attachment (other: TYPE_A): like Current
 			-- Current type to which attachment status of `other' is applied
-			-- without taking into consideration attachment status of an anchor (if any)
+			-- without taking into consideration attachment status of an anchor (if any).
 		require
 			other_attached: other /= Void
 		do
@@ -1296,7 +1312,7 @@ feature -- Duplication
 		end
 
 	to_other_separateness (other: TYPE_A): like Current
-			-- Current type to which separateness status of `other' is applied
+			-- Current type to which separateness status of `other' is applied.
 		require
 			other_attached: other /= Void
 		do
@@ -1919,6 +1935,25 @@ feature -- Access
 		end
 
 feature {TYPE_A} -- Helpers
+
+	combined_hash_code (a_seed, a_hash_code: INTEGER): INTEGER
+			-- Given an existing value `a_seed' and a hash_code `a_hash_code', compute a new hash_code.
+		note
+			copyright: "Copyright (c) 1984-2015, Eiffel Software and others"
+			copyright: "Copyright 2005-2014 Daniel James for code in `combined_hash_code'."
+			license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+			license:   "Boost Software License, Version 1.0 (see http://www.boost.org/LICENSE_1_0.txt)"
+		do
+				-- The way to compute the combined hash_code is taken from the Boost C++ library.
+				-- The constant 0x9e3779b9 is derived from (2^32 / Phi) where Phi is
+				-- the golden ratio (1 + sqrt(5)) / 2. That constant is an arbitrary value.
+				-- Its purpose is to avoid mapping all zeros to all zeros. It helps spread entropy
+				-- and handles duplicates.
+			Result := a_seed.bit_xor (a_hash_code + 0x9e3779b9 + (a_seed |<< 6) + (a_seed |>> 2))
+			Result := Result.hash_code
+		ensure
+			good_hash_value: Result >= 0
+		end
 
 	internal_conform_to (a_context_class: CLASS_C; other: TYPE_A; a_in_generic: BOOLEAN): BOOLEAN
 			-- Does Current conform to `other' in `a_context_class'?

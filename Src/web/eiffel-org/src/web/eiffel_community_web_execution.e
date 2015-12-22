@@ -70,6 +70,10 @@ feature -- CMS setup
 			m.enable
 			a_setup.register_module (m)
 
+			create {CMS_TAXONOMY_MODULE} m.make
+			m.enable
+			a_setup.register_module (m)
+
 			create {CMS_RECENT_CHANGES_MODULE} m.make
 			m.enable
 			a_setup.register_module (m)
@@ -122,6 +126,12 @@ feature -- CMS setup
 			create {GOOGLE_CUSTOM_SEARCH_MODULE} m.make
 			m.enable
 			a_setup.register_module (m)
+
+				-- Task List
+			create {CMS_TASK_LIST_MODULE} m.make
+			m.enable
+			a_setup.register_module (m)
+
 
 				-- Others...
 			debug

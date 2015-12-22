@@ -9,9 +9,13 @@ class
 inherit
 	ANY
 
+	CMS_HOOK_EXPORT
+
+	CMS_EXPORT_JSON_UTILITIES
+
 	REFACTORING_HELPER
 
-	CMS_ENCODERS
+	CMS_REQUEST_UTIL
 
 create
 	make
@@ -24,6 +28,7 @@ feature {NONE} -- Initialize
 			setup := a_setup
 			create error_handler.make
 			create {CMS_ENV_LOGGER} logger.make
+			create hooks.make
 			initialize
 		ensure
 			setup_set: setup = a_setup
@@ -39,6 +44,8 @@ feature {NONE} -- Initialize
 		do
 				-- Initialize formats.
 			initialize_formats
+				-- Initialize contents.
+			initialize_content_types
 
 				-- Initialize storage.
 			if attached setup.storage (error_handler) as l_storage then
@@ -82,6 +89,15 @@ feature {NONE} -- Initialize
 					l_enabled_modules.remove (ic.item)
 				end
 			end
+				-- Initialize hooks system
+			setup_hooks
+		end
+
+	initialize_content_types
+			-- Initialize content types.
+		do
+			create content_types.make (1)
+			create content_type_webform_managers.make (1)
 		end
 
 	initialize_formats
@@ -103,7 +119,7 @@ feature {NONE} -- Initialize
 
 feature {CMS_ACCESS} -- Installation		
 
-	install
+	install_all_modules
 			-- Install CMS or uninstalled module which are enabled.
 		local
 			l_module: CMS_MODULE
@@ -117,12 +133,28 @@ feature {CMS_ACCESS} -- Installation
 					-- and leave the responsability to the module to know
 					-- if this is installed or not...
 				if not l_module.is_installed (Current) then
-					l_module.install (Current)
-					if l_module.is_enabled then
-						l_module.initialize (Current)
-					end
+					install_module (l_module)
 				end
 			end
+		end
+
+	install_module (m: CMS_MODULE)
+			-- Install module `m'.
+		require
+			module_not_installed: not is_module_installed (m)
+		do
+			m.install (Current)
+			if m.is_enabled then
+				m.initialize (Current)
+			end
+		end
+
+	uninstall_module (m: CMS_MODULE)
+			-- Uninstall module `m'.
+		require
+			module_installed: is_module_installed (m)
+		do
+			m.uninstall (Current)
 		end
 
 feature -- Access
@@ -135,6 +167,64 @@ feature -- Access
 
 	storage: CMS_STORAGE
 			-- Default persistence storage.	
+
+feature -- Content
+
+	content_types: ARRAYED_LIST [CMS_CONTENT_TYPE]
+			-- Available content types	
+
+	add_content_type (a_type: CMS_CONTENT_TYPE)
+			-- Register content type `a_type'.
+		do
+			content_types.force (a_type)
+		end
+
+	content_type (a_name: READABLE_STRING_GENERAL): detachable CMS_CONTENT_TYPE
+			-- Content type named `a_named' if any.
+		do
+			across
+				content_types as ic
+			until
+				Result /= Void
+			loop
+				Result := ic.item
+				if not a_name.is_case_insensitive_equal (Result.name) then
+					Result := Void
+				end
+			end
+		end
+
+feature -- Content type webform
+
+	content_type_webform_managers: ARRAYED_LIST [CMS_CONTENT_TYPE_WEBFORM_MANAGER [CMS_CONTENT]]
+			-- Available content types
+
+	add_content_type_webform_manager (a_manager: CMS_CONTENT_TYPE_WEBFORM_MANAGER [CMS_CONTENT])
+			-- Register webform manager `a_manager'.
+		do
+			content_type_webform_managers.force (a_manager)
+		end
+
+	content_type_webform_manager (a_content_type: CMS_CONTENT_TYPE): detachable CMS_CONTENT_TYPE_WEBFORM_MANAGER [CMS_CONTENT]
+			-- Web form manager for content type `a_content_type' if any.
+		do
+			Result := content_type_webform_manager_by_name (a_content_type.name)
+		end
+
+	content_type_webform_manager_by_name (a_content_type_name: READABLE_STRING_GENERAL): detachable CMS_CONTENT_TYPE_WEBFORM_MANAGER [CMS_CONTENT]
+			-- Web form manager for content type named `a_content_type_name' if any.
+		do
+			across
+				content_type_webform_managers as ic
+			until
+				Result /= Void
+			loop
+				Result := ic.item
+				if not a_content_type_name.is_case_insensitive_equal (Result.name) then
+					Result := Void
+				end
+			end
+		end
 
 feature -- Formats
 
@@ -200,6 +290,26 @@ feature -- Logging
 				else
 					logger.put_debug (m, Void)
 			end
+		end
+
+feature -- Internationalization (i18n)
+
+	translation (a_text: READABLE_STRING_GENERAL; opts: detachable CMS_API_OPTIONS): STRING_32
+			-- Translated text `a_text' according to expected context (lang, ...)
+			-- and adapt according to options eventually set by `opts'.
+		do
+			to_implement ("Implement i18n support [2015-may]")
+			Result := a_text.as_string_32
+		end
+
+	formatted_string (a_text: READABLE_STRING_GENERAL; args: TUPLE): STRING_32
+			-- Format `a_text' using arguments `args'.
+			--| ex: formatted_string ("hello $1, see page $title.", ["bob", "contact"] -> "hello bob, see page contact"
+		local
+			l_formatter: CMS_STRING_FORMATTER
+		do
+			create l_formatter
+			Result := l_formatter.formatted_string (a_text, args)
 		end
 
 feature -- Emails
@@ -302,9 +412,37 @@ feature -- Query: module
 			end
 		end
 
+feature -- Hooks
+
+	hooks: CMS_HOOK_CORE_MANAGER
+			-- Manager handling hook subscriptions.
+
+feature {NONE} -- Hooks
+
+	setup_hooks
+			-- Set up CMS hooks.
+			--| Each module has to opportunity to subscribe to various hooks.
+		local
+			l_module: CMS_MODULE
+			l_hooks: like hooks
+		do
+			l_hooks := hooks
+			setup_core_hooks (l_hooks)
+			across
+				enabled_modules as ic
+			loop
+				l_module := ic.item
+				if attached {CMS_HOOK_AUTO_REGISTER} l_module as l_auto then
+					l_auto.auto_subscribe_to_hooks (l_hooks)
+				end
+				l_module.setup_hooks (l_hooks)
+			end
+		end
+
 feature -- Query: API
 
 	user_api: CMS_USER_API
+			-- API to access user related data.
 		local
 			l_api: like internal_user_api
 		do
@@ -314,6 +452,14 @@ feature -- Query: API
 				internal_user_api := l_api
 			end
 			Result := l_api
+		end
+
+feature -- Hooks
+
+	setup_core_hooks (a_hooks: CMS_HOOK_CORE_MANAGER)
+			-- Register hooks associated with the cms core.
+		do
+			a_hooks.subscribe_to_export_hook (Current)
 		end
 
 feature -- Path aliases	
@@ -579,6 +725,112 @@ feature -- Environment/ modules and theme
 	module_configuration (a_module: CMS_MODULE; a_name: detachable READABLE_STRING_GENERAL): detachable CONFIG_READER
 		do
 			Result := module_configuration_by_name (a_module.name, a_name)
+		end
+
+feature -- Hook	
+
+	export_to (a_export_id_list: detachable ITERABLE [READABLE_STRING_GENERAL]; a_export_parameters: CMS_EXPORT_PARAMETERS; a_response: CMS_RESPONSE)
+			-- <Precursor>.
+		local
+			p: PATH
+			d: DIRECTORY
+			ja: JSON_ARRAY
+			jobj,jo,j: JSON_OBJECT
+			f: PLAIN_TEXT_FILE
+			u: CMS_USER
+		do
+			if attached a_response.has_permissions (<<"admin export", "export core">>) then
+				if a_export_id_list = Void then -- Include everything
+					p := a_export_parameters.location.extended ("core")
+					create d.make_with_path (p)
+					if not d.exists then
+						d.recursive_create_dir
+					end
+
+						-- path_aliases export.
+					a_export_parameters.log ("Exporting path_aliases")
+					create jo.make_empty
+					across storage.path_aliases as ic loop
+						jo.put_string (ic.item, ic.key)
+					end
+					create f.make_with_path (p.extended ("path_aliases.json"))
+					f.create_read_write
+					f.put_string (json_to_string (jo))
+					f.close
+
+						-- custom_values export.					
+					if attached storage.custom_values as lst then
+						a_export_parameters.log ("Exporting custom_values")
+						create ja.make_empty
+						across
+							lst as ic
+						loop
+							create j.make_empty
+							if attached ic.item.type as l_type then
+								j.put_string (l_type, "type")
+							end
+							j.put_string (ic.item.name, "name")
+							if attached ic.item.type as l_value then
+								j.put_string (l_value, "value")
+							end
+							ja.extend (j)
+						end
+						create f.make_with_path (p.extended ("custom_values.json"))
+						f.create_read_write
+						f.put_string (json_to_string (ja))
+						f.close
+					end
+
+						-- users export.
+					a_export_parameters.log ("Exporting users")
+					create jo.make_empty
+
+					create jobj.make_empty
+					across user_api.recent_users (create {CMS_DATA_QUERY_PARAMETERS}.make (0, user_api.users_count.as_natural_32)) as ic loop
+						u := ic.item
+						create j.make_empty
+						j.put_string (u.name, "name")
+						j.put_integer (u.status, "status")
+						put_string_into_json (u.email, "email", j)
+						put_string_into_json (u.password, "password", j)
+						put_string_into_json (u.hashed_password, "hashed_password", j)
+						put_date_into_json (u.creation_date, "creation_date", j)
+						put_date_into_json (u.last_login_date, "last_login_date", j)
+						if attached u.roles as l_roles then
+							create ja.make (l_roles.count)
+							across
+								l_roles as roles_ic
+							loop
+								ja.extend (create {JSON_STRING}.make_from_string_32 ({STRING_32} " %"" + roles_ic.item.name + {STRING_32} "%" #" + roles_ic.item.id.out))
+							end
+							j.put (ja, "roles")
+						end
+						jobj.put (j, u.id.out)
+					end
+					jo.put (jobj, "users")
+
+					create jobj.make_empty
+					across user_api.roles as ic loop
+						create j.make_empty
+						j.put_string (ic.item.name, "name")
+						if attached ic.item.permissions as l_perms then
+							create ja.make (l_perms.count)
+							across
+								l_perms as perms_ic
+							loop
+								ja.extend (create {JSON_STRING}.make_from_string (perms_ic.item))
+							end
+							j.put (ja, "permissions")
+						end
+						jobj.put (j, ic.item.id.out)
+					end
+					jo.put (jobj, "roles")
+					create f.make_with_path (p.extended ("users.json"))
+					f.create_read_write
+					f.put_string (json_to_string (jo))
+					f.close
+				end
+			end
 		end
 
 note

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 					Domain generator to perform domain transformation eigther between the same type of domains, or between
 					different type of domains.
@@ -68,7 +68,6 @@ note
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -403,7 +402,7 @@ feature{QL_CRITERION} -- Implementation/Criterion interaction
 
 feature{NONE} -- Implementation
 
-	process_groups_from_target (a_target: CONF_TARGET; a_parent: QL_ITEM; a_action: PROCEDURE [ANY, TUPLE [QL_GROUP]])
+	process_groups_from_target (a_target: CONF_TARGET; a_parent: QL_ITEM; a_action: PROCEDURE [QL_GROUP])
 			-- Iterate through groups in `a_target' and call `a_action' for every group.
 		require
 			a_target_attached: a_target /= Void
@@ -432,7 +431,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	process_classes_from_group (a_group: CONF_GROUP; a_parent: QL_ITEM; a_action: PROCEDURE [ANY, TUPLE [QL_CLASS]])
+	process_classes_from_group (a_group: CONF_GROUP; a_parent: QL_ITEM; a_action: PROCEDURE [QL_CLASS])
 			-- For every class in `a_group', call `a_action'.
 		require
 			a_group_attached: a_group /= Void
@@ -474,7 +473,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	process_feature_from_class (a_class: QL_CLASS; a_real_feature_action: PROCEDURE [ANY, TUPLE [QL_REAL_FEATURE]]; a_invariant_action: PROCEDURE [ANY, TUPLE [QL_INVARIANT]])
+	process_feature_from_class (a_class: QL_CLASS; a_real_feature_action: PROCEDURE [QL_REAL_FEATURE]; a_invariant_action: PROCEDURE [QL_INVARIANT])
 			-- Iterate through features in `a_class' and call `a_real_feature_action' for every real feature,
 			-- call `a_invariant_action' for every invariant feature.
 		require
@@ -594,8 +593,6 @@ feature{QL_DOMAIN_GENERATOR, QL_CRITERION} -- Action
 		require
 			a_item_attached: a_item /= Void
 			a_item_valid: a_item.is_valid_domain_item
-		local
-			l_tuple: TUPLE [value: like item_type]
 		do
 			if is_fill_domain_enabled then
 				domain.content.extend (a_item)
@@ -603,9 +600,7 @@ feature{QL_DOMAIN_GENERATOR, QL_CRITERION} -- Action
 			if not a_interval_actions_applied then
 				increase_internal_counter (a_item)
 			end
-			create l_tuple
-			l_tuple.value := a_item
-			item_satisfied_actions.call (l_tuple)
+			item_satisfied_actions.call (a_item)
 		end
 
 invariant
@@ -616,7 +611,7 @@ invariant
 	tautology_criterion_attached: tautology_criterion /= Void
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2015, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -646,7 +641,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
-
-
 
 end

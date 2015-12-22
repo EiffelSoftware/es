@@ -21,7 +21,7 @@ inherit
 			generic_derivation, associated_class_type, has_associated_class_type,
 			internal_same_generic_derivation_as, internal_generic_derivation,
 			has_associated_class, is_class_valid, instantiated_in, deep_actual_type,
-			is_processor_attachable_to
+			is_processor_attachable_to, deanchored_form_marks_free, has_same_marks
 		end
 
 	SHARED_IL_CASING
@@ -107,8 +107,11 @@ feature -- Properties
 
 	is_expanded: BOOLEAN
 			-- Is the type expanded?
+		local
+			l_mark: like declaration_mark
 		do
-			Result := has_expanded_mark or else (has_no_mark and then base_class.is_expanded)
+			l_mark := declaration_mark
+			Result := l_mark = expanded_mark or else (l_mark = no_mark and then class_declaration_mark = expanded_mark)
 		end
 
 	is_ephemeral: BOOLEAN
@@ -119,8 +122,11 @@ feature -- Properties
 
 	is_reference: BOOLEAN
 			-- Is the type a reference type?
+		local
+			l_mark: like declaration_mark
 		do
-			Result := has_reference_mark or else (has_no_mark and then not base_class.is_expanded)
+			l_mark := declaration_mark
+			Result := l_mark = reference_mark or else (l_mark = no_mark and then class_declaration_mark = no_mark)
 		end
 
 	is_full_named_type: BOOLEAN
@@ -179,8 +185,16 @@ feature -- Comparison
 		do
 			other_class_type ?= other
 			Result := other_class_type /= Void and then class_id = other_class_type.class_id
-						and then is_expanded = other_class_type.is_expanded
-						and then has_same_marks (other_class_type)
+				and then has_same_marks (other_class_type)
+		end
+
+	has_same_marks (other: TYPE_A): BOOLEAN
+			-- <Precursor>
+		do
+			if attached {CL_TYPE_A} other as l_cl_type then
+				Result := Precursor (l_cl_type) and then declaration_mark = l_cl_type.declaration_mark and then
+					class_declaration_mark = l_cl_type.class_declaration_mark
+			end
 		end
 
 	is_processor_attachable_to (other: TYPE_A): BOOLEAN
@@ -230,6 +244,13 @@ feature -- Access
 			--| Redefined for getting a more precise type.
 		do
 			Result := Current
+		end
+
+	deanchored_form_marks_free: like Current
+			-- <Precursor>
+			--| Redefined for getting a more precise type.
+		do
+			Result := as_marks_free
 		end
 
 	sk_value (a_context_type: TYPE_A): NATURAL_32
@@ -632,27 +653,10 @@ feature {TYPE_A} -- Helpers
 				(l_class.is_expanded = (class_declaration_mark = expanded_mark))
 		end
 
-	internal_generic_derivation (a_level: INTEGER): CL_TYPE_A
-		local
-			l_attachment: like attachment_bits
-			l_variant_bits: like variant_bits
-			s: like has_separate_mark
+	internal_generic_derivation (a_level: INTEGER): like Current
+			-- <Precursor>
 		do
-			if attachment_bits = 0 and variant_bits = 0 and not has_separate_mark then
-				Result := Current
-			else
-					-- Clear the attachment and separate mark.
-				l_attachment := attachment_bits
-				l_variant_bits := variant_bits
-				attachment_bits := 0
-				variant_bits := 0
-				s := has_separate_mark
-				has_separate_mark := False
-				Result := twin
-				has_separate_mark := s
-				attachment_bits := l_attachment
-				variant_bits := l_variant_bits
-			end
+			Result := deanchored_form_marks_free
 		end
 
 	internal_same_generic_derivation_as (current_type, other: TYPE_A; a_level: INTEGER): BOOLEAN
@@ -679,17 +683,29 @@ feature {COMPILER_EXPORTER} -- Settings
 	set_expanded_mark
 			-- Set class type declaration as expanded.
 		do
-			declaration_mark := expanded_mark
+			if is_reference then
+				if base_class.is_expanded then
+					declaration_mark := no_mark
+				else
+					declaration_mark := expanded_mark
+				end
+			end
 		ensure
-			has_expanded_mark: has_expanded_mark
+			is_expanded: is_expanded
 		end
 
 	set_reference_mark
 			-- Set class type declaration as reference.
 		do
-			declaration_mark := reference_mark
+			if is_expanded then
+				if base_class.is_expanded then
+					declaration_mark := reference_mark
+				else
+					declaration_mark := no_mark
+				end
+			end
 		ensure
-			has_reference_mark: has_reference_mark
+			is_reference: is_reference
 		end
 
 feature {COMPILER_EXPORTER} -- Conformance
@@ -978,9 +994,22 @@ feature {COMPILER_EXPORTER} -- Instantiation of a type in the context of a desce
 
 	reference_type: CL_TYPE_A
 			-- Reference counterpart of an expanded type
+		local
+			l_decl: like declaration_mark
 		do
-			Result := duplicate
-			Result.set_reference_mark
+			if is_expanded then
+				if base_class.is_expanded then
+					Result := duplicate
+					Result.set_reference_mark
+				else
+					l_decl := declaration_mark
+					declaration_mark := no_mark
+					Result := duplicate
+					declaration_mark := l_decl
+				end
+			else
+				Result := Current
+			end
 		end
 
 	create_info: CREATE_TYPE

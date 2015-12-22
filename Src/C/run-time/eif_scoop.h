@@ -59,29 +59,42 @@
 extern "C" {
 #endif
 
-/* Separate calls */
-
-typedef struct call_data {
-	EIF_REFERENCE target;			/* Target of a call */
+/*
+doc:	<struct name="eif_scoop_call_data", export="public">
+doc:		<summary> A container used to describe a SCOOP separate call (i.e. a closure). Holds information about the target, the arguments, and the result pointer. </summary>
+doc:		<field name="target", type="EIF_REFERENCE"> The target of the call. Must not be NULL. </field>
+doc:		<field name="routine_id", type="int"> Workbench only: The ID of the routine to be called. Must be a valid ID. </field>
+doc:		<field name="result", type="EIF_TYPED_VALUE*"> Workbench only: A pointer to store the result of a query. May be NULL.</field>
+doc:		<field name="address", type="fnptr"> Finalized only: The address of the function to be executed. May be NULL. </field>
+doc:		<field name="result", type="EIF_POINTER"> Finalized only: A pointer to store the result of a query. The result type depends on the called feature and is hard-coded in the pattern. May be NULL.</field>
+doc:		<field name="pattern", type="void(*)(struct eif_scoop_call_data*)"> Finalized only: The stub to invoke the function at 'address' or to get an attribute. Must not be NULL. </field>
+doc:		<field name="count", type="EIF_NATURAL_16"> The number of arguments, excluding the target object. </field>
+doc:		<field name="offset", type="EIF_NATURAL_16"> The offset to an attribute. May be invalid for regular feature calls. Not used for workbench. </field>
+doc:		<field name="is_synchronous", type="EIF_BOOLEAN"> Indicates a synchronous call. </field>
+doc:		<field name="argument", type="EIF_TYPED_VALUE[]"> The arguments to the call, excluding target object. NOTE: This array has variable length. </field>
+doc:	</struct>
+ */
+typedef struct eif_scoop_call_data {
+	EIF_REFERENCE target;
 
 #ifdef WORKBENCH
-	int routine_id;					/* Routine to be called */
-	EIF_TYPED_VALUE *result;		/* Address of a result for queries */
+	int routine_id;
+	EIF_TYPED_VALUE *result;
 #else
-	fnptr address;					/* Routine to be called */
-	EIF_POINTER result;				/* Address of a result for queries, the result type depends on the called feature */
-	void (* pattern) (struct call_data *); /* Stub that is used to perform a call */
-#endif /* WORKBENCH */
-	EIF_NATURAL_16 count;			/* Number of arguments excluding target object */
-	EIF_INTEGER_16 offset;			/* Offset of an attribute */
-	EIF_BOOLEAN is_synchronous;		/* Indicator of a synchronous call */
-	EIF_TYPED_VALUE argument [1];	/* Arguments excluding target object */
+	fnptr address;
+	EIF_POINTER result;
+	void (* pattern) (struct eif_scoop_call_data *);
+#endif
+	EIF_NATURAL_16 count;
+	EIF_INTEGER_16 offset;
+	EIF_BOOLEAN is_synchronous;
+	EIF_TYPED_VALUE argument [1];
 } call_data;
 
 
 RT_LNK EIF_BOOLEAN eif_scoop_can_impersonate (EIF_SCP_PID client_processor_id, EIF_SCP_PID supplier_region_id, EIF_BOOLEAN is_synchronous);
-RT_LNK void eif_log_call (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, call_data* data);
-RT_LNK void eif_call_const (call_data * a);
+RT_LNK void eif_scoop_log_call (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, struct eif_scoop_call_data* data);
+RT_LNK void eif_call_const (struct eif_scoop_call_data * a);
 
 #ifdef EIF_THREADS
 struct tag_eif_globals; /* Forward declaration. That way we don't need to include basically all header files in eif_scoop.h" */
@@ -89,13 +102,13 @@ RT_LNK void eif_scoop_impersonate (struct tag_eif_globals* eif_globals, EIF_SCP_
 #endif
 
 /* Processor properties */
-RT_LNK EIF_SCP_PID eif_new_processor(EIF_BOOLEAN is_passive);
-RT_LNK int eif_is_uncontrolled (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, EIF_SCP_PID supplier_region_id);
-RT_LNK void eif_wait_for_all_processors(void);
+RT_LNK EIF_SCP_PID eif_scoop_new_processor(EIF_BOOLEAN is_passive);
+RT_LNK EIF_BOOLEAN eif_scoop_is_uncontrolled (EIF_SCP_PID client_processor_id, EIF_SCP_PID client_region_id, EIF_SCP_PID supplier_region_id);
+RT_LNK void eif_scoop_wait_for_all_processors(void);
 
 /* Request chain operations */
-RT_LNK void eif_new_scoop_request_group (EIF_SCP_PID client_pid);
-RT_LNK void eif_delete_scoop_request_group (EIF_SCP_PID client_pid, size_t count);
+RT_LNK void eif_scoop_new_request_group (EIF_SCP_PID client_pid);
+RT_LNK void eif_scoop_delete_request_group (EIF_SCP_PID client_pid, size_t count);
 RT_LNK size_t eif_scoop_request_group_stack_count (EIF_SCP_PID client_pid);
 RT_LNK void eif_scoop_wait_request_group (EIF_SCP_PID client_pid);
 RT_LNK void eif_scoop_add_supplier_request_group (EIF_SCP_PID client_pid, EIF_SCP_PID supplier_pid);

@@ -10,8 +10,6 @@ inherit
 	CMS_RESPONSE
 		rename
 			make as make_response
-		redefine
-			initialize
 		end
 
 	WDOCS_MODULE_HELPER
@@ -26,19 +24,10 @@ feature {NONE} -- Initialization
 
 	make (req: WSF_REQUEST; res: WSF_RESPONSE; a_api: like api; a_wdocs_api: WDOCS_API; a_wdocs_edit_module: WDOCS_EDIT_MODULE)
 		do
-			create {WSF_NULL_THEME} wsf_theme.make
 			wdocs_api := a_wdocs_api
 			wdocs_module := a_wdocs_edit_module.wdocs_module
 			make_response (req, res, a_api)
 		end
-
-	initialize
-		do
-			Precursor
-			create {CMS_TO_WSF_THEME} wsf_theme.make (Current, theme)
-		end
-
-	wsf_theme: WSF_THEME
 
 feature -- Access
 
@@ -100,12 +89,12 @@ feature -- Execution
 					set_title (translation ("New doc page", Void))
 				end
 
-				f := new_edit_form (pg, url (request.percent_encoded_path_info, Void), "wdocs_edit")
+				f := new_edit_form (pg, mng, url (request.percent_encoded_path_info, Void), "wdocs_edit")
 				if l_bookid /= Void then
 					f.extend (create {WSF_FORM_HIDDEN_INPUT}.make_with_text ("bookid", l_bookid.as_string_32))
 				end
 
-				hooks.invoke_form_alter (f, fd, Current)
+				api.hooks.invoke_form_alter (f, fd, Current)
 				if request.is_post_request_method then
 					if l_bookid = Void then
 						add_error_message ("Missing book name information!")
@@ -172,7 +161,7 @@ feature -- Execution
 				end
 				new_pg.set_text (create {WIKI_CONTENT_TEXT}.make_from_string (l_text))
 
-				f := new_edit_form (new_pg, url (request.percent_encoded_path_info, Void), "wdocs_edit")
+				f := new_edit_form (new_pg, mng, url (request.percent_encoded_path_info, Void), "wdocs_edit")
 				if l_bookid /= Void then
 					f.extend (create {WSF_FORM_HIDDEN_INPUT}.make_with_text ("bookid", l_bookid.as_string_32))
 				end
@@ -180,7 +169,7 @@ feature -- Execution
 					f.extend (create {WSF_FORM_HIDDEN_INPUT}.make_with_text ("parent", pg.title))
 				end
 
-				hooks.invoke_form_alter (f, fd, Current)
+				api.hooks.invoke_form_alter (f, fd, Current)
 				if request.is_post_request_method then
 					if l_bookid = Void then
 						add_error_message ("Missing book name information!")
@@ -285,7 +274,7 @@ feature -- Form
 			l_link_title_value, l_title_value, l_source_value: detachable READABLE_STRING_8
 			l_content: detachable READABLE_STRING_8
 			l_changed: BOOLEAN
-			l_meta_link_title: detachable READABLE_STRING_32
+			l_meta_link_title, l_meta_uuid: detachable READABLE_STRING_32
 			s: STRING
 			e: CMS_EMAIL
 			fn: STRING_32
@@ -321,6 +310,7 @@ feature -- Form
 				else
 					if pg /= Void then
 						l_meta_link_title := pg.metadata ("link_title")
+						l_meta_uuid := pg.metadata ("uuid")
 						l_path := pg.path
 						l_page := pg
 						l_content := wdocs_api.wiki_text (pg)
@@ -417,7 +407,7 @@ feature -- Form
 			end
 		end
 
-	new_edit_form (pg: detachable WIKI_BOOK_PAGE; a_url: READABLE_STRING_8; a_formid: STRING): CMS_FORM
+	new_edit_form (pg: detachable WIKI_BOOK_PAGE; mng: WDOCS_MANAGER; a_url: READABLE_STRING_8; a_formid: STRING): CMS_FORM
 			-- Create a web form named `a_formid' for wiki page `pg' (if set), using form action url `a_url'.
 		local
 			f: CMS_FORM
@@ -505,7 +495,24 @@ feature -- Form
 			create bt_reset.make ("reset")
 			f.extend (bt_reset)
 
+			populate_form_with_taxonomy (Current, f, pg, mng)
+
 			Result := f
+		end
+
+	populate_form_with_taxonomy (a_response: CMS_RESPONSE; a_form: CMS_FORM; a_page: detachable WIKI_PAGE; a_manager: WDOCS_MANAGER)
+		local
+			c: detachable CMS_WDOCS_CONTENT
+		do
+			if attached {CMS_TAXONOMY_API} a_response.api.module_api ({CMS_TAXONOMY_MODULE}) as l_taxonomy_api then
+				if
+					a_page /= Void and then
+					attached wdocs_api.wiki_page_uuid (a_page, a_manager.version_id) as l_uuid
+				then
+					create {CMS_WDOCS_CONTENT} c.make (a_page, l_uuid)
+				end
+				l_taxonomy_api.populate_edit_form (a_response, a_form, {CMS_WDOCS_CONTENT_TYPE}.name, c)
+			end
 		end
 
 	safe_utf_8_string (s: detachable READABLE_STRING_GENERAL): detachable STRING

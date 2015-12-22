@@ -10,7 +10,7 @@ class
 inherit
 	CMS_MODULE
 		redefine
-			register_hooks,
+			setup_hooks,
 			initialize,
 			install
 		end
@@ -85,10 +85,10 @@ feature -- Access: router
 
 feature -- Hooks
 
-	register_hooks (a_response: CMS_RESPONSE)
+	setup_hooks (a_hooks: CMS_HOOK_CORE_MANAGER)
 		do
-			a_response.hooks.subscribe_to_menu_system_alter_hook (Current)
-			a_response.hooks.subscribe_to_block_hook (Current)
+			a_hooks.subscribe_to_menu_system_alter_hook (Current)
+			a_hooks.subscribe_to_block_hook (Current)
 		end
 
 	block_list: ITERABLE [like {CMS_BLOCK}.name]
@@ -151,7 +151,7 @@ feature -- Mapping helper: uri template
 
 feature -- Mapping helper: uri template agent
 
-	map_uri_template_agent (a_router: WSF_ROUTER; a_tpl: READABLE_STRING_8; proc: PROCEDURE [ANY, TUPLE [req: WSF_REQUEST; res: WSF_RESPONSE]]; rqst_methods: detachable WSF_REQUEST_METHODS)
+	map_uri_template_agent (a_router: WSF_ROUTER; a_tpl: READABLE_STRING_8; proc: PROCEDURE [TUPLE [req: WSF_REQUEST; res: WSF_RESPONSE]]; rqst_methods: detachable WSF_REQUEST_METHODS)
 			-- Map `proc' as handler for `a_tpl' for request methods `rqst_methods'.
 		require
 			a_tpl_attached: a_tpl /= Void

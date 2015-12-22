@@ -81,10 +81,6 @@ RT_DECLARE_VECTOR_SIZE_FUNCTIONS (private_queue_list_t, struct rt_private_queue*
 RT_DECLARE_VECTOR_ARRAY_FUNCTIONS (private_queue_list_t, struct rt_private_queue*)
 RT_DECLARE_VECTOR_STACK_FUNCTIONS (private_queue_list_t, struct rt_private_queue*)
 
-/* Forward declaration. */
-rt_private void rt_processor_publish_wait_condition (struct rt_processor* self);
-
-
 /*
 doc:	<routine name="rt_processor_create" return_type="int" export="shared">
 doc:		<summary> Create a new processor with ID 'a_pid'. Note: This only creates the processor object and does not spawn a new thread. </summary>
@@ -118,7 +114,6 @@ rt_shared int rt_processor_create (EIF_SCP_PID a_pid, EIF_BOOLEAN is_root_proces
 		self->is_active = EIF_TRUE;
 		self->is_dirty = EIF_FALSE;
 		self->is_impersonation_allowed = EIF_TRUE;
-		rt_message_init (&self->current_msg);
 		self->result_notify_proxy = &self->result_notify;
 			/* Only the root processor's creation procedure is initially "logged". */
 		self->is_creation_procedure_logged = is_root_processor;
@@ -271,11 +266,6 @@ rt_shared void rt_processor_mark (struct rt_processor* self, MARKER marking)
 	REQUIRE ("self_not_null", self);
 	REQUIRE ("marking_not_null", marking);
 
-		/* Also mark the call that may be executed right now. */
-	if (self->current_msg.call) {
-		rt_mark_call_data (marking, self->current_msg.call);
-	}
-
 		/* Mark all private queues in generated_private_queues */
 	l_count = private_queue_list_t_count (&self->generated_private_queues);
 
@@ -290,12 +280,12 @@ doc:	<routine name="rt_processor_execute_call" return_type="void" export="shared
 doc:		<summary> Execute the call 'call' coming from processor 'client'. </summary>
 doc:		<param name="self" type="struct rt_processor*"> The processor that executes the call. Must not be NULL. </param>
 doc:		<param name="client" type="struct rt_processor*"> The processor that sent the request. Must not be NULL. </param>
-doc:		<param name="call" type="struct call_data*"> The call to be executed. Must not be NULL. </param>
+doc:		<param name="call" type="struct eif_scoop_call_data*"> The call to be executed. Must not be NULL. </param>
 doc:		<thread_safety> Not safe. </thread_safety>
-doc:		<synchronization> Only execute this feature on the thread behind processor 'self'. </synchronization>
+doc:		<synchronization> Only execute this feature on the thread that owns 'self'. </synchronization>
 doc:	</routine>
 */
-rt_shared void rt_processor_execute_call (struct rt_processor* self, struct rt_processor* client, struct call_data* call)
+rt_shared void rt_processor_execute_call (struct rt_processor* self, struct rt_processor* client, struct eif_scoop_call_data* call)
 {
 	EIF_BOOLEAN l_is_synchronous;
 	EIF_BOOLEAN is_successful;
@@ -321,7 +311,7 @@ rt_shared void rt_processor_execute_call (struct rt_processor* self, struct rt_p
 		} else {
 
 				/* Execute the call. */
-			is_successful = rt_scoop_try_call (call);
+			is_successful = rt_try_execute_scoop_call (call);
 
 				/* Mark the current region as dirty if the call fails. */
 			if (!is_successful) {
@@ -348,7 +338,7 @@ rt_shared void rt_processor_execute_call (struct rt_processor* self, struct rt_p
 		}
 	}
 
-		/* Free the call data struct, as it's not needed any more. */
+		/* Free the object containing the separate call, as it's not needed any more. */
 	free (call);
 }
 
@@ -358,28 +348,27 @@ doc:		<summary> Execute all calls in the private queue 'queue' until an unlock m
 doc:		<param name="self" type="struct rt_processor*"> The processor object. Must not be NULL. </param>
 doc:		<param name="queue" type="struct rt_private_queue*"> The private queue to be worked on. Must not be NULL. </param>
 doc:		<thread_safety> Not safe. </thread_safety>
-doc:		<synchronization> Only execute this feature on the thread behind processor 'self'. </synchronization>
+doc:		<synchronization> Only execute this feature on the thread that owns 'self'. </synchronization>
 doc:	</routine>
 */
 rt_private void rt_processor_process_private_queue (struct rt_processor* self, struct rt_private_queue *queue)
 {
 	EIF_BOOLEAN is_stopped = EIF_FALSE;
-	struct rt_message* l_message = NULL;
+	struct rt_message l_message;
 
 	REQUIRE ("self_not_null", self);
 	REQUIRE ("queue_not_null", queue);
 
-	l_message = &self->current_msg;
-
 	while (!is_stopped) {
 
-			/* Receive a new call and store it in self->current_msg.
+			/* Receive a new call and store it in l_message.
 			* This is a blocking call if no data is available.
 			* The call might be logged by the original client of the queue
 			* or some other processor that has acquired the locks during lock passing. */
-		rt_message_channel_receive (&queue->channel, l_message);
+		rt_message_init (&l_message);
+		rt_message_channel_receive (&queue->channel, &l_message);
 
-		switch (l_message->message_type) {
+		switch (l_message.message_type) {
 			case SCOOP_MESSAGE_UNLOCK:
 				rt_processor_publish_wait_condition (self);
 					/* Fallthrough intended. */
@@ -387,25 +376,17 @@ rt_private void rt_processor_process_private_queue (struct rt_processor* self, s
 				self->is_dirty = EIF_FALSE;
 				is_stopped = EIF_TRUE;
 				break;
-			case SCOOP_MESSAGE_SYNC:
-					/* We're a passive processor that got a lock request. */
-				CHECK ("is_passive", self->is_passive_region);
-				rt_message_channel_send (l_message->sender_processor->result_notify_proxy, SCOOP_MESSAGE_RESULT_READY, NULL, NULL, NULL);
-				break;
 			case SCOOP_MESSAGE_EXECUTE:
-				rt_processor_execute_call (self, l_message->sender_processor, l_message->call);
+				rt_processor_execute_call (self, l_message.sender_processor, l_message.call);
 				break;
 			default:
 				CHECK ("valid_message", EIF_FALSE);
 		}
-
-			/* Make sure the call doesn't get traversed again for GC */
-		rt_message_init (l_message);
 	}
 }
 
 /*
-doc:	<routine name="rt_processor_publish_wait_condition" return_type="void" export="private">
+doc:	<routine name="rt_processor_publish_wait_condition" return_type="void" export="shared">
 doc:		<summary> Notify all processors in the 'self->wait_condition_subscribers' vector that a wait condition has changed. </summary>
 doc:		<param name="self" type="struct rt_processor*"> The processor with the subscribers list. Must not be NULL. </param>
 doc:		<thread_safety> Not safe. </thread_safety>
@@ -413,7 +394,7 @@ doc:		<synchronization> The feature rt_processor_subscribe_wait_condition must o
 doc:			This ensures that rt_publish_wait_condition cannot be executed at the same time. </synchronization>
 doc:	</routine>
 */
-rt_private void rt_processor_publish_wait_condition (struct rt_processor* self)
+rt_shared void rt_processor_publish_wait_condition (struct rt_processor* self)
 {
 	struct subscriber_list_t* subscribers = NULL;
 
@@ -442,9 +423,9 @@ rt_private void rt_processor_publish_wait_condition (struct rt_processor* self)
 /*
 doc:	<routine name="rt_processor_application_loop" return_type="void" export="shared">
 doc:		<summary> The main loop of a SCOOP processor.
-doc:			Normally this will be called when the thread spawns but here we expose it
-doc:			so that it may be called externally for the root thread (whose thread is
-doc:			the main thread of the program, and thus already exists). </summary>
+doc:			This is the entry point for every processor and will be the called by
+doc:			rt_processor_registry.c:spawn_main(). The root thread of the application will also
+doc:			enter this loop after execution of the root feature. </summary>
 doc:		<param name="self" type="struct rt_processor*"> The processor object. Must not be NULL. </param>
 doc:		<thread_safety> Not safe. </thread_safety>
 doc:		<synchronization> Only execute this feature on the thread behind processor 'self'. </synchronization>
@@ -461,11 +442,15 @@ rt_shared void rt_processor_application_loop (struct rt_processor* self)
 	while (!is_stopped) {
 		struct rt_message next_job;
 
-			/* Triggering the collection happens when all */
-			/* processors are idle. This is sufficient for */
-			/* program termination, but not sufficient for */
-			/* freeing threads to let new ones take their */
-			/* place. */
+			/* When all processors are idle, trigger a
+			 * garbage collection cycle. This is sufficient for
+			 * program termination, but it isn't useful to free
+			 * processors early, before RT_MAX_SCOOP_PROCESSOR_COUNT
+			 * has been reached.
+			 * TODO: Since the introduction of the early GC technique,
+			 * the mechanism here has become obsolete and can be
+			 * removed.
+			 */
 		if (decrement_and_fetch_active_processor_count() == 0
 			&& rt_message_channel_is_empty (&self->queue_of_queues)) {
 			plsc();
@@ -476,7 +461,14 @@ rt_shared void rt_processor_application_loop (struct rt_processor* self)
 		if (next_job.message_type == SCOOP_MESSAGE_ADD_QUEUE) {
 			increment_active_processor_count();
 			self->is_active = EIF_TRUE;
-			self->client = next_job.sender_processor->pid; /* TODO: This is the only place where we would need the client region ID instead of the processor ID. */
+				/* TODO: The information (self->client) is not used by SCOOP itself,
+				 * but may be used in the debugger. The idea is to display current
+				 * client region of a processor.
+				 * However, here we use the client processor instead, because we
+				 * don't have the information about the region available. In the future
+				 * it may be useful to add a new field to rt_message or in the private
+				 * queue that shows the current client. */
+			self->client = next_job.sender_processor->pid;
 
 			rt_processor_process_private_queue (self, next_job.queue);
 
@@ -555,7 +547,7 @@ int rt_processor_new_private_queue (struct rt_processor* self, struct rt_private
 
 /*
 doc:	<routine name="rt_processor_subscribe_wait_condition" return_type="int" export="shared">
-doc:		<summary> Register for a notification when the heap protected by processor 'self' may have changed.
+doc:		<summary> Register for a notification when the memory region handled by processor 'self' may have changed.
 doc:			This is used to implement wait condition change signalling.
 doc:			The registration is only valid for a single notification and will be deleted by 'self' afterwards.
 doc:			Note: This feature is executed by the 'client' processor (i.e. thread), and can only be called when the

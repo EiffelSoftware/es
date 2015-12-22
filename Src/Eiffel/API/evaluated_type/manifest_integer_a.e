@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Actual type for integer constant types."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -67,40 +67,19 @@ feature {COMPILER_EXPORTER} -- Implementation
 	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN
 			-- Does current convert to `a_target_type' in `a_context_class'?
 			-- Update `last_conversion_info' of AST_CONTEXT.
-		local
-			l_int: INTEGER_A
-			l_nat: NATURAL_A
-			l_info: CONVERSION_INFO
-			l_feat: FEATURE_I
 		do
-			if a_target_type.is_integer then
-				l_int ?= a_target_type
+			if attached {INTEGER_A} a_target_type as l_int then
 				if (integer_types & integer_mask (l_int.size)) /= 0 then
-					l_feat := base_class.feature_table.
-						item ("to_integer_" + l_int.size.out)
-						-- We protect ourself in case the `to_integer_xx' routines
-						-- would have been removed from the INTEGER_XX classes
-					if l_feat /= Void then
-						create {FEATURE_CONVERSION_INFO} l_info.make_to (Current, l_int, base_class, l_feat)
-						Result := True
-					end
+					context.set_last_conversion_info (create {NULL_CONVERSION_INFO}.make (l_int))
+					Result := True
 				end
-				context.set_last_conversion_info (l_info)
-			elseif a_target_type.is_natural then
-				l_nat ?= a_target_type
+			elseif attached {NATURAL_A} a_target_type as l_nat then
 				if (integer_types & natural_mask (l_nat.size)) /= 0 then
-					l_feat := base_class.feature_table.
-						item ("to_natural_" + l_nat.size.out)
-						-- We protect ourself in case the `to_natural_xx' routines
-						-- would have been removed from the INTEGER_XX classes
-					if l_feat /= Void then
-						create {FEATURE_CONVERSION_INFO} l_info.make_to (Current, l_nat, base_class, l_feat)
-						Result := True
-					end
+					context.set_last_conversion_info (create {NULL_CONVERSION_INFO}.make (l_nat))
+					Result := True
 				end
-				context.set_last_conversion_info (l_info)
 			else
-				Result := Precursor {INTEGER_A} (a_context_class, a_target_type)
+				Result := Precursor (a_context_class, a_target_type)
 			end
 		end
 
@@ -119,7 +98,7 @@ invariant
 		).bit_not = 0
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -132,22 +111,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -48,10 +48,14 @@ feature -- Access, stored in configuration file
 	description: detachable STRING_32
 			-- A description about the rules.
 
+	error: detachable STRING_32
+			-- An error message (if any) set by `add_exclude', `add_include', `del_exclude', `del_include'.
+
 feature {CONF_ACCESS} -- Update, stored in configuration file
 
 	add_exclude (a_pattern: STRING_32)
 			-- Add an exclude pattern.
+			-- Set `error' if combined exclude or include patterns cannot be compiled.
 		require
 			a_pattern_ok: valid_regexp (a_pattern)
 		local
@@ -68,6 +72,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 
 	add_include (a_pattern: STRING_32)
 			-- Add an include pattern.
+			-- Set `error' if combined exclude or include patterns cannot be compiled.
 		require
 			a_pattern_ok: valid_regexp (a_pattern)
 		local
@@ -84,6 +89,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 
 	del_exclude (a_pattern: STRING_32)
 			-- Delete an exclude pattern.
+			-- Set `error' if combined exclude or include patterns cannot be compiled.
 		require
 			a_pattern_ok: attached exclude as l_exclude and then l_exclude.has (a_pattern)
 		do
@@ -100,6 +106,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 
 	del_include (a_pattern: STRING_32)
 			-- Delete an include pattern.
+			-- Set `error' if combined exclude or include patterns cannot be compiled.
 		require
 			a_pattern_ok: attached include as l_include and then l_include.has (a_pattern)
 		do
@@ -126,8 +133,7 @@ feature {CONF_ACCESS} -- Merging
 
 	merge (other: like Current)
 			-- Merge with other.
-		require
-			other_valid: other.valid_excludes and other.valid_includes
+			-- Set `error' if combined exclude or include patterns cannot be compiled.
 		do
 			if attached other as l_other then
 				if attached l_other.exclude as l_other_exclude then
@@ -145,10 +151,7 @@ feature {CONF_ACCESS} -- Merging
 						include := l_other_include.twin
 					end
 				end
-
 				compile
---				exclude_regexp.merge (other.exclude_regexp)
---				include_regexp.merge (other.include_regexp)
 			end
 		end
 
@@ -170,14 +173,11 @@ feature -- Basic operation
 			a_path_not_void: a_path /= Void
 			a_sub_path_not_void: a_sub_path /= Void
 		local
-			l_exclude_regexp: like exclude_regexp
-			l_include_regexp: like include_regexp
 			u: UTF_CONVERTER
 			l_loc: STRING_8
 		do
 			Result := True
-			l_exclude_regexp := exclude_regexp
-			if l_exclude_regexp /= Void then
+			if attached exclude_regexp as l_exclude_regexp then
 					-- Our regular expressions in ECFs always contain the cluster separator /
 					-- so we need to include it.
 				if a_path.is_empty then
@@ -189,12 +189,17 @@ feature -- Basic operation
 				end
 				l_loc.append_character ('/')
 				u.utf_32_string_into_utf_8_string_8 (a_sub_path, l_loc)
+				check
+					compiled_exclude_regexp: l_exclude_regexp.is_compiled
+				end
 				l_exclude_regexp.match (l_loc)
 				if l_exclude_regexp.has_matched then
 					Result := False
-					l_include_regexp := include_regexp
-					if l_include_regexp /= Void then
+					if attached include_regexp as l_include_regexp then
 							-- it's excluded, check if there is an include that matches
+						check
+							compiled_include_regexp: l_include_regexp.is_compiled
+						end
 						l_include_regexp.match (l_loc)
 						Result := l_include_regexp.has_matched
 					end
@@ -202,22 +207,66 @@ feature -- Basic operation
 			end
 		end
 
+feature -- Ordered representation inclusion and exclusion lists
+
+	ordered_exclude: detachable ARRAYED_LIST [STRING_32]
+			-- Sorted items of `exclude'.
+		do
+			if attached exclude as x then
+				Result := x.linear_representation
+				sorter.sort (Result)
+			end
+		ensure
+			attached_result: attached exclude implies attached Result
+		end
+
+	ordered_include: detachable ARRAYED_LIST [STRING_32]
+			-- Sorted items of `include'.
+		do
+			if attached include as x then
+				Result := x.linear_representation
+				sorter.sort (Result)
+			end
+		ensure
+			attached_result: attached include implies attached Result
+		end
+
 feature {NONE} -- Implementation
 
 	compile
 			-- (Re)compile the regexp patterns.
+		require
+			valid_exclude: attached exclude as xs implies across xs as x all valid_regexp (x.item) end
+			valid_include: attached include as xs implies across xs as x all valid_regexp (x.item) end
+		local
+			e: like error
 		do
 			exclude_regexp := compile_list (exclude)
+			e := error
 			include_regexp := compile_list (include)
+			if attached e then
+					-- Report an error discovered earlier.
+				error := e
+			end
+		ensure
+			attached_exclude_regexp: attached exclude as x and then not x.is_empty and not attached error implies attached exclude_regexp
+			attached_include_regexp:  attached include as x and then not x.is_empty and not attached error implies attached include_regexp
+			compiled_exclude_regexp: attached exclude_regexp as r implies r.is_compiled
+			compiled_include_regexp: attached include_regexp as r implies r.is_compiled
+			attached_error_for_exclude: attached exclude as x and then not x.is_empty and not attached exclude_regexp implies attached error
+			attached_error_for_include: attached include as x and then not x.is_empty and not attached include_regexp implies attached error
 		end
 
 	compile_list (a_list: like include): detachable REGULAR_EXPRESSION
 			-- Compile `a_list' into a regular expression.
+		require
+			valid_a_list: attached a_list as xs implies across xs as x all valid_regexp (x.item) end
 		local
 			l_regexp_str: STRING
 			l_left_paren, l_right_paren_and_bar: STRING
 			u: UTF_CONVERTER
 		do
+			error := Void
 			if a_list /= Void and then not a_list.is_empty then
 				debug ("fixme")
 					(create {REFACTORING_HELPER}).fixme ("Support regular expressions with Unicode.")
@@ -241,11 +290,17 @@ feature {NONE} -- Implementation
 				create Result
 				Result.set_caseless ({PLATFORM}.is_windows)
 				Result.compile (l_regexp_str)
-				check
-					correct_regexp: Result.is_compiled
+				if Result.is_compiled then
+					Result.optimize
+				else
+					error := Result.error_message
+					Result := Void
 				end
-				Result.optimize
 			end
+		ensure
+			attached_result: attached a_list and then not a_list.is_empty and not attached error implies attached Result
+			compiled_result: attached Result implies Result.is_compiled
+			attached_error: attached a_list and then not a_list.is_empty and not attached Result implies attached error
 		end
 
 feature {CONF_FILE_RULE} -- Implementation, merging
@@ -284,12 +339,19 @@ feature -- Contracts
 			end
 		end
 
+feature {NONE} -- Sorting
+
+	sorter: QUICK_SORTER [READABLE_STRING_GENERAL]
+		once
+			create Result.make (create {STRING_COMPARATOR}.make)
+		end
+
 invariant
-	exclude_patterns_valid: valid_excludes
-	include_patterns_valid: valid_includes
+			compiled_exclude_regexp: attached exclude_regexp as r implies r.is_compiled
+			compiled_include_regexp: attached include_regexp as r implies r.is_compiled
 
 note
-	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
