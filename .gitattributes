@@ -4005,6 +4005,7 @@ Src/tools/iron/delivery/resources/node/html/bootstrap/js/bootstrap.js -text
 Src/tools/iron/delivery/resources/node/html/bootstrap/js/bootstrap.min.js -text
 Src/tools/iron/delivery/resources/node/html/iron.js -text
 Src/tools/iron/delivery/resources/node/html/style.css -text
+Src/tools/iron/delivery/resources/node/html/style.scss -text
 Src/tools/iron/delivery/resources/node/template/html/package-version-list-item.tpl -text
 Src/tools/iron/delivery/resources/node/template/html/package-version-view.tpl -text
 Src/tools/iron/delivery/resources/node/template/html/page.tpl -text
