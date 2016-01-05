@@ -5289,6 +5289,8 @@ Src/web/eiffel-org/modules/task_list/site/files/scss/variables.scss -text
 Src/web/eiffel-org/modules/task_list/site/files/scss/wish_list.scss -text
 Src/web/eiffel-org/modules/task_list/site/scripts/initialize_task_list.sql -text
 Src/web/eiffel-org/modules/task_list/site/scripts/task_list.sql -text
+Src/web/eiffel-org/modules/wdocs/site/files/css/wdocs.css -text
+Src/web/eiffel-org/modules/wdocs/site/files/scss/wdocs.scss -text
 Src/web/eiffel-org/modules/wdocs/site/wdocs.ini -text
 Src/web/eiffel-org/modules/wdocs/wdocs-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/wdocs/wdocs.ecf svneol=native#text/xml
@@ -5381,6 +5383,8 @@ Src/web/eiffel-org/site/modules/taxonomy/files/css/taxonomy.css -text
 Src/web/eiffel-org/site/modules/taxonomy/files/scss/taxonomy.scss -text
 Src/web/eiffel-org/site/modules/taxonomy/scripts/install.sql -text
 Src/web/eiffel-org/site/modules/taxonomy/scripts/uninstall.sql -text
+Src/web/eiffel-org/site/modules/wdocs/files/css/wdocs.css -text
+Src/web/eiffel-org/site/modules/wdocs/files/scss/wdocs.scss -text
 Src/web/eiffel-org/site/modules/wdocs/wdocs.ini -text
 Src/web/eiffel-org/site/modules/wish_list/files/css/wish_list.css -text
 Src/web/eiffel-org/site/modules/wish_list/files/favicon.ico -text
