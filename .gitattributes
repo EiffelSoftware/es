@@ -5327,7 +5327,6 @@ Src/web/eiffel-org/modules/wish_list/site/files/scss/wish_list.scss -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/alter_table.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/initialize_wish_list.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/wish_list.sql -text
-Src/web/eiffel-org/site/bin/roc_sendmail -text
 Src/web/eiffel-org/site/config/app.ini -text
 Src/web/eiffel-org/site/config/cms.ini -text
 Src/web/eiffel-org/site/config/eiffel_community_app.json -text
