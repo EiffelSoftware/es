@@ -5950,6 +5950,7 @@ eweasel/tests/codeanalysis017/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis017/notes -text
 eweasel/tests/codeanalysis018/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis018/notes -text
+eweasel/tests/codeanalysis019/Ace svneol=native#text/xml
 eweasel/tests/config036/Ace svneol=native#text/xml
 eweasel/tests/config036/eweasel.ecf svneol=native#text/xml
 eweasel/tests/config038/Ace svneol=native#text/xml
