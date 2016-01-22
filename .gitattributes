@@ -5364,6 +5364,8 @@ Src/web/eiffel-org/site/modules/auth/mail_templates/admin_account_evaluation.htm
 Src/web/eiffel-org/site/modules/blog/files/css/blog.css -text
 Src/web/eiffel-org/site/modules/blog/files/scss/blog.scss -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
+Src/web/eiffel-org/site/modules/contact/files/css/contact.css -text
+Src/web/eiffel-org/site/modules/contact/files/scss/contact.scss -text
 Src/web/eiffel-org/site/modules/eiffel_download/downloads_configuration.json -text
 Src/web/eiffel-org/site/modules/feed_aggregator/config/feeds.json.example -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/css/feed_aggregator.css -text
@@ -5563,7 +5565,6 @@ Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/base/base-reset.css -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/base/base-reset.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/markup-mixins.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/codeboard.scss -text
-Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/contact.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/custom.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/docs.scss -text
 Src/web/eiffel-org/site/themes/eiffel-org/assets/scss/site/download_product.scss -text
