@@ -1757,6 +1757,7 @@ Src/Delivery/studio/config/windows/msc/appl.ico -text
 Src/Delivery/studio/eifinit/code_analysis.xml -text
 Src/Delivery/studio/eifinit/libraries.cfg -text
 Src/Delivery/studio/eifinit/precompiles.cfg -text
+Src/Delivery/studio/help/defaults/default-scoop.ecf svneol=native#text/xml
 Src/Delivery/studio/help/errors/short/V1SE -text
 Src/Delivery/studio/lang/mo_files/de_DE.mo -text
 Src/Delivery/studio/lang/mo_files/en_US.mo -text
