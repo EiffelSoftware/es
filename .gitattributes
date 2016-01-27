@@ -5364,6 +5364,7 @@ Src/web/eiffel-org/site/modules/auth/mail_templates/account_welcome.html svneol=
 Src/web/eiffel-org/site/modules/auth/mail_templates/admin_account_evaluation.html svneol=native#text/xml
 Src/web/eiffel-org/site/modules/blog/files/css/blog.css -text
 Src/web/eiffel-org/site/modules/blog/files/scss/blog.scss -text
+Src/web/eiffel-org/site/modules/blog/scripts/install.sql -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
 Src/web/eiffel-org/site/modules/contact/files/css/contact.css -text
 Src/web/eiffel-org/site/modules/contact/files/scss/contact.scss -text
@@ -5380,7 +5381,7 @@ Src/web/eiffel-org/site/modules/oauth20/scripts/oauth2_consumers_initialize.sql 
 Src/web/eiffel-org/site/modules/openid/scripts/openid_consumers.sql -text
 Src/web/eiffel-org/site/modules/openid/scripts/openid_consumers_initialize.sql -text
 Src/web/eiffel-org/site/modules/openid/scripts/openid_items.sql -text
-Src/web/eiffel-org/site/modules/session_auth/scripts/session_auth_table.sql -text
+Src/web/eiffel-org/site/modules/session_auth/scripts/install.sql -text
 Src/web/eiffel-org/site/modules/task_list/files/css/wish_list.css -text
 Src/web/eiffel-org/site/modules/task_list/files/favicon.ico -text
 Src/web/eiffel-org/site/modules/task_list/files/images/ajax-loader.gif -text
