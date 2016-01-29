@@ -7127,6 +7127,7 @@ eweasel/tests/valid282/Ace svneol=native#text/xml
 eweasel/tests/valid283/Ace svneol=native#text/xml
 eweasel/tests/valid284/Ace svneol=native#text/xml
 eweasel/tests/valid285/Ace svneol=native#text/xml
+eweasel/tests/valid288/Ace svneol=native#text/xml
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text
