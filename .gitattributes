@@ -5377,7 +5377,6 @@ Src/web/eiffel-org/site/config/modules/feed_aggregator/feeds.json -text
 Src/web/eiffel-org/site/config/modules/wdocs/wdocs.ini -text
 Src/web/eiffel-org/site/modules/admin/files/css/admin.css -text
 Src/web/eiffel-org/site/modules/admin/files/scss/admin.scss -text
-Src/web/eiffel-org/site/modules/auth/auth.json -text
 Src/web/eiffel-org/site/modules/auth/config/auth.json -text
 Src/web/eiffel-org/site/modules/auth/files/css/auth.css -text
 Src/web/eiffel-org/site/modules/auth/files/scss/auth.scss -text
