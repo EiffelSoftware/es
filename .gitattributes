@@ -6270,6 +6270,7 @@ eweasel/tests/final033/notes -text
 eweasel/tests/final099/Ace -text
 eweasel/tests/final121/Ace svneol=native#text/xml
 eweasel/tests/final122/Ace svneol=native#text/xml
+eweasel/tests/final123/Ace svneol=native#text/xml
 eweasel/tests/fixed001/notes -text
 eweasel/tests/fixed003/notes -text
 eweasel/tests/fixed004/notes -text
