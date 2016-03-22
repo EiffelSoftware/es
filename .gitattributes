@@ -4051,6 +4051,11 @@ Src/tools/iron/testing/cases/test02.ecf-test -text
 Src/tools/iron/testing/cases/test03.ecf-test -text
 Src/tools/iron/testing/cases/test04.ecf-test -text
 Src/tools/iron/testing/cases/test_unicode.ecf-test -text
+Src/tools/library_index/lib/package_database/package_database-safe.ecf svneol=native#text/xml
+Src/tools/library_index/lib/package_visitor/package_visitor-safe.ecf svneol=native#text/xml
+Src/tools/library_index/library_indexer-safe.ecf svneol=native#text/xml
+Src/tools/library_visitor/library_visitor-safe.ecf svneol=native#text/xml
+Src/tools/library_visitor/library_visitor.ecf svneol=native#text/xml
 Src/tools/metaconfig/README.txt -text
 Src/tools/objc2eif/documentation/Documentation[!!-~]Source/Cover[!!-~]Page[!!-~]Source/Cover[!!-~]Page.pages -text
 Src/tools/objc2eif/documentation/Documentation[!!-~]Source/Cover[!!-~]Page[!!-~]Source/Cover[!!-~]Page.pdf -text
