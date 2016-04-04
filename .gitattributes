@@ -5393,6 +5393,7 @@ Src/web/eiffel-org/site/config/cms.ini -text
 Src/web/eiffel-org/site/config/eiffel_community_app.json -text
 Src/web/eiffel-org/site/config/eiffel_org.json -text
 Src/web/eiffel-org/site/config/modules/feed_aggregator/feeds.json -text
+Src/web/eiffel-org/site/config/modules/wdocs/eis.ini -text
 Src/web/eiffel-org/site/config/modules/wdocs/wdocs.ini -text
 Src/web/eiffel-org/site/modules/admin/files/css/admin.css -text
 Src/web/eiffel-org/site/modules/admin/files/scss/admin.scss -text
