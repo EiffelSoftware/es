@@ -5923,6 +5923,7 @@ eweasel/tests/attach103/Ace svneol=native#text/xml
 eweasel/tests/attach113/Ace svneol=native#text/xml
 eweasel/tests/attach116/Ace svneol=native#text/xml
 eweasel/tests/attach117/Ace svneol=native#text/xml
+eweasel/tests/attach118/Ace svneol=native#text/xml
 eweasel/tests/bench008/Makefile -text
 eweasel/tests/bench008/main.gold -text
 eweasel/tests/bench008/test.in -text
