@@ -1928,6 +1928,7 @@ Src/Delivery/studio/wizards/new_projects/vision2/pixmaps/wizard.png -text
 Src/Delivery/studio/wizards/new_projects/vision2/resources/new.png -text
 Src/Delivery/studio/wizards/new_projects/vision2/resources/open.png -text
 Src/Delivery/studio/wizards/new_projects/vision2/resources/save.png -text
+Src/Delivery/studio/wizards/new_projects/vision2/resources/template_config-scoop.ecf svneol=native#text/xml
 Src/Delivery/studio/wizards/new_projects/wel/pixmaps/dialog_application.png -text
 Src/Delivery/studio/wizards/new_projects/wel/pixmaps/eiffel_wizard.png -text
 Src/Delivery/studio/wizards/new_projects/wel/pixmaps/eiffel_wizard_icon.png -text
