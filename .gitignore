@@ -183,8 +183,6 @@ Src/C_library/zlib/minigzip_d.exe
 Src/C_library/zlib/zdll.exp
 Src/C_library/zlib/zlib1.dll
 Src/C_library/zlib/zlib1.res
-Src/Delivery/scripts/windows/install/bin
-Src/Delivery/scripts/windows/install/binaries
 Src/Delivery/scripts/windows/install/redist/bin
 Src/Delivery/scripts/windows/install/redist/obj
 Src/Delivery/studio/wizards/new_projects/dotnet/spec
