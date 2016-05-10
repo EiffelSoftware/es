@@ -3149,6 +3149,14 @@ Src/examples/zeromq/weather/client/client.ecf svneol=native#text/xml
 Src/examples/zeromq/weather/server/server.ecf svneol=native#text/xml
 Src/experimental/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/experimental/library/api_wrapper/implementation/unix/Clib/dl-config -text
+Src/experimental/library/base/elks/structures/cursors/array_iteration_cursor.e svneol=native#text/plain
+Src/experimental/library/base/elks/structures/cursors/arrayed_list_iteration_cursor.e svneol=native#text/plain
+Src/experimental/library/base/elks/structures/cursors/general_special_iteration_cursor.e svneol=native#text/plain
+Src/experimental/library/base/elks/structures/cursors/readable_indexable_iteration_cursor.e svneol=native#text/plain
+Src/experimental/library/base/elks/structures/cursors/special_iteration_cursor.e svneol=native#text/plain
+Src/experimental/library/base/elks/structures/cursors/string_32_iteration_cursor.e svneol=native#text/plain
+Src/experimental/library/base/elks/structures/cursors/string_8_iteration_cursor.e svneol=native#text/plain
+Src/experimental/library/base/elks/structures/cursors/typed_indexable_iteration_cursor.e svneol=native#text/plain
 Src/experimental/library/base/test/license.lic -text
 Src/experimental/library/base/testing/license.lic -text
 Src/experimental/library/editor/bitmaps/copy_selection.png -text
@@ -3168,6 +3176,11 @@ Src/experimental/library/gobo/gobo_string-safe.ecf svneol=native#text/xml
 Src/experimental/library/gobo/gobo_structure-safe.ecf svneol=native#text/xml
 Src/experimental/library/gobo/gobo_time-safe.ecf svneol=native#text/xml
 Src/experimental/library/gobo/gobo_utility-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_xml-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_xpath-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_xpath.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_xslt-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_xslt.ecf svneol=native#text/xml
 Src/experimental/library/i18n/README -text
 Src/experimental/library/i18n/TODO -text
 Src/experimental/library/i18n/doc/css/commonPrint.css -text
@@ -3439,6 +3452,7 @@ Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.docx -text
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.pdf -text svneol=unset#application/pdf
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.vsd -text
 Src/experimental/library/store/all_store.ecf svneol=native#text/xml
+Src/experimental/library/store/dbms/rdbms/mysql/Clib/build.eant svneol=native#text/xml
 Src/experimental/library/store/test/test_results/oracle_results -text
 Src/experimental/library/text/parser/xml/parser/callbacks/README.TXT -text
 Src/experimental/library/text/parser/xml/tree/README.TXT -text
