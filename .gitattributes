@@ -1778,6 +1778,7 @@ Src/Delivery/studio/spec/win64/bin/ssleay32.dll -text
 Src/Delivery/studio/spec/windows/bin/libcurl.dll -text
 Src/Delivery/studio/spec/windows/bin/libeay32.dll -text
 Src/Delivery/studio/spec/windows/bin/ssleay32.dll -text
+Src/Delivery/studio/templates/code_template-1.0.rnc svneol=native#text/plain
 Src/Delivery/studio/templates/defaults/empty.e.tpl -text
 Src/Delivery/studio/templates/defaults/full.e.tpl -text
 Src/Delivery/studio/templates/defaults/test.e.tpl -text
@@ -1809,7 +1810,6 @@ Src/Delivery/studio/templates/design_by_contract/not_is_empty.code -text
 Src/Delivery/studio/templates/design_by_contract/not_is_negative.code -text
 Src/Delivery/studio/templates/design_by_contract/not_is_null_pointer.code -text
 Src/Delivery/studio/templates/design_by_contract/not_is_positive.code -text
-Src/Delivery/studio/templates/design_by_contract/template-1.0.rnc svneol=native#text/plain
 Src/Delivery/studio/templates/design_by_contract/unchanged.code -text
 Src/Delivery/studio/templates/design_by_contract/value_big_enough.code -text
 Src/Delivery/studio/templates/design_by_contract/value_small_enough.code -text
