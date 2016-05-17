@@ -1765,11 +1765,13 @@ Src/Delivery/studio/help/defaults/default-scoop.ecf svneol=native#text/xml
 Src/Delivery/studio/help/errors/short/V1SE -text
 Src/Delivery/studio/lang/mo_files/de_DE.mo -text
 Src/Delivery/studio/lang/mo_files/en_US.mo -text
+Src/Delivery/studio/lang/mo_files/es_ES.mo -text
 Src/Delivery/studio/lang/mo_files/fr_FR.mo -text
 Src/Delivery/studio/lang/mo_files/ru_RU.mo -text
 Src/Delivery/studio/lang/mo_files/zh_CN.mo -text
 Src/Delivery/studio/lang/po_files/de_DE.po -text
 Src/Delivery/studio/lang/po_files/en_US.po -text
+Src/Delivery/studio/lang/po_files/es_ES.po svneol=native#text/plain%3B+charset%3Dutf-8
 Src/Delivery/studio/lang/po_files/ru_RU.po svneol=LF#text/plain%3B+charset%3Dutf-8 eol=lf
 Src/Delivery/studio/lang/po_files/zh_CN.po -text
 Src/Delivery/studio/spec/win64/bin/libcurl.dll -text
