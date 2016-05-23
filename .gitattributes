@@ -4320,6 +4320,7 @@ Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/library/base2/todo -text
 Src/unstable/library/compression/bzip2/Readme.txt -text
+Src/unstable/library/compression/bzip2/bzip2-safe.ecf svneol=native#text/xml
 Src/unstable/library/compression/zlib/Readme.txt -text
 Src/unstable/library/compression/zlib/example/basic_functions/file_to_compress.txt -text
 Src/unstable/library/compression/zlib/example/compress/index.html -text
