@@ -4214,12 +4214,6 @@ Src/tools/iron/delivery/resources/node/html/style.scss -text
 Src/tools/iron/delivery/resources/node/template/html/package-version-list-item.tpl -text
 Src/tools/iron/delivery/resources/node/template/html/package-version-view.tpl -text
 Src/tools/iron/delivery/resources/node/template/html/page.tpl -text
-Src/tools/iron/delivery/upload/VERSIONS/alter/C_library/libpng/clibs_libpng-safe.ecf.tpl svneol=native#text/xml
-Src/tools/iron/delivery/upload/VERSIONS/alter/C_library/libpng/clibs_libpng.ecf.tpl svneol=native#text/xml
-Src/tools/iron/delivery/upload/VERSIONS/alter/C_library/zlib/clibs_zlib-safe.ecf.tpl svneol=native#text/xml
-Src/tools/iron/delivery/upload/VERSIONS/alter/C_library/zlib/clibs_zlib.ecf.tpl svneol=native#text/xml
-Src/tools/iron/delivery/upload/VERSIONS/alter/library/vision2/vision2-safe.ecf.tpl svneol=native#text/xml
-Src/tools/iron/delivery/upload/VERSIONS/alter/library/vision2/vision2.ecf.tpl svneol=native#text/xml
 Src/tools/iron/doc/footer.html.tpl -text
 Src/tools/iron/doc/header.html.tpl -text
 Src/tools/iron/doc/index.html svneol=native#text/xml
