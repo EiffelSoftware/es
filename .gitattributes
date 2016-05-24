@@ -4214,11 +4214,6 @@ Src/tools/iron/delivery/resources/node/html/style.scss -text
 Src/tools/iron/delivery/resources/node/template/html/package-version-list-item.tpl -text
 Src/tools/iron/delivery/resources/node/template/html/package-version-view.tpl -text
 Src/tools/iron/delivery/resources/node/template/html/page.tpl -text
-Src/tools/iron/delivery/upload/VERSIONS/alter/unstable/library/compression/bzip2/bzip2-safe.ecf svneol=native#text/xml
-Src/tools/iron/delivery/upload/VERSIONS/alter/unstable/library/compression/bzip2/bzip2.ecf svneol=native#text/xml
-Src/tools/iron/delivery/upload/VERSIONS/alter/unstable/library/compression/bzip2/example/example.ecf svneol=native#text/xml
-Src/tools/iron/delivery/upload/VERSIONS/alter/unstable/library/compression/bzip2/testing/testing-bzip2.ecf svneol=native#text/xml
-Src/tools/iron/delivery/upload/VERSIONS/alter/unstable/library/web/cms/modules/node/node.ecf svneol=native#text/xml
 Src/tools/iron/doc/footer.html.tpl -text
 Src/tools/iron/doc/header.html.tpl -text
 Src/tools/iron/doc/index.html svneol=native#text/xml
