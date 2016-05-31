@@ -5335,6 +5335,7 @@ eweasel/tests/dotnet116/a.dll -text
 eweasel/tests/dotnet117/Ace svneol=native#text/xml
 eweasel/tests/dotnet117/a.dll -text
 eweasel/tests/dotnet117/a.il -text
+eweasel/tests/dotnet118/Ace svneol=native#text/xml
 eweasel/tests/except036/dotnet_output -text
 eweasel/tests/except038/bad_file -text
 eweasel/tests/exec003/notes -text
