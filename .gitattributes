@@ -76,8 +76,6 @@ Documentation/tools/xmldoc2wiki/README.txt -text
 Src/.git-svn/readme.txt -text
 Src/.git-svn/scm -text
 Src/.git-svn/users.txt -text
-Src/C/CONFIGS/iphone-arm-64 -text
-Src/C/CONFIGS/linux-armv7 -text
 Src/C/eif_config_h.SH eol=lf
 Src/C/run-time/eif_size_h.SH eol=lf
 Src/C/shell/bin/cat.exe -text
