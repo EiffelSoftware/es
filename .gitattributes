@@ -5138,6 +5138,15 @@ eweasel/LICENSING -text
 eweasel/README -text
 eweasel/bin/run_eweasel_keyword -text
 eweasel/bin/set_eweasel_env -text
+eweasel/compilation/precomp/dotnet/base-mt-safe.ecf svneol=native#text/xml
+eweasel/compilation/precomp/dotnet/base-mt.ecf svneol=native#text/xml
+eweasel/compilation/precomp/dotnet/base-safe.ecf svneol=native#text/xml
+eweasel/compilation/precomp/dotnet/base.ecf svneol=native#text/xml
+eweasel/compilation/precomp/neutral/base-mt-safe.ecf svneol=native#text/xml
+eweasel/compilation/precomp/neutral/base-mt.ecf svneol=native#text/xml
+eweasel/compilation/precomp/neutral/base-safe.ecf svneol=native#text/xml
+eweasel/compilation/precomp/neutral/base-scoop-safe.ecf svneol=native#text/xml
+eweasel/compilation/precomp/neutral/base.ecf svneol=native#text/xml
 eweasel/control/eweasel_gui_config.xml -text
 eweasel/doc/buglist -text
 eweasel/doc/eweasel.doc -text
