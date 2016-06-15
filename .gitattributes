@@ -5272,27 +5272,16 @@ eweasel/tests/codeanalysis006/Ace -text
 eweasel/tests/codeanalysis006/notes -text
 eweasel/tests/codeanalysis007/Ace -text
 eweasel/tests/codeanalysis007/notes -text
-eweasel/tests/codeanalysis008/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis008/notes -text
-eweasel/tests/codeanalysis009/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis009/notes -text
-eweasel/tests/codeanalysis010/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis010/notes -text
-eweasel/tests/codeanalysis011/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis011/notes -text
-eweasel/tests/codeanalysis012/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis012/notes -text
-eweasel/tests/codeanalysis013/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis013/notes -text
-eweasel/tests/codeanalysis014/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis014/notes -text
-eweasel/tests/codeanalysis015/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis015/notes -text
-eweasel/tests/codeanalysis016/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis016/notes -text
-eweasel/tests/codeanalysis017/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis017/notes -text
-eweasel/tests/codeanalysis018/Ace -text svneol=native#unset
 eweasel/tests/codeanalysis018/notes -text
 eweasel/tests/codeanalysis019/Ace svneol=native#text/xml
 eweasel/tests/config036/Ace svneol=native#text/xml
