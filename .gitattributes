@@ -5159,6 +5159,7 @@ eweasel/source/gui/build_project.bpr -text
 eweasel/source/gui/readme.txt -text
 eweasel/source/gui/system_interface.xml -text
 eweasel/tests/agent010/Ace -text
+eweasel/tests/agent015/Ace svneol=native#text/xml
 eweasel/tests/anchor077/Ace svneol=native#text/xml
 eweasel/tests/anchor078/Ace svneol=native#text/xml
 eweasel/tests/anchor079/Ace svneol=native#text/xml
