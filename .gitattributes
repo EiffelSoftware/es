@@ -5303,6 +5303,7 @@ eweasel/tests/config039/Ace4 -text
 eweasel/tests/config039/Ace5 -text
 eweasel/tests/config039/Ace6 -text
 eweasel/tests/conform007/Ace -text
+eweasel/tests/directory002/Ace svneol=native#text/xml
 eweasel/tests/dotnet018/cas.cs -text
 eweasel/tests/dotnet018/cas.dll -text
 eweasel/tests/dotnet018/notes -text
