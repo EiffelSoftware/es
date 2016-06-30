@@ -5274,7 +5274,6 @@ eweasel/tests/codeanalysis001/Ace -text
 eweasel/tests/codeanalysis002/Ace -text
 eweasel/tests/codeanalysis002/alldisabled.xml -text
 eweasel/tests/codeanalysis002/notes -text
-eweasel/tests/codeanalysis002/test.e -text svneol=native#unset
 eweasel/tests/codeanalysis003/Ace -text
 eweasel/tests/codeanalysis003/notes -text
 eweasel/tests/codeanalysis003/test.e -text svneol=native#unset
