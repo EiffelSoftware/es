@@ -5279,7 +5279,6 @@ eweasel/tests/codeanalysis003/notes -text
 eweasel/tests/codeanalysis003/test.e -text svneol=native#unset
 eweasel/tests/codeanalysis004/Ace -text
 eweasel/tests/codeanalysis004/notes -text
-eweasel/tests/codeanalysis004/test.e -text svneol=native#unset
 eweasel/tests/codeanalysis005/Ace -text
 eweasel/tests/codeanalysis005/notes -text
 eweasel/tests/codeanalysis006/Ace -text
