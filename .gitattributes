@@ -5918,6 +5918,7 @@ eweasel/tests/incr381/Ace_rev2 -text
 eweasel/tests/incr428/Ace_rev2 -text
 eweasel/tests/incr431/Ace svneol=native#text/xml
 eweasel/tests/incr432/Ace svneol=native#text/xml
+eweasel/tests/incr433/Ace svneol=native#text/xml
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text
