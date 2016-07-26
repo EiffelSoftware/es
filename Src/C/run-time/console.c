@@ -49,7 +49,10 @@ doc:<file name="console.c" header="eif_console.h" version="$Id$" summary="Extern
 rt_public EIF_POINTER console_def (EIF_INTEGER file)
 {
 #ifdef EIF_WINDOWS
-	eif_show_console();
+	/* This code is commented out while the Eiffel code (EiffelBase or others) has been updated
+	 * so that it is called only when I/Os are going to made using the console, not during
+	 * initialization. */
+	/* eif_show_console(); */
 #endif
 
 	/* Convert the integer `i' into the corresponding
