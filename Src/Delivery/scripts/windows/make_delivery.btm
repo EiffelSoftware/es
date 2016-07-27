@@ -56,6 +56,10 @@ REM > %INSTALL_LOG
 call check_environment.btm
 cdd %INIT_DIR
 
+fullrd install\bin
+fullrd install\binaries
+svn revert -R  install\content\eiffelstudio
+
 give_time_to warm up
 remtrace Retrieve and organize the delivery
 remtrace Remove %INSTALL_DIR
