@@ -4732,6 +4732,11 @@ Src/web/eiffel-org/site/modules/eiffel_download/downloads_configuration.json -te
 Src/web/eiffel-org/site/modules/feed_aggregator/config/feeds.json.example -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/css/feed_aggregator.css -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/scss/feed_aggregator.scss -text
+Src/web/eiffel-org/site/modules/files/files/img/file-logo.png -text
+Src/web/eiffel-org/site/modules/files/files/js/src/basic.scss -text
+Src/web/eiffel-org/site/modules/files/files/js/src/dropzone.coffee -text
+Src/web/eiffel-org/site/modules/files/files/js/src/dropzone.scss -text
+Src/web/eiffel-org/site/modules/files/files/scss/files.scss -text
 Src/web/eiffel-org/site/modules/google_search/config/google_search.json -text
 Src/web/eiffel-org/site/modules/node/files/css/node.css -text
 Src/web/eiffel-org/site/modules/node/files/scss/node.scss -text
