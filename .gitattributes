@@ -3502,6 +3502,7 @@ Src/experimental/library/libevent/Clib/libevent/test/regress.rpc -text
 Src/experimental/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
 Src/experimental/library/obsolete/xml/parser/callbacks/README.TXT -text
 Src/experimental/library/obsolete/xml/tree/README.TXT -text
+Src/experimental/library/patterns/patterns-safe.ecf svneol=native#text/xml
 Src/experimental/library/ribbon/test/src/eiffelribbon1.res -text
 Src/experimental/library/ribbon/test/src/ribbon_1.bml -text
 Src/experimental/library/ribbon/test/src/ribbon_project.er -text
