@@ -6181,6 +6181,8 @@ eweasel/tests/store040/Ace svneol=native#text/xml
 eweasel/tests/store041/Ace svneol=native#text/xml
 eweasel/tests/store042/Ace svneol=native#text/xml
 eweasel/tests/store043/Ace svneol=native#text/xml
+eweasel/tests/store044/Ace_root.ecf svneol=native#text/xml
+eweasel/tests/store044/Ace_test.ecf svneol=native#text/xml
 eweasel/tests/string003/Ace svneol=native#text/xml
 eweasel/tests/syntax001/notes -text
 eweasel/tests/syntax002/notes -text
