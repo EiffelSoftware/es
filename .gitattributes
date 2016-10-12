@@ -6087,6 +6087,7 @@ eweasel/tests/once005/Ace -text
 eweasel/tests/path001/Ace svneol=native#text/xml
 eweasel/tests/path002/Ace svneol=native#text/xml
 eweasel/tests/pretty029/Ace svneol=native#text/xml
+eweasel/tests/reflection009/Ace svneol=native#text/xml
 eweasel/tests/replication002/Ace -text
 eweasel/tests/runtime018/Ace svneol=native#text/xml
 eweasel/tests/runtime020/client.ecf svneol=native#text/xml
