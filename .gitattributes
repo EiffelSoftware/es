@@ -5237,10 +5237,6 @@ eweasel/tests/anchor080/Ace svneol=native#text/xml
 eweasel/tests/anchor081/Ace svneol=native#text/xml
 eweasel/tests/attach010/Ace2 -text
 eweasel/tests/attach011/Ace -text
-eweasel/tests/attach019/Ace -text
-eweasel/tests/attach019/Ace2 -text
-eweasel/tests/attach020/Ace -text
-eweasel/tests/attach020/Ace2 -text
 eweasel/tests/attach021/Ace -text
 eweasel/tests/attach026/Ace -text
 eweasel/tests/attach027/Ace -text
