@@ -5266,6 +5266,7 @@ eweasel/tests/attach119/Ace svneol=native#text/xml
 eweasel/tests/attach120/AceC.ecf svneol=native#text/xml
 eweasel/tests/attach120/AceI.ecf svneol=native#text/xml
 eweasel/tests/attach121/Ace svneol=native#text/xml
+eweasel/tests/attach122/Ace svneol=native#text/xml
 eweasel/tests/bench008/Makefile -text
 eweasel/tests/bench008/main.gold -text
 eweasel/tests/bench008/test.in -text
