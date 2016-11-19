@@ -5374,6 +5374,8 @@ eweasel/tests/config039/Ace5 -text
 eweasel/tests/config039/Ace6 -text
 eweasel/tests/config040/Ace svneol=native#text/xml
 eweasel/tests/config040/library.ecf svneol=native#text/xml
+eweasel/tests/config041/Ace svneol=native#text/xml
+eweasel/tests/config041/library.ecf svneol=native#text/xml
 eweasel/tests/conform007/Ace -text
 eweasel/tests/directory002/Ace svneol=native#text/xml
 eweasel/tests/dotnet018/cas.cs -text
