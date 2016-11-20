@@ -5378,6 +5378,10 @@ eweasel/tests/config041/Ace svneol=native#text/xml
 eweasel/tests/config041/library.ecf svneol=native#text/xml
 eweasel/tests/config042/Ace svneol=native#text/xml
 eweasel/tests/config043/Ace svneol=native#text/xml
+eweasel/tests/config044/Ace svneol=native#text/xml
+eweasel/tests/config044/none.ecf svneol=native#text/xml
+eweasel/tests/config044/scoop.ecf svneol=native#text/xml
+eweasel/tests/config044/thread.ecf svneol=native#text/xml
 eweasel/tests/conform007/Ace -text
 eweasel/tests/directory002/Ace svneol=native#text/xml
 eweasel/tests/dotnet018/cas.cs -text
