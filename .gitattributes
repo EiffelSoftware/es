@@ -1701,6 +1701,7 @@ Src/Delivery/esbuilder/bitmaps/png/widgets.png -text
 Src/Delivery/esbuilder/pixmaps/eiffel_wizard.png -text
 Src/Delivery/esbuilder/pixmaps/eiffel_wizard_icon.png -text
 Src/Delivery/esbuilder/pixmaps/wizard.png -text
+Src/Delivery/esbuilder/templates/template-safe.ecf svneol=native#text/xml
 Src/Delivery/scripts/unix/README.packaging -text
 Src/Delivery/scripts/unix/compile_eweasel -text
 Src/Delivery/scripts/unix/compile_other_libraries -text
