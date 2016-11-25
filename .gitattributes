@@ -4692,9 +4692,7 @@ Src/unstable/library/web/cms/modules/taxonomy/taxonomy.ecf svneol=native#text/xm
 Src/unstable/library/web/cms/tools/roc/license.lic -text
 Src/unstable/library/web/cms/tools/roc/roc.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/tools/roc/roc.rc -text
-Src/web/eiffel-org/eiffel_community_app-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/eiffel_community_app.ecf svneol=native#text/xml
-Src/web/eiffel-org/eiffel_community_site-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/eiffel_community_site.ecf svneol=native#text/xml
 Src/web/eiffel-org/ewf.ini -text
 Src/web/eiffel-org/library/motion/motion-safe.ecf svneol=native#text/xml
