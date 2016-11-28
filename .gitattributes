@@ -3549,6 +3549,9 @@ Src/experimental/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
 Src/experimental/library/obsolete/xml/parser/callbacks/README.TXT -text
 Src/experimental/library/obsolete/xml/tree/README.TXT -text
 Src/experimental/library/patterns/patterns-safe.ecf svneol=native#text/xml
+Src/experimental/library/process/base/base_process-safe.ecf svneol=native#text/xml
+Src/experimental/library/process/base/base_process.ecf svneol=native#text/xml
+Src/experimental/library/process/base/license.lic -text
 Src/experimental/library/ribbon/test/src/eiffelribbon1.res -text
 Src/experimental/library/ribbon/test/src/ribbon_1.bml -text
 Src/experimental/library/ribbon/test/src/ribbon_project.er -text
@@ -3557,6 +3560,7 @@ Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.pdf -text svne
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.vsd -text
 Src/experimental/library/store/all_store.ecf svneol=native#text/xml
 Src/experimental/library/store/dbms/rdbms/mysql/Clib/build.eant svneol=native#text/xml
+Src/experimental/library/store/test/test.ecf svneol=native#text/xml
 Src/experimental/library/store/test/test_results/oracle_results -text
 Src/experimental/library/text/parser/xml/parser/callbacks/README.TXT -text
 Src/experimental/library/text/parser/xml/tree/README.TXT -text
