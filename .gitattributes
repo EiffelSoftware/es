@@ -5477,6 +5477,8 @@ eweasel/tests/config048/dep.ecf svneol=native#text/xml
 eweasel/tests/config048/foo.ecf svneol=native#text/xml
 eweasel/tests/config048/precomp-scoop.ecf svneol=native#text/xml
 eweasel/tests/config048/precomp-thread.ecf svneol=native#text/xml
+eweasel/tests/config049/Ace svneol=native#text/xml
+eweasel/tests/config049/library.ecf svneol=native#text/xml
 eweasel/tests/conform007/Ace -text
 eweasel/tests/directory002/Ace svneol=native#text/xml
 eweasel/tests/dotnet018/cas.cs -text
