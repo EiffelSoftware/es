@@ -5202,6 +5202,7 @@ Src/web/support/database/mssql/data_problem_report_status.sql -text svneol=unset
 Src/web/support/database/mssql/data_questions.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/data_roles.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/data_security_questions.sql -text svneol=unset#application/octet-stream
+Src/web/support/database/mssql/db_complete.sql -text
 Src/web/support/database/mssql/db_schemas.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/db_store_procedures.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/db_tables.sql -text svneol=unset#application/octet-stream
