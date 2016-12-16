@@ -5191,24 +5191,6 @@ Src/web/support/client/esa_client.ecf svneol=native#text/xml
 Src/web/support/client/test/esa_config.json -text
 Src/web/support/client/test/test.ecf svneol=native#text/xml
 Src/web/support/core/esa_core.ecf svneol=native#text/xml
-Src/web/support/database/mssql/data_countries.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_problem_report_categories.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_problem_report_categories_roles.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_problem_report_category_groups.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_problem_report_classes.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_problem_report_form_fields.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_problem_report_severities.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_problem_report_status.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_questions.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_roles.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/data_security_questions.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_complete.sql -text
-Src/web/support/database/mssql/db_schemas.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_store_procedures.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_tables.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_user.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_user_defined_functions.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_views.sql -text svneol=unset#application/octet-stream
 Src/web/support/db/esa_db.ecf svneol=native#text/xml
 Src/web/support/db/scripts/AddUser2.sql -text
 Src/web/support/db/scripts/GetProblemReportsGuest.sql -text
