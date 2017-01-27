@@ -4820,6 +4820,7 @@ Src/web/eiffel-org/modules/wish_list/site/files/scss/wish_list.scss -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/alter_table.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/initialize_wish_list.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/wish_list.sql -text
+Src/web/eiffel-org/roc.cfg -text
 Src/web/eiffel-org/site.ecf svneol=native#text/xml
 Src/web/eiffel-org/site/config/app.ini -text
 Src/web/eiffel-org/site/config/cms.ini -text
@@ -4843,6 +4844,8 @@ Src/web/eiffel-org/site/modules/auth/mail_templates/admin_account_evaluation.htm
 Src/web/eiffel-org/site/modules/blog/files/css/blog.css -text
 Src/web/eiffel-org/site/modules/blog/files/scss/blog.scss -text
 Src/web/eiffel-org/site/modules/blog/scripts/install.sql -text
+Src/web/eiffel-org/site/modules/comments/files/scss/comments.scss -text
+Src/web/eiffel-org/site/modules/comments/scripts/install.sql -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
 Src/web/eiffel-org/site/modules/contact/files/css/contact.css -text
 Src/web/eiffel-org/site/modules/contact/files/scss/contact.scss -text
@@ -4859,6 +4862,7 @@ Src/web/eiffel-org/site/modules/google_search/config/google_search.json -text
 Src/web/eiffel-org/site/modules/node/files/css/node.css -text
 Src/web/eiffel-org/site/modules/node/files/scss/node.scss -text
 Src/web/eiffel-org/site/modules/node/scripts/node.sql -text
+Src/web/eiffel-org/site/modules/node/scripts/page.sql -text
 Src/web/eiffel-org/site/modules/oauth20/scripts/oauth2_consumers.sql -text
 Src/web/eiffel-org/site/modules/oauth20/scripts/oauth2_consumers_initialize.sql -text
 Src/web/eiffel-org/site/modules/openid/scripts/openid_consumers.sql -text
@@ -4897,6 +4901,7 @@ Src/web/eiffel-org/site/modules/taxonomy/scripts/uninstall.sql -text
 Src/web/eiffel-org/site/modules/wdocs/files/css/wdocs.css -text
 Src/web/eiffel-org/site/modules/wdocs/files/scss/wdocs.scss -text
 Src/web/eiffel-org/site/modules/wdocs/wdocs.ini -text
+Src/web/eiffel-org/site/modules/wikitext/files/scss/wikitext.scss -text
 Src/web/eiffel-org/site/modules/wish_list/files/css/wish_list.css -text
 Src/web/eiffel-org/site/modules/wish_list/files/favicon.ico -text
 Src/web/eiffel-org/site/modules/wish_list/files/images/ajax-loader.gif -text
