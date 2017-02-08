@@ -4855,6 +4855,7 @@ Src/web/eiffel-org/site/modules/comments/scripts/install.sql -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
 Src/web/eiffel-org/site/modules/contact/files/css/contact.css -text
 Src/web/eiffel-org/site/modules/contact/files/scss/contact.scss -text
+Src/web/eiffel-org/site/modules/core/scripts/core.sql -text
 Src/web/eiffel-org/site/modules/eiffel_download/downloads_configuration.json -text
 Src/web/eiffel-org/site/modules/feed_aggregator/config/feeds.json.example -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/css/feed_aggregator.css -text
@@ -4869,8 +4870,8 @@ Src/web/eiffel-org/site/modules/node/files/css/node.css -text
 Src/web/eiffel-org/site/modules/node/files/scss/node.scss -text
 Src/web/eiffel-org/site/modules/node/scripts/node.sql -text
 Src/web/eiffel-org/site/modules/node/scripts/page.sql -text
-Src/web/eiffel-org/site/modules/oauth20/scripts/oauth2_consumers.sql -text
-Src/web/eiffel-org/site/modules/oauth20/scripts/oauth2_consumers_initialize.sql -text
+Src/web/eiffel-org/site/modules/oauth20/scripts/data.sql -text
+Src/web/eiffel-org/site/modules/oauth20/scripts/install.sql -text
 Src/web/eiffel-org/site/modules/openid/scripts/openid_consumers.sql -text
 Src/web/eiffel-org/site/modules/openid/scripts/openid_consumers_initialize.sql -text
 Src/web/eiffel-org/site/modules/openid/scripts/openid_items.sql -text
