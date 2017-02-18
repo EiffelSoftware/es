@@ -5347,6 +5347,7 @@ eweasel/tests/codeanalysis018/notes -text
 eweasel/tests/codeanalysis019/Ace svneol=native#text/xml
 eweasel/tests/codeanalysis020/Ace svneol=native#text/xml
 eweasel/tests/codeanalysis021/Ace svneol=native#text/xml
+eweasel/tests/codeanalysis022/Ace svneol=native#text/xml
 eweasel/tests/config036/Ace svneol=native#text/xml
 eweasel/tests/config036/eweasel.ecf svneol=native#text/xml
 eweasel/tests/config038/Ace svneol=native#text/xml
