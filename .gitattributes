@@ -6113,6 +6113,7 @@ eweasel/tests/melt106/Ace svneol=native#text/xml
 eweasel/tests/melt107/Ace svneol=native#text/xml
 eweasel/tests/melt108/Ace svneol=native#text/xml
 eweasel/tests/melt109/Ace svneol=native#text/xml
+eweasel/tests/melt110/Ace svneol=native#text/xml
 eweasel/tests/once001/Ace -text
 eweasel/tests/once004/Ace -text
 eweasel/tests/once005/Ace -text
