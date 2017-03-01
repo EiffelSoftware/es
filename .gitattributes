@@ -4754,6 +4754,7 @@ Src/web/eiffel-org/site/modules/contact/config/contact.json -text
 Src/web/eiffel-org/site/modules/contact/files/css/contact.css -text
 Src/web/eiffel-org/site/modules/contact/files/scss/contact.scss -text
 Src/web/eiffel-org/site/modules/core/scripts/core.sql -text
+Src/web/eiffel-org/site/modules/core/scripts/updates/core-1.0.0.1.sql -text
 Src/web/eiffel-org/site/modules/eiffel_download/downloads_configuration.json -text
 Src/web/eiffel-org/site/modules/feed_aggregator/config/feeds.json.example -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/css/feed_aggregator.css -text
