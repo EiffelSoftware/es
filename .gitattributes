@@ -4770,10 +4770,12 @@ Src/web/eiffel-org/site/modules/files/files/js/src/dropzone.coffee -text
 Src/web/eiffel-org/site/modules/files/files/js/src/dropzone.scss -text
 Src/web/eiffel-org/site/modules/files/files/scss/files.scss -text
 Src/web/eiffel-org/site/modules/google_search/config/google_search.json -text
+Src/web/eiffel-org/site/modules/messaging/files/scss/messaging.scss -text
 Src/web/eiffel-org/site/modules/node/files/css/node.css -text
 Src/web/eiffel-org/site/modules/node/files/scss/node.scss -text
 Src/web/eiffel-org/site/modules/node/scripts/node.sql -text
 Src/web/eiffel-org/site/modules/node/scripts/page.sql -text
+Src/web/eiffel-org/site/modules/node/scripts/updates/node-1.0.0.1.sql -text
 Src/web/eiffel-org/site/modules/oauth20/scripts/data.sql -text
 Src/web/eiffel-org/site/modules/oauth20/scripts/install.sql -text
 Src/web/eiffel-org/site/modules/openid/scripts/openid_consumers.sql -text
