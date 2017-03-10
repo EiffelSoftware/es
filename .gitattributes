@@ -4859,7 +4859,6 @@ Src/unstable/library/web/cms/modules/wikitext/wikitext-safe.ecf svneol=native#te
 Src/unstable/library/web/cms/modules/wikitext/wikitext.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/tools/roc/roc.ecf svneol=native#text/xml
 Src/web/eiffel-org/app.ecf svneol=native#text/xml
-Src/web/eiffel-org/eiffel_community_site-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/ewf.ini -text
 Src/web/eiffel-org/library/motion/motion-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/library/motion/motion.ecf svneol=native#text/xml
