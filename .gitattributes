@@ -5503,6 +5503,7 @@ eweasel/tests/attach123/library.ecf svneol=native#text/xml
 eweasel/tests/attach124/Ace svneol=native#text/xml
 eweasel/tests/attach125/Ace svneol=native#text/xml
 eweasel/tests/attach126/Ace svneol=native#text/xml
+eweasel/tests/attach127/Ace svneol=native#text/xml
 eweasel/tests/bench008/Makefile -text
 eweasel/tests/bench008/main.gold -text
 eweasel/tests/bench008/test.in -text
