@@ -528,6 +528,9 @@ Src/tools/vms/ES5SH/es5sh.rc
 Src/unstable/library/compression/zlib/example/EIFGENs
 Src/unstable/library/persistency/database/sqlite3/spec/mingw
 Src/unstable/library/persistency/database/sqlite3/spec/msc
+Src/unstable/library/web/cms/examples/demo/site/export
+Src/unstable/library/web/cms/examples/demo/site/files
+Src/unstable/library/web/cms/examples/demo/site/import
 Src/unstable/library/web/cms/src/service/*.bak
 Src/web/eiffel-org/_db
 Src/web/eiffel-org/_storage_
