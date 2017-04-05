@@ -6496,6 +6496,7 @@ eweasel/tests/scoop077/Ace svneol=native#text/xml
 eweasel/tests/scoop078/Ace svneol=native#text/xml
 eweasel/tests/scoop079/Ace svneol=native#text/xml
 eweasel/tests/scoop080/Ace svneol=native#text/xml
+eweasel/tests/scoop081/Ace svneol=native#text/xml
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
 eweasel/tests/store002/notes -text
