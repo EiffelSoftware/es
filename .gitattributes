@@ -4037,6 +4037,7 @@ Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.pdf -text svne
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.vsd -text
 Src/experimental/library/store/all_store.ecf svneol=native#text/xml
 Src/experimental/library/store/dbms/rdbms/mysql/Clib/build.eant svneol=native#text/xml
+Src/experimental/library/store/test/eiffel_store/eiffel_store_tests.ecf svneol=native#text/xml
 Src/experimental/library/store/test/test.ecf svneol=native#text/xml
 Src/experimental/library/store/test/test_results/oracle_results -text
 Src/experimental/library/text/parser/xml/parser/callbacks/README.TXT -text
