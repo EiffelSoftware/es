@@ -6912,6 +6912,7 @@ eweasel/tests/term215/Ace svneol=native#text/xml
 eweasel/tests/thread002/Ace -text
 eweasel/tests/thread010/Ace -text
 eweasel/tests/thread024/Ace -text svneol=native#application/xml
+eweasel/tests/thread025/Ace svneol=native#text/xml
 eweasel/tests/time004/Ace -text
 eweasel/tests/time006/Ace svneol=native#text/xml
 eweasel/tests/time007/Ace svneol=native#text/xml
