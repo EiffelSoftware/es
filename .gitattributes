@@ -7079,6 +7079,7 @@ eweasel/tests/valid291/Ace svneol=native#text/xml
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text
+eweasel/tests/vwce002/Ace svneol=native#text/xml
 free_add_ons/gcc/win64/mingw/README.compat -text
 free_add_ons/gcc/win64/mingw/bin/addr2line.exe -text
 free_add_ons/gcc/win64/mingw/bin/ar.exe -text
