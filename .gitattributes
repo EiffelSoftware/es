@@ -6704,6 +6704,7 @@ eweasel/tests/lib042/Ace svneol=native#text/xml
 eweasel/tests/lib043/Ace svneol=native#text/xml
 eweasel/tests/lib044/Ace svneol=native#text/xml
 eweasel/tests/lib045/Ace svneol=native#text/xml
+eweasel/tests/lib046/Ace svneol=native#text/xml
 eweasel/tests/list015/Ace -text
 eweasel/tests/melt001/notes -text
 eweasel/tests/melt003/notes -text
