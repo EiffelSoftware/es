@@ -5922,6 +5922,7 @@ eweasel/tests/bench017/Ace svneol=native#text/xml
 eweasel/tests/bench018/Ace svneol=native#text/xml
 eweasel/tests/bench019/Ace svneol=native#text/xml
 eweasel/tests/bench020/Ace svneol=native#text/xml
+eweasel/tests/bench021/Ace svneol=native#text/xml
 eweasel/tests/catcall013/Ace svneol=native#text/xml
 eweasel/tests/catcall014/Ace svneol=native#text/xml
 eweasel/tests/ccomp001/notes -text
