@@ -6102,6 +6102,8 @@ Src/tools/eiffel_ribbon/images/button_without_text_large.png -text
 Src/tools/eiffel_ribbon/images/button_without_text_large_highlight.png -text
 Src/tools/eiffel_ribbon/images/button_without_text_large_invalid.png -text
 Src/tools/eiffel_ribbon/images/ribbon_background.png -text
+Src/tools/eiffel_script/eiffel_script.ecf svneol=native#text/xml
+Src/tools/eiffel_script/testing/hello/hello.ecf svneol=native#text/xml
 Src/tools/estudio/config/estudio.ico -text
 Src/tools/estudio/config/estudio.lic -text
 Src/tools/estudio/config/estudio_e.ico -text
