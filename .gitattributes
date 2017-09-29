@@ -6496,7 +6496,10 @@ Src/web/eiffel-org/modules/eiffel_community/eiffel_community-safe.ecf svneol=nat
 Src/web/eiffel-org/modules/eiffel_community/eiffel_community.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/eiffel_download/eiffel_download-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/eiffel_download/eiffel_download.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/eiffel_download/site/downloads_configuration.json -text
+Src/web/eiffel-org/modules/eiffel_download/site/files/css/download.css -text
+Src/web/eiffel-org/modules/eiffel_download/site/files/scss/download.css -text
+Src/web/eiffel-org/modules/eiffel_download/site/files/scss/download.css.map -text
+Src/web/eiffel-org/modules/eiffel_download/site/files/scss/download.scss -text
 Src/web/eiffel-org/modules/embedded_video/test/testing-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/embedded_video/test/testing.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/embedded_video/video-safe.ecf svneol=native#text/xml
@@ -6593,7 +6596,7 @@ Src/web/eiffel-org/site/modules/contact/files/css/contact.css -text
 Src/web/eiffel-org/site/modules/contact/files/scss/contact.scss -text
 Src/web/eiffel-org/site/modules/core/scripts/core.sql -text
 Src/web/eiffel-org/site/modules/core/scripts/updates/core-1.0.0.1.sql -text
-Src/web/eiffel-org/site/modules/eiffel_download/downloads_configuration.json -text
+Src/web/eiffel-org/site/modules/eiffel_download/files/css/download.css -text
 Src/web/eiffel-org/site/modules/feed_aggregator/config/feeds.json.example -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/css/feed_aggregator.css -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/scss/feed_aggregator.scss -text
