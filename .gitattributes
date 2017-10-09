@@ -6456,6 +6456,11 @@ Src/unstable/library/web/cms/themes/min/assets/favicon.ico -text
 Src/unstable/library/web/cms/themes/min/assets/scss/style.scss -text
 Src/unstable/library/web/cms/themes/min/theme.info -text
 Src/unstable/library/web/cms/tools/roc/roc.ecf svneol=native#text/xml
+Src/web/eiffel-cloud/build/deploy -text
+Src/web/eiffel-cloud/build/etc.rc -text
+Src/web/eiffel-cloud/build/inc/build_server -text
+Src/web/eiffel-cloud/build/inc/update_source -text
+Src/web/eiffel-cloud/build/install_server -text
 Src/web/eiffel-cloud/modules/es_cloud/es_cloud.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/modules/es_cloud/site/config/config.ini -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install.sql -text
