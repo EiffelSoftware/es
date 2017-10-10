@@ -6461,6 +6461,7 @@ Src/web/eiffel-cloud/build/etc.rc -text
 Src/web/eiffel-cloud/build/inc/build_server -text
 Src/web/eiffel-cloud/build/inc/update_source -text
 Src/web/eiffel-cloud/build/install_server -text
+Src/web/eiffel-cloud/build/www/service.ews -text
 Src/web/eiffel-cloud/modules/es_cloud/es_cloud.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/modules/es_cloud/site/config/config.ini -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install.sql -text
@@ -6471,7 +6472,7 @@ Src/web/eiffel-cloud/roc.cfg -text
 Src/web/eiffel-cloud/server.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/server.ini -text
 Src/web/eiffel-cloud/site/config/cms.ini -text
-Src/web/eiffel-cloud/site/config/es_cloud.json -text
+Src/web/eiffel-cloud/site/config/env.json -text
 Src/web/eiffel-cloud/site/modules/admin/files/scss/admin.scss -text
 Src/web/eiffel-cloud/site/modules/auth/files/scss/auth.scss -text
 Src/web/eiffel-cloud/site/modules/auth/mail_templates/account_activation.html svneol=native#text/xml
