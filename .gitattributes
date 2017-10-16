@@ -6633,7 +6633,6 @@ Src/web/eiffel-org/site.ecf svneol=native#text/xml
 Src/web/eiffel-org/site/config/app.ini -text
 Src/web/eiffel-org/site/config/cms.ini -text
 Src/web/eiffel-org/site/config/eiffel_community_app.json -text
-Src/web/eiffel-org/site/config/eiffel_org.json -text
 Src/web/eiffel-org/site/config/env.json -text
 Src/web/eiffel-org/site/config/modules/feed_aggregator/feeds.json -text
 Src/web/eiffel-org/site/config/modules/wdocs/eis.ini -text
