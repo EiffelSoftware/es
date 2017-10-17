@@ -6513,6 +6513,16 @@ Src/web/eiffel-cloud/site/themes/min/theme.info -text
 Src/web/eiffel-cloud/testing/testing.ecf svneol=native#text/xml
 Src/web/eiffel-org/app.ecf svneol=native#text/xml
 Src/web/eiffel-org/build/deploy -text
+Src/web/eiffel-org/build/edoc_generator/all_libs-safe.ecf svneol=native#text/xml
+Src/web/eiffel-org/build/edoc_generator/all_libs.ecf svneol=native#text/xml
+Src/web/eiffel-org/build/edoc_generator/docs.css -text
+Src/web/eiffel-org/build/edoc_generator/docs.fil -text
+Src/web/eiffel-org/build/edoc_generator/images/arrow-rtl.png -text
+Src/web/eiffel-org/build/edoc_generator/images/arrow.png -text
+Src/web/eiffel-org/build/edoc_generator/images/bkg.png -text
+Src/web/eiffel-org/build/edoc_generator/images/bkg_tab.png -text
+Src/web/eiffel-org/build/edoc_generator/images/icon_users.png -text
+Src/web/eiffel-org/build/edoc_generator/images/logo-es.jpg -text
 Src/web/eiffel-org/build/etc.rc -text
 Src/web/eiffel-org/build/inc/build_server -text
 Src/web/eiffel-org/build/inc/update_source -text
