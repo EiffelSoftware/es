@@ -6468,6 +6468,7 @@ Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install.sql -text
 Src/web/eiffel-cloud/modules/jwt_auth/jwt_auth.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/modules/jwt_auth/site/config/config.ini -text
 Src/web/eiffel-cloud/modules/jwt_auth/site/scripts/install.sql -text
+Src/web/eiffel-cloud/modules/login_with_esa/login_with_esa.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/roc.cfg -text
 Src/web/eiffel-cloud/server.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/server.ini -text
