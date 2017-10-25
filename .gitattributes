@@ -6640,7 +6640,7 @@ Src/web/eiffel-org/modules/wish_list/site/scripts/alter_table.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/initialize_wish_list.sql -text
 Src/web/eiffel-org/modules/wish_list/site/scripts/wish_list.sql -text
 Src/web/eiffel-org/roc.cfg -text
-Src/web/eiffel-org/site.ecf svneol=native#text/xml
+Src/web/eiffel-org/server.ecf svneol=native#text/xml
 Src/web/eiffel-org/site/config/app.ini -text
 Src/web/eiffel-org/site/config/cms.ini -text
 Src/web/eiffel-org/site/config/eiffel_community_app.json -text
