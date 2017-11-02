@@ -3447,16 +3447,12 @@ Src/Delivery/studio/lang/po_files/en_US.po -text
 Src/Delivery/studio/lang/po_files/es_ES.po svneol=LF#text/plain%3B+charset%3Dutf-8 eol=lf
 Src/Delivery/studio/lang/po_files/ru_RU.po svneol=LF#text/plain%3B+charset%3Dutf-8 eol=lf
 Src/Delivery/studio/lang/po_files/zh_CN.po -text
+Src/Delivery/studio/spec/win64/bin/libcrypto-1_1-x64.dll -text
 Src/Delivery/studio/spec/win64/bin/libcurl.dll -text
-Src/Delivery/studio/spec/win64/bin/libeay32.dll -text
-Src/Delivery/studio/spec/win64/bin/libssh2.dll -text
-Src/Delivery/studio/spec/win64/bin/ssleay32.dll -text
-Src/Delivery/studio/spec/win64/bin/zlib1.dll -text
+Src/Delivery/studio/spec/win64/bin/libssl-1_1-x64.dll -text
+Src/Delivery/studio/spec/windows/bin/libcrypto-1_1.dll -text
 Src/Delivery/studio/spec/windows/bin/libcurl.dll -text
-Src/Delivery/studio/spec/windows/bin/libeay32.dll -text
-Src/Delivery/studio/spec/windows/bin/libssh2.dll -text
-Src/Delivery/studio/spec/windows/bin/ssleay32.dll -text
-Src/Delivery/studio/spec/windows/bin/zlib1.dll -text
+Src/Delivery/studio/spec/windows/bin/libssl-1_1.dll -text
 Src/Delivery/studio/templates/code_template-1.0.rnc svneol=native#text/plain
 Src/Delivery/studio/templates/defaults/empty.e.tpl -text
 Src/Delivery/studio/templates/defaults/full.e.tpl -text
