@@ -6538,6 +6538,7 @@ Src/web/eiffel-cloud/site/modules/auth/mail_templates/admin_account_evaluation.h
 Src/web/eiffel-cloud/site/modules/core/scripts/core.sql -text
 Src/web/eiffel-cloud/site/modules/core/scripts/updates/core-1.0.0.1.sql -text
 Src/web/eiffel-cloud/site/modules/core/scripts/user_profile.sql -text
+Src/web/eiffel-cloud/site/modules/custom_block/config/custom_block.json -text
 Src/web/eiffel-cloud/site/modules/es_cloud/config/config.ini -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install.sql -text
 Src/web/eiffel-cloud/site/modules/files/files/img/file-logo.png -text
@@ -6561,6 +6562,11 @@ Src/web/eiffel-cloud/site/modules/wikitext/files/scss/wikitext.scss -text
 Src/web/eiffel-cloud/site/themes/admin/assets/favicon.ico -text
 Src/web/eiffel-cloud/site/themes/admin/assets/scss/style.scss -text
 Src/web/eiffel-cloud/site/themes/admin/theme.info -text
+Src/web/eiffel-cloud/site/themes/cloud/assets/favicon.ico -text
+Src/web/eiffel-cloud/site/themes/cloud/assets/scss/cloud.scss -text
+Src/web/eiffel-cloud/site/themes/cloud/assets/scss/common.scss -text
+Src/web/eiffel-cloud/site/themes/cloud/assets/scss/style.scss -text
+Src/web/eiffel-cloud/site/themes/cloud/theme.info -text
 Src/web/eiffel-cloud/site/themes/min/assets/favicon.ico -text
 Src/web/eiffel-cloud/site/themes/min/assets/scss/style.scss -text
 Src/web/eiffel-cloud/site/themes/min/theme.info -text
