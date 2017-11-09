@@ -7909,6 +7909,7 @@ eweasel/tests/free002/Ace svneol=native#text/xml
 eweasel/tests/free003/Ace svneol=native#text/xml
 eweasel/tests/free004/Ace svneol=native#text/xml
 eweasel/tests/free005/Ace svneol=native#text/xml
+eweasel/tests/free006/Ace svneol=native#text/xml
 eweasel/tests/freez002/notes -text
 eweasel/tests/freez004/output -text svneol=unset#application/octet-stream
 eweasel/tests/freez005/notes -text
