@@ -4720,7 +4720,6 @@ Src/contrib/library/web/authentication/oauth/cypress/consumer/apis/license.lic -
 Src/contrib/library/web/authentication/oauth/cypress/consumer/examples/examples.ecf svneol=native#text/xml
 Src/contrib/library/web/authentication/oauth/cypress/consumer/examples/license.lic -text
 Src/contrib/library/web/authentication/oauth/cypress/consumer/license.lic -text
-Src/contrib/library/web/authentication/oauth/cypress/consumer/tests/consumer-tests.rc -text
 Src/contrib/library/web/authentication/oauth/cypress/consumer/tests/license.lic -text
 Src/contrib/library/web/authentication/oauth/cypress/consumer/tests/tests-safe.ecf svneol=native#text/xml
 Src/contrib/library/web/authentication/oauth/cypress/consumer/tests/tests.ecf svneol=native#text/xml
@@ -5457,7 +5456,6 @@ Src/framework/code_analysis/tests/template/args.txt_ -text
 Src/framework/code_analysis/tests/template/output.txt_ -text
 Src/framework/code_analysis/tests/template/template.e_ -text
 Src/framework/code_analysis/void_safe_tests/void_safe_tests.ecf svneol=native#text/xml
-Src/framework/code_analysis/void_safe_tests/void_safe_tests.rc -text
 Src/framework/com_light/tests/test.docx -text
 Src/framework/com_light/tests/test.ecf svneol=native#text/xml
 Src/framework/command_tunnel/command_tunnel.lic -text
@@ -6319,7 +6317,6 @@ Src/unstable/library/network/socket/netssl/net_ssl_dynamic.ecf svneol=native#tex
 Src/unstable/library/pattern/criteria/README.md -text
 Src/unstable/library/pattern/criteria/examples/simple-safe.ecf svneol=native#text/xml
 Src/unstable/library/pattern/criteria/examples/simple.ecf svneol=native#text/xml
-Src/unstable/library/pattern/criteria/testing/criteria_tests.rc -text
 Src/unstable/library/pattern/criteria/testing/tests.ecf svneol=native#text/xml
 Src/unstable/library/persistency/abel/backend_couchdb/backend_couchdb.ecf svneol=native#text/xml
 Src/unstable/library/persistency/abel/connector_mysql/connector_mysql.ecf svneol=native#text/xml
@@ -7198,7 +7195,6 @@ Src/web/eiffel-org/site/themes/wdocs/assets/scss/variables.scss -text
 Src/web/eiffel-org/site/themes/wdocs/theme.info -text
 Src/web/eiffel-org/tools/docs2svn/docs2svn-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/tools/docs2svn/docs2svn.ecf svneol=native#text/xml
-Src/web/eiffel-org/tools/docs2svn/docs2svn.rc -text
 Src/web/eiffel_download/IIRF.ini -text
 Src/web/eiffel_download/download_tables.sql -text
 Src/web/eiffel_download/ewf_download.ecf svneol=native#text/xml
@@ -7252,7 +7248,6 @@ Src/web/support/db/scripts/IsProblemReportVisubleGuest.sql -text
 Src/web/support/db/scripts/TableRowCount.sql -text
 Src/web/support/db/tests/esa_api.log -text
 Src/web/support/db/tests/tests.ecf svneol=native#text/xml
-Src/web/support/db/tests/tests.rc -text
 benchmarks/scoop/Tests1-6.xls -text
 benchmarks/scoop/results/chart.ods -text
 benchmarks/scoop/scoop0001/LogParser.java -text
