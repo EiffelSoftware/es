@@ -5681,6 +5681,7 @@ eweasel/tests/free006/Ace svneol=native#text/xml
 eweasel/tests/free007/Ace svneol=native#text/xml
 eweasel/tests/free008/Ace svneol=native#text/xml
 eweasel/tests/free009/Ace svneol=native#text/xml
+eweasel/tests/free010/Ace svneol=native#text/xml
 eweasel/tests/freez002/notes -text
 eweasel/tests/freez004/output -text svneol=unset#application/octet-stream
 eweasel/tests/freez005/notes -text
