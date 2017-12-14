@@ -1,4 +1,5 @@
 * text=auto !eol
+/.travis.yml -text
 Documentation/tools/web/trunk/bin/README.txt -text
 Documentation/tools/web/trunk/bin/data/favicon.ico -text
 Documentation/tools/web/trunk/bin/data/logo.gif -text
