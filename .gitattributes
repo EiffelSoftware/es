@@ -6065,6 +6065,7 @@ eweasel/tests/runtime020/client.ecf svneol=native#text/xml
 eweasel/tests/runtime020/supplier.ecf svneol=native#text/xml
 eweasel/tests/runtime021/Ace svneol=native#text/xml
 eweasel/tests/runtime022/Ace svneol=native#text/xml
+eweasel/tests/runtime023/Ace svneol=native#text/xml
 eweasel/tests/scoop010/tcf -text
 eweasel/tests/scoop037/main.in -text
 eweasel/tests/scoop038/Ace svneol=native#text/xml
