@@ -5094,6 +5094,7 @@ eweasel/GPL.txt -text
 eweasel/INSTALL -text
 eweasel/LICENSING -text
 eweasel/README -text
+eweasel/bin/eiffel_freeze eol=lf
 eweasel/bin/run_eweasel_keyword -text
 eweasel/bin/set_eweasel_env -text
 eweasel/compilation/precomp/dotnet/base-mt-safe.ecf svneol=native#text/xml
