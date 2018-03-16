@@ -77,7 +77,17 @@ Documentation/tools/xmldoc2wiki/README.txt -text
 Src/.git-svn/readme.txt -text
 Src/.git-svn/scm -text
 Src/.git-svn/users.txt -text
+Src/C/Makefile.SH eol=lf
+Src/C/bench/Makefile.SH eol=lf
 Src/C/eif_config_h.SH eol=lf
+Src/C/idrs/Makefile.SH eol=lf
+Src/C/ipc/Makefile.SH eol=lf
+Src/C/ipc/app/Makefile.SH eol=lf
+Src/C/ipc/daemon/Makefile.SH eol=lf
+Src/C/ipc/ewb/Makefile.SH eol=lf
+Src/C/ipc/shared/Makefile.SH eol=lf
+Src/C/platform/Makefile.SH eol=lf
+Src/C/run-time/Makefile.SH eol=lf
 Src/C/run-time/eif_size_h.SH eol=lf
 Src/C/shell/bin/cat.exe -text
 Src/C/shell/bin/chmod.exe -text
