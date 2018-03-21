@@ -5108,6 +5108,7 @@ eweasel/LICENSING -text
 eweasel/README -text
 eweasel/bin/eiffel_freeze eol=lf
 eweasel/bin/run_eweasel eol=lf
+eweasel/bin/run_eweasel_catalog eol=lf
 eweasel/bin/run_eweasel_filter eol=lf
 eweasel/bin/run_eweasel_keyword -text
 eweasel/bin/set_eweasel_env -text
