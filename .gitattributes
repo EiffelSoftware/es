@@ -6285,6 +6285,7 @@ eweasel/tests/time006/Ace svneol=native#text/xml
 eweasel/tests/time007/Ace svneol=native#text/xml
 eweasel/tests/unicode007/Ace svneol=native#text/xml
 eweasel/tests/unicode008/Ace svneol=native#text/xml
+eweasel/tests/utf003/Ace svneol=native#text/xml
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
 eweasel/tests/valid003/notes -text
