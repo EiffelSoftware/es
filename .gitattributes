@@ -5057,6 +5057,7 @@ eweasel/tests/anchor078/Ace svneol=native#text/xml
 eweasel/tests/anchor079/Ace svneol=native#text/xml
 eweasel/tests/anchor080/Ace svneol=native#text/xml
 eweasel/tests/anchor081/Ace svneol=native#text/xml
+eweasel/tests/array013/Ace svneol=native#text/xml
 eweasel/tests/attach010/Ace2 -text
 eweasel/tests/attach011/Ace -text
 eweasel/tests/attach021/Ace -text
