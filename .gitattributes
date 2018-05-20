@@ -6465,6 +6465,7 @@ eweasel/tests/valid292/Ace svneol=native#text/xml
 eweasel/tests/valid293/Ace svneol=native#text/xml
 eweasel/tests/valid294/Ace svneol=native#text/xml
 eweasel/tests/valid295/Ace svneol=native#text/xml
+eweasel/tests/valid296/Ace svneol=native#text/xml
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text
