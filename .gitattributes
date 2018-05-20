@@ -5631,6 +5631,16 @@ eweasel/tests/free011/Ace svneol=native#text/xml
 eweasel/tests/free012/Ace svneol=native#text/xml
 eweasel/tests/free013/Ace svneol=native#text/xml
 eweasel/tests/free014/Ace svneol=native#text/xml
+eweasel/tests/free015/Ace svneol=native#text/xml
+eweasel/tests/free016/Ace svneol=native#text/xml
+eweasel/tests/free017/Ace svneol=native#text/xml
+eweasel/tests/free018/Ace svneol=native#text/xml
+eweasel/tests/free019/Ace svneol=native#text/xml
+eweasel/tests/free020/Ace svneol=native#text/xml
+eweasel/tests/free021/Ace svneol=native#text/xml
+eweasel/tests/free022/Ace svneol=native#text/xml
+eweasel/tests/free023/Ace svneol=native#text/xml
+eweasel/tests/free024/Ace svneol=native#text/xml
 eweasel/tests/freez002/notes -text
 eweasel/tests/freez004/output -text svneol=unset#application/octet-stream
 eweasel/tests/freez005/notes -text
