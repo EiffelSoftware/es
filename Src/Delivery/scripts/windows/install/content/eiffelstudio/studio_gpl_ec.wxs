@@ -1,5 +1,23 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
-  	<ComponentGroup Id="gpl_ec" />
+    <?ifndef IsWin64?>
+    <?ifdef x64?>
+    <?define IsWin64 = "yes"?>
+    <?else ?>
+    <?define IsWin64 = "no"?>
+    <?endif ?>
+    <?endif ?>
+    <?ifdef EiffelStudio?>
+    <DirectoryRef Id="Dir.Core.studio.spec.$(var.IsePlatform).bin">
+      <Component Id="Comp.Core.gpl_version" Guid="61AD140C-8F6F-4D08-97D0-7E76F00A017C" Win64="$(var.IsWin64)" KeyPath="yes">
+        <File Id="Core.ec.exe" Name="ec.exe" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\releases\gpl_version\ec.exe" />
+        <File Id="Core.ecb.exe" Name="ecb.exe" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\releases\gpl_version\ecb.exe" />
+        <File Id="Core.LICENSE" Name="LICENSE" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\releases\gpl_version\LICENSE" />
+      </Component>
+    </DirectoryRef>
+    <ComponentGroup Id="gpl_ec">
+      <ComponentRef Id="Comp.Core.gpl_version" />
+    </ComponentGroup>
+    <?endif ?>
   </Fragment>
 </Wix>

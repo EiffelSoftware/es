@@ -1,6 +1,251 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
-  	<ComponentGroup Id="Core.experimental.library.gobo" />
+    <?ifndef IsWin64?>
+    <?ifdef x64?>
+    <?define IsWin64 = "yes"?>
+    <?else ?>
+    <?define IsWin64 = "no"?>
+    <?endif ?>
+    <?endif ?>
+    <?ifdef EiffelStudio?>
+    <DirectoryRef Id="Dir.Core.experimental.library.gobo">
+      <Component Id="Comp.Core.experimental.library.gobo.gobo" Guid="1FE69791-6592-4D10-8882-3DCECE01440D" Win64="$(var.IsWin64)" KeyPath="yes">
+        <File Id="Core.experimental.library.gobo.gobo_sample.ecf_sample" Name="gobo-sample.ecf-sample" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo-sample.ecf-sample" />
+        <File Id="Core.experimental.library.gobo.gobo_all.ecf" Name="gobo_all.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_all.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_argument.ecf" Name="gobo_argument.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_argument.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_gelex_safe.ecf" Name="gobo_gelex-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_gelex-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_gelex.ecf" Name="gobo_gelex.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_gelex.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_geyacc_safe.ecf" Name="gobo_geyacc-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_geyacc-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_geyacc.ecf" Name="gobo_geyacc.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_geyacc.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_kernel_safe.ecf" Name="gobo_kernel-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_kernel-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_kernel.ecf" Name="gobo_kernel.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_kernel.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_lexical_safe.ecf" Name="gobo_lexical-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_lexical-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_lexical.ecf" Name="gobo_lexical.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_lexical.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_math_safe.ecf" Name="gobo_math-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_math-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_math.ecf" Name="gobo_math.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_math.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_parse_safe.ecf" Name="gobo_parse-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_parse-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_parse.ecf" Name="gobo_parse.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_parse.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_pattern_safe.ecf" Name="gobo_pattern-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_pattern-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_pattern.ecf" Name="gobo_pattern.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_pattern.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_regexp_safe.ecf" Name="gobo_regexp-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_regexp-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_regexp.ecf" Name="gobo_regexp.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_regexp.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_string_safe.ecf" Name="gobo_string-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_string-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_string.ecf" Name="gobo_string.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_string.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_structure_safe.ecf" Name="gobo_structure-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_structure-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_structure.ecf" Name="gobo_structure.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_structure.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_test.ecf" Name="gobo_test.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_test.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_time_safe.ecf" Name="gobo_time-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_time-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_time.ecf" Name="gobo_time.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_time.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_tools.ecf" Name="gobo_tools.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_tools.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_utility_safe.ecf" Name="gobo_utility-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_utility-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_utility.ecf" Name="gobo_utility.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_utility.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_xml_safe.ecf" Name="gobo_xml-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_xml-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_xml.ecf" Name="gobo_xml.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_xml.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_xpath_safe.ecf" Name="gobo_xpath-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_xpath-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_xpath.ecf" Name="gobo_xpath.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_xpath.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_xslt_safe.ecf" Name="gobo_xslt-safe.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_xslt-safe.ecf" />
+        <File Id="Core.experimental.library.gobo.gobo_xslt.ecf" Name="gobo_xslt.ecf" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\gobo_xslt.ecf" />
+        <File Id="Core.experimental.library.gobo.package.iron" Name="package.iron" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\package.iron" />
+        <File Id="Core.experimental.library.gobo.README.txt" Name="README.txt" DiskId="1" Source="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\README.txt" />
+      </Component>
+      <Directory Id="Dir.Core.experimental.library.gobo.override" Name="override" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override">
+        <Component Id="Comp.Core.experimental.library.gobo.override" Guid="F872DB3A-6EB5-4109-993F-D8291552C2E4" Win64="$(var.IsWin64)" KeyPath="yes">
+          <File Id="Core.experimental.library.gobo.override.clean_generated.py" Name="clean_generated.py" DiskId="1" />
+          <File Id="Core.experimental.library.gobo.override.update_generated.py" Name="update_generated.py" DiskId="1" />
+        </Component>
+        <Directory Id="Dir.Core.experimental.library.gobo.override.generated" Name="generated" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated">
+          <Component Id="Comp.Core.experimental.library.gobo.override.generated" Guid="34AEDE54-64F7-45A0-9942-1EA0AE011CE8" Win64="$(var.IsWin64)" KeyPath="yes">
+            <File Id="Core.experimental.library.gobo.override.generated.README.txt" Name="README.txt" DiskId="1" />
+          </Component>
+          <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library" Name="library" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library">
+            <Component Id="Comp.Core.experimental.library.gobo.override.generated.library" Guid="7A9DF2AE-6A57-40BD-BACC-1065C89BBBB4" Win64="$(var.IsWin64)" KeyPath="yes">
+              <CreateFolder />
+              <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.generated.library" On="uninstall" />
+            </Component>
+            <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.kernel" Name="kernel" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\kernel">
+              <Component Id="Comp.Core.experimental.library.gobo.override.generated.library.kernel" Guid="C92959C2-8AA3-4964-A20A-DB3CA90D63DC" Win64="$(var.IsWin64)" KeyPath="yes">
+                <File Id="Core.experimental.library.gobo.override.GENERA_1.library.kernel.README." Name="README.txt" DiskId="1" />
+              </Component>
+              <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.kernel.spec" Name="spec" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\kernel\spec">
+                <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.kernel.sp" Guid="56B3B6EE-8ED8-4FB2-B121-C147BEEAE879" Win64="$(var.IsWin64)" KeyPath="yes">
+                  <CreateFolder />
+                  <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.kernel.spec" On="uninstall" />
+                </Component>
+                <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.kernel.spe" Name="ise" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\kernel\spec\ise">
+                  <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.kernel.sp2" Guid="9A90C38F-4C1F-4543-8F23-97F200437E97" Win64="$(var.IsWin64)" KeyPath="yes">
+                    <CreateFolder />
+                    <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.kernel.spe" On="uninstall" />
+                  </Component>
+                </Directory>
+              </Directory>
+            </Directory>
+            <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.lexical" Name="lexical" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\lexical">
+              <Component Id="Comp.Core.experimental.library.gobo.override.generated.library.lexical" Guid="9CAE8924-378C-479A-A48D-7BFF2E847B09" Win64="$(var.IsWin64)" KeyPath="yes">
+                <File Id="Core.experimental.library.gobo.override.GENERA_1.library.lexical.README" Name="README.txt" DiskId="1" />
+              </Component>
+              <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.lexical.lex" Name="lex" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\lexical\lex">
+                <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.lexical.l" Guid="DF7A79A5-BF23-49F3-BA6A-59DADFD9141F" Win64="$(var.IsWin64)" KeyPath="yes">
+                  <CreateFolder />
+                  <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.lexical.lex" On="uninstall" />
+                </Component>
+              </Directory>
+              <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.lexical.re" Name="regexp" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\lexical\regexp">
+                <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.lexical.r" Guid="E06A679E-DE1C-4FE6-B87D-46D47AC52108" Win64="$(var.IsWin64)" KeyPath="yes">
+                  <CreateFolder />
+                  <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.lexical.re" On="uninstall" />
+                </Component>
+              </Directory>
+            </Directory>
+            <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.parse" Name="parse" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\parse">
+              <Component Id="Comp.Core.experimental.library.gobo.override.generated.library.parse" Guid="2F14F298-06C8-4FA1-9634-B8E3C33185D0" Win64="$(var.IsWin64)" KeyPath="yes">
+                <File Id="Core.experimental.library.gobo.override.GENERA_1.library.parse.README.t" Name="README.txt" DiskId="1" />
+              </Component>
+              <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.parse.yacc" Name="yacc" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\parse\yacc">
+                <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.parse.yacc" Guid="CC531174-542D-41C2-B79B-15670A58A036" Win64="$(var.IsWin64)" KeyPath="yes">
+                  <CreateFolder />
+                  <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.generated.library.parse.yacc" On="uninstall" />
+                </Component>
+              </Directory>
+            </Directory>
+            <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.test" Name="test" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\test">
+              <Component Id="Comp.Core.experimental.library.gobo.override.generated.library.test" Guid="CE13BA0F-9952-4B7F-813D-82A8A6476C4F" Win64="$(var.IsWin64)" KeyPath="yes">
+                <File Id="Core.experimental.library.gobo.override.GENERA_1.library.test.README.txt" Name="README.txt" DiskId="1" />
+              </Component>
+              <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.test.GENER" Name="generation" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\test\generation">
+                <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.test.GENE" Guid="8B2853A3-F86B-4187-99FF-6D86AC10EFCF" Win64="$(var.IsWin64)" KeyPath="yes">
+                  <CreateFolder />
+                  <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.test.GENER" On="uninstall" />
+                </Component>
+              </Directory>
+            </Directory>
+            <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.tools" Name="tools" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\tools">
+              <Component Id="Comp.Core.experimental.library.gobo.override.generated.library.tools" Guid="4CE359BA-5394-453C-ACFB-1BD2389264B3" Win64="$(var.IsWin64)" KeyPath="yes">
+                <File Id="Core.experimental.library.gobo.override.GENERA_1.library.tools.README.t" Name="README.txt" DiskId="1" />
+              </Component>
+              <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.tools.eiff" Name="eiffel" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\tools\eiffel">
+                <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.tools.eif" Guid="9F601780-7439-4C4E-8FBC-85AFD81C0C4A" Win64="$(var.IsWin64)" KeyPath="yes">
+                  <CreateFolder />
+                  <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.tools.eiff" On="uninstall" />
+                </Component>
+                <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.tools.eiff2" Name="parser" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\tools\eiffel\parser">
+                  <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.tools.eif2" Guid="D005CC5A-CDBC-4216-A677-CF0B80389E9C" Win64="$(var.IsWin64)" KeyPath="yes">
+                    <CreateFolder />
+                    <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.tools.eiff2" On="uninstall" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.tools.lace" Name="lace" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\tools\lace">
+                <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.tools.lace" Guid="6E3225B5-8F1C-431C-B9A2-1154986A2BEC" Win64="$(var.IsWin64)" KeyPath="yes">
+                  <CreateFolder />
+                  <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.generated.library.tools.lace" On="uninstall" />
+                </Component>
+                <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.tools.lace" Name="parser" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\tools\lace\parser">
+                  <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.tools.lac" Guid="A19A6DF1-243A-4EDE-B11A-C658B7666A4D" Win64="$(var.IsWin64)" KeyPath="yes">
+                    <CreateFolder />
+                    <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.tools.lace" On="uninstall" />
+                  </Component>
+                </Directory>
+              </Directory>
+            </Directory>
+            <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.utility" Name="utility" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\utility">
+              <Component Id="Comp.Core.experimental.library.gobo.override.generated.library.utility" Guid="6C27F07A-2768-4B79-B270-0E00A1D93059" Win64="$(var.IsWin64)" KeyPath="yes">
+                <File Id="Core.experimental.library.gobo.override.GENERA_1.library.utility.README" Name="README.txt" DiskId="1" />
+              </Component>
+              <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.utility.co" Name="config" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\utility\config">
+                <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.utility.c" Guid="DCF121F3-5B3B-4AC0-9A83-3373271F97E0" Win64="$(var.IsWin64)" KeyPath="yes">
+                  <CreateFolder />
+                  <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.utility.co" On="uninstall" />
+                </Component>
+              </Directory>
+            </Directory>
+            <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.xml" Name="xml" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\xml">
+              <Component Id="Comp.Core.experimental.library.gobo.override.generated.library.xml" Guid="0052695F-BE51-469B-8A40-86D2FD409A79" Win64="$(var.IsWin64)" KeyPath="yes">
+                <File Id="Core.experimental.library.gobo.override.generated.library.xml.README.txt" Name="README.txt" DiskId="1" />
+              </Component>
+              <Directory Id="Dir.Core.experimental.library.gobo.override.generated.library.xml.parser" Name="parser" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\xml\parser">
+                <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.xml.parser" Guid="649F97A2-4604-44BA-8BBD-94D22BA0F8FB" Win64="$(var.IsWin64)" KeyPath="yes">
+                  <CreateFolder />
+                  <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.generated.library.xml.parser" On="uninstall" />
+                </Component>
+                <Directory Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.xml.parser" Name="eiffel" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\library\xml\parser\eiffel">
+                  <Component Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.xml.parse" Guid="1F91C5E2-3CAF-40E7-BAA0-07B53335AF62" Win64="$(var.IsWin64)" KeyPath="yes">
+                    <CreateFolder />
+                    <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.GENERA_1.library.xml.parser" On="uninstall" />
+                  </Component>
+                </Directory>
+              </Directory>
+            </Directory>
+          </Directory>
+          <Directory Id="Dir.Core.experimental.library.gobo.override.generated.src" Name="src" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\src">
+            <Component Id="Comp.Core.experimental.library.gobo.override.generated.src" Guid="C6A9012A-2CFD-4ECF-8EE8-09307F56154A" Win64="$(var.IsWin64)" KeyPath="yes">
+              <CreateFolder />
+              <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.generated.src" On="uninstall" />
+            </Component>
+            <Directory Id="Dir.Core.experimental.library.gobo.override.generated.src.gepp" Name="gepp" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\override\generated\src\gepp">
+              <Component Id="Comp.Core.experimental.library.gobo.override.generated.src.gepp" Guid="FBD67E88-E05E-4F88-A066-57F4BDFF033F" Win64="$(var.IsWin64)" KeyPath="yes">
+                <CreateFolder />
+                <RemoveFolder Id="Dir.Core.experimental.library.gobo.override.generated.src.gepp" On="uninstall" />
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="Dir.Core.experimental.library.gobo.src" Name="src" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\src">
+        <Component Id="Comp.Core.experimental.library.gobo.src" Guid="10410812-D3AC-4AFC-9F8B-21F0B818473C" Win64="$(var.IsWin64)" KeyPath="yes">
+          <File Id="Core.experimental.library.gobo.src.geant.ecf" Name="geant.ecf" DiskId="1" />
+          <File Id="Core.experimental.library.gobo.src.gec.ecf" Name="gec.ecf" DiskId="1" />
+          <File Id="Core.experimental.library.gobo.src.gelex.ecf" Name="gelex.ecf" DiskId="1" />
+          <File Id="Core.experimental.library.gobo.src.gelint.ecf" Name="gelint.ecf" DiskId="1" />
+          <File Id="Core.experimental.library.gobo.src.gepp.ecf" Name="gepp.ecf" DiskId="1" />
+          <File Id="Core.experimental.library.gobo.src.getest.ecf" Name="getest.ecf" DiskId="1" />
+          <File Id="Core.experimental.library.gobo.src.gexace.ecf" Name="gexace.ecf" DiskId="1" />
+          <File Id="Core.experimental.library.gobo.src.gexslt.ecf" Name="gexslt.ecf" DiskId="1" />
+          <File Id="Core.experimental.library.gobo.src.geyacc.ecf" Name="geyacc.ecf" DiskId="1" />
+        </Component>
+        <Directory Id="Dir.Core.experimental.library.gobo.src.ecf_support" Name="ecf_support" FileSource="c:\work\InstalledEiffel_18.05_32\EiffelStudio\experimental\library\gobo\src\ecf_support">
+          <Component Id="Comp.Core.experimental.library.gobo.src.ecf_support" Guid="EABF33F7-3DCB-4D88-92DA-735802BB3A76" Win64="$(var.IsWin64)" KeyPath="yes">
+            <File Id="Core.experimental.library.gobo.src.ecf_support.ecf_gec.e" Name="ecf_gec.e" DiskId="1" />
+            <File Id="Core.experimental.library.gobo.src.ecf_support.ecf_gelint.e" Name="ecf_gelint.e" DiskId="1" />
+            <File Id="Core.experimental.library.gobo.src.ecf_support.et_ecf_ast_factory.e" Name="et_ecf_ast_factory.e" DiskId="1" />
+            <File Id="Core.experimental.library.gobo.src.ecf_support.et_ecf_parser.e" Name="et_ecf_parser.e" DiskId="1" />
+            <File Id="Core.experimental.library.gobo.src.ecf_support.et_ecf_parse_error.e" Name="et_ecf_parse_error.e" DiskId="1" />
+            <File Id="Core.experimental.library.gobo.src.ecf_support.et_ecf_system_parser.e" Name="et_ecf_system_parser.e" DiskId="1" />
+            <File Id="Core.experimental.library.gobo.src.ecf_support.gec.ecf" Name="gec.ecf" DiskId="1" />
+            <File Id="Core.experimental.library.gobo.src.ecf_support.gelint.ecf" Name="gelint.ecf" DiskId="1" />
+          </Component>
+        </Directory>
+      </Directory>
+    </DirectoryRef>
+    <ComponentGroup Id="Core.experimental.library.gobo">
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.gobo" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.library" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.library.kernel" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.kernel.sp" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.kernel.sp2" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.library.lexical" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.lexical.l" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.lexical.r" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.library.parse" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.parse.yacc" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.library.test" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.test.GENE" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.library.tools" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.tools.eif" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.tools.eif2" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.tools.lace" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.tools.lac" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.library.utility" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.utility.c" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.library.xml" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.xml.parser" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.GENERA_1.library.xml.parse" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.src" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.override.generated.src.gepp" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.src" />
+      <ComponentRef Id="Comp.Core.experimental.library.gobo.src.ecf_support" />
+    </ComponentGroup>
+    <?endif ?>
   </Fragment>
 </Wix>
-
