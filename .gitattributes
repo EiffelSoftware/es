@@ -3685,6 +3685,8 @@ Src/library/wel/tests/graphics/32bpp.bmp -text
 Src/library/wizard/help/Clib/htmlhelp.lib -text
 Src/scripts/check_trunk_head_compilation_validity -text
 Src/scripts/geant/tools/_inc/_f_code_tpl_ -text
+Src/scripts/update_copyright_year.sh eol=lf
+Src/scripts/update_eiffelstudio_version.sh eol=lf
 Src/tools/ace2ecf/license.lic -text
 Src/tools/ace2ecf/src/lace/lace_compile/lace.l -text
 Src/tools/button_clicker/button_clicker.ico -text
