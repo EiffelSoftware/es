@@ -2362,7 +2362,6 @@ feature {NONE} -- Visitor
 				end
 			elseif
 					-- Look at the target type to see if it can be used to compute target type.
-					-- TODO on [2018-01-30]: Remove this branch when all source code is updated.
 				attached current_target_type as t and then
 				attached {GEN_TYPE_A} t.conformance_type as g and then
 					-- Check that it is either an ARRAY, or a NATIVE_ARRAY when used
@@ -2393,7 +2392,7 @@ feature {NONE} -- Visitor
 					create l_generics.make (1)
 					l_generics.extend (default_element_type)
 						-- Type of a manifest array is always attached.
-					default_array_type := (create {GEN_TYPE_A}.make (system.array_id, l_generics)).as_attached_in (l_current_class)
+					default_array_type := (create {GEN_TYPE_A}.make (system.array_id, l_generics)).as_normally_attached (l_current_class)
 						-- Type of a manifest array is always frozen.
 					default_array_type.set_frozen_mark
 				end
@@ -2410,17 +2409,13 @@ feature {NONE} -- Visitor
 							-- Either an explicit array type is specified or the computed array type is not useable for all elements.
 							-- Check conformance and conversion rules for the explicit array type or for the target type.
 						if attached default_element_type then
-								-- TODO on [2019-06-30]: Remove this branch when all source code is updated.
 								-- The implicit type is required to compute array type, it should be replaced with an explicit one.
-							if (create {DATE}.make (2017, 11, 30)).relative_duration (create {DATE}.make_now_utc).days_count + 366  + 183 <= 0 then
+							if context.current_class.lace_class.is_manifest_array_type_mismatch_warning then
+									-- Report a warning.
+								error_handler.insert_warning (create {VWMA_EXPLICIT_TYPE_REQUIRED_FOR_CONFORMANCE}.make (context, default_element_type, l_type_a, l_as, False))
+							elseif context.current_class.lace_class.is_manifest_array_type_mismatch_error then
 									-- Report an error.
-								error_handler.insert_error (create {VWMA_EXPLICIT_TYPE_REQUIRED}.make (context, default_element_type, l_type_a, l_as, True))
-							elseif
-									(create {DATE}.make (2017, 11, 30)).relative_duration (create {DATE}.make_now_utc).days_count + 366 <= 0 or else
-									context.current_class.is_warning_enabled (w_manifest_array_type)
-							then
-									-- Report a warning either when it is enabled or when a year has passed since the release.
-								error_handler.insert_warning (create {VWMA_EXPLICIT_TYPE_REQUIRED}.make (context, default_element_type, l_type_a, l_as, False))
+								error_handler.insert_error (create {VWMA_EXPLICIT_TYPE_REQUIRED_FOR_CONFORMANCE}.make (context, default_element_type, l_type_a, l_as, True))
 							end
 						end
 							-- Check that expressions' type matches element's type of the array.
@@ -2461,6 +2456,21 @@ feature {NONE} -- Visitor
 						end
 					else
 							-- There is no explicit array type and the computed array type conforms to the target array type.
+						if
+							not is_inherited and then
+							not context.current_class.lace_class.is_manifest_array_type_standard and then
+							attached default_element_type and then
+							not l_type_a.conform_to (context.current_class, default_element_type)
+						then
+								-- The source type is different from the target one.
+							if context.current_class.lace_class.is_manifest_array_type_mismatch_error then
+									-- Report an error.
+								error_handler.insert_error (create {VWMA_EXPLICIT_TYPE_REQUIRED_FOR_MATCH}.make (context, default_element_type, l_type_a, l_as, True))
+							else
+									-- Report a warning.
+								error_handler.insert_warning (create {VWMA_EXPLICIT_TYPE_REQUIRED_FOR_MATCH}.make (context, default_element_type, l_type_a, l_as, False))
+							end
+						end
 							-- Use the default (computed) array type.
 						l_type_a := default_element_type
 						implicit_type := default_array_type
@@ -2483,8 +2493,8 @@ feature {NONE} -- Visitor
 								-- support that, so we remove the anchors.
 							l_array_type := l_array_type.deep_actual_type
 						end
-							-- Type of a manifest array is always attached
-						l_array_type := l_array_type.as_attached_in (l_current_class)
+							-- Type of a manifest array is always attached.
+						l_array_type := l_array_type.as_normally_attached (l_current_class)
 					end
 				else
 						-- There is no explicit or implicit array type,  use the default one.
@@ -2532,18 +2542,18 @@ feature {NONE} -- Visitor
 		do
 			if l_as.type = Void then
 					-- Default to STRING_8, if not specified in the code.
-					l_simplified_string_type := manifest_string_type
-		else
+				l_simplified_string_type := manifest_string_type
+			else
 				check_type (l_as.type)
 				if attached last_type as l_last_type then
 					l_simplified_string_type := l_last_type.duplicate
-						-- Manifest string are always frozen.
+						-- Manifest strings are always frozen.
 					l_simplified_string_type.set_frozen_mark
 				end
 			end
 			if l_simplified_string_type /= Void then
 					-- Constants are always of an attached type.
-				l_simplified_string_type := l_simplified_string_type.as_attached_in (context.current_class)
+				l_simplified_string_type := l_simplified_string_type.as_normally_attached (context.current_class)
 				set_type (l_simplified_string_type, l_as)
 				class_id := l_simplified_string_type.base_class.class_id
 				if attached system.string_8_class as c then
@@ -11008,6 +11018,11 @@ feature {NONE} -- Implementation: type validation
 				rx := x.to_other_immediate_attachment (y)
 				ry := y
 			end
+				-- Source types should conform to the computed ones.
+			check
+				x_conforms_to_rx: x.conform_to (context.current_class, rx)
+				y_conforms_to_ry: x.conform_to (context.current_class, ry)
+			end
 			if rx.is_separate then
 					-- Use `x` separateness status.
 				ry := ry.to_other_separateness (rx)
@@ -11015,11 +11030,20 @@ feature {NONE} -- Implementation: type validation
 					-- Use `y` separateness status.
 				rx := rx.to_other_separateness (ry)
 			end
-			if rx.conform_to (context.current_class, ry) then
+				-- Source types should conform to the computed ones.
+			check
+				x_conforms_to_rx: x.conform_to (context.current_class, rx)
+				y_conforms_to_ry: x.conform_to (context.current_class, ry)
+			end
+				-- Use the type to which both `x` and `y` conform.
+			if x.conform_to (context.current_class, ry) then
 				Result := ry
-			elseif ry.conform_to (context.current_class, rx) then
+			elseif y.conform_to (context.current_class, rx) then
 				Result := rx
 			end
+		ensure
+			x_conforms_to_Result: attached Result implies x.conform_to (context.current_class, Result)
+			y_conforms_to_Result: attached Result implies y.conform_to (context.current_class, Result)
 		end
 
 	maximal_type (ts: ARRAYED_LIST [TYPE_A]): TYPE_A
@@ -11028,8 +11052,8 @@ feature {NONE} -- Implementation: type validation
 			t: TYPE_A
 			i, j, n: INTEGER
 		do
-				-- Use "NONE" as the initial lowest type, it conforms to any other type.
-			Result := none_type.as_attached_type
+				-- Use "(attached) NONE" as the initial lowest type, it conforms to any other type.
+			Result := none_type.as_normally_attached (context.current_class)
 			from
 				n := ts.count
 			until
@@ -11041,8 +11065,8 @@ feature {NONE} -- Implementation: type validation
 					Result := x
 				else
 					if i >= n or else j >= n then
-							-- Cannot find a common type, use "ANY".
-						Result := (create {CL_TYPE_A}.make (system.any_id)).as_attached_type
+							-- Cannot find a common type, use "(attached) ANY".
+						Result := system.any_type.as_normally_attached (context.current_class)
 					else
 							-- Start over from the next unprocessed element type as the initial one.
 						if i > j then
@@ -11056,6 +11080,8 @@ feature {NONE} -- Implementation: type validation
 					i := 0
 				end
 			end
+		ensure
+			types_conform_to_result: across ts as x all x.item.conform_to (context.current_class, Result) end
 		end
 
 feature {NONE} -- Implementation: checking locals
