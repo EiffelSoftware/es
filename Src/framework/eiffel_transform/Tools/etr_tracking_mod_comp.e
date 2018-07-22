@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Comparator for sorting trackable modifications"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -11,14 +11,14 @@ inherit
 
 feature
 
-	less_than (u, v: ETR_TRACKABLE_MODIFICATION): BOOLEAN
+	attached_less_than (u, v: ETR_TRACKABLE_MODIFICATION): BOOLEAN
 			-- <precursor>
 		do
 			Result := u.region_start < v.region_start
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2018, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
