@@ -11,7 +11,7 @@ inherit
 
 feature {NONE} -- Constants
 
-	default_using_compiler_factory: BOOLEAN is true
+	default_using_compiler_factory: BOOLEAN = true
 			-- Default factory is a compiler factory
 
 feature {NONE} -- Parser	

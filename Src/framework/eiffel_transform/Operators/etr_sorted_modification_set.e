@@ -9,7 +9,7 @@ create {ETR_AST_STRUCTURE_PRINTER}
 
 feature {NONE} -- Creation
 
-	make is
+	make
 			-- make empty structure
 		do
 			create par_groups.make

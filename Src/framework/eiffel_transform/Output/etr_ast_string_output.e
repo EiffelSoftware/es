@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Creation
 
-	make is
+	make
 			-- Create with `default_indentation_string'
 		do
 			make_with_indentation_string(default_indentation_string)

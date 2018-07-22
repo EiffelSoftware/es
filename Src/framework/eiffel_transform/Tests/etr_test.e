@@ -39,7 +39,7 @@ feature -- Test routines
 
 	printer_test
 			-- reads a complex syntax file, prints it out from structure and tries to reparse it
-		indexing
+		note
 			testing:  "EiffelTransform", "covers/{ETR_AST_STRUCTURE_PRINTER}"
 		local
 			l_class_file: KL_BINARY_INPUT_FILE
@@ -85,7 +85,7 @@ feature -- Test routines
 
 	test_ast_modification_invalid
 			-- does some invalid ast modifications
-		indexing
+		note
 			testing:  "EiffelTransform", "covers/{ETR_BASIC_OPS}"
 		local
 			context: ETR_CONTEXT
@@ -109,7 +109,7 @@ feature -- Test routines
 
 	test_ast_modification_valid
 			-- does some valid ast modifications
-		indexing
+		note
 			testing:  "EiffelTransform", "covers/{ETR_AST_STRUCTURE_PRINTER}", "covers/{ETR_BASIC_OPS}"
 		local
 			context: ETR_CONTEXT
@@ -196,7 +196,7 @@ feature -- Test routines
 
 	huge_printer_test
 			-- Parses and reprints all classes in EIFFEL_SRC
-		indexing
+		note
 			testing:  "EiffelTransform", "covers/{ETR_AST_STRUCTURE_PRINTER}"
 		local
 			l_root_dir: DIRECTORY

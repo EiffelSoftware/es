@@ -20,7 +20,7 @@ create
 
 feature {NONE} -- Creation
 
-	make is
+	make
 			-- <precursor>
 		do
 			create child_stack.make
