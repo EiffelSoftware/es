@@ -4343,10 +4343,6 @@ Src/web/eiffel-org/modules/eiffel_download/site/files/css/download.css -text
 Src/web/eiffel-org/modules/eiffel_download/site/files/scss/download.css -text
 Src/web/eiffel-org/modules/eiffel_download/site/files/scss/download.css.map -text
 Src/web/eiffel-org/modules/eiffel_download/site/files/scss/download.scss -text
-Src/web/eiffel-org/modules/embedded_video/test/testing-safe.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/embedded_video/test/testing.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/embedded_video/video-safe.ecf svneol=native#text/xml
-Src/web/eiffel-org/modules/embedded_video/video.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/task_list/cms_task_list-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/task_list/cms_task_list.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/task_list/site/files/css/wish_list.css -text
