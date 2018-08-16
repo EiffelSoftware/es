@@ -6011,6 +6011,11 @@ eweasel/tests/melt110/Ace svneol=native#text/xml
 eweasel/tests/once001/Ace -text
 eweasel/tests/once004/Ace -text
 eweasel/tests/once005/Ace -text
+eweasel/tests/once024/Ace svneol=native#text/xml
+eweasel/tests/once025/Ace svneol=native#text/xml
+eweasel/tests/once026/Ace svneol=native#text/xml
+eweasel/tests/once027/Ace svneol=native#text/xml
+eweasel/tests/once028/Ace svneol=native#text/xml
 eweasel/tests/path001/Ace svneol=native#text/xml
 eweasel/tests/path002/Ace svneol=native#text/xml
 eweasel/tests/pretty029/Ace svneol=native#text/xml
