@@ -4451,6 +4451,8 @@ Src/web/eiffel-org/site/modules/files/files/js/src/dropzone.scss -text
 Src/web/eiffel-org/site/modules/files/files/scss/files.scss -text
 Src/web/eiffel-org/site/modules/google_search/config/google_search.json -text
 Src/web/eiffel-org/site/modules/google_search_20/config/google_search_20.json-dist -text
+Src/web/eiffel-org/site/modules/google_search_20/files/css/gcse.css -text
+Src/web/eiffel-org/site/modules/google_search_20/files/scss/gcse.scss -text
 Src/web/eiffel-org/site/modules/messaging/files/scss/messaging.scss -text
 Src/web/eiffel-org/site/modules/node/files/css/node.css -text
 Src/web/eiffel-org/site/modules/node/files/scss/node.scss -text
