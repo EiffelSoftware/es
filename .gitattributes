@@ -4421,6 +4421,7 @@ Src/web/eiffel-org/site/modules/admin/files/scss/admin.scss -text
 Src/web/eiffel-org/site/modules/auth/config/auth.json -text
 Src/web/eiffel-org/site/modules/auth/files/css/admin_auth.css -text
 Src/web/eiffel-org/site/modules/auth/files/css/auth.css -text
+Src/web/eiffel-org/site/modules/auth/files/scss/admin_auth.scss -text
 Src/web/eiffel-org/site/modules/auth/files/scss/auth.scss -text
 Src/web/eiffel-org/site/modules/auth/mail_templates/account_activation.html svneol=native#text/xml
 Src/web/eiffel-org/site/modules/auth/mail_templates/account_activation_confirmation.html svneol=native#text/xml
@@ -4440,7 +4441,9 @@ Src/web/eiffel-org/site/modules/contact/files/css/contact.css -text
 Src/web/eiffel-org/site/modules/contact/files/scss/contact.scss -text
 Src/web/eiffel-org/site/modules/core/scripts/core.sql -text
 Src/web/eiffel-org/site/modules/core/scripts/updates/core-1.0.0.1.sql -text
+Src/web/eiffel-org/site/modules/custom_block/config/custom_block.json -text
 Src/web/eiffel-org/site/modules/eiffel_download/files/css/download.css -text
+Src/web/eiffel-org/site/modules/eiffel_download/files/scss/download.scss -text
 Src/web/eiffel-org/site/modules/feed_aggregator/config/feeds.json.example -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/css/feed_aggregator.css -text
 Src/web/eiffel-org/site/modules/feed_aggregator/files/scss/feed_aggregator.scss -text
