@@ -4434,6 +4434,7 @@ Src/web/eiffel-org/site/modules/auth/mail_templates/admin_account_evaluation.htm
 Src/web/eiffel-org/site/modules/blog/files/css/blog.css -text
 Src/web/eiffel-org/site/modules/blog/files/scss/blog.scss -text
 Src/web/eiffel-org/site/modules/blog/scripts/install.sql -text
+Src/web/eiffel-org/site/modules/codeboard/files/css/codeboard_static_demo.css -text
 Src/web/eiffel-org/site/modules/comments/files/scss/comments.scss -text
 Src/web/eiffel-org/site/modules/comments/scripts/install.sql -text
 Src/web/eiffel-org/site/modules/contact/config/contact.json -text
