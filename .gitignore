@@ -539,3 +539,7 @@ Src/web/eiffel-org/site/db
 Src/web/eiffel-org/tmp
 eweasel/compilation/EIFGENs
 eweasel/tmp
+research/extension/autoproof/framework/eiffel2boogie/tests/EIFGENs
+research/extension/autoproof/framework/eiffel2boogie/tests/autoproof_output.txt
+research/extension/autoproof/framework/eiffel2boogie/tests/exception_trace.log
+research/extension/autoproof/framework/eiffel2boogie/tests/log.txt
