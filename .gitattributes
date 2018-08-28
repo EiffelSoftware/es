@@ -10436,6 +10436,7 @@ research/extension/autoproof/framework/eiffel2boogie/tests/template/args.txt_ -t
 research/extension/autoproof/framework/eiffel2boogie/tests/template/output.txt_ -text
 research/extension/autoproof/framework/eiffel2boogie/tests/template/template.e_ -text
 research/extension/autoproof/library/base/any.sed eol=lf
+research/extension/autoproof/library/base/arguments.sed eol=lf
 research/extension/autoproof/library/base/base.ecf svneol=native#text/xml
 research/extension/autoproof/library/base/base.sed eol=lf
 research/extension/autoproof/library/base/eve/array.bpl -text
