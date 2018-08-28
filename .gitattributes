@@ -10435,3 +10435,16 @@ research/extension/autoproof/framework/eiffel2boogie/tests/language/tuples/outpu
 research/extension/autoproof/framework/eiffel2boogie/tests/template/args.txt_ -text
 research/extension/autoproof/framework/eiffel2boogie/tests/template/output.txt_ -text
 research/extension/autoproof/framework/eiffel2boogie/tests/template/template.e_ -text
+research/extension/autoproof/library/base/any.sed eol=lf
+research/extension/autoproof/library/base/base.ecf svneol=native#text/xml
+research/extension/autoproof/library/base/base.sed eol=lf
+research/extension/autoproof/library/base/eve/array.bpl -text
+research/extension/autoproof/library/base/iterable.sed eol=lf
+research/extension/autoproof/library/base/iteration_cursor.sed eol=lf
+research/extension/autoproof/library/base/mml/bag.bpl -text
+research/extension/autoproof/library/base/mml/map.bpl -text
+research/extension/autoproof/library/base/mml/pair.bpl -text
+research/extension/autoproof/library/base/mml/relation.bpl -text
+research/extension/autoproof/library/base/mml/sequence.bpl -text
+research/extension/autoproof/library/base/mml/set.bpl -text
+research/extension/autoproof/library/base/std_files.sed eol=lf
