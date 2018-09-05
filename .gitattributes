@@ -3863,9 +3863,8 @@ Src/tools/estudio/config/estudio_e.ico -text
 Src/tools/estudio/config/estudio_ecf.ico -text
 Src/tools/eweasel_comparator/eweasel_comparator.lic -text
 Src/tools/finish_freezing/appl.ico -text
-Src/tools/finish_freezing/finish_freezing-safe.lic -text
 Src/tools/finish_freezing/finish_freezing.exe.manifest -text
-Src/tools/finish_freezing/finish_freezing.lic -text
+Src/tools/finish_freezing/license.lic -text
 Src/tools/hallow/hallow.lic -text
 Src/tools/iron/client/license.lic -text
 Src/tools/iron/delivery/credential.py-template -text
