@@ -5054,6 +5054,7 @@ Src/web/support/db/scripts/IsProblemReportVisubleGuest.sql -text
 Src/web/support/db/scripts/TableRowCount.sql -text
 Src/web/support/db/tests/esa_api.log -text
 Src/web/support/db/tests/tests.ecf svneol=native#text/xml
+/appveyor.yml -text
 benchmarks/scoop/Tests1-6.xls -text
 benchmarks/scoop/results/chart.ods -text
 benchmarks/scoop/scoop0001/LogParser.java -text
