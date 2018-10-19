@@ -4559,7 +4559,6 @@ Src/web/eiffel-org/site/modules/node/files/scss/node.scss -text
 Src/web/eiffel-org/site/modules/node/scripts/node.sql -text
 Src/web/eiffel-org/site/modules/node/scripts/page.sql -text
 Src/web/eiffel-org/site/modules/node/scripts/updates/node-1.0.0.1.sql -text
-Src/web/eiffel-org/site/modules/oauth20/scripts/data.sql -text
 Src/web/eiffel-org/site/modules/oauth20/scripts/install.sql -text
 Src/web/eiffel-org/site/modules/openid/scripts/openid_consumers.sql -text
 Src/web/eiffel-org/site/modules/openid/scripts/openid_consumers_initialize.sql -text
