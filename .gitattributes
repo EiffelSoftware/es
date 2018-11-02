@@ -5238,6 +5238,7 @@ eweasel/tests/ccomp048/notes -text
 eweasel/tests/ccomp050/notes -text
 eweasel/tests/ccomp051/notes -text
 eweasel/tests/ccomp052/notes -text
+eweasel/tests/ccomp091/Ace svneol=native#text/xml
 eweasel/tests/codeanalysis001/Ace -text
 eweasel/tests/codeanalysis002/Ace -text
 eweasel/tests/codeanalysis002/alldisabled.xml -text
