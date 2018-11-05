@@ -4979,6 +4979,8 @@ Src/web/eiffel-org/site/themes/wdocs/assets/scss/variables.scss -text
 Src/web/eiffel-org/site/themes/wdocs/theme.info -text
 Src/web/eiffel-org/tools/docs2svn/docs2svn-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/tools/docs2svn/docs2svn.ecf svneol=native#text/xml
+Src/web/eiffel-org/www-setup/install.sh eol=lf
+Src/web/eiffel-org/www-setup/install_porterpackage.sh eol=lf
 Src/web/eiffel-org/www-setup/readme.html svneol=native#text/xml
 Src/web/eiffel_download/IIRF.ini -text
 Src/web/eiffel_download/download_tables.sql -text
