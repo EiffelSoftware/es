@@ -3398,9 +3398,7 @@ Src/help/wizards/estore2/pixmaps/eiffel_wizard_icon.png -text
 Src/help/wizards/eweb/pixmaps/Eiffel_wizard_new.bmp -text
 Src/help/wizards/eweb/pixmaps/database_small.bmp -text
 Src/help/wizards/ewf/console_wizard.ecf svneol=native#text/xml
-Src/help/wizards/ewf/lib/wizard/estudio_console_wizard-safe.ecf svneol=native#text/xml
 Src/help/wizards/ewf/lib/wizard/estudio_console_wizard.ecf svneol=native#text/xml
-Src/help/wizards/ewf/lib/wizard/estudio_gui_wizard-safe.ecf svneol=native#text/xml
 Src/help/wizards/ewf/lib/wizard/estudio_gui_wizard.ecf svneol=native#text/xml
 Src/help/wizards/ewf/rootdir/ewf.dsc -text
 Src/help/wizards/ewf/rootdir/resources/${APP_NAME}.ecf svneol=native#text/xml
