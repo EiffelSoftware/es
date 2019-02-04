@@ -4467,7 +4467,6 @@ Src/web/eiffel-org/modules/eiffel_community/eiffel_community.ecf svneol=native#t
 Src/web/eiffel-org/modules/eiffel_download/eiffel_download-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/eiffel_download/eiffel_download.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/eiffel_download/site/files/css/download.css -text
-Src/web/eiffel-org/modules/eiffel_download/site/files/scss/download.css -text
 Src/web/eiffel-org/modules/eiffel_download/site/files/scss/download.scss -text
 Src/web/eiffel-org/modules/task_list/cms_task_list-safe.ecf svneol=native#text/xml
 Src/web/eiffel-org/modules/task_list/cms_task_list.ecf svneol=native#text/xml
