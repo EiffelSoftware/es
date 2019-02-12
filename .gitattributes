@@ -1266,6 +1266,7 @@ Src/Delivery/studio/bitmaps/src/icons/20/6.svg -text
 Src/Delivery/studio/bitmaps/src/icons/20/7.svg -text
 Src/Delivery/studio/bitmaps/src/icons/20/8.svg -text
 Src/Delivery/studio/bitmaps/src/icons/21/1.svg -text
+Src/Delivery/studio/bitmaps/src/icons/21/12.svg -text
 Src/Delivery/studio/bitmaps/src/icons/21/2.svg -text
 Src/Delivery/studio/bitmaps/src/icons/21/4.svg -text
 Src/Delivery/studio/bitmaps/src/icons/21/5.svg -text
@@ -1388,6 +1389,7 @@ Src/Delivery/studio/bitmaps/src/icons/8/5.svg -text
 Src/Delivery/studio/bitmaps/src/icons/9/1.svg -text
 Src/Delivery/studio/bitmaps/src/icons/9/2.svg -text
 Src/Delivery/studio/bitmaps/src/icons/9/3.svg -text
+Src/Delivery/studio/bitmaps/src/icons/icons.svg -text
 Src/Delivery/studio/bitmaps/src/mini/1/1.svg -text
 Src/Delivery/studio/bitmaps/src/mini/1/10.svg -text
 Src/Delivery/studio/bitmaps/src/mini/1/11.svg -text
@@ -1429,6 +1431,7 @@ Src/Delivery/studio/bitmaps/src/mini/5/3.svg -text
 Src/Delivery/studio/bitmaps/src/mini/5/5.svg -text
 Src/Delivery/studio/bitmaps/src/mini/6/1.svg -text
 Src/Delivery/studio/bitmaps/src/mini/6/9.svg -text
+Src/Delivery/studio/bitmaps/src/mini/mini_icons.svg -text
 Src/Delivery/studio/bitmaps/src/res/3dots.svg -text
 Src/Delivery/studio/bitmaps/src/res/_empty.svg -text
 Src/Delivery/studio/bitmaps/src/res/arrow_green_down.svg -text
@@ -1522,6 +1525,7 @@ Src/Delivery/studio/bitmaps/src/small/1/6.svg -text
 Src/Delivery/studio/bitmaps/src/small/1/7.svg -text
 Src/Delivery/studio/bitmaps/src/small/1/8.svg -text
 Src/Delivery/studio/bitmaps/src/small/1/9.svg -text
+Src/Delivery/studio/bitmaps/src/small/small_icons.svg -text
 Src/Delivery/studio/bitmaps/src/svgcleaner -text
 Src/Delivery/studio/config/windows/msc/appl.ico -text
 Src/Delivery/studio/eifinit/code_analysis.xml -text
