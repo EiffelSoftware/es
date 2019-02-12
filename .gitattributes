@@ -1164,6 +1164,16 @@ Src/Delivery/studio/bitmaps/png/small_18x18.png -text
 Src/Delivery/studio/bitmaps/png/small_24x24.png -text
 Src/Delivery/studio/bitmaps/png/splash.png -text
 Src/Delivery/studio/bitmaps/png/splash_shadow.png -text
+Src/Delivery/studio/bitmaps/src/build_all_diff.sh eol=lf
+Src/Delivery/studio/bitmaps/src/build_all_icons_matrix.sh eol=lf
+Src/Delivery/studio/bitmaps/src/build_diff.sh eol=lf
+Src/Delivery/studio/bitmaps/src/build_icons.sh eol=lf
+Src/Delivery/studio/bitmaps/src/build_mini_icons.sh eol=lf
+Src/Delivery/studio/bitmaps/src/build_overlays.sh eol=lf
+Src/Delivery/studio/bitmaps/src/build_res.sh eol=lf
+Src/Delivery/studio/bitmaps/src/build_small_icons.sh eol=lf
+Src/Delivery/studio/bitmaps/src/build_svg_matrix.sh eol=lf
+Src/Delivery/studio/bitmaps/src/extract_all_png.sh eol=lf
 Src/Delivery/studio/bitmaps/src/icons/1/1.svg -text
 Src/Delivery/studio/bitmaps/src/icons/1/10.svg -text
 Src/Delivery/studio/bitmaps/src/icons/1/11.svg -text
@@ -1390,6 +1400,9 @@ Src/Delivery/studio/bitmaps/src/icons/9/1.svg -text
 Src/Delivery/studio/bitmaps/src/icons/9/2.svg -text
 Src/Delivery/studio/bitmaps/src/icons/9/3.svg -text
 Src/Delivery/studio/bitmaps/src/icons/icons.svg -text
+Src/Delivery/studio/bitmaps/src/inc/matrix_from_subpixmaps.sh eol=lf
+Src/Delivery/studio/bitmaps/src/inc/matrix_to_subpixmaps.sh eol=lf
+Src/Delivery/studio/bitmaps/src/inc/svgbuilder.sh eol=lf
 Src/Delivery/studio/bitmaps/src/mini/1/1.svg -text
 Src/Delivery/studio/bitmaps/src/mini/1/10.svg -text
 Src/Delivery/studio/bitmaps/src/mini/1/11.svg -text
@@ -1526,6 +1539,7 @@ Src/Delivery/studio/bitmaps/src/small/1/7.svg -text
 Src/Delivery/studio/bitmaps/src/small/1/8.svg -text
 Src/Delivery/studio/bitmaps/src/small/1/9.svg -text
 Src/Delivery/studio/bitmaps/src/small/small_icons.svg -text
+Src/Delivery/studio/bitmaps/src/svg_cli.py eol=lf
 Src/Delivery/studio/bitmaps/src/svgcleaner -text
 Src/Delivery/studio/config/windows/msc/appl.ico -text
 Src/Delivery/studio/eifinit/code_analysis.xml -text
