@@ -6995,6 +6995,7 @@ Src/tools/eiffel_echo/eiffel_echo.lic -text
 Src/tools/eiffel_image_embedder/eimgemb.lic -text
 Src/tools/eiffel_make/emake.lic -text
 Src/tools/eiffel_matrix_code_generator/emcgen.lic -text
+Src/tools/eiffel_matrix_code_generator/frames/studio_dpi.e.frame -text
 Src/tools/eiffel_matrix_code_generator/frames/tool.e.frame -text
 Src/tools/eiffel_ribbon/eiffel_ribbon.lic -text
 Src/tools/eiffel_ribbon/images/button_with_text.png -text
