@@ -79,6 +79,7 @@ Src/.git-svn/scm -text
 Src/.git-svn/users.txt -text
 Src/C/CONFIGS/linux-x86-64 eol=lf
 Src/C/Configure eol=lf
+Src/C/Jmakefile eol=lf
 Src/C/Makefile.SH eol=lf
 Src/C/bench/Makefile.SH eol=lf
 Src/C/eif_config_h.SH eol=lf
@@ -88,6 +89,7 @@ Src/C/ipc/app/Makefile.SH eol=lf
 Src/C/ipc/daemon/Makefile.SH eol=lf
 Src/C/ipc/ewb/Makefile.SH eol=lf
 Src/C/ipc/shared/Makefile.SH eol=lf
+Src/C/mkdep.unix eol=lf
 Src/C/platform/Makefile.SH eol=lf
 Src/C/quick_configure eol=lf
 Src/C/run-time/Makefile.SH eol=lf
