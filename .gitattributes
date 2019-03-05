@@ -87,6 +87,7 @@ Src/C/ipc/daemon/Makefile.SH eol=lf
 Src/C/ipc/ewb/Makefile.SH eol=lf
 Src/C/ipc/shared/Makefile.SH eol=lf
 Src/C/platform/Makefile.SH eol=lf
+Src/C/quick_configure eol=lf
 Src/C/run-time/Makefile.SH eol=lf
 Src/C/run-time/eif_size_h.SH eol=lf
 Src/C/shell/bin/cat.exe -text
