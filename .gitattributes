@@ -77,6 +77,7 @@ Documentation/tools/xmldoc2wiki/README.txt -text
 Src/.git-svn/readme.txt -text
 Src/.git-svn/scm -text
 Src/.git-svn/users.txt -text
+Src/C/Configure eol=lf
 Src/C/Makefile.SH eol=lf
 Src/C/bench/Makefile.SH eol=lf
 Src/C/eif_config_h.SH eol=lf
