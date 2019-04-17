@@ -1405,6 +1405,7 @@ Src/Delivery/studio/bitmaps/src/icons/icons.svg -text
 Src/Delivery/studio/bitmaps/src/inc/matrix_from_subpixmaps.sh eol=lf
 Src/Delivery/studio/bitmaps/src/inc/matrix_to_subpixmaps.sh eol=lf
 Src/Delivery/studio/bitmaps/src/inc/svgbuilder.sh eol=lf
+Src/Delivery/studio/bitmaps/src/index.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/mini/1/1.svg -text
 Src/Delivery/studio/bitmaps/src/mini/1/10.svg -text
 Src/Delivery/studio/bitmaps/src/mini/1/11.svg -text
