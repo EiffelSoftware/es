@@ -5979,7 +5979,9 @@ Src/experimental/library/edk/spec/msc/windows/lib/edk.lib -text
 Src/experimental/library/encoding/implementation/unix/Clib/iconv-config -text
 Src/experimental/library/gobo/gobo_gelex-safe.ecf svneol=native#text/xml
 Src/experimental/library/gobo/gobo_geyacc-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_lexical_skl.ecf svneol=native#text/xml
 Src/experimental/library/gobo/gobo_math-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_parse_skl.ecf svneol=native#text/xml
 Src/experimental/library/gobo/gobo_pattern-safe.ecf svneol=native#text/xml
 Src/experimental/library/gobo/gobo_regexp-safe.ecf svneol=native#text/xml
 Src/experimental/library/gobo/gobo_string-safe.ecf svneol=native#text/xml
@@ -6253,8 +6255,11 @@ Src/experimental/library/libevent/Clib/libevent/test/Makefile.in -text
 Src/experimental/library/libevent/Clib/libevent/test/Makefile.nmake -text
 Src/experimental/library/libevent/Clib/libevent/test/regress.rpc -text
 Src/experimental/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
+Src/experimental/library/net/Clib/Makefile.SH eol=lf
+Src/experimental/library/net/Clib/net-config eol=lf
 Src/experimental/library/obsolete/xml/parser/callbacks/README.TXT -text
 Src/experimental/library/obsolete/xml/tree/README.TXT -text
+Src/experimental/library/patterns/event/examples/src/events_example.ecf svneol=native#text/xml
 Src/experimental/library/patterns/patterns-safe.ecf svneol=native#text/xml
 Src/experimental/library/process/base/base_process-safe.ecf svneol=native#text/xml
 Src/experimental/library/process/base/base_process.ecf svneol=native#text/xml
