@@ -8684,6 +8684,7 @@ eweasel/tests/exec371/Ace svneol=native#text/xml
 eweasel/tests/exec372/Ace svneol=native#text/xml
 eweasel/tests/exec373/Ace svneol=native#text/xml
 eweasel/tests/exec374/Ace svneol=native#text/xml
+eweasel/tests/exec375/Ace svneol=native#text/xml
 eweasel/tests/expanded012/Ace svneol=native#text/xml
 eweasel/tests/expanded013/Ace svneol=native#text/xml
 eweasel/tests/fake001/notes -text
