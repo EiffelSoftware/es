@@ -516,6 +516,7 @@ Src/C_library/openssl/VMS/openssl_utils.com.in -text
 Src/C_library/openssl/VMS/test-includes.com -text
 Src/C_library/openssl/VMS/translatesyms.pl -text
 Src/C_library/openssl/appveyor.yml -text
+Src/C_library/openssl/build.eant svneol=native#text/xml
 Src/C_library/openssl/build.info -text
 Src/C_library/openssl/clibs_openssl.ecf svneol=native#text/xml
 Src/C_library/openssl/config -text
@@ -8683,6 +8684,7 @@ eweasel/tests/exec371/Ace svneol=native#text/xml
 eweasel/tests/exec372/Ace svneol=native#text/xml
 eweasel/tests/exec373/Ace svneol=native#text/xml
 eweasel/tests/exec374/Ace svneol=native#text/xml
+eweasel/tests/exec375/Ace svneol=native#text/xml
 eweasel/tests/expanded012/Ace svneol=native#text/xml
 eweasel/tests/expanded013/Ace svneol=native#text/xml
 eweasel/tests/fake001/notes -text
