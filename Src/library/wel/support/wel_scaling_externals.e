@@ -9,8 +9,7 @@ class
 	WEL_SCALING_EXTERNALS
 
 inherit
-
-	WEL_ANY
+	ANY
 		redefine
 			default_create
 		end
@@ -32,8 +31,11 @@ feature {NONE} -- Initialization
 
 	initialize_scaling
 			-- Properly initialize Current.
+		local
+			dll: WEL_DLL
 		do
-			scaling_handle := {WEL_SCALING_UTILITY}.scaling_handle
+			create dll.make_permanent ("Shcore.dll")
+			scaling_handle := dll.item
 		end
 
 feature -- Constants
@@ -44,22 +46,23 @@ feature -- Constants
 
 	Default_dpi: INTEGER = 96
 			-- Default DPI value of 96
-			-- known as DPI unawre, the application render as if the screen that they are on has a DPI value of 96
+			-- known as DPI unaware, the application render as 
+			-- if the screen that they are on has a DPI value of 96 .
 
 	Process_per_monitor_dpi_aware: INTEGER  = 2
 
 feature -- Status report
 
 	is_scaling_installed: BOOLEAN
-			-- i.e if Schore.dll present.
+			-- Is "Shcore.dll" available?
 		do
-			Result := {WEL_SCALING_UTILITY}.is_scaling_installed
+			Result := not scaling_handle.is_default_pointer
 		end
 
 feature -- Access
 
 	scaling_handle: POINTER
-			-- Handle to Schore.dll if present.	
+			-- Handle to Schore.dll if present.
 
 	monitor_scale (hwnd: POINTER): TUPLE [scalex: DOUBLE; scaley: DOUBLE]
 			-- Return the scale DIP (device independent pixels) size, based on the current DPI
@@ -76,10 +79,12 @@ feature -- Access
 			l_dpi_y: INTEGER
 		do
 			Result := [1.0, 1.0]
-			l_monitor := {WEL_API}.monitor_from_window ({WEL_API}.get_window (hwnd, {WEL_GW_CONSTANTS}.gw_owner), Monitor_defaulttonearest)
-			if l_monitor /= default_pointer and then scaling_handle /= default_pointer then
-				c_get_dpi_for_monitor (scaling_handle, l_monitor, Mdt_effective_dpi, $l_dpi_x, $l_dpi_y)
-				Result := [l_dpi_x/default_dpi, l_dpi_y/default_dpi]
+			if not scaling_handle.is_default_pointer then
+				l_monitor := {WEL_API}.monitor_from_window ({WEL_API}.get_window (hwnd, {WEL_GW_CONSTANTS}.gw_owner), Monitor_defaulttonearest)
+				if not l_monitor.is_default_pointer then
+					c_get_dpi_for_monitor (scaling_handle, l_monitor, Mdt_effective_dpi, $l_dpi_x, $l_dpi_y)
+					Result := [l_dpi_x / default_dpi, l_dpi_y / default_dpi]
+				end
 			end
 		end
 
@@ -87,16 +92,18 @@ feature -- Access
 			-- Return the dots per inch (dpi) of a display `hwnd`.
 			-- DPI sizes 96, 120, 144, 192, etc.
 		require
-				hwnd_exists: not hwnd.is_default_pointer
+			hwnd_exists: not hwnd.is_default_pointer
 		local
 			l_monitor: POINTER
 			l_dpi_x: INTEGER
 			l_dpi_y: INTEGER
 		do
-			l_monitor := {WEL_API}.monitor_from_window ({WEL_API}.get_window (hwnd, {WEL_GW_CONSTANTS}.gw_owner), Monitor_defaulttonearest)
-			if l_monitor /= default_pointer and then scaling_handle /= default_pointer then
-				c_get_dpi_for_monitor (scaling_handle, l_monitor, Mdt_effective_dpi, $l_dpi_x, $l_dpi_y)
-				Result := l_dpi_x
+			if not scaling_handle.is_default_pointer then
+				l_monitor := {WEL_API}.monitor_from_window ({WEL_API}.get_window (hwnd, {WEL_GW_CONSTANTS}.gw_owner), Monitor_defaulttonearest)
+				if not l_monitor.is_default_pointer then
+					c_get_dpi_for_monitor (scaling_handle, l_monitor, Mdt_effective_dpi, $l_dpi_x, $l_dpi_y)
+					Result := l_dpi_x
+				end
 			end
 		end
 
@@ -109,33 +116,23 @@ feature -- Access
 			l_res: BOOLEAN
 			l_value: INTEGER
 			l_val_res: INTEGER
+			retried: BOOLEAN
 		do
-			if scaling_handle /= default_pointer  then
-				l_res := c_set_process_dpi_awareness (scaling_handle, process_per_monitor_dpi_aware)
-				debug
-					l_val_res := c_get_process_dpi_awareness (scaling_handle, default_pointer, $l_value )
-					check process_dpi_awarness: l_value = process_per_monitor_dpi_aware  end
+			if not retried then
+				if not scaling_handle.is_default_pointer  then
+					l_res := c_set_process_dpi_awareness (scaling_handle, process_per_monitor_dpi_aware)
+					debug
+						l_val_res := c_get_process_dpi_awareness (scaling_handle, default_pointer, $l_value )
+						check process_dpi_awarness: l_value = process_per_monitor_dpi_aware  end
+					end
 				end
 			end
+		rescue
+			retried := True
+			retry
 		end
 
-feature -- Destroy
-
-	destroy_item
-			-- Free Current Scaling object memory.
-		local
-			l_null: POINTER
-		do
-			check
-				item_valid: item /= l_null implies scaling_handle /= l_null
-			end
-			if scaling_handle /= l_null then
-				{WEL_SCALING_UTILITY}.free_module
-				item := default_pointer
-			end
-		end
-
-feature {NONE} --C externals
+feature {NONE} -- C externals
 
 	c_get_dpi_for_monitor (a_scaling_handle: POINTER; a_hwnd: POINTER; a_flags: INTEGER_32; dpi_x, dpi_y: TYPED_POINTER[INTEGER])
 			-- Declared as HRESULT GetDpiForMonitor( HMONITOR hmonitor, MONITOR_DPI_TYPE dpiType, UINT *dpiX, UINT *dpiY );
@@ -150,7 +147,7 @@ feature {NONE} --C externals
 				
 				GetDpiForMonitor = GetProcAddress (user32_module, "GetDpiForMonitor");
 				if (GetDpiForMonitor) {
-					(FUNCTION_CAST(void , (HMONITOR, MONITOR_DPI_TYPE, UINT *, UINT * )) GetDpiForMonitor) ($a_hwnd, $a_flags, $dpi_x, $dpi_y );
+					(FUNCTION_CAST_TYPE(void, WINAPI, (HMONITOR, MONITOR_DPI_TYPE, UINT *, UINT * )) GetDpiForMonitor) ($a_hwnd, $a_flags, $dpi_x, $dpi_y );
 				}
 			]"
 		end
@@ -168,7 +165,7 @@ feature {NONE} --C externals
 						
 				SetProcessDpiAwareness = GetProcAddress (user32_module, "SetProcessDpiAwareness");
 				if (SetProcessDpiAwareness) {
-					return (FUNCTION_CAST(HRESULT , (PROCESS_DPI_AWARENESS)) SetProcessDpiAwareness) ($a_level);
+					return (FUNCTION_CAST_TYPE(HRESULT, WINAPI, (PROCESS_DPI_AWARENESS)) SetProcessDpiAwareness) ($a_level);
 				} else {
 					return 	0;
 				}
@@ -188,7 +185,7 @@ feature {NONE} --C externals
 								
 				GetProcessDpiAwareness = GetProcAddress (user32_module, "GetProcessDpiAwareness");
 				if (GetProcessDpiAwareness) {
-					return (FUNCTION_CAST(HRESULT , (HANDLE, PROCESS_DPI_AWARENESS * )) GetProcessDpiAwareness) ($a_process, $a_value);
+					return (FUNCTION_CAST_TYPE(HRESULT, WINAPI, (HANDLE, PROCESS_DPI_AWARENESS * )) GetProcessDpiAwareness) ($a_process, $a_value);
 				} else {
 					return 0;
 				}
