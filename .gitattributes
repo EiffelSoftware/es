@@ -9404,6 +9404,7 @@ eweasel/tests/syntax052/Ace -text
 eweasel/tests/syntax071/Ace svneol=native#text/xml
 eweasel/tests/syntax072/Ace svneol=native#text/xml
 eweasel/tests/table008/Ace -text
+eweasel/tests/table014/Ace svneol=native#text/xml
 eweasel/tests/term001/notes -text
 eweasel/tests/term002/notes -text
 eweasel/tests/term003/notes -text
