@@ -148,7 +148,7 @@ feature {NONE} -- C externals
 					
 					GetDpiForMonitor = GetProcAddress (user32_module, "GetDpiForMonitor");
 					if (GetDpiForMonitor) {
-						(FUNCTION_CAST_TYPE(void, WINAPI, (HMONITOR, MONITOR_DPI_TYPE, UINT *, UINT * )) GetDpiForMonitor) ($a_hwnd, $a_flags, $dpi_x, $dpi_y );
+						(FUNCTION_CAST_TYPE(void, WINAPI, (HMONITOR, MONITOR_DPI_TYPE, UINT *, UINT * )) GetDpiForMonitor) ((HMONITOR) $a_hwnd, (MONITOR_DPI_TYPE) $a_flags, (UINT *) $dpi_x, (UINT *) $dpi_y );
 					}
 				#endif
 			]"
@@ -168,7 +168,44 @@ feature {NONE} -- C externals
 							
 					SetProcessDpiAwareness = GetProcAddress (user32_module, "SetProcessDpiAwareness");
 					if (SetProcessDpiAwareness) {
-						return EIF_TEST((FUNCTION_CAST_TYPE(HRESULT, WINAPI, (PROCESS_DPI_AWARENESS)) SetProcessDpiAwareness) ($a_level));
+						return EIF_TEST((FUNCTION_CAST_TYPE(HRESULT, WINAPI, (PROCESS_DPI_AWARENESS)) SetProcessDpiAwareness) ((PROCESS_DPI_AWARENESS)$a_level));
+					} else {
+						return EIF_FALSE;
+					}
+				#else
+					return EIF_FALSE;
+				#endif
+			]"
+		end
+
+	c_dpi_awareness_context_per_monitor_aware_v2 : NATURAL_64
+			-- Declared as
+		external
+			"C inline use <wel_scaling_api.h>"
+		alias
+		  "[
+			#if defined(_MSC_VER) && defined(_DPI_AWARENESS_CONTEXTS_) && defined(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+				return DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2;
+			#else
+				return 0;
+			#endif
+			]"
+		end
+
+	c_set_process_dpi_awareness_context	(a_scaling_handle: POINTER; a_level: NATURAL_64): BOOLEAN
+			-- Declated as BOOL SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
+		require
+			a_api_exists: a_scaling_handle /= default_pointer
+		external
+			"C inline use <wel_scaling_api.h>"
+		alias
+			"[
+				#if defined(_MSC_VER) && defined(_DPI_AWARENESS_CONTEXTS_)
+					FARPROC SetProcessDpiAwarenessContext = NULL;
+					HMODULE user32_module = (HMODULE) $a_scaling_handle;
+					SetProcessDpiAwarenessContext = GetProcAddress (user32_module, "SetProcessDpiAwarenessContext");
+					if (SetProcessDpiAwarenessContext) {
+						return EIF_TEST((FUNCTION_CAST_TYPE(BOOL, WINAPI, (DPI_AWARENESS_CONTEXT)) SetProcessDpiAwarenessContext) ((DPI_AWARENESS_CONTEXT) $a_level));
 					} else {
 						return EIF_FALSE;
 					}
@@ -192,7 +229,7 @@ feature {NONE} -- C externals
 									
 					GetProcessDpiAwareness = GetProcAddress (user32_module, "GetProcessDpiAwareness");
 					if (GetProcessDpiAwareness) {
-						return (FUNCTION_CAST_TYPE(HRESULT, WINAPI, (HANDLE, PROCESS_DPI_AWARENESS * )) GetProcessDpiAwareness) ($a_process, $a_value);
+						return (FUNCTION_CAST_TYPE(HRESULT, WINAPI, (HANDLE, PROCESS_DPI_AWARENESS * )) GetProcessDpiAwareness) ((HANDLE) $a_process, (PROCESS_DPI_AWARENESS *) $a_value);
 					} else {
 						return 0;
 					}
