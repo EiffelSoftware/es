@@ -5961,6 +5961,870 @@ Src/examples/zeromq/parallel_task_ventilator/task_worker/task_worker.ecf svneol=
 Src/examples/zeromq/version/version.ecf svneol=native#text/xml
 Src/examples/zeromq/weather/client/client.ecf svneol=native#text/xml
 Src/examples/zeromq/weather/server/server.ecf svneol=native#text/xml
+Src/experimental/C_library/curl/CHANGES -text
+Src/experimental/C_library/curl/CMake/CMakeConfigurableFile.in -text
+Src/experimental/C_library/curl/CMake/CurlSymbolHiding.cmake -text
+Src/experimental/C_library/curl/CMake/FindCARES.cmake -text
+Src/experimental/C_library/curl/CMake/FindGSS.cmake -text
+Src/experimental/C_library/curl/CMake/FindLibSSH2.cmake -text
+Src/experimental/C_library/curl/CMake/FindMbedTLS.cmake -text
+Src/experimental/C_library/curl/CMake/FindNGHTTP2.cmake -text
+Src/experimental/C_library/curl/CMake/Macros.cmake -text
+Src/experimental/C_library/curl/CMake/OtherTests.cmake -text
+Src/experimental/C_library/curl/CMake/Platforms/WindowsCache.cmake -text
+Src/experimental/C_library/curl/CMake/Utilities.cmake -text
+Src/experimental/C_library/curl/CMake/cmake_uninstall.cmake.in -text
+Src/experimental/C_library/curl/COPYING -text
+Src/experimental/C_library/curl/MacOSX-Framework -text
+Src/experimental/C_library/curl/README -text
+Src/experimental/C_library/curl/RELEASE-NOTES -text
+Src/experimental/C_library/curl/acinclude.m4 -text
+Src/experimental/C_library/curl/aclocal.m4 -text
+Src/experimental/C_library/curl/buildconf -text
+Src/experimental/C_library/curl/clibs_libcurl-safe.ecf svneol=native#text/xml
+Src/experimental/C_library/curl/clibs_libcurl.ecf svneol=native#text/xml
+Src/experimental/C_library/curl/compile -text
+Src/experimental/C_library/curl/config.guess -text
+Src/experimental/C_library/curl/config.sub -text
+Src/experimental/C_library/curl/configure -text
+Src/experimental/C_library/curl/configure.ac -text
+Src/experimental/C_library/curl/curl-config.in -text
+Src/experimental/C_library/curl/depcomp -text
+Src/experimental/C_library/curl/include/README -text
+Src/experimental/C_library/curl/include/curl/curlbuild.h.cmake -text
+Src/experimental/C_library/curl/include/curl/curlbuild.h.in -text
+Src/experimental/C_library/curl/install-sh -text
+Src/experimental/C_library/curl/lib/checksrc.pl -text
+Src/experimental/C_library/curl/lib/curl_config.h.cmake -text
+Src/experimental/C_library/curl/lib/curl_config.h.in -text
+Src/experimental/C_library/curl/lib/libcurl.plist -text
+Src/experimental/C_library/curl/lib/libcurl.rc -text
+Src/experimental/C_library/curl/lib/libcurl.vers.in -text
+Src/experimental/C_library/curl/lib/makefile.amiga -text
+Src/experimental/C_library/curl/lib/makefile.dj -text
+Src/experimental/C_library/curl/lib/mk-ca-bundle.pl -text
+Src/experimental/C_library/curl/lib/mk-ca-bundle.vbs -text
+Src/experimental/C_library/curl/lib/objnames.inc -text
+Src/experimental/C_library/curl/libcurl.pc.in -text
+Src/experimental/C_library/curl/m4/ax_code_coverage.m4 -text
+Src/experimental/C_library/curl/m4/curl-compilers.m4 -text
+Src/experimental/C_library/curl/m4/curl-confopts.m4 -text
+Src/experimental/C_library/curl/m4/curl-functions.m4 -text
+Src/experimental/C_library/curl/m4/curl-openssl.m4 -text
+Src/experimental/C_library/curl/m4/curl-override.m4 -text
+Src/experimental/C_library/curl/m4/curl-reentrant.m4 -text
+Src/experimental/C_library/curl/m4/libtool.m4 -text
+Src/experimental/C_library/curl/m4/ltoptions.m4 -text
+Src/experimental/C_library/curl/m4/ltsugar.m4 -text
+Src/experimental/C_library/curl/m4/ltversion.m4 -text
+Src/experimental/C_library/curl/m4/lt~obsolete.m4 -text
+Src/experimental/C_library/curl/m4/xc-am-iface.m4 -text
+Src/experimental/C_library/curl/m4/xc-cc-check.m4 -text
+Src/experimental/C_library/curl/m4/xc-lt-iface.m4 -text
+Src/experimental/C_library/curl/m4/xc-translit.m4 -text
+Src/experimental/C_library/curl/m4/xc-val-flgs.m4 -text
+Src/experimental/C_library/curl/m4/zz40-xc-ovr.m4 -text
+Src/experimental/C_library/curl/m4/zz50-xc-ovr.m4 -text
+Src/experimental/C_library/curl/m4/zz60-xc-ovr.m4 -text
+Src/experimental/C_library/curl/maketgz -text
+Src/experimental/C_library/curl/missing -text
+Src/experimental/C_library/curl/packages/AIX/RPM/README -text
+Src/experimental/C_library/curl/packages/AIX/RPM/curl.spec.in -text
+Src/experimental/C_library/curl/packages/Android/Android.mk -text
+Src/experimental/C_library/curl/packages/DOS/README -text
+Src/experimental/C_library/curl/packages/DOS/common.dj -text
+Src/experimental/C_library/curl/packages/EPM/README -text
+Src/experimental/C_library/curl/packages/EPM/curl.list.in -text
+Src/experimental/C_library/curl/packages/Linux/RPM/README -text
+Src/experimental/C_library/curl/packages/Linux/RPM/curl-ssl.spec.in -text
+Src/experimental/C_library/curl/packages/Linux/RPM/curl.spec.in -text
+Src/experimental/C_library/curl/packages/Linux/RPM/make_curl_rpm -text
+Src/experimental/C_library/curl/packages/NetWare/get_exp.awk -text
+Src/experimental/C_library/curl/packages/NetWare/get_ver.awk -text
+Src/experimental/C_library/curl/packages/OS400/README.OS400 -text
+Src/experimental/C_library/curl/packages/OS400/curl.inc.in -text
+Src/experimental/C_library/curl/packages/README -text
+Src/experimental/C_library/curl/packages/Symbian/bwins/libcurlu.def -text
+Src/experimental/C_library/curl/packages/Symbian/eabi/libcurlu.def -text
+Src/experimental/C_library/curl/packages/Symbian/group/bld.inf -text
+Src/experimental/C_library/curl/packages/Symbian/group/curl.iby -text
+Src/experimental/C_library/curl/packages/Symbian/group/curl.mmp -text
+Src/experimental/C_library/curl/packages/Symbian/group/curl.pkg -text
+Src/experimental/C_library/curl/packages/Symbian/group/libcurl.iby -text
+Src/experimental/C_library/curl/packages/Symbian/group/libcurl.mmp -text
+Src/experimental/C_library/curl/packages/Symbian/group/libcurl.pkg -text
+Src/experimental/C_library/curl/packages/TPF/curl.mak -text
+Src/experimental/C_library/curl/packages/Win32/README -text
+Src/experimental/C_library/curl/packages/Win32/cygwin/README -text
+Src/experimental/C_library/curl/packages/vms/backup_gnv_curl_src.com -text
+Src/experimental/C_library/curl/packages/vms/build_curl-config_script.com -text
+Src/experimental/C_library/curl/packages/vms/build_gnv_curl.com -text
+Src/experimental/C_library/curl/packages/vms/build_gnv_curl_pcsi_desc.com -text
+Src/experimental/C_library/curl/packages/vms/build_gnv_curl_pcsi_text.com -text
+Src/experimental/C_library/curl/packages/vms/build_gnv_curl_release_notes.com -text
+Src/experimental/C_library/curl/packages/vms/build_libcurl_pc.com -text
+Src/experimental/C_library/curl/packages/vms/build_vms.com -text
+Src/experimental/C_library/curl/packages/vms/clean_gnv_curl.com -text
+Src/experimental/C_library/curl/packages/vms/compare_curl_source.com -text
+Src/experimental/C_library/curl/packages/vms/config_h.com -text
+Src/experimental/C_library/curl/packages/vms/curl_startup.com -text
+Src/experimental/C_library/curl/packages/vms/curlmsg.msg -text
+Src/experimental/C_library/curl/packages/vms/curlmsg.sdl -text
+Src/experimental/C_library/curl/packages/vms/generate_config_vms_h_curl.com -text
+Src/experimental/C_library/curl/packages/vms/generate_vax_transfer.com -text
+Src/experimental/C_library/curl/packages/vms/gnv_conftest.c_first -text
+Src/experimental/C_library/curl/packages/vms/gnv_libcurl_symbols.opt -text
+Src/experimental/C_library/curl/packages/vms/gnv_link_curl.com -text
+Src/experimental/C_library/curl/packages/vms/macro32_exactcase.patch -text
+Src/experimental/C_library/curl/packages/vms/pcsi_product_gnv_curl.com -text
+Src/experimental/C_library/curl/packages/vms/readme -text
+Src/experimental/C_library/curl/packages/vms/setup_gnv_curl_build.com -text
+Src/experimental/C_library/curl/packages/vms/stage_curl_install.com -text
+Src/experimental/C_library/curl/projects/README -text
+Src/experimental/C_library/curl/projects/Windows/VC10/curl-all.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC10/lib/libcurl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC10/lib/libcurl.vcxproj -text
+Src/experimental/C_library/curl/projects/Windows/VC10/lib/libcurl.vcxproj.filters -text
+Src/experimental/C_library/curl/projects/Windows/VC10/src/curl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC10/src/curl.vcxproj -text
+Src/experimental/C_library/curl/projects/Windows/VC10/src/curl.vcxproj.filters -text
+Src/experimental/C_library/curl/projects/Windows/VC11/curl-all.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC11/lib/libcurl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC11/lib/libcurl.vcxproj -text
+Src/experimental/C_library/curl/projects/Windows/VC11/lib/libcurl.vcxproj.filters -text
+Src/experimental/C_library/curl/projects/Windows/VC11/src/curl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC11/src/curl.vcxproj -text
+Src/experimental/C_library/curl/projects/Windows/VC11/src/curl.vcxproj.filters -text
+Src/experimental/C_library/curl/projects/Windows/VC12/curl-all.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC12/lib/libcurl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC12/lib/libcurl.vcxproj -text
+Src/experimental/C_library/curl/projects/Windows/VC12/lib/libcurl.vcxproj.filters -text
+Src/experimental/C_library/curl/projects/Windows/VC12/src/curl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC12/src/curl.vcxproj -text
+Src/experimental/C_library/curl/projects/Windows/VC12/src/curl.vcxproj.filters -text
+Src/experimental/C_library/curl/projects/Windows/VC14/.vs/curl-all/v14/.suo -text
+Src/experimental/C_library/curl/projects/Windows/VC14/UpgradeLog.htm -text
+Src/experimental/C_library/curl/projects/Windows/VC14/curl-all.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC14/lib/libcurl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC14/lib/libcurl.vcxproj -text
+Src/experimental/C_library/curl/projects/Windows/VC14/lib/libcurl.vcxproj.filters -text
+Src/experimental/C_library/curl/projects/Windows/VC14/src/curl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC14/src/curl.vcxproj -text
+Src/experimental/C_library/curl/projects/Windows/VC14/src/curl.vcxproj.filters -text
+Src/experimental/C_library/curl/projects/Windows/VC6/curl-all.dsw -text
+Src/experimental/C_library/curl/projects/Windows/VC6/lib/libcurl.dsp -text
+Src/experimental/C_library/curl/projects/Windows/VC6/lib/libcurl.dsw -text
+Src/experimental/C_library/curl/projects/Windows/VC6/src/curl.dsp -text
+Src/experimental/C_library/curl/projects/Windows/VC6/src/curl.dsw -text
+Src/experimental/C_library/curl/projects/Windows/VC7.1/curl-all.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC7.1/lib/libcurl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC7.1/lib/libcurl.vcproj -text
+Src/experimental/C_library/curl/projects/Windows/VC7.1/src/curl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC7.1/src/curl.vcproj -text
+Src/experimental/C_library/curl/projects/Windows/VC7/curl-all.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC7/lib/libcurl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC7/lib/libcurl.vcproj -text
+Src/experimental/C_library/curl/projects/Windows/VC7/src/curl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC7/src/curl.vcproj -text
+Src/experimental/C_library/curl/projects/Windows/VC8/curl-all.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC8/lib/libcurl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC8/lib/libcurl.vcproj -text
+Src/experimental/C_library/curl/projects/Windows/VC8/src/curl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC8/src/curl.vcproj -text
+Src/experimental/C_library/curl/projects/Windows/VC9/curl-all.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC9/lib/libcurl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC9/lib/libcurl.vcproj -text
+Src/experimental/C_library/curl/projects/Windows/VC9/src/curl.sln -text
+Src/experimental/C_library/curl/projects/Windows/VC9/src/curl.vcproj -text
+Src/experimental/C_library/curl/projects/wolfssl_override.props -text
+Src/experimental/C_library/curl/scripts/updatemanpages.pl -text
+Src/experimental/C_library/curl/scripts/zsh.pl -text
+Src/experimental/C_library/curl/src/curl.rc -text
+Src/experimental/C_library/curl/src/macos/MACINSTALL.TXT -text
+Src/experimental/C_library/curl/src/macos/curl.mcp.xml.sit.hqx -text
+Src/experimental/C_library/curl/src/makefile.amiga -text
+Src/experimental/C_library/curl/src/makefile.dj -text
+Src/experimental/C_library/curl/src/mkhelp.pl -text
+Src/experimental/C_library/curl/test-driver -text
+Src/experimental/C_library/libpng/arm/filter_neon.S -text
+Src/experimental/C_library/libpng/clibs_libpng-safe.ecf svneol=native#text/xml
+Src/experimental/C_library/libpng/clibs_libpng.ecf svneol=native#text/xml
+Src/experimental/C_library/libpng/configure -text
+Src/experimental/C_library/libpng/configure.ac -text
+Src/experimental/C_library/libpng/contrib/arm-neon/README -text
+Src/experimental/C_library/libpng/contrib/conftest/README -text
+Src/experimental/C_library/libpng/contrib/conftest/pngcp.dfa -text
+Src/experimental/C_library/libpng/contrib/conftest/read.dfa -text
+Src/experimental/C_library/libpng/contrib/conftest/s_read.dfa -text
+Src/experimental/C_library/libpng/contrib/conftest/s_write.dfa -text
+Src/experimental/C_library/libpng/contrib/conftest/simple.dfa -text
+Src/experimental/C_library/libpng/contrib/conftest/write.dfa -text
+Src/experimental/C_library/libpng/contrib/gregbook/COPYING -text
+Src/experimental/C_library/libpng/contrib/gregbook/toucan.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/intel/INSTALL -text
+Src/experimental/C_library/libpng/contrib/intel/intel_sse.patch -text
+Src/experimental/C_library/libpng/contrib/mips-msa/README -text
+Src/experimental/C_library/libpng/contrib/pngminim/README -text
+Src/experimental/C_library/libpng/contrib/pngminim/decoder/README -text
+Src/experimental/C_library/libpng/contrib/pngminim/decoder/pngusr.dfa -text
+Src/experimental/C_library/libpng/contrib/pngminim/encoder/README -text
+Src/experimental/C_library/libpng/contrib/pngminim/encoder/pngusr.dfa -text
+Src/experimental/C_library/libpng/contrib/pngminim/preader/README -text
+Src/experimental/C_library/libpng/contrib/pngminim/preader/pngusr.dfa -text
+Src/experimental/C_library/libpng/contrib/pngsuite/README -text
+Src/experimental/C_library/libpng/contrib/pngsuite/basn0g01.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn0g02.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn0g04.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn0g08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn0g16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn2c08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn2c16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn3p01.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn3p02.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn3p04.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn3p08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn4a08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn4a16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn6a08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/basn6a16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbbn0g01.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbbn0g02.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbbn0g04.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbbn2c16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbbn3p08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbgn2c16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbgn3p08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbrn2c08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbwn0g16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbwn3p08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftbyn3p08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftp0n0g08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftp0n2c08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftp0n3p08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/pngsuite/ftp1n3p08.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-1-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-1-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-1-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-1-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-1-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-1-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-1-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-1.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-16-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-16-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-16-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-16-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-16-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-16-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-16-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-2-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-2-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-2-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-2-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-2-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-2-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-2-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-2.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-4-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-4-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-4-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-4-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-4-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-4-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-4-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-4.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-8-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-8-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-8-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-8-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-8-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-8-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-alpha-16-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-alpha-16-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-alpha-16-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-alpha-16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-alpha-8-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-alpha-8-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-alpha-8-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/gray-alpha-8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-1-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-1-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-1-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-1-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-1-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-1-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-1-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-1.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-2-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-2-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-2-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-2-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-2-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-2-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-2-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-2.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-4-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-4-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-4-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-4-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-4-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-4-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-4-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-4.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-8-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-8-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-8-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-8-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-8-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-8-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/palette-8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-16-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-16-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-16-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-16-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-16-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-16-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-16-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-8-1.8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-8-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-8-linear-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-8-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-8-sRGB-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-8-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-8-tRNS.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-alpha-16-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-alpha-16-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-alpha-16-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-alpha-16.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-alpha-8-1.8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-alpha-8-linear.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-alpha-8-sRGB.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/testpngs/rgb-alpha-8.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/contrib/tools/chkfmt -text
+Src/experimental/C_library/libpng/contrib/tools/reindent -text
+Src/experimental/C_library/libpng/contrib/visupng/VisualPng.ico svneol=native#unset
+Src/experimental/C_library/libpng/contrib/visupng/VisualPng.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/libpng-config.in -text
+Src/experimental/C_library/libpng/libpng.pc.in -text
+Src/experimental/C_library/libpng/pngbar.jpg -text svneol=unset#image/jpg
+Src/experimental/C_library/libpng/pngbar.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/pngnow.png -text svneol=unset#image/png
+Src/experimental/C_library/libpng/pngusr.dfa -text
+Src/experimental/C_library/libpng/projects/owatcom/libpng.tgt -text
+Src/experimental/C_library/libpng/projects/owatcom/libpng.wpj -text
+Src/experimental/C_library/libpng/projects/owatcom/pngconfig.mak -text
+Src/experimental/C_library/libpng/projects/owatcom/pngstest.tgt -text
+Src/experimental/C_library/libpng/projects/owatcom/pngtest.tgt -text
+Src/experimental/C_library/libpng/projects/owatcom/pngvalid.tgt -text
+Src/experimental/C_library/libpng/projects/vstudio/libpng/libpng.vcxproj -text
+Src/experimental/C_library/libpng/projects/vstudio/pnglibconf/pnglibconf.vcxproj -text
+Src/experimental/C_library/libpng/projects/vstudio/pngunknown/pngunknown.vcxproj -text
+Src/experimental/C_library/libpng/projects/vstudio/pngvalid/pngvalid.vcxproj -text
+Src/experimental/C_library/libpng/projects/vstudio/vstudio.sln -text
+Src/experimental/C_library/libpng/projects/vstudio/zlib.props -text
+Src/experimental/C_library/libpng/projects/vstudio/zlib/zlib.vcxproj -text
+Src/experimental/C_library/libpng/scripts/checksym.awk -text
+Src/experimental/C_library/libpng/scripts/dfn.awk -text
+Src/experimental/C_library/libpng/scripts/genchk.cmake.in -text
+Src/experimental/C_library/libpng/scripts/genout.cmake.in -text
+Src/experimental/C_library/libpng/scripts/gensrc.cmake.in -text
+Src/experimental/C_library/libpng/scripts/macro.lst -text
+Src/experimental/C_library/libpng/scripts/options.awk -text
+Src/experimental/C_library/libpng/scripts/pnglibconf.dfa -text
+Src/experimental/C_library/libpng/scripts/pnglibconf.h.prebuilt -text
+Src/experimental/C_library/libpng/scripts/pnglibconf.mak -text
+Src/experimental/C_library/libpng/scripts/pngwin.rc -text
+Src/experimental/C_library/libpng/scripts/symbols.def -text
+Src/experimental/C_library/libpng/scripts/test.cmake.in -text
+Src/experimental/C_library/openssl/.gitmodules -text
+Src/experimental/C_library/openssl/.travis-apt-pin.preferences -text
+Src/experimental/C_library/openssl/.travis.yml -text
+Src/experimental/C_library/openssl/ACKNOWLEDGEMENTS -text
+Src/experimental/C_library/openssl/AUTHORS -text
+Src/experimental/C_library/openssl/CHANGES -text
+Src/experimental/C_library/openssl/CONTRIBUTING -text
+Src/experimental/C_library/openssl/Configure -text
+Src/experimental/C_library/openssl/FAQ -text
+Src/experimental/C_library/openssl/INSTALL -text
+Src/experimental/C_library/openssl/LICENSE -text
+Src/experimental/C_library/openssl/NEWS -text
+Src/experimental/C_library/openssl/NOTES.ANDROID -text
+Src/experimental/C_library/openssl/NOTES.DJGPP -text
+Src/experimental/C_library/openssl/NOTES.PERL -text
+Src/experimental/C_library/openssl/NOTES.UNIX -text
+Src/experimental/C_library/openssl/NOTES.VMS -text
+Src/experimental/C_library/openssl/NOTES.WIN -text
+Src/experimental/C_library/openssl/README -text
+Src/experimental/C_library/openssl/README.ENGINE -text
+Src/experimental/C_library/openssl/README.FIPS -text
+Src/experimental/C_library/openssl/VMS/VMSify-conf.pl -text
+Src/experimental/C_library/openssl/VMS/engine.opt -text
+Src/experimental/C_library/openssl/VMS/openssl_ivp.com.in -text
+Src/experimental/C_library/openssl/VMS/openssl_shutdown.com.in -text
+Src/experimental/C_library/openssl/VMS/openssl_startup.com.in -text
+Src/experimental/C_library/openssl/VMS/openssl_utils.com.in -text
+Src/experimental/C_library/openssl/VMS/test-includes.com -text
+Src/experimental/C_library/openssl/VMS/translatesyms.pl -text
+Src/experimental/C_library/openssl/appveyor.yml -text
+Src/experimental/C_library/openssl/build.eant svneol=native#text/xml
+Src/experimental/C_library/openssl/build.info -text
+Src/experimental/C_library/openssl/clibs_openssl.ecf svneol=native#text/xml
+Src/experimental/C_library/openssl/config -text
+Src/experimental/C_library/openssl/config.com -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-586.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-armv4.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-c64xplus.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-ia64.S -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-mips.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-parisc.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-s390x.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aes-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aesfx-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aesni-mb-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aesni-sha1-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aesni-sha256-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aesni-x86.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aesni-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aesp8-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aest4-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/aesv8-armx.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/bsaes-armv7.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/bsaes-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/vpaes-armv8.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/vpaes-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/vpaes-x86.pl -text
+Src/experimental/C_library/openssl/crypto/aes/asm/vpaes-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/aes/build.info -text
+Src/experimental/C_library/openssl/crypto/alphacpuid.pl -text
+Src/experimental/C_library/openssl/crypto/aria/build.info -text
+Src/experimental/C_library/openssl/crypto/arm64cpuid.pl -text
+Src/experimental/C_library/openssl/crypto/armv4cpuid.pl -text
+Src/experimental/C_library/openssl/crypto/asn1/build.info -text
+Src/experimental/C_library/openssl/crypto/asn1/charmap.pl -text
+Src/experimental/C_library/openssl/crypto/async/build.info -text
+Src/experimental/C_library/openssl/crypto/bf/asm/bf-586.pl -text
+Src/experimental/C_library/openssl/crypto/bf/build.info -text
+Src/experimental/C_library/openssl/crypto/bio/build.info -text
+Src/experimental/C_library/openssl/crypto/blake2/build.info -text
+Src/experimental/C_library/openssl/crypto/bn/README.pod -text
+Src/experimental/C_library/openssl/crypto/bn/asm/alpha-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/armv4-gf2m.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/armv4-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/armv8-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/bn-586.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/c64xplus-gf2m.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/co-586.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/ia64-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/ia64.S -text
+Src/experimental/C_library/openssl/crypto/bn/asm/mips-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/mips.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/parisc-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/ppc-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/ppc.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/ppc64-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/rsaz-avx2.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/rsaz-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/s390x-gf2m.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/s390x-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/s390x.S -text
+Src/experimental/C_library/openssl/crypto/bn/asm/sparct4-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/sparcv8.S -text
+Src/experimental/C_library/openssl/crypto/bn/asm/sparcv8plus.S -text
+Src/experimental/C_library/openssl/crypto/bn/asm/sparcv9-gf2m.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/sparcv9-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/sparcv9a-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/via-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/vis3-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/x86-gf2m.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/x86-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/x86_64-gf2m.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/x86_64-mont.pl -text
+Src/experimental/C_library/openssl/crypto/bn/asm/x86_64-mont5.pl -text
+Src/experimental/C_library/openssl/crypto/bn/bn_prime.pl -text
+Src/experimental/C_library/openssl/crypto/bn/build.info -text
+Src/experimental/C_library/openssl/crypto/buffer/build.info -text
+Src/experimental/C_library/openssl/crypto/build.info -text
+Src/experimental/C_library/openssl/crypto/c64xpluscpuid.pl -text
+Src/experimental/C_library/openssl/crypto/camellia/asm/cmll-x86.pl -text
+Src/experimental/C_library/openssl/crypto/camellia/asm/cmll-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/camellia/asm/cmllt4-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/camellia/build.info -text
+Src/experimental/C_library/openssl/crypto/cast/asm/cast-586.pl -text
+Src/experimental/C_library/openssl/crypto/cast/build.info -text
+Src/experimental/C_library/openssl/crypto/chacha/asm/chacha-armv4.pl -text
+Src/experimental/C_library/openssl/crypto/chacha/asm/chacha-armv8.pl -text
+Src/experimental/C_library/openssl/crypto/chacha/asm/chacha-c64xplus.pl -text
+Src/experimental/C_library/openssl/crypto/chacha/asm/chacha-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/chacha/asm/chacha-s390x.pl -text
+Src/experimental/C_library/openssl/crypto/chacha/asm/chacha-x86.pl -text
+Src/experimental/C_library/openssl/crypto/chacha/asm/chacha-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/chacha/build.info -text
+Src/experimental/C_library/openssl/crypto/cmac/build.info -text
+Src/experimental/C_library/openssl/crypto/cms/build.info -text
+Src/experimental/C_library/openssl/crypto/comp/build.info -text
+Src/experimental/C_library/openssl/crypto/conf/build.info -text
+Src/experimental/C_library/openssl/crypto/conf/keysets.pl -text
+Src/experimental/C_library/openssl/crypto/ct/build.info -text
+Src/experimental/C_library/openssl/crypto/des/asm/crypt586.pl -text
+Src/experimental/C_library/openssl/crypto/des/asm/des-586.pl -text
+Src/experimental/C_library/openssl/crypto/des/asm/des_enc.m4 -text
+Src/experimental/C_library/openssl/crypto/des/asm/desboth.pl -text
+Src/experimental/C_library/openssl/crypto/des/asm/dest4-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/des/build.info -text
+Src/experimental/C_library/openssl/crypto/dh/build.info -text
+Src/experimental/C_library/openssl/crypto/dh/dh1024.pem -text
+Src/experimental/C_library/openssl/crypto/dh/dh192.pem -text
+Src/experimental/C_library/openssl/crypto/dh/dh2048.pem -text
+Src/experimental/C_library/openssl/crypto/dh/dh4096.pem -text
+Src/experimental/C_library/openssl/crypto/dh/dh512.pem -text
+Src/experimental/C_library/openssl/crypto/dsa/build.info -text
+Src/experimental/C_library/openssl/crypto/dso/build.info -text
+Src/experimental/C_library/openssl/crypto/ec/asm/ecp_nistz256-armv4.pl -text
+Src/experimental/C_library/openssl/crypto/ec/asm/ecp_nistz256-armv8.pl -text
+Src/experimental/C_library/openssl/crypto/ec/asm/ecp_nistz256-avx2.pl -text
+Src/experimental/C_library/openssl/crypto/ec/asm/ecp_nistz256-ppc64.pl -text
+Src/experimental/C_library/openssl/crypto/ec/asm/ecp_nistz256-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/ec/asm/ecp_nistz256-x86.pl -text
+Src/experimental/C_library/openssl/crypto/ec/asm/ecp_nistz256-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/ec/asm/x25519-ppc64.pl -text
+Src/experimental/C_library/openssl/crypto/ec/asm/x25519-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/ec/build.info -text
+Src/experimental/C_library/openssl/crypto/engine/README -text
+Src/experimental/C_library/openssl/crypto/engine/build.info -text
+Src/experimental/C_library/openssl/crypto/err/README -text
+Src/experimental/C_library/openssl/crypto/err/build.info -text
+Src/experimental/C_library/openssl/crypto/err/openssl.ec -text
+Src/experimental/C_library/openssl/crypto/evp/build.info -text
+Src/experimental/C_library/openssl/crypto/hmac/build.info -text
+Src/experimental/C_library/openssl/crypto/ia64cpuid.S -text
+Src/experimental/C_library/openssl/crypto/idea/build.info -text
+Src/experimental/C_library/openssl/crypto/include/internal/bn_conf.h.in -text
+Src/experimental/C_library/openssl/crypto/include/internal/dso_conf.h.in -text
+Src/experimental/C_library/openssl/crypto/kdf/build.info -text
+Src/experimental/C_library/openssl/crypto/lhash/build.info -text
+Src/experimental/C_library/openssl/crypto/md2/build.info -text
+Src/experimental/C_library/openssl/crypto/md4/build.info -text
+Src/experimental/C_library/openssl/crypto/md5/asm/md5-586.pl -text
+Src/experimental/C_library/openssl/crypto/md5/asm/md5-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/md5/asm/md5-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/md5/build.info -text
+Src/experimental/C_library/openssl/crypto/mdc2/build.info -text
+Src/experimental/C_library/openssl/crypto/modes/asm/aesni-gcm-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghash-alpha.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghash-armv4.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghash-c64xplus.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghash-ia64.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghash-parisc.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghash-s390x.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghash-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghash-x86.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghash-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghashp8-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/modes/asm/ghashv8-armx.pl -text
+Src/experimental/C_library/openssl/crypto/modes/build.info -text
+Src/experimental/C_library/openssl/crypto/objects/README -text
+Src/experimental/C_library/openssl/crypto/objects/build.info -text
+Src/experimental/C_library/openssl/crypto/objects/obj_dat.pl -text
+Src/experimental/C_library/openssl/crypto/objects/obj_mac.num -text
+Src/experimental/C_library/openssl/crypto/objects/objects.pl -text
+Src/experimental/C_library/openssl/crypto/objects/objects.txt -text
+Src/experimental/C_library/openssl/crypto/objects/objxref.pl -text
+Src/experimental/C_library/openssl/crypto/ocsp/build.info -text
+Src/experimental/C_library/openssl/crypto/pariscid.pl -text
+Src/experimental/C_library/openssl/crypto/pem/build.info -text
+Src/experimental/C_library/openssl/crypto/perlasm/arm-xlate.pl -text
+Src/experimental/C_library/openssl/crypto/perlasm/cbc.pl -text
+Src/experimental/C_library/openssl/crypto/perlasm/ppc-xlate.pl -text
+Src/experimental/C_library/openssl/crypto/perlasm/readme -text
+Src/experimental/C_library/openssl/crypto/perlasm/sparcv9_modes.pl -text
+Src/experimental/C_library/openssl/crypto/perlasm/x86_64-xlate.pl -text
+Src/experimental/C_library/openssl/crypto/perlasm/x86asm.pl -text
+Src/experimental/C_library/openssl/crypto/perlasm/x86gas.pl -text
+Src/experimental/C_library/openssl/crypto/perlasm/x86masm.pl -text
+Src/experimental/C_library/openssl/crypto/perlasm/x86nasm.pl -text
+Src/experimental/C_library/openssl/crypto/pkcs12/build.info -text
+Src/experimental/C_library/openssl/crypto/pkcs7/build.info -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-armv4.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-armv8.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-c64xplus.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-mips.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-ppcfp.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-s390x.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-x86.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/asm/poly1305-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/poly1305/build.info -text
+Src/experimental/C_library/openssl/crypto/ppccpuid.pl -text
+Src/experimental/C_library/openssl/crypto/rand/build.info -text
+Src/experimental/C_library/openssl/crypto/rc2/build.info -text
+Src/experimental/C_library/openssl/crypto/rc4/asm/rc4-586.pl -text
+Src/experimental/C_library/openssl/crypto/rc4/asm/rc4-c64xplus.pl -text
+Src/experimental/C_library/openssl/crypto/rc4/asm/rc4-md5-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/rc4/asm/rc4-parisc.pl -text
+Src/experimental/C_library/openssl/crypto/rc4/asm/rc4-s390x.pl -text
+Src/experimental/C_library/openssl/crypto/rc4/asm/rc4-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/rc4/build.info -text
+Src/experimental/C_library/openssl/crypto/rc5/asm/rc5-586.pl -text
+Src/experimental/C_library/openssl/crypto/rc5/build.info -text
+Src/experimental/C_library/openssl/crypto/ripemd/asm/rmd-586.pl -text
+Src/experimental/C_library/openssl/crypto/ripemd/build.info -text
+Src/experimental/C_library/openssl/crypto/rsa/build.info -text
+Src/experimental/C_library/openssl/crypto/s390xcpuid.pl -text
+Src/experimental/C_library/openssl/crypto/seed/build.info -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-armv4.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-armv8.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-avx2.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-avx512.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-avx512vl.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-c64x.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-mmx.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-ppc64.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-s390x.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/keccak1600p8-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-586.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-alpha.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-armv4-large.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-armv8.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-c64xplus.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-ia64.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-mb-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-mips.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-parisc.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-s390x.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-sparcv9a.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-thumb.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha1-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha256-586.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha256-armv4.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha256-c64xplus.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha256-mb-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-586.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-armv4.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-armv8.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-c64xplus.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-ia64.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-mips.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-parisc.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-s390x.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-sparcv9.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/sha/asm/sha512p8-ppc.pl -text
+Src/experimental/C_library/openssl/crypto/sha/build.info -text
+Src/experimental/C_library/openssl/crypto/siphash/build.info -text
+Src/experimental/C_library/openssl/crypto/sm2/build.info -text
+Src/experimental/C_library/openssl/crypto/sm3/build.info -text
+Src/experimental/C_library/openssl/crypto/sm4/build.info -text
+Src/experimental/C_library/openssl/crypto/sparccpuid.S -text
+Src/experimental/C_library/openssl/crypto/srp/build.info -text
+Src/experimental/C_library/openssl/crypto/stack/build.info -text
+Src/experimental/C_library/openssl/crypto/store/build.info -text
+Src/experimental/C_library/openssl/crypto/ts/build.info -text
+Src/experimental/C_library/openssl/crypto/txt_db/build.info -text
+Src/experimental/C_library/openssl/crypto/ui/build.info -text
+Src/experimental/C_library/openssl/crypto/whrlpool/asm/wp-mmx.pl -text
+Src/experimental/C_library/openssl/crypto/whrlpool/asm/wp-x86_64.pl -text
+Src/experimental/C_library/openssl/crypto/whrlpool/build.info -text
+Src/experimental/C_library/openssl/crypto/x509/build.info -text
+Src/experimental/C_library/openssl/crypto/x509v3/build.info -text
+Src/experimental/C_library/openssl/crypto/x86_64cpuid.pl -text
+Src/experimental/C_library/openssl/crypto/x86cpuid.pl -text
+Src/experimental/C_library/openssl/engines/asm/e_padlock-x86.pl -text
+Src/experimental/C_library/openssl/engines/asm/e_padlock-x86_64.pl -text
+Src/experimental/C_library/openssl/engines/build.info -text
+Src/experimental/C_library/openssl/engines/e_afalg.ec -text
+Src/experimental/C_library/openssl/engines/e_capi.ec -text
+Src/experimental/C_library/openssl/engines/e_dasync.ec -text
+Src/experimental/C_library/openssl/engines/e_ossltest.ec -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/Artistic -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/COPYING -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/INSTALL -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/MANIFEST -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/META.json -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/META.yml -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/README -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/lib/Text/Template.pm -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/lib/Text/Template/Preprocess.pm -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/00-version.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/01-basic.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/02-hash.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/03-out.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/04-safe.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/05-safe2.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/06-ofh.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/07-safe3.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/08-exported.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/09-error.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/10-delimiters.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/11-prepend.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/12-preprocess.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/13-taint.t -text
+Src/experimental/C_library/openssl/external/perl/Text-Template-1.46/t/14-broken.t -text
+Src/experimental/C_library/openssl/external/perl/transfer/Text/Template.pm -text
+Src/experimental/C_library/openssl/include/openssl/opensslconf.h.in -text
+Src/experimental/C_library/openssl/ms/cmp.pl -text
+Src/experimental/C_library/openssl/ms/uplink-common.pl -text
+Src/experimental/C_library/openssl/ms/uplink-ia64.pl -text
+Src/experimental/C_library/openssl/ms/uplink-x86.pl -text
+Src/experimental/C_library/openssl/ms/uplink-x86_64.pl -text
+Src/experimental/C_library/openssl/spec/win64/bin/libcrypto-1_1-x64.dll -text
+Src/experimental/C_library/openssl/spec/win64/bin/libcrypto.lib -text
+Src/experimental/C_library/openssl/spec/win64/bin/libssl-1_1-x64.dll -text
+Src/experimental/C_library/openssl/spec/win64/bin/libssl.lib -text
+Src/experimental/C_library/openssl/spec/windows/bin/libcrypto-1_1.dll -text
+Src/experimental/C_library/openssl/spec/windows/bin/libcrypto.lib -text
+Src/experimental/C_library/openssl/spec/windows/bin/libssl-1_1.dll -text
+Src/experimental/C_library/openssl/spec/windows/bin/libssl.lib -text
+Src/experimental/C_library/openssl/ssl/build.info -text
+Src/experimental/C_library/openssl/ssl/record/README -text
+Src/experimental/C_library/openssl/ssl/statem/README -text
+Src/experimental/C_library/openssl/tools/build.info -text
+Src/experimental/C_library/openssl/tools/c_rehash.in -text
+Src/experimental/C_library/openssl/util/add-depends.pl -text
+Src/experimental/C_library/openssl/util/build.info -text
+Src/experimental/C_library/openssl/util/check-malloc-errs -text
+Src/experimental/C_library/openssl/util/ck_errf.pl -text
+Src/experimental/C_library/openssl/util/copy.pl -text
+Src/experimental/C_library/openssl/util/dofile.pl -text
+Src/experimental/C_library/openssl/util/echo.pl -text
+Src/experimental/C_library/openssl/util/find-doc-nits -text
+Src/experimental/C_library/openssl/util/find-unused-errs -text
+Src/experimental/C_library/openssl/util/indent.pro -text
+Src/experimental/C_library/openssl/util/libcrypto.num -text
+Src/experimental/C_library/openssl/util/libssl.num -text
+Src/experimental/C_library/openssl/util/local_shlib.com.in -text
+Src/experimental/C_library/openssl/util/mkbuildinf.pl -text
+Src/experimental/C_library/openssl/util/mkdef.pl -text
+Src/experimental/C_library/openssl/util/mkdir-p.pl -text
+Src/experimental/C_library/openssl/util/mkerr.pl -text
+Src/experimental/C_library/openssl/util/mkrc.pl -text
+Src/experimental/C_library/openssl/util/openssl-format-source -text
+Src/experimental/C_library/openssl/util/openssl-update-copyright -text
+Src/experimental/C_library/openssl/util/perl/OpenSSL/Glob.pm -text
+Src/experimental/C_library/openssl/util/perl/OpenSSL/Test.pm -text
+Src/experimental/C_library/openssl/util/perl/OpenSSL/Test/Simple.pm -text
+Src/experimental/C_library/openssl/util/perl/OpenSSL/Test/Utils.pm -text
+Src/experimental/C_library/openssl/util/perl/OpenSSL/Util/Pod.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/Alert.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/Certificate.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/CertificateVerify.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/ClientHello.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/EncryptedExtensions.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/Message.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/NewSessionTicket.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/Proxy.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/Record.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/ServerHello.pm -text
+Src/experimental/C_library/openssl/util/perl/TLSProxy/ServerKeyExchange.pm -text
+Src/experimental/C_library/openssl/util/perl/checkhandshake.pm -text
+Src/experimental/C_library/openssl/util/perl/with_fallback.pm -text
+Src/experimental/C_library/openssl/util/private.num -text
+Src/experimental/C_library/openssl/util/process_docs.pl -text
+Src/experimental/C_library/openssl/util/shlib_wrap.sh.in -text
+Src/experimental/C_library/openssl/util/su-filter.pl -text
+Src/experimental/C_library/openssl/util/unlocal_shlib.com.in -text
+Src/experimental/C_library/zlib/clibs_zlib-safe.ecf svneol=native#text/xml
+Src/experimental/C_library/zlib/clibs_zlib.ecf svneol=native#text/xml
+Src/experimental/C_library/zlib/contrib/ada/buffer_demo.adb -text
+Src/experimental/C_library/zlib/contrib/amd64/amd64-match.S -text
+Src/experimental/C_library/zlib/contrib/blast/test.pk svneol=native#unset
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib.build -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib.chm -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib.sln -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/AssemblyInfo.cs -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/ChecksumImpl.cs -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/CircularBuffer.cs -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/CodecBase.cs -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/Deflater.cs -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/DotZLib.cs -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/DotZLib.csproj -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/GZipStream.cs -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/Inflater.cs -text
+Src/experimental/C_library/zlib/contrib/dotzlib/DotZLib/UnitTests.cs -text
+Src/experimental/C_library/zlib/contrib/gcc_gvmat64/gvmat64.S -text
+Src/experimental/C_library/zlib/contrib/masmx64/gvmat64.asm -text
+Src/experimental/C_library/zlib/contrib/masmx64/inffasx64.asm -text
+Src/experimental/C_library/zlib/contrib/masmx86/match686.asm -text
+Src/experimental/C_library/zlib/contrib/minizip/configure.ac -text
+Src/experimental/C_library/zlib/contrib/minizip/miniunzip.1 -text
+Src/experimental/C_library/zlib/contrib/minizip/minizip.1 -text
+Src/experimental/C_library/zlib/contrib/minizip/minizip.pc.in -text
+Src/experimental/C_library/zlib/contrib/puff/zeros.raw svneol=native#unset
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/miniunz.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/miniunz.vcxproj.filters -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/minizip.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/minizip.vcxproj.filters -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/testzlib.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/testzlib.vcxproj.filters -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/testzlibdll.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/testzlibdll.vcxproj.filters -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/zlib.rc -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/zlibstat.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/zlibstat.vcxproj.filters -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/zlibvc.def -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/zlibvc.sln -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/zlibvc.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc10/zlibvc.vcxproj.filters -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc11/miniunz.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc11/minizip.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc11/testzlib.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc11/testzlibdll.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc11/zlib.rc -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc11/zlibstat.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc11/zlibvc.def -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc11/zlibvc.sln -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc11/zlibvc.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc12/miniunz.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc12/minizip.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc12/testzlib.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc12/testzlibdll.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc12/zlib.rc -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc12/zlibstat.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc12/zlibvc.def -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc12/zlibvc.sln -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc12/zlibvc.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc14/miniunz.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc14/minizip.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc14/testzlib.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc14/testzlibdll.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc14/zlib.rc -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc14/zlibstat.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc14/zlibvc.def -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc14/zlibvc.sln -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc14/zlibvc.vcxproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc9/miniunz.vcproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc9/minizip.vcproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc9/testzlib.vcproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc9/testzlibdll.vcproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc9/zlib.rc -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc9/zlibstat.vcproj -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc9/zlibvc.def -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc9/zlibvc.sln -text
+Src/experimental/C_library/zlib/contrib/vstudio/vc9/zlibvc.vcproj -text
+Src/experimental/C_library/zlib/examples/README.examples -text
+Src/experimental/C_library/zlib/examples/zlib_how.html svneol=native#text/xml
+Src/experimental/C_library/zlib/nintendods/README -text
+Src/experimental/C_library/zlib/os400/README400 -text
+Src/experimental/C_library/zlib/os400/bndsrc -text
+Src/experimental/C_library/zlib/os400/zlib.inc -text
+Src/experimental/C_library/zlib/treebuild.xml svneol=native#text/xml
+Src/experimental/C_library/zlib/watcom/watcom_f.mak -text
+Src/experimental/C_library/zlib/watcom/watcom_l.mak -text
+Src/experimental/C_library/zlib/zlib.3.pdf -text
+Src/experimental/C_library/zlib/zlib.map -text
+Src/experimental/C_library/zlib/zlib2ansi -text
 Src/experimental/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/experimental/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/experimental/library/base/elks/structures/cursors/array_iteration_cursor.e svneol=native#text/plain
