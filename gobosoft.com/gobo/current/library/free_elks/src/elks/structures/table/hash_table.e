@@ -15,7 +15,7 @@ class HASH_TABLE [G, K -> detachable HASHABLE] inherit
 		rename
 			has as has_item
 		redefine
-			has_item, copy, is_equal
+			copy, is_equal
 		end
 
 	TABLE [G, K]
@@ -28,7 +28,7 @@ class HASH_TABLE [G, K -> detachable HASHABLE] inherit
 		export
 			{NONE} prune_all
 		redefine
-			copy, is_equal, wipe_out, has_item
+			copy, is_equal
 		end
 
 	TABLE_ITERABLE [G, K]
@@ -60,7 +60,7 @@ create
 	make,
 	make_equal
 
-feature {NONE} -- Initialization
+feature -- Initialization
 
 	make (n: INTEGER)
 			-- Allocate hash table for at least `n' items.
@@ -117,8 +117,6 @@ feature {NONE} -- Initialization
 			no_status: not special_status
 			compare_objects: object_comparison
 		end
-
-feature -- Initialization
 
 	accommodate (n: INTEGER)
 			-- Reallocate table with enough space for `n' items;
@@ -1771,7 +1769,7 @@ note
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 1984-2018, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2019, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

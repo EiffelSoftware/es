@@ -5,7 +5,7 @@ note
 		"Interface for character output streams with the notion of lines"
 
 	library: "Gobo Eiffel Kernel Library"
-	copyright: "Copyright (c) 2001-2018, Eric Bezault and others"
+	copyright: "Copyright (c) 2001-2019, Eric Bezault and others"
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -18,7 +18,7 @@ inherit
 
 feature -- Output
 
-	put_line (a_string: STRING)
+	put_line (a_string: READABLE_STRING_8)
 			-- Write `a_string' to output stream
 			-- followed by a line separator.
 		require
@@ -39,11 +39,10 @@ feature -- Output
 
 feature -- Access
 
-	eol: STRING
+	eol: STRING_8
 			-- Line separator
 		deferred
 		ensure
-			instance_free: class
 			eol_not_void: Result /= Void
 			eol_not_empty: Result.count > 0
 		end
