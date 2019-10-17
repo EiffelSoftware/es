@@ -6869,11 +6869,13 @@ Src/web/eiffel-cloud/server.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/server.ini -text
 Src/web/eiffel-cloud/site/config/cms.ini -text
 Src/web/eiffel-cloud/site/config/env.json -text
+Src/web/eiffel-cloud/site/config/modules/jwt_auth/config.ini -text
 Src/web/eiffel-cloud/site/config/modules/login_with_esa/config.ini -text
 Src/web/eiffel-cloud/site/modules/admin/files/scss/admin.scss -text
 Src/web/eiffel-cloud/site/modules/auth/files/scss/auth.scss -text
 Src/web/eiffel-cloud/site/modules/auth/mail_templates/account_activation.html svneol=native#text/xml
 Src/web/eiffel-cloud/site/modules/auth/mail_templates/account_activation_confirmation.html svneol=native#text/xml
+Src/web/eiffel-cloud/site/modules/auth/mail_templates/account_email_verification.html svneol=native#text/xml
 Src/web/eiffel-cloud/site/modules/auth/mail_templates/account_new_password.html svneol=native#text/xml
 Src/web/eiffel-cloud/site/modules/auth/mail_templates/account_re_activation.html svneol=native#text/xml
 Src/web/eiffel-cloud/site/modules/auth/mail_templates/account_rejected.html svneol=native#text/xml
