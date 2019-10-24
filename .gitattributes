@@ -5952,9 +5952,9 @@ Src/help/wizards/ewf/rootdir/resources/www/index.html svneol=native#text/xml
 Src/help/wizards/ewf/wizard.ecf svneol=native#text/xml
 Src/help/wizards/ewf_wizard.ecf svneol=native#text/xml
 Src/help/wizards/library/console_wizard.ecf svneol=native#text/xml
+Src/help/wizards/library/library_wizard.ecf svneol=native#text/xml
 Src/help/wizards/library/rootdir/library.dsc -text
 Src/help/wizards/library/rootdir/resources/${LIB_NAME}.ecf svneol=native#text/xml
-Src/help/wizards/library/wizard.ecf svneol=native#text/xml
 Src/help/wizards/wizard.ico -text
 Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
