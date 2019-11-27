@@ -8984,6 +8984,7 @@ eweasel/tests/term212/special.e-rev1 -text
 eweasel/tests/term213/Ace svneol=native#text/xml
 eweasel/tests/term214/Ace svneol=native#text/xml
 eweasel/tests/term215/Ace svneol=native#text/xml
+eweasel/tests/term218/Ace svneol=native#text/xml
 eweasel/tests/thread002/Ace -text
 eweasel/tests/thread010/Ace -text
 eweasel/tests/thread024/Ace -text svneol=native#application/xml
