@@ -7044,6 +7044,8 @@ Src/web/eiffel-cloud/site/themes/admin/assets/favicon.ico -text
 Src/web/eiffel-cloud/site/themes/admin/assets/scss/style.scss -text
 Src/web/eiffel-cloud/site/themes/admin/theme.info -text
 Src/web/eiffel-cloud/site/themes/cloud/assets/favicon.ico -text
+Src/web/eiffel-cloud/site/themes/cloud/assets/images/logo.png -text
+Src/web/eiffel-cloud/site/themes/cloud/assets/images/outer_header_bg.jpg -text
 Src/web/eiffel-cloud/site/themes/cloud/assets/scss/cloud.scss -text
 Src/web/eiffel-cloud/site/themes/cloud/assets/scss/common.scss -text
 Src/web/eiffel-cloud/site/themes/cloud/assets/scss/style.scss -text
