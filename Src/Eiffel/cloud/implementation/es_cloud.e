@@ -85,6 +85,7 @@ feature {NONE} -- Initialization
 			l_app_name: STRING
 			i,n: INTEGER
 			l_var_name: READABLE_STRING_8
+			syscsts: SYSTEM_CONSTANTS
 		do
 			create inst.make (eiffel_layout)
 			l_app_name := env.product_name
@@ -96,12 +97,14 @@ feature {NONE} -- Initialization
 				create l_id.make_empty
 				l_id.append (env.product_name)
 				l_id.append_character ('_')
-				l_id.append (env.version_name)
-				l_id.append_character ('-')
+				create syscsts
+				l_id.append (syscsts.Compiler_version_number.version)
+
 				l_id.append_character ('-')
 				l_id.append (env.eiffel_platform)
 				l_id.append_character ('-')
-				v := {SYSTEM_CONSTANTS}.version_type_name
+				l_id.append_character ('-')
+				v := syscsts.version_type_name
 				from
 					i := 1
 					n := v.count
@@ -115,8 +118,6 @@ feature {NONE} -- Initialization
 					end
 					i := i + 1
 				end
-				l_id.append_character ('-')
-				l_id.append (inst.device_name)
 				l_id.append_character ('-')
 				l_id.append_character ('-')
 				l_id.append ((create {UUID_GENERATOR}).generate_uuid.out)
@@ -163,18 +164,22 @@ feature -- Event
 					attached eiffel_project.lace as l_ace
 				then
 					create l_title.make_empty
-					if attached l_ace.target_name as tgt then
-						l_title.append (tgt)
-						l_title.append_character (' ')
+					if is_debug_enabled then
+						if attached l_ace.target_name as tgt then
+							l_title.append (tgt)
+							l_title.append_character (' ')
+						end
+						l_title.append_character ('(')
+						l_title.append (l_ace.project_location.location.name)
+						l_title.append_character (')')
 					end
-					l_title.append_character ('(')
-					l_title.append (l_ace.project_location.location.name)
-					l_title.append_character (')')
 					if
 						attached eiffel_universe.conf_system as cfg and then
 						not cfg.is_generated_uuid
 					then
-						l_title.append_character (' ')
+						if not l_title.is_empty then
+							l_title.append_character (' ')
+						end
 						l_title.append ("UUID=")
 						l_title.append (cfg.uuid.out)
 					end
