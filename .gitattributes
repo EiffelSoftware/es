@@ -6986,8 +6986,10 @@ Src/web/eiffel-cloud/modules/es_cloud/es_cloud.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/modules/es_cloud/site/config/config.ini -text
 Src/web/eiffel-cloud/modules/es_cloud/site/config/store.json -text
 Src/web/eiffel-cloud/modules/es_cloud/site/files/css/es_cloud-admin.css -text
+Src/web/eiffel-cloud/modules/es_cloud/site/files/css/es_cloud.css -text
 Src/web/eiffel-cloud/modules/es_cloud/site/files/css/pricing.css -text
 Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/es_cloud-admin.scss -text
+Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/es_cloud.scss -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install.sql -text
 Src/web/eiffel-cloud/modules/jwt_auth/jwt_auth.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/modules/jwt_auth/site/config/config.ini -text
@@ -7022,7 +7024,10 @@ Src/web/eiffel-cloud/site/modules/custom_block/config/custom_block.json -text
 Src/web/eiffel-cloud/site/modules/es_cloud/config/config.ini -text
 Src/web/eiffel-cloud/site/modules/es_cloud/config/store.json -text
 Src/web/eiffel-cloud/site/modules/es_cloud/files/css/es_cloud-admin.css -text
+Src/web/eiffel-cloud/site/modules/es_cloud/files/css/es_cloud.css -text
 Src/web/eiffel-cloud/site/modules/es_cloud/files/css/pricing.css -text
+Src/web/eiffel-cloud/site/modules/es_cloud/files/scss/es_cloud-admin.scss -text
+Src/web/eiffel-cloud/site/modules/es_cloud/files/scss/es_cloud.scss -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install.sql -text
 Src/web/eiffel-cloud/site/modules/files/files/img/file-logo.png -text
 Src/web/eiffel-cloud/site/modules/files/files/js/src/basic.scss -text
