@@ -1573,13 +1573,11 @@ Src/Delivery/studio/lang/po_files/zh_CN.po -text
 Src/Delivery/studio/spec/win64/bin/libcrypto-1_1-x64.dll -text
 Src/Delivery/studio/spec/win64/bin/libcrypto.lib -text
 Src/Delivery/studio/spec/win64/bin/libcurl.dll -text
-Src/Delivery/studio/spec/win64/bin/libcurl.lib -text
 Src/Delivery/studio/spec/win64/bin/libssl-1_1-x64.dll -text
 Src/Delivery/studio/spec/win64/bin/libssl.lib -text
 Src/Delivery/studio/spec/windows/bin/libcrypto-1_1.dll -text
 Src/Delivery/studio/spec/windows/bin/libcrypto.lib -text
 Src/Delivery/studio/spec/windows/bin/libcurl.dll -text
-Src/Delivery/studio/spec/windows/bin/libcurl.lib -text
 Src/Delivery/studio/spec/windows/bin/libssl-1_1.dll -text
 Src/Delivery/studio/spec/windows/bin/libssl.lib -text
 Src/Delivery/studio/templates/code_template-1.0.rnc svneol=native#text/plain
