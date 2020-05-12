@@ -8999,6 +8999,9 @@ eweasel/tests/store045/Ace svneol=native#text/xml
 eweasel/tests/store045/stored.c_independent -text
 eweasel/tests/store045/stored.sed_recoverable -text
 eweasel/tests/string003/Ace svneol=native#text/xml
+eweasel/tests/string004/Ace svneol=native#text/xml
+eweasel/tests/string004/output svneol=native#text/plain
+eweasel/tests/string004/output_new svneol=native#text/plain
 eweasel/tests/syntax001/notes -text
 eweasel/tests/syntax002/notes -text
 eweasel/tests/syntax003/notes -text
