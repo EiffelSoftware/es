@@ -6727,6 +6727,7 @@ Src/tools/resource_bench/rb.ico svneol=native#unset
 Src/tools/resource_bench/rb.lic -text
 Src/tools/resource_bench/toolbar.bmp svneol=native#unset
 Src/tools/syntax_updater/syntax_updater.lic -text
+Src/tools/unicode/gelex_category.sh eol=lf
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/tools/wrapc/build.eant svneol=native#text/xml
 Src/tools/wrapc/config/wrap_c_application.eant svneol=native#text/xml
