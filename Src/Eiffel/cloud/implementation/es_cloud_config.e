@@ -7,7 +7,8 @@ class
 	ES_CLOUD_CONFIG
 
 create
-	make
+	make,
+	make_from_separate
 
 feature {NONE} -- Initialization
 
@@ -22,6 +23,14 @@ feature {NONE} -- Initialization
 
 			connection_timeout := 3 -- seconds
 			timeout := 10 -- seconds
+		end
+
+	make_from_separate (cfg: separate ES_CLOUD_CONFIG)
+		do
+			create root_endpoint.make_from_string (cfg.root_endpoint)
+			create server_url.make_from_string (cfg.server_url)
+			connection_timeout := cfg.connection_timeout
+			timeout := cfg.timeout
 		end
 
 feature -- Access

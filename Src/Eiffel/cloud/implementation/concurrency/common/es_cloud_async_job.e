@@ -1,39 +1,57 @@
-﻿note
-	description: "Error object used in Eiffel Query Language."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+note
+	description: "Summary description for {ES_CLOUD_ASYNC_JOB}."
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	QL_ERROR
+	ES_CLOUD_ASYNC_JOB
 
-inherit
-	ANY
-		redefine
-			out
-		end
+feature {NONE} -- Initialization
 
-feature -- Access
-
-	code: STRING
-			-- Code error
-		deferred
-		ensure
-			code_not_void: Result /= Void
-		end
-
-feature -- Access
-
-	text: STRING_GENERAL
-			-- The error message.
-		deferred
-		end
-
-	out: STRING
-			-- Output
+	make (a_service: ES_CLOUD_S; cfg: ES_CLOUD_CONFIG)
+		require
+			a_service /= Void
 		do
-			Result := {UTF_CONVERTER}.string_32_to_utf_8_string_8 (text)
+			service := a_service
+			config := cfg
+		end
+
+feature -- Access: Current
+
+	service: ES_CLOUD_S
+
+feature {NONE} -- Access: worker thread
+
+	config: ES_CLOUD_CONFIG
+
+	web_api: ES_CLOUD_API
+		local
+			cfg: ES_CLOUD_CONFIG
+		do
+			create cfg.make_from_separate (config)
+			Result := once_web_api
+			Result.set_config (cfg)
+		end
+
+	once_web_api: ES_CLOUD_API
+		once ("THREAD")
+			create Result.make (config)
+		end
+
+feature -- Execution in concurrent thread
+
+	execute
+		deferred
+		end
+
+feature -- Execution in main thread		
+
+	pre_execute
+		deferred
+		end
+
+	post_execute
+		deferred
 		end
 
 note
@@ -67,5 +85,4 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
-
 end

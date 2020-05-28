@@ -1,41 +1,46 @@
-﻿note
-	description: "Error object used in Eiffel Query Language."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+note
+	description: "Summary description for {ES_CLOUD_ASYNC_WORKER}."
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	QL_ERROR
+class
+	ES_CLOUD_ASYNC_WORKER
 
-inherit
-	ANY
-		redefine
-			out
-		end
+create
+	make
 
-feature -- Access
+feature {NONE} -- Initialization	
 
-	code: STRING
-			-- Code error
-		deferred
-		ensure
-			code_not_void: Result /= Void
-		end
-
-feature -- Access
-
-	text: STRING_GENERAL
-			-- The error message.
-		deferred
-		end
-
-	out: STRING
-			-- Output
+	make
 		do
-			Result := {UTF_CONVERTER}.string_32_to_utf_8_string_8 (text)
+			create jobs.make (10)
 		end
 
+feature -- Access
+
+	pending_job_count: NATURAL_32
+
+feature -- Protected Access
+
+	exit_requested: BOOLEAN
+
+feature -- Element change
+
+	add_job (a_job: ES_CLOUD_ASYNC_JOB)
+		do
+			pending_job_count := pending_job_count + 1
+			a_job.pre_execute
+			a_job.execute
+			a_job.post_execute
+			pending_job_count := pending_job_count - 1
+		end
+
+	request_exit
+		do
+			exit_requested := True
+		end
+
+invariant
 note
 	copyright: "Copyright (c) 1984-2020, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
@@ -67,5 +72,4 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
-
 end
