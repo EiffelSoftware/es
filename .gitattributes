@@ -8405,6 +8405,8 @@ eweasel/tests/final130/Ace svneol=native#text/xml
 eweasel/tests/final131/Ace svneol=native#text/xml
 eweasel/tests/final132/Ace svneol=native#text/xml
 eweasel/tests/final133/Ace svneol=native#text/xml
+eweasel/tests/final134/Ace svneol=native#text/xml
+eweasel/tests/final134/output svneol=native#text/plain
 eweasel/tests/fixed001/notes -text
 eweasel/tests/fixed003/notes -text
 eweasel/tests/fixed004/notes -text
