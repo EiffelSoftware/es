@@ -1387,6 +1387,7 @@ test	dead-code-removal-new_instance		final130 tcf pass finalizing code_removal
 test	dead-code-removal-sed_facilities	final131 tcf pass finalizing code_removal storable
 test	dead-code-removal-storable		final132 tcf pass finalizing code_removal storable
 test	finalized-agent-call			final133 tcf fail finalizing 
+test	finalize-single-non-object-call		final134 tcf pass finalizing instance_free call execution
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -2957,6 +2958,7 @@ test	targeted-unqualified-once-expanded	attach125 tcf pass void_safe targeted va
 test	targeted-unqualified-once-indirect	attach126 tcf pass void_safe targeted validity
 test	targeted-creation-expanded-argument	attach127 tcf pass void_safe targeted validity expanded
 test	targeted-assigner-command		attach128 tcf fail void_safe targeted validity assigner
+test	attribute-body-void-result		attach129 tcf pass attached_types void_safe creation attribute validity
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
