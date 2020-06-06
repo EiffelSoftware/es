@@ -7836,6 +7836,7 @@ Src/web/support/client/esa_client.ecf svneol=native#text/xml
 Src/web/support/client/test/esa_config.json -text
 Src/web/support/client/test/test.ecf svneol=native#text/xml
 Src/web/support/core/esa_core.ecf svneol=native#text/xml
+Src/web/support/database/mssql/update_sp_visible_guest_interactions_05_2020.sql -text
 Src/web/support/db/esa_db.ecf svneol=native#text/xml
 Src/web/support/db/scripts/AddUser2.sql -text
 Src/web/support/db/scripts/GetProblemReportsGuest.sql -text
