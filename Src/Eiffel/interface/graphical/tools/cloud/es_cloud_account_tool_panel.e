@@ -12,7 +12,8 @@ class
 inherit
 	ES_DOCKABLE_TOOL_PANEL [EV_VERTICAL_BOX]
 		redefine
-			on_show
+			on_show,
+			create_mini_tool_bar_items
 		end
 
 	ES_CLOUD_OBSERVER
@@ -60,6 +61,8 @@ feature -- Widgets
 feature -- Status
 
 	is_cloud_available: BOOLEAN
+
+	is_advanced_view: BOOLEAN
 
 feature -- Operations
 
@@ -124,12 +127,63 @@ feature {NONE} -- Factory
 			Result.set_padding_width (layout_constants.default_padding_size)
 		end
 
-    create_tool_bar_items: detachable ARRAYED_LIST [SD_TOOL_BAR_ITEM]
-            -- Retrieves a list of tool bar items to display at the top of the tool.
+    create_mini_tool_bar_items: detachable ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+		local
+			but: SD_TOOL_BAR_TOGGLE_BUTTON
+			b_up: SD_TOOL_BAR_BUTTON
         do
+        	create Result.make (2)
+
+        	create b_up.make
+        	b_up.set_text (cloud_names.button_update)
+        	b_up.set_tooltip (cloud_names.tooltip_button_update)
+        	b_up.select_actions.extend (agent on_update_selected)
+        	Result.extend (b_up)
+        	button_update := b_up
+
+        	create but.make
+        	but.set_text (cloud_names.button_show_more)
+        	but.set_tooltip (cloud_names.tooltip_button_show_more)
+        	but.select_actions.extend (agent on_advanced_event (but))
+        	Result.extend (but)
+
         end
 
+    create_tool_bar_items: detachable ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+            -- Retrieves a list of tool bar items to display at the top of the tool.
+		local
+--			but: SD_TOOL_BAR_TOGGLE_BUTTON
+        do
+--       	
+--        	create but.make
+--        	but.set_text (interface_names.b_advanced)
+--        	but.select_actions.extend (agent on_advanced_event (but))
+
+--        	create Result.make (1)
+--        	Result.extend (but)
+        end
+
+feature -- Widgets
+
+	button_update: detachable SD_TOOL_BAR_BUTTON
+
 feature {NONE} -- Action handlers
+
+	on_advanced_event (but: SD_TOOL_BAR_TOGGLE_BUTTON)
+		do
+			is_advanced_view := but.is_selected
+			refresh
+		end
+
+	on_update_selected
+		do
+			if
+				attached es_cloud_s.service as cld and then
+				attached cld.active_account as acc
+			then
+				on_account_reload (cld, acc)
+			end
+		end
 
 	on_show
 			-- Performs actions when the user widget is displayed.
@@ -156,10 +210,17 @@ feature {NONE} -- Action handlers
 		do
 			b := main_box
 			b.wipe_out
+			if attached button_update as but_update then
+				but_update.disable_sensitive
+			end
+
 			if attached es_cloud_s.service as cld then
 				l_dbg := cld.is_debug_enabled
 				acc := cld.active_account
 				if acc /= Void then
+					if attached button_update as but_update then
+						but_update.enable_sensitive
+					end
 					create txt
 					b.extend (txt)
 					append_bold_text_to (locale.translation_in_context ("Username: ", "cloud.info"), txt)
@@ -169,28 +230,30 @@ feature {NONE} -- Action handlers
 						append_bold_text_to (locale.translation_in_context ("Edition: enterprise", "cloud.info"), txt)
 						append_text_to ("%N", txt)
 					elseif attached cld.installation.associated_plan as l_plan then
-						append_bold_text_to (locale.translation_in_context ("License: ", "cloud.info"), txt)
+						append_bold_text_to (locale.translation_in_context ("License plan: ", "cloud.info"), txt)
 						append_text_to (l_plan.name, txt)
 						append_text_to ("%N", txt)
 						if attached l_plan.expiration_date as dt then
 							nb_days := l_plan.days_remaining
 							append_bold_text_to (locale.translation_in_context ("Expires: ", "cloud.info"), txt)
-							append_text_to (dt.out, txt)
+							append_time_to (dt, txt)
 							append_text_to ("%N", txt)
 							if nb_days >= 0 then
 								append_bold_text_to (locale.translation_in_context ("Days remaining: ", "cloud.info"), txt)
 								append_text_to (nb_days.out, txt)
 								append_text_to ("%N", txt)
 							else
-								append_bold_text_to (locale.translation_in_context ("License: EXPIRED!", "cloud.info"), txt)
+								append_bold_text_to (locale.translation_in_context ("Status: EXPIRED!", "cloud.info"), txt)
 								append_text_to ("%N", txt)
 							end
 						end
-						append_bold_text_to (locale.translation_in_context ("Installation id: ", "cloud.info"), txt)
-						append_text_to (cld.installation.id, txt)
-						append_text_to ("%N", txt)
+						if is_advanced_view then
+							append_bold_text_to (locale.translation_in_context ("Installation id: ", "cloud.info"), txt)
+							append_text_to (cld.installation.id, txt)
+							append_text_to ("%N", txt)
+						end
 					end
-					if attached cld.active_session as sess then
+					if is_advanced_view and attached cld.active_session as sess then
 						append_text_to ("%N", txt)
 						append_bold_text_to ("Session: ", txt)
 						append_text_to (sess.id.out, txt)
@@ -198,7 +261,7 @@ feature {NONE} -- Action handlers
 						if attached {ES_ACCOUNT_ACCESS_TOKEN} acc.access_token as tok then
 							append_text_to ("%N", txt)
 							append_bold_text_to (locale.translation_in_context ("Authentication token expiration: ", "cloud.info"), txt)
-							append_text_to (tok.expiration_date.out, txt)
+							append_time_to (tok.expiration_date, txt)
 							if attached tok.expiration_delay_in_seconds as nb and then nb >= 0 then
 								append_text_to (" ", txt)
 								create s.make_empty
@@ -239,7 +302,7 @@ feature {NONE} -- Action handlers
 							append_bold_text_to ("Installation: ", txt)
 							append_text_to (l_installation.id, txt)
 							if attached l_installation.creation_date as dt then
-								append_italic_text_to (" (since " + dt.out + ")" , txt)
+								append_italic_text_to (" (since " + date_time_local_representation (dt) + ")" , txt)
 							end
 							append_text_to ("%N", txt)
 						end
@@ -255,7 +318,7 @@ feature {NONE} -- Action handlers
 							append_text_to (tok.token, txt)
 							append_text_to ("%N%T", txt)
 							append_text_to ("expiration=", txt)
-							append_text_to (tok.expiration_date.out, txt)
+							append_time_to (tok.expiration_date, txt)
 							if attached tok.expiration_delay_in_seconds as nb and then nb >= 0 then
 								append_text_to (" ", txt)
 								create s.make_empty
@@ -310,14 +373,16 @@ feature {NONE} -- Action handlers
 	--					create hb
 
 						create but.make_with_text_and_action (cloud_names.button_visit_web_account, agent on_web_account (cld, acc))
+						but.set_tooltip (cloud_names.tooltip_button_visit_web_account)
 						hb.extend (but)
 						layout_constants.set_default_size_for_button (but)
 						hb.disable_item_expand (but)
 
-						create but.make_with_text_and_action (cloud_names.button_reload, agent on_account_reload (cld, acc))
-						hb.extend (but)
-						layout_constants.set_default_size_for_button (but)
-						hb.disable_item_expand (but)
+--						create but.make_with_text_and_action (cloud_names.button_update, agent on_account_reload (cld, acc))
+--						but.set_tooltip (cloud_names.tooltip_button_update)
+--						hb.extend (but)
+--						layout_constants.set_default_size_for_button (but)
+--						hb.disable_item_expand (but)
 
 						create but.make_with_text_and_action (cloud_names.button_sign_out, agent on_sign_out (cld))
 						hb.extend (but)
@@ -448,6 +513,9 @@ feature {NONE} -- Action handlers
 			l_style := widget.pointer_style
 			widget.set_pointer_style (pixmaps.stock_pixmaps.busy_cursor)
 			cld.update_account (acc)
+			if attached acc.access_token as tok and then tok.has_refresh_key then
+				cld.refresh_token (tok, acc)
+			end
 			widget.set_pointer_style (l_style)
 			if not is_cloud_available then
 				refresh
@@ -501,7 +569,26 @@ feature -- Access: Help
 			Result := {STRING_32} "TO-FILL"
 		end
 
+feature -- Time helpers
+
+	local_time (dt: DATE_TIME): DATE_TIME
+		do
+    		create Result.make_by_date_time (dt.date, dt.time)
+			Result.add ((create {DATE_TIME}.make_now).relative_duration (create {DATE_TIME}.make_now_utc))
+		end
+
+	date_time_local_representation (dt: DATE_TIME): STRING
+		do
+			Result := local_time (dt).formatted_out ("yyyy-[0]mm-[0]dd [0]hh:[0]mi:[0]ss")
+			Result.replace_substring_all (" ", "T")
+		end
+
 feature -- Rich text helper
+
+	append_time_to (dt: DATE_TIME; a_rich_text: EV_RICH_TEXT)
+		do
+			append_formatted_text_to (date_time_local_representation (dt), Void, a_rich_text)
+		end
 
 	append_text_to (a_txt: detachable READABLE_STRING_GENERAL; a_rich_text: EV_RICH_TEXT)
 		do

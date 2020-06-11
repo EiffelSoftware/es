@@ -12,7 +12,7 @@ inherit
 		redefine
 			on_account_signed_in,
 			on_account_signed_out,
-			on_account_license_expired,
+			on_account_license_issue,
 			on_account_updated,
 			on_cloud_available,
 			on_session_state_changed,
@@ -135,13 +135,13 @@ feature -- Events
 			start_background_pinging (acc)
 		end
 
-	on_account_license_expired (acc: ES_ACCOUNT)
+	on_account_license_issue (lic: detachable ES_ACCOUNT_LICENSE; acc: ES_ACCOUNT)
 		local
 			dlg: ES_CLOUD_LICENSE_ISSUE_DIALOG
 			w: detachable EB_DEVELOPMENT_WINDOW
 		do
 			debug ("es_cloud")
-				print (generator + ".on_account_license_expired (" + acc.username + ")%N")
+				print (generator + ".on_account_license_issue (" + acc.username + ")%N")
 			end
 			stop_background_pinging
 
@@ -156,6 +156,11 @@ feature -- Events
 				last_license_issue_dialog := dlg
 			end
 			if dlg /= Void then
+				if lic /= Void then
+					dlg.set_license_expired
+				else
+					dlg.set_license_issue
+				end
 				w := window_manager.last_focused_development_window
 				if
 					w = Void and then

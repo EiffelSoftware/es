@@ -1,5 +1,5 @@
-note
-	description: "data for alias name in the multiple alias list : FEATURE_NAME_ALIAS_AS.aliases ."
+﻿note
+	description: "An alias name in the multiple alias list (see `{FEATURE_NAME_ALIAS_AS}.aliases`)."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -7,12 +7,8 @@ class
 	FEATURE_ALIAS_NAME
 
 inherit
-	ANY
-
 	INTERNAL_COMPILER_STRING_EXPORTER
-
 	EIFFEL_SYNTAX_CHECKER
-
 	PREFIX_INFIX_NAMES
 
 create
@@ -35,16 +31,13 @@ feature {NONE} -- Initialize
 				alias_keyword_index := a_alias_keyword.index
 			end
 
-			if
-				not is_bracket_alias and then
-				not is_parentheses_alias
-			then
-					-- Make sure we do not get "prefix %"or%"" or alike
-				if is_valid_unary_operator (a_alias_name.value_32) then
-					set_is_unary
-				elseif is_valid_binary_operator (a_alias_name.value_32) then
-					set_is_binary
-				end
+			if is_bracket_alias or else is_parentheses_alias then
+					-- No name mangling is performed.
+			elseif is_valid_unary_operator (a_alias_name.value) then
+					-- Make sure we do not get "prefix %"or%"" or alike.
+				set_is_unary
+			elseif is_valid_binary_operator (a_alias_name.value) then
+				set_is_binary
 			end
 		end
 
@@ -73,9 +66,9 @@ feature -- Access
 			else
 					-- For alias, always consider lowercase operator name!
 				if is_binary then
-					create Result.initialize (infix_feature_name_with_symbol (alias_name.value.as_lower))
+					create Result.initialize (infix_feature_name_with_symbol (alias_name.value_as_lower))
 				else
-					create Result.initialize (prefix_feature_name_with_symbol (alias_name.value.as_lower))
+					create Result.initialize (prefix_feature_name_with_symbol (alias_name.value_as_lower))
 				end
 			end
 		ensure
@@ -102,12 +95,12 @@ feature -- status
 
 	is_bracket_alias: BOOLEAN
 		do
-			Result := alias_name.value.item (1) = '['
+			Result := alias_name.value [1] = '['
 		end
 
 	is_parentheses_alias: BOOLEAN
 		do
-			Result := alias_name.value.item (1) = '('
+			Result := alias_name.value [1] = '('
 		end
 
 feature -- Element change
@@ -124,10 +117,8 @@ feature -- Element change
 			is_unary := False
 		end
 
-invariant
-
 note
-	copyright: "Copyright (c) 1984-2019, Eiffel Software"
+	copyright: "Copyright (c) 1984-2020, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
