@@ -79,6 +79,7 @@ Src/.git-svn/readme.txt -text
 Src/.git-svn/scm -text
 Src/.git-svn/users.txt -text
 Src/C/CONFIGS/freebsd-ppc -text
+Src/C/CONFIGS/freebsd-ppc-64 -text
 Src/C/CONFIGS/linux-x86-64 eol=lf
 Src/C/Configure eol=lf
 Src/C/Jmakefile eol=lf
