@@ -8846,6 +8846,8 @@ eweasel/tests/lib046/Ace svneol=native#text/xml
 eweasel/tests/lib047/Ace svneol=native#text/xml
 eweasel/tests/lib048/Ace svneol=native#text/xml
 eweasel/tests/lib048/output svneol=native#text/plain
+eweasel/tests/lib049/Ace svneol=native#text/xml
+eweasel/tests/lib049/output svneol=native#text/plain
 eweasel/tests/list015/Ace -text
 eweasel/tests/melt001/notes -text
 eweasel/tests/melt003/notes -text
