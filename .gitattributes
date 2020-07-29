@@ -1781,6 +1781,8 @@ Src/Eiffel/doc/Microsoft.NET/multiple_inheritance/method2/diamond_inheritance_on
 Src/Eiffel/doc/debugger_files/image002.gif svneol=native#unset
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.dia -text
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.png -text
+Src/Eiffel/edition/edition.ecf svneol=native#text/xml
+Src/Eiffel/edition/license.lic -text
 Src/build/build.ico -text
 Src/contrib/examples/web/authentication/oauth/login_with_github/github.ini-dist -text
 Src/contrib/examples/web/authentication/oauth/login_with_github/login_with_github.ecf svneol=native#text/xml
