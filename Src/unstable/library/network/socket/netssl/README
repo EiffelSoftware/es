@@ -1,0 +1,16 @@
+# OpenSSL support for EiffelNet #
+
+Status: working on Windows and Linux
+
+Contributors:
+- Guus Leeuw jr. (itpassion.com)
+- Jocelyn Fiat (eiffel.com)
+- Javier Velilla (eiffel.com)
+
+
+Supported Version
+=================
+OpenSSL version 1.1.1a.
+
+
+Check OpenSSL library to more information.

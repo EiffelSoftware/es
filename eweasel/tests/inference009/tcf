@@ -1,0 +1,10 @@
+test_name 	 inference-boolean-expression
+test_description Some constructs expect values of type BOOLEAN.
+
+copy_sub 	 Ace $TEST Ace
+copy_raw 	 test.e  $CLUSTER test.e
+
+compile_melted
+compile_result   validity_error TEST "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:11"
+
+test_end

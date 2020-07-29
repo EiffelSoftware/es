@@ -1,0 +1,38 @@
+#!/bin/sh
+
+#Let's compile for PPC on lisbon in background
+# Although it won't create the UI version of the compiler because of the
+# R_PPC_REL24 linking error for large executable we are still building a
+# delivery with only the batch compiler.
+#(sh ./make_for_platform lisbon.ise manus linux-ppc 22) &
+
+#Let's compile for Solaris Sparc (both 32-bit and 64-bit) on sparc9 in background
+(
+ssh sparc9.ise "\rm -f ~/local/gtkinstall" ;
+ssh sparc9.ise "\ln -s ~/local/gtk-2.6.9/gtkinstall ~/local/gtkinstall" ;
+sh ./make_for_platform sparc9.ise manus solaris-sparc 22 ;
+
+ssh sparc9.ise "\rm -f ~/local/gtkinstall" ;
+ssh sparc9.ise "\ln -s ~/local/gtk269-64/gtkinstall ~/local/gtkinstall" ;
+sh ./make_for_platform sparc9.ise manus solaris-sparc-64 22 ;
+)&
+
+#Let's compile for Solaris x86 in background
+(sh ./make_for_platform amsterdam.ise manus solaris-x86 22 ; sh ./make_for_platform amsterdam.ise manus solaris-x86-64 22) &
+
+#Let's compile for Linux, FreeBSD, OpenBSD (done together because they are on the same machine and we don't want to overload the machine
+(sh ./make_for_platform ubuntu804 manus linux-x86 22 ; sh ./make_for_platform ubuntu804 manus linux-x86-suncc 22) &
+(sh ./make_for_platform ubuntu804-x64.ise manus linux-x86-64 22 ; sh ./make_for_platform ubuntu804-x64.ise manus linux-x86-64-suncc 22) &
+(sh ./make_for_platform freebsd.ise manus freebsd-x86 22 ; sh ./make_for_platform freebsd64.ise manus freebsd-x86-64 22 ; sh ./make_for_platform openbsd64 manus openbsd-x86-64 22)&
+
+#Let's compile for Raspberry PI in background
+(sh ./make_for_platform raspberry.ise pi linux-armv6 22) &
+
+#Let's compile for MacOS X 64 bits in background
+(sh ./make_for_platform macmini.ise manus macosx-x86-64 22) &
+
+#Let's compile for OpenBSD in background
+#(sh ./make_for_platform sushi.inf.ethz.ch manus openbsd-x86 22) &
+
+#Let's compile for Linux Sparc in background
+#(sh ./make_for_platform calypso.frankengul.org manu linux-sparc 22 "-l 15") &

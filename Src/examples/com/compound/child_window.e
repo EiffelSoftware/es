@@ -1,0 +1,275 @@
+﻿note
+	description: "Child window of frame window containing an OLE compound file"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	CHILD_WINDOW
+
+inherit
+
+	WEL_MDI_CHILD_WINDOW
+		rename
+			make as mdi_child_window_make
+		redefine
+			class_icon,
+			on_size,
+			on_window_pos_changed,
+			on_notify,
+			dispose
+		end
+
+	ECOM_EXCEPTION
+		rename
+			class_name as exception_class_name
+		export
+			{NONE} all
+		redefine
+			dispose
+		end
+
+	ECOM_STORAGE_ROUTINES
+		export
+			{NONE} all
+		end
+
+	WEL_SIZE_CONSTANTS
+		export
+			{NONE} all
+		end
+
+	WEL_SM_CONSTANTS
+		export
+			{NONE} all
+		end
+
+	WEL_TVIF_CONSTANTS
+		export
+			{NONE} all
+		end
+
+	APPLICATION_IDS
+		export
+			{NONE} all
+		end
+
+	ECOM_STGTY
+		export
+			{NONE} all
+		end
+
+	ECOM_STGM
+		export
+			{NONE} all
+		end
+
+	ECOM_EXCEPTION_CODES
+		export
+			{NONE} all
+		end
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (p: WEL_MDI_FRAME_WINDOW; file_name: PATH)
+			-- Create MDI child window with parent `p' and
+			-- title `name', then build associated tree view.
+		local
+			mess_box: WEL_MSG_BOX
+			tvitem: WEL_TREE_VIEW_ITEM
+			tvinss: WEL_TREE_VIEW_INSERT_STRUCT
+			retried: BOOLEAN
+		do
+			if not retried then
+				create tvitem_table.make (5)
+				if is_compound_file_path (file_name) then
+					create storage.make_open_file_path (file_name, Stgm_share_deny_write)
+					mdi_child_window_make (p, file_name.name)
+					create tree_view.make (Current, 0, 0, width, height, Tree_view_id)
+					create tvitem.make
+					create tvinss.make
+					tvitem.set_text (Root_item_title)
+					tvinss.set_parent (tree_view.last_item)
+					tvinss.set_last
+					tvinss.set_tree_view_item (tvitem)
+					tree_view.insert_item (tvinss)
+					create_tree_view (tree_view.last_item, storage)
+				else
+					create mess_box.make
+					mess_box.error_message_box (p, "Sorry, not a compound file.", "Read error")
+				end
+			end
+		rescue
+			if hresult = Stg_e_shareviolation then
+				create mess_box.make
+				mess_box.error_message_box (p, "Sharing Violation", "Read error")
+				retried := True
+				retry
+			else
+				create mess_box.make
+				mess_box.error_message_box (p, "Can not open file", "Open error")
+				retried := True
+				retry
+			end
+		end
+
+	new_tvitem (stor: ECOM_STORAGE; stream_name: STRING): WEL_TREE_VIEW_ITEM
+			-- New tree view item referencing stream `stream_name' in storage `stor'
+		do
+			tvitem_table.put ([stor, stream_name], tvitem_table_count)
+			create Result.make
+			Result.set_mask (Result.mask + Tvif_param)
+			Result.set_lparam (tvitem_table_count)
+			tvitem_table_count := tvitem_table_count + 1
+		end
+
+	create_tree_view (p: POINTER; stor: ECOM_STORAGE)
+			-- Recursively create tree view with parent `p'
+			-- and associated compound file `stor'
+			-- `elements' is used for efficiency.
+		local
+			substorage: ECOM_STORAGE
+			tex: STRING_32
+			elements: ECOM_ENUM_STATSTG
+			statstg: ECOM_STATSTG
+			tvitem: WEL_TREE_VIEW_ITEM
+			tvinss: WEL_TREE_VIEW_INSERT_STRUCT
+		do
+			from
+				elements := stor.elements
+				elements.reset
+				statstg := elements.next_item
+			until
+				statstg = Void
+			loop
+				tvitem := new_tvitem (stor, statstg.name.twin)
+				create tvinss.make
+				tex := stgty_string (statstg.type)
+				tex.append (statstg.name)
+				tvitem.set_text (tex)
+				tvinss.set_parent (p)
+				tvinss.set_last
+				tvinss.set_tree_view_item (tvitem)
+				tree_view.insert_item (tvinss)
+				if statstg.type = Stgty_storage then
+					substorage := stor.retrieved_substorage (statstg.name, Stgm_share_exclusive)
+					create_tree_view (tree_view.last_item, substorage)
+				end
+				statstg := elements.next_item
+             end
+		end
+
+feature -- Access
+
+	tree_view: WEL_TREE_VIEW
+			-- Associated tree view
+
+	storage: ECOM_STORAGE
+			-- Associated root file
+
+feature -- Message Processing
+
+	on_size (size_type, w, h: INTEGER)
+			-- Resize tree view to width `w'and height `h'.
+			-- `size_type' indicates form of resizing.
+		do
+			if tree_view /= Void and then tree_view.exists then
+				if size_type = Size_minimized then
+					tree_view.minimize
+				elseif size_type = Size_restored then
+					tree_view.restore
+				else
+					tree_view.move_and_resize (0, 0, w, h, true)
+				end
+			end
+		end
+
+	 on_window_pos_changed (window_pos: WEL_WINDOW_POS)
+			-- Move tree view to `window_pos'and resize accordingly.
+		do
+			if tree_view /= Void and then tree_view.exists then
+				tree_view.move_and_resize (0, 0, window_pos.width,
+				window_pos.height, true)
+			end
+		end
+
+	on_notify (control_id: INTEGER; info: WEL_NMHDR)
+			-- Notifications processing
+		local
+			stream_display: STREAM_DISPLAY_WINDOW
+			retried: BOOLEAN
+			mess_box: WEL_MSG_BOX
+   		do
+			if
+				not retried and then
+				control_id = Tree_view_id and then
+				info.code = -3 and not
+				tree_view.selected_item.text.is_equal (Root_item_title) and
+				attached {ECOM_STORAGE} tvitem_table.item (tree_view.selected_item.lparam).item (1) as stor and
+				attached {READABLE_STRING_GENERAL} tvitem_table.item (tree_view.selected_item.lparam).item (2) as name
+			then
+				create stream_display.make (stor.retrieved_stream (name, Stgm_share_exclusive))
+			end
+		rescue
+			create mess_box.make
+			mess_box.error_message_box (Current, "Can not open stream", "Open error")
+			retried := True
+			retry
+ 		end
+
+feature {NONE} -- Implementation
+
+	dispose
+			-- Dispose precursors.
+		do
+			Precursor {WEL_MDI_CHILD_WINDOW}
+			Precursor {ECOM_EXCEPTION}
+		end
+
+	tvitem_table: HASH_TABLE [TUPLE [ECOM_STORAGE, STRING], INTEGER]
+			-- Table of streams identified by their contening storage and name
+			-- Index kept in tree view item for later retrieval in `on_notify'
+
+	stgty_string (stgty_constant: INTEGER): STRING
+			-- String value of ECOM_STGTY constants
+		do
+			if stgty_constant = STGTY_LOCKBYTES then
+				Result := "Lock Bytes: "
+			elseif stgty_constant = STGTY_STREAM then
+				Result := "Stream: "
+			elseif stgty_constant = STGTY_STORAGE	then
+				Result := "Storage: "
+			end
+		end
+
+	class_icon: WEL_ICON
+			-- Window's icon
+		once
+			create Result.make_by_id (Id_ico_child_window)
+		end
+
+	Tree_view_id: INTEGER = 0
+			-- Tree view control id
+
+	tvitem_table_count: INTEGER
+			-- Next free index in `tvitem_table'
+
+	Root_item_title: STRING = "Root";
+			-- Root storage displayed name
+
+note
+	copyright:	"Copyright (c) 1984-2017, Eiffel Software and others"
+	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
+
+end

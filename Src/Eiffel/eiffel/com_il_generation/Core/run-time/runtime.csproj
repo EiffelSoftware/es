@@ -1,0 +1,167 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{37441A0A-37F3-48EB-850C-E90D611F3658}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>EiffelSoftware.Runtime</AssemblyName>
+    <AssemblyOriginatorKeyFile>isekey.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>EiffelSoftware.Runtime</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>.\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>ASSERTIONS, VS_DEVEL</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>.\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="agent_proxy.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="any.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="assertions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="custom_attributes\assertion_level_attribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="custom_attributes\eiffel_class_type_mark_attribute.cs" />
+    <Compile Include="custom_attributes\eiffel_consumable_attribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="custom_attributes\eiffel_name_attribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="custom_attributes\eiffel_version_attribute.cs" />
+    <Compile Include="custom_attributes\interface_type_attribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="custom_attributes\rt_interface_type_attribute.cs" />
+    <Compile Include="custom_attributes\type_feature_attribute.cs" />
+    <Compile Include="eiffel_exception.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="eiffel_type_info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="enums\assertion_level_enum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="enums\class_type_mark.cs" />
+    <Compile Include="gen_conf.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="rt_custom_attribute_data.cs" />
+    <Compile Include="rt_exception_manager.cs" />
+    <Compile Include="rt_extension.cs" />
+    <Compile Include="rt_parameter_utility.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="rt_reference_comparer.cs" />
+    <Compile Include="runtime.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="runtime_assembly_info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="types\basic_type.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="types\character_32_type.cs" />
+    <Compile Include="types\class_type.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="types\formal_type.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="types\generic_type.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="types\none_type.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="types\tuple_type.cs" />
+    <Compile Include="types\type.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="isekey.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

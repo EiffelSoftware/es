@@ -1,0 +1,178 @@
+note
+	description: "Eiffel call stack for the stopped application."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision $"
+
+deferred class EIFFEL_CALL_STACK
+
+feature -- Properties
+
+	thread_id: POINTER
+			-- Thread ID related to `Current' call stack
+		deferred
+		end
+
+	stack_depth: INTEGER
+		deferred
+		end
+
+	error_occurred: BOOLEAN
+			-- Did an error occurred when retrieving the eiffel stack?
+		deferred
+		end
+
+	is_loaded: BOOLEAN
+			-- Is Call stacks loaded ?
+
+feature -- fake TWO_WAY_LIST Interface
+
+	count: INTEGER
+		deferred
+		end
+
+	is_empty: BOOLEAN
+			-- Call Stack empty ?
+		deferred
+		end
+
+feature -- Access
+
+	item: CALL_STACK_ELEMENT
+		deferred
+		end
+
+	i_th alias "[]" (i: INTEGER): like item
+		deferred
+		end
+
+	valid_index (i: INTEGER): BOOLEAN
+			-- Is `i' within allowable bounds?
+		deferred
+		end
+
+	eiffel_call_stack_element (dep: INTEGER): EIFFEL_CALL_STACK_ELEMENT
+			-- Call stack element of depth `dep'
+		do
+			from
+				start
+			until
+				after or Result /= Void
+			loop
+				if attached {like eiffel_call_stack_element} item as c and then stack_depth - c.level_in_stack + 1 = dep then
+					Result := c
+				end
+				forth
+			end
+		end
+
+feature -- Queries
+
+	to_string: STRING
+		local
+			i: like item
+		do
+			create Result.make (0)
+			from
+				start
+			until
+				after
+			loop
+				i := item
+				if i /= Void then
+					Result.append_string (i.to_string)
+				end
+				Result.append_character ('%N')
+				forth
+			end
+		end
+
+feature -- Change
+
+	extend (v: like item)
+			-- Add `v' to end.
+			-- Do not move cursor.
+		deferred
+		end
+
+	reset_call_stack_depth (dep: INTEGER)
+			-- Reset call stack element of callstack depth `dep'
+		do
+			if attached eiffel_call_stack_element (dep) as c then
+				c.reset_stack
+			end
+		end
+
+	reset_call_stack_level (lev: INTEGER)
+			-- Reset call stack element of callstack level `lev'
+		do
+			if valid_index (lev) then
+				if attached {like eiffel_call_stack_element} i_th (lev) as c then
+					c.reset_stack
+				end
+			end
+		end
+
+feature -- Cursor movement
+
+	start
+		deferred
+		end
+
+	forth
+		deferred
+		end
+
+	after: BOOLEAN
+		deferred
+		end
+
+feature {APPLICATION_STATUS} -- Change
+
+	reload (n: INTEGER)
+			-- Reload call stack up to level `n'
+		require
+			all_level_or_positive: n = -1 or n > 0
+		deferred
+		ensure
+			is_loaded: is_loaded
+		end
+
+invariant
+
+	empty_if_error: error_occurred implies is_empty
+
+note
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful,	but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the	GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+		]"
+	source: "[
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
+
+end -- class EIFFEL_CALL_STACK

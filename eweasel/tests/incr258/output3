@@ -1,0 +1,7 @@
+PROCEDURE [TUPLE [INTEGER_8]]
+5
+
+PROCEDURE [TUPLE [STRING_8]]
+string
+
+Execution completed

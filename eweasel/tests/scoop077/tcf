@@ -1,0 +1,31 @@
+test_name	 scoop-across-iteration-loop
+test_description An across loop can be done only on a controlled target and its elements should be controlled to call on them.
+
+copy_sub 	Ace $TEST Ace
+copy_raw 	test0.e      $CLUSTER test.e
+
+compile_melted
+compile_result validity_error TEST VUTA(3):19 VUTA(3):19 VUTA(3):19 VUTA(3):22 VUTA(3):22 VUTA(3):25 VUTA(3):25 VUTA(3):25 VUTA(3):25 VUTA(3):28
+
+copy_raw 	test1.e      $CLUSTER test.e
+
+resume_compile
+compile_result ok
+execute_work 	NONE 	exec_output_m1
+execute_result 	ok
+compare		exec_output_m1 output1
+
+copy_raw 	test2.e      $CLUSTER test.e
+
+compile_melted
+compile_result validity_error TEST VUTA(3):23 VUTA(3):31
+
+copy_raw 	test3.e      $CLUSTER test.e
+
+resume_compile
+compile_result ok
+execute_work 	NONE 	exec_output_m2
+execute_result 	ok
+compare		exec_output_m2 output2
+
+test_end

@@ -1,0 +1,70 @@
+
+--| Copyright (c) 1993-2006 University of Southern California and contributors.
+--| All rights reserved.
+--| Your use of this work is governed under the terms of the GNU General
+--| Public License version 2.
+
+-- This is a test control file
+
+test_name 	 validity-vhrc3-basic
+test_description There is no validity constraint VHRC3 with a class which renames a feature to itself.
+
+copy_sub 	 Ace $TEST Ace
+copy_raw 	 test1.e  $CLUSTER test1.e
+
+define		 RENAME "rename old_feature as old_feature end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename i2 as i2 alias "+" end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename old_feature as OLD_feature end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename p3 as p3 alias "+" end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename i3 as i3 alias "@weasel" end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename i3 as i3 alias "@weasel" end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename p4 as p4 alias "@WEASEL" end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename p2 as p2 alias "###" end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename p5 as p5 alias "###WEASEL" end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename i1 as i1 alias "###" end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+define		 RENAME "rename i4 as i4 alias "###WEASEL" end"
+copy_sub 	 test.e  $CLUSTER test.e
+compile_melted
+compile_result 	 ok
+
+test_end

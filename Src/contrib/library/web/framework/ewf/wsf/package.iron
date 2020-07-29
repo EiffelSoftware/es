@@ -1,0 +1,38 @@
+package wsf
+
+project
+	wsf = "wsf.ecf"
+	wsf_extension = "wsf_extension.ecf"
+	wsf_policy_driven = "wsf_policy_driven.ecf"
+	wsf_router_context = "wsf_router_context.ecf"
+	wsf_session = "wsf_session.ecf"
+	wsf_cgi = "connector/cgi.ecf"
+	wsf_libfcgi = "connector/libfcgi.ecf"
+	default_cgi = "default/cgi.ecf"
+	default_libfcgi = "default/libfcgi.ecf"
+	default_openshift = "default/openshift.ecf"
+	wsf_standalone = "connector/standalone.ecf"
+	default_standalone = "default/standalone.ecf"
+	wsf_all = "connector/all.ecf"
+	wsf_nino = "connector/nino.ecf"
+	wsf_openshift = "connector/openshift.ecf"
+	wsf_standalone_websocket = "connector/standalone_websocket.ecf"
+	default_nino = "default/nino.ecf"
+
+note
+	title: Web Server Foundation
+	description: "[
+Core of the Eiffel Web Framework (EWF).
+Provide the request, response, router, ... interfaces.
+The foundation to build web server application.
+				]"
+
+	tags: ewf,server,httpd,request,connector,web
+	collection: EWF
+	copyright: 2011-2016, Jocelyn Fiat, Javier Velilla, Olivier Ligot, Colin Adams, Eiffel Software and others
+	license: Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)
+	link[license]: http://www.eiffel.com/licensing/forum.txt
+	link[source]: "Github" https://github.com/EiffelWebFramework/EWF/library/server/wsf
+	link[doc]: "Documentation" http://eiffelwebframework.github.io/EWF/
+
+end

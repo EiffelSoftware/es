@@ -1,0 +1,47 @@
+test_name	storable-with-long-nested-generics
+test_description When storing a type involving many nested generics it might cause some memory corruption. We use a value of 1000 for input as it is a good number that does not trigger a stack overflow and creates quite a few types.
+
+copy_sub 	Ace $TEST Ace
+copy_raw	test.e $CLUSTER test.e
+copy_raw	a.e $CLUSTER a.e
+
+compile_melted
+compile_result ok
+
+execute_work   NONE exec_output_1 store 1000
+execute_result ok
+compare	exec_output_1 output_store
+
+execute_work   NONE exec_output_2 retrieve
+execute_result ok
+compare        exec_output_2 output_retrieve
+
+compile_frozen
+compile_result	ok
+
+c_compile_work
+c_compile_result ok
+
+execute_work NONE exec_output_3 store 1000
+execute_result ok
+compare	exec_output_3 output_store
+
+execute_work   NONE exec_output_4 retrieve
+execute_result ok
+compare        exec_output_4 output_retrieve
+
+compile_final
+compile_final	ok
+
+c_compile_final
+c_compile_result	ok
+
+execute_final NONE exec_output_5 store 1000
+execute_result ok
+compare	exec_output_5 output_store
+
+execute_final   NONE exec_output_6 retrieve
+execute_result ok
+compare        exec_output_6 output_retrieve
+
+test_end

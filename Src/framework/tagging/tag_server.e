@@ -1,0 +1,392 @@
+note
+	description: "[
+		Objects that associate generic items G with tags, represented by strings. The tags are validated
+		by an instance of {TAG_VALIDATOR}.
+		
+		A observer pattern is provided to inform clients when tags are added/removed from items.
+	]"
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	TAG_SERVER [G -> TAG_ITEM]
+
+inherit
+	EVENT_CONNECTION_POINT_I [TAG_SERVER_OBSERVER [G], TAG_SERVER [G]]
+
+create
+	make_default, make
+
+feature {NONE} -- Initialization
+
+	make_default
+			-- Initialize `Current' with default formatter.
+		do
+			make (create {TAG_VALIDATOR})
+		end
+
+	make (a_validator: like validator)
+			-- Initialize `Current' using given formatter.
+			--
+			-- `a_formatter': Validator for validating/modifying tags.
+		require
+			a_validator_attached: a_validator /= Void
+		do
+			validator := a_validator
+
+			create item_to_tags_table.make (10)
+			create tag_table.make (10)
+
+			create tag_added_event
+			create tag_remove_event
+		ensure
+			validator_set: validator = a_validator
+		end
+
+feature -- Access
+
+	validator: TAG_VALIDATOR
+			-- Validator used to validate/modify tags
+
+--	items: DS_ARRAYED_LIST [G]
+--			-- All items currently tagged in `Current'
+--		do
+--			create Result.make_from_linear (item_to_tags_table.keys)
+--		ensure
+--			result_attached: Result /= Void
+--		end
+
+--	tags: DS_ARRAYED_LIST [READABLE_STRING_GENERAL]
+--			-- Arrayed list of all tags currently used to tag `items'
+--		do
+--			create Result.make_from_linear (tag_table.keys)
+--		ensure
+--			result_attached: Result /= Void
+--		end
+
+	tags_of_item (an_item: G): TAG_SEARCH_TABLE
+			-- All tags with which an item is tagged
+			--
+			-- `an_item': Tagged item.
+			-- `Result': Tags with which `Current' is tagged.
+		require
+			an_item_attached: an_item /= Void
+			has_an_item: has_item (an_item)
+		do
+			Result := item_to_tags_table.item (an_item).twin
+		ensure
+			result_attached: Result /= Void
+--			results_valid: Result.for_all (agent (a_tag: STRING): BOOLEAN
+--				do
+--					Result := validator.is_valid_tag (a_tag)
+--				end)
+		end
+
+feature {NONE} -- Access
+
+	tag_table: TAG_HASH_TABLE [NATURAL]
+			-- Table containing all tags currently used to tag an item together with a reference counter
+			--
+			-- keys: Tags
+			-- values: Reference counter indicating how many times a tag is used
+
+	item_to_tags_table: HASH_TABLE [like tags_of_item, G]
+			-- Table associating items with their corresponding tags
+			--
+			-- keys: Generic items
+			-- values: Set of tags
+
+	connection_cache: detachable like connection
+			-- Cache for `connection'
+			--
+			-- Note: do not access this directly, use `connection' instead.
+
+	lock_count: NATURAL
+			-- Number of locks applied to `Current'
+
+feature -- Status report
+
+	is_locked: BOOLEAN
+			-- Is it currently not possible to add/remove tags?
+		do
+			Result := lock_count > 0
+		ensure
+			count_positive_implies_result: lock_count > 0 implies Result
+		end
+
+feature -- Status report: Event
+
+	is_interface_usable: BOOLEAN = True
+			-- <Precursor>
+
+feature {NONE} -- Status setting
+
+	lock
+			-- Increase `lock_count', disallowing any tag adding/removal until `unlock' is called.
+		do
+			lock_count := lock_count + 1
+		ensure
+			locked: is_locked
+		end
+
+	unlock
+			-- Decrase `lock_count'.
+		require
+			locked: is_locked
+		do
+			lock_count := lock_count - 1
+		end
+
+feature -- Query
+
+	is_valid_tag_for_item (an_item: G; a_tag: READABLE_STRING_GENERAL): BOOLEAN
+			-- Can item be tagged with given tag?
+			--
+			-- `an_item': Item to be tagged.
+			-- `a_tag': Tag with which `an_item' should be tagged.
+			-- `Result': True if item can be tagged with `a_tag', False otherwise.
+		require
+			an_item_attached: an_item /= Void
+			a_tag_attached: a_tag /= Void
+		do
+			if validator.is_valid_tag (a_tag) then
+				Result := not has_item_with_tag (an_item, a_tag)
+			end
+		ensure
+			result_implies_valid_tag: Result implies validator.is_valid_tag (a_tag)
+			result_implies_not_used: Result implies not has_item_with_tag (an_item, a_tag)
+		end
+
+	is_valid_tag (a_tag: READABLE_STRING_GENERAL): BOOLEAN
+			-- Is tag a valid tag to be added?
+			--
+			-- `a_tag': Tag to be added.
+			-- `Result': True if `a_tag' is a valid tag, False otherwise.
+		do
+			Result := validator.is_valid_tag (a_tag)
+		ensure
+			result_implies_valid_tag: Result implies validator.is_valid_tag (a_tag)
+		end
+
+	has_item (an_item: G): BOOLEAN
+			-- Is item currently tagged in `Current'?
+			--
+			-- `an_item': Some item.
+			-- `Result': True is `an_item' is tagged in `Current', False otherwise.
+		require
+			an_item_attached: an_item /= Void
+		do
+			Result := item_to_tags_table.has (an_item)
+		ensure
+			definition: Result = item_to_tags_table.has (an_item)
+		end
+
+	has_item_with_tag (an_item: G; a_tag: READABLE_STRING_GENERAL): BOOLEAN
+			-- Is item tagged with given tag?
+			--
+			-- `an_item': Some item.
+			-- `a_tag': Some tag.
+			-- `Result': True if `an_item' is tagged with `a_tag', False otherwise.
+		require
+			an_item_attached: an_item /= Void
+			a_tag_attached: a_tag /= Void
+		local
+			l_table: like item_to_tags_table
+		do
+			l_table := item_to_tags_table
+			l_table.search (an_item)
+			if l_table.found then
+				Result := l_table.found_item.has (a_tag)
+			end
+		ensure
+			result_correct: Result = (has_item (an_item) and then
+				item_to_tags_table.item (an_item).has (a_tag))
+		end
+
+feature -- Element change
+
+	add_tag (an_item: G; a_tag: READABLE_STRING_GENERAL)
+			-- Tag item with given tag and notify observers through `tag_added_event'.
+			--
+			-- `an_item': Item to be tagged.
+			-- `a_tag': Tag with which item should be tagged.
+		require
+			an_item_attached: an_item /= Void
+			a_tag_attached: a_tag /= Void
+			not_updating: not is_locked
+			a_tag_valid: is_valid_tag_for_item (an_item, a_tag)
+		local
+			l_set: like tags_of_item
+			l_new: IMMUTABLE_STRING_32
+			l_count: NATURAL
+			l_tag_table: like tag_table
+		do
+			lock
+			if item_to_tags_table.has (an_item) then
+				l_set := item_to_tags_table.item (an_item)
+			else
+				create l_set.make (10)
+				item_to_tags_table.force (l_set, an_item)
+			end
+			l_tag_table := tag_table
+			l_tag_table.search (a_tag)
+			if l_tag_table.found then
+				l_count := l_tag_table.found_item + 1
+			else
+				l_count := 1
+			end
+			l_new := l_tag_table.immutable_string (a_tag)
+			l_tag_table.force (l_count, l_new)
+			l_set.force (l_new)
+			tag_added_event.publish ([Current, an_item, l_new])
+			unlock
+		ensure
+			has_tag: has_item_with_tag (an_item, a_tag)
+		end
+
+	remove_tag (an_item: G; a_tag: READABLE_STRING_GENERAL)
+			-- Remove tag from item and notify observer through `tag_remove_event'.
+			--
+			-- `an_item': Item from which tag should be removed.
+			-- `a_tag': Tag to be removed from `an_item'.
+		require
+			an_item_attached: an_item /= Void
+			a_tag_attached: a_tag /= Void
+			not_updating: not is_locked
+			has_an_item: has_item (an_item)
+			has_a_tag: has_item_with_tag (an_item, a_tag)
+		local
+			l_set: like tags_of_item
+			l_count: NATURAL
+			l_table: like tag_table
+			l_tag: IMMUTABLE_STRING_32
+		do
+			lock
+			l_set := item_to_tags_table.item (an_item)
+			l_tag := l_set.immutable_string (a_tag)
+			check found: l_set.found end
+			tag_remove_event.publish ([Current, an_item, l_tag])
+			if l_set.count = 1 then
+				item_to_tags_table.remove (an_item)
+			else
+				l_set.remove (l_tag)
+			end
+			l_table := tag_table
+			l_count := l_table.item (l_tag)
+			if l_count = 1 then
+				l_table.remove (l_tag)
+			else
+				l_table.force (l_count - 1, l_tag)
+			end
+			unlock
+		ensure
+			not_has_tag: not has_item (an_item) or else not has_item_with_tag (an_item, a_tag)
+		end
+
+	remove_all_tags (an_item: G)
+			-- Remove all tags associated with given item and notify observer through `tag_remove_event'.
+			--
+			-- `an_item': Item for which all tags should be removed.
+		require
+			an_item_attached: an_item /= Void
+			not_updating: not is_locked
+			has_an_item: has_item (an_item)
+		local
+			l_table: like tags_of_item
+		do
+			from
+				l_table := tags_of_item (an_item)
+				l_table.start
+			until
+				l_table.after
+			loop
+				remove_tag (an_item, l_table.item_for_iteration)
+				l_table.forth
+			end
+		ensure
+			item_removed: not has_item (an_item)
+			not_updating: not is_locked
+		end
+
+feature -- Events
+
+	tag_added_event: EVENT_TYPE [TUPLE [server: TAG_SERVER [G]; tagged_item: G; added_tag: READABLE_STRING_GENERAL]]
+			-- Events called when an item have been tagged which was already tagged before.
+
+	tag_remove_event: EVENT_TYPE [TUPLE [server: TAG_SERVER [G]; remove_item: G; remove_tag: READABLE_STRING_GENERAL]]
+			-- Events called before a tag is removed from an item containing more than one tags.
+
+	connection: EVENT_CONNECTION [TAG_SERVER_OBSERVER [G], TAG_SERVER [G]]
+			-- <Precursor>
+		local
+			l_cache: like connection_cache
+		do
+			l_cache := connection_cache
+			if l_cache = Void then
+				create l_cache.make (
+					agent (a_observer: TAG_SERVER_OBSERVER [G]): ARRAY [TUPLE [event: EVENT_TYPE [TUPLE]; action: PROCEDURE]]
+						do
+							Result := <<
+								[tag_added_event, agent a_observer.on_tag_added],
+								[tag_remove_event, agent a_observer.on_tag_removed]
+							>>
+						end)
+				connection_cache := l_cache
+			end
+			Result := l_cache
+		end
+
+feature {NONE} -- Implementation
+
+	new_tag_set: TAG_SEARCH_TABLE
+			-- New set for storing tags.
+		do
+			create Result.make (10)
+		ensure
+			result_attached: Result /= Void
+		end
+
+invariant
+	item_table_attached: item_to_tags_table /= Void
+--	item_table_valid: item_to_tags_table.for_all (
+--		agent (a_item: DS_HASH_SET [READABLE_STRING_GENERAL]): BOOLEAN
+--			do
+--				Result := a_item.equality_tester = equality_tester
+--			end)
+	tag_added_event_attached: tag_added_event /= Void
+	tag_removed_event_attached: tag_remove_event /= Void
+	tag_table_attached: tag_table /= Void
+
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+end

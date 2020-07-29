@@ -1,0 +1,24 @@
+test_name	 benchmark-scoop-synthetic-chain
+test_description A synthetic SCOOP benchmark: chain.
+
+copy_sub	Ace                $TEST    Ace
+copy_raw	histogram_max.e    $CLUSTER histogram_max.e
+copy_raw	main.e             $CLUSTER main.e
+copy_raw	tuple_comparator.e $CLUSTER tuple_comparator.e
+copy_raw	tuple_sorter.e     $CLUSTER tuple_sorter.e
+copy_raw	worker.e           $CLUSTER worker.e
+
+compile_final
+compile_result 	ok
+c_compile_final
+c_compile_result ok
+
+define_directory EIFGEN  $TEST   EIFGENs
+define_directory TARGET  $EIFGEN test
+define_directory FCODE   $TARGET F_code
+copy_bin	 test.in $FCODE  test.in
+
+execute_final	NONE exec_output_f -i test.in -bench
+execute_result	ok
+
+test_end

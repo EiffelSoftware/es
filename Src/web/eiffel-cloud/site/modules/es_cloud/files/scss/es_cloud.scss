@@ -1,0 +1,8 @@
+div.user-view-cloud-box {
+	border: solid 1px #ccc;
+	padding: 1em;
+	&:hover {
+		border: solid 1px #00f;
+		background-color: #eee;
+	}
+}

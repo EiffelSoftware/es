@@ -1,0 +1,30 @@
+test_name 	 targeted-assignment-source
+test_description A source of an assignment whose target is targeted is targeted.
+
+copy_sub	Ace $TEST Ace
+copy_raw	test1.e $CLUSTER test.e
+
+compile_melted
+compile_result	ok
+
+copy_raw	test2.e $CLUSTER test.e
+
+compile_melted
+compile_result	validity_error TEST VEVI
+
+copy_raw	test3.e $CLUSTER test.e
+
+resume_compile
+compile_result	validity_error TEST VEVI
+
+copy_raw	test4.e $CLUSTER test.e
+
+resume_compile
+compile_result	validity_error TEST VEVI
+
+copy_raw	test5.e $CLUSTER test.e
+
+resume_compile
+compile_result	validity_error TEST VEVI
+
+test_end

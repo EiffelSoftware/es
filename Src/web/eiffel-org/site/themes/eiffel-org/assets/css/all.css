@@ -1,0 +1,2641 @@
+/* line 1, ../scss/base/base-reset.scss */
+body {
+  margin: 0;
+  color: #000000;
+  background: #f0f3f5;
+  font: 16px/24px "Open Sans", Arial, Helvetica, sans-serif;
+  min-width: 1020px;
+  overflow-y: scroll;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: none;
+}
+
+/* line 11, ../scss/base/base-reset.scss */
+* {
+  max-height: 100000px;
+}
+
+/* line 12, ../scss/base/base-reset.scss */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+  display: block;
+}
+
+/* line 27, ../scss/base/base-reset.scss */
+img {
+  border-style: none;
+}
+
+/* line 29, ../scss/base/base-reset.scss */
+a {
+  text-decoration: none;
+  color: #5082D9;
+}
+/* line 32, ../scss/base/base-reset.scss */
+a:hover {
+  color: #5082D9;
+  color: #3498db;
+}
+
+/* line 38, ../scss/base/base-reset.scss */
+input,
+textarea,
+select {
+  font: 100% Arial, Helvetica, sans-serif;
+  color: black;
+  vertical-align: middle;
+}
+
+/* line 46, ../scss/base/base-reset.scss */
+form,
+fieldset {
+  margin: 0;
+  padding: 0;
+  border-style: none;
+}
+
+/* line 53, ../scss/base/base-reset.scss */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/* line 59, ../scss/base/base-reset.scss */
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+  *overflow: visible;
+}
+
+/* line 68, ../scss/base/base-reset.scss */
+input[type="submit"]:hover,
+button:hover {
+  cursor: pointer;
+}
+
+/* line 73, ../scss/base/base-reset.scss */
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+textarea {
+  margin: 0;
+  padding: 4px 7px;
+  border: 1px solid #999999;
+}
+/* line 83, ../scss/base/base-reset.scss */
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+  border-color: #4d4d4d;
+}
+
+/* line 89, ../scss/base/base-reset.scss */
+textarea {
+  overflow: auto;
+  resize: vertical;
+  vertical-align: top;
+}
+
+/* line 95, ../scss/base/base-reset.scss */
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* line 101, ../scss/base/base-reset.scss */
+input[type="search"] {
+  -webkit-appearance: textfield;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+/* line 108, ../scss/base/base-reset.scss */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/* line 113, ../scss/base/base-reset.scss */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+  line-height: 1.2em;
+  margin: 0 0 1.2em;
+}
+
+/* line 119, ../scss/base/base-reset.scss */
+p {
+  margin: 0 0 1.2em;
+}
+
+/* line 123, ../scss/base/base-reset.scss */
+q {
+  quotes: none;
+}
+/* line 125, ../scss/base/base-reset.scss */
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
+/* line 131, ../scss/base/base-reset.scss */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+/* line 139, ../scss/base/base-reset.scss */
+sup {
+  top: -0.5em;
+}
+
+/* line 143, ../scss/base/base-reset.scss */
+sub {
+  bottom: -0.25em;
+}
+
+/* line 147, ../scss/base/base-reset.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 3, ../scss/markup-mixins.scss */
+.container-codeboard:after, .container:after, #nav ul:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+
+/* line 11, ../scss/markup-mixins.scss */
+#content .bookcards ul, #nav ul, .add-links ul, .column .libraries ul,
+.column .updates ul, #footer .copyrights, .footer-nav ul, .footer-nav ul li ul, #content ul.cards, .rss-block > ul, .widget ul, .social-networks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* line 1, ../scss/base/base-reset.scss */
+body {
+  margin: 0;
+  color: #000000;
+  background: #f0f3f5;
+  font: 16px/24px "Open Sans", Arial, Helvetica, sans-serif;
+  min-width: 1020px;
+  overflow-y: scroll;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: none;
+}
+
+/* line 11, ../scss/base/base-reset.scss */
+* {
+  max-height: 100000px;
+}
+
+/* line 12, ../scss/base/base-reset.scss */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+  display: block;
+}
+
+/* line 27, ../scss/base/base-reset.scss */
+img {
+  border-style: none;
+}
+
+/* line 29, ../scss/base/base-reset.scss */
+a {
+  text-decoration: none;
+  color: #5082D9;
+}
+/* line 32, ../scss/base/base-reset.scss */
+a:hover {
+  color: #5082D9;
+  color: #3498db;
+}
+
+/* line 38, ../scss/base/base-reset.scss */
+input,
+textarea,
+select {
+  font: 100% Arial, Helvetica, sans-serif;
+  color: black;
+  vertical-align: middle;
+}
+
+/* line 46, ../scss/base/base-reset.scss */
+form,
+fieldset {
+  margin: 0;
+  padding: 0;
+  border-style: none;
+}
+
+/* line 53, ../scss/base/base-reset.scss */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/* line 59, ../scss/base/base-reset.scss */
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+  *overflow: visible;
+}
+
+/* line 68, ../scss/base/base-reset.scss */
+input[type="submit"]:hover,
+button:hover {
+  cursor: pointer;
+}
+
+/* line 73, ../scss/base/base-reset.scss */
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+textarea {
+  margin: 0;
+  padding: 4px 7px;
+  border: 1px solid #999999;
+}
+/* line 83, ../scss/base/base-reset.scss */
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+  border-color: #4d4d4d;
+}
+
+/* line 89, ../scss/base/base-reset.scss */
+textarea {
+  overflow: auto;
+  resize: vertical;
+  vertical-align: top;
+}
+
+/* line 95, ../scss/base/base-reset.scss */
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* line 101, ../scss/base/base-reset.scss */
+input[type="search"] {
+  -webkit-appearance: textfield;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+/* line 108, ../scss/base/base-reset.scss */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/* line 113, ../scss/base/base-reset.scss */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+  line-height: 1.2em;
+  margin: 0 0 1.2em;
+}
+
+/* line 119, ../scss/base/base-reset.scss */
+p {
+  margin: 0 0 1.2em;
+}
+
+/* line 123, ../scss/base/base-reset.scss */
+q {
+  quotes: none;
+}
+/* line 125, ../scss/base/base-reset.scss */
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
+/* line 131, ../scss/base/base-reset.scss */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+/* line 139, ../scss/base/base-reset.scss */
+sup {
+  top: -0.5em;
+}
+
+/* line 143, ../scss/base/base-reset.scss */
+sub {
+  bottom: -0.25em;
+}
+
+/* line 147, ../scss/base/base-reset.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 3, ../scss/markup-mixins.scss */
+.container-codeboard:after, .container:after, #nav ul:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+
+/* line 11, ../scss/markup-mixins.scss */
+#content .bookcards ul, #nav ul, .add-links ul, .column .libraries ul,
+.column .updates ul, #footer .copyrights, .footer-nav ul, .footer-nav ul li ul, #content ul.cards, .rss-block > ul, .widget ul, .social-networks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* WDOCS nav tree */
+/* line 9, ../scss/site/docs.scss */
+#wdocs-tree.menu {
+  border: solid 1px #ccc;
+  border-top: none;
+  background-color: #fff;
+  color: #112935;
+  padding: 0;
+}
+/* line 15, ../scss/site/docs.scss */
+#wdocs-tree.menu a {
+  color: #112935;
+}
+/* line 18, ../scss/site/docs.scss */
+#wdocs-tree.menu > ul > li {
+  cursor: pointer;
+  padding: 5px 0 3px 5px;
+  border-top: solid 1px #ccc;
+}
+/* line 22, ../scss/site/docs.scss */
+#wdocs-tree.menu > ul > li > a {
+  color: #5082D9;
+}
+/* line 25, ../scss/site/docs.scss */
+#wdocs-tree.menu > ul > li.expandable > * + a {
+  display: inline-block;
+  width: 85%;
+}
+/* line 30, ../scss/site/docs.scss */
+#wdocs-tree.menu .arrow {
+  font-family: "Lucida Console", "Courier New", "serif";
+  color: #5082D9;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 6px;
+  display: -moz-inline-box;
+  display: inline-block;
+  /* Use font-size to control the size of the arrow. */
+  font-size: 10px;
+  height: 0;
+  line-height: 0;
+  position: relative;
+  vertical-align: middle;
+  width: 0;
+  left: -10px;
+}
+/* line 49, ../scss/site/docs.scss */
+#wdocs-tree.menu li > a {
+  padding-left: 12px;
+}
+/* line 52, ../scss/site/docs.scss */
+#wdocs-tree.menu li.arrowed > a {
+  padding-left: 0;
+  background-color: transparent;
+}
+/* line 57, ../scss/site/docs.scss */
+#wdocs-tree.menu li.arrowed:not(.expandable) > .arrow {
+  left: -4px;
+  border-width: 3px;
+  border-color: #ddd;
+  top: 0;
+}
+/* line 63, ../scss/site/docs.scss */
+#wdocs-tree.menu li.arrowed:not(.expandable) > a {
+  padding-left: 6px;
+}
+/* line 67, ../scss/site/docs.scss */
+#wdocs-tree.menu > ul > li.arrowed:not(.expandable) > .arrow {
+  border-color: #777;
+}
+/* line 70, ../scss/site/docs.scss */
+#wdocs-tree.menu li.expandable > .arrow {
+  left: -4px;
+  border-color: transparent;
+  border-left-color: #777;
+  top: 0;
+}
+/* line 75, ../scss/site/docs.scss */
+#wdocs-tree.menu li.expandable > .arrow:hover {
+  border-color: transparent;
+  border-left-color: #5082D9;
+}
+/* line 80, ../scss/site/docs.scss */
+#wdocs-tree.menu li.expanded > .arrow {
+  left: -6px;
+  border-color: transparent;
+  border-top-color: #777;
+  top: 2px;
+}
+/* line 85, ../scss/site/docs.scss */
+#wdocs-tree.menu li.expanded > .arrow:hover {
+  border-color: transparent;
+  border-top-color: #5082D9;
+}
+/* line 91, ../scss/site/docs.scss */
+#wdocs-tree.menu > ul > li > ul > * {
+  font-size: smaller;
+  background-color: #fff;
+  padding-left: 10px;
+}
+/* line 96, ../scss/site/docs.scss */
+#wdocs-tree.menu ul {
+  list-style-type: none;
+  padding: 0;
+}
+/* line 100, ../scss/site/docs.scss */
+#wdocs-tree.menu ul li {
+  padding-left: 10px;
+}
+/* line 102, ../scss/site/docs.scss */
+#wdocs-tree.menu ul li a:hover {
+  color: #3498db;
+}
+/* line 107, ../scss/site/docs.scss */
+#wdocs-tree.menu li.active {
+  font-weight: bold;
+  border-right: solid 2px #3498db;
+  background-color: rgba(240, 240, 255, 0.6);
+}
+/* line 113, ../scss/site/docs.scss */
+#wdocs-tree.menu li.active li {
+  font-weight: normal;
+}
+/* line 117, ../scss/site/docs.scss */
+#wdocs-tree.menu li.expandable:not(.expanded) li {
+  display: none;
+}
+/* line 120, ../scss/site/docs.scss */
+#wdocs-tree.menu li.expandable.expanded > a {
+  font-weight: bold;
+}
+
+/* line 125, ../scss/site/docs.scss */
+.wikipage {
+  line-height: 1.8;
+}
+/* line 128, ../scss/site/docs.scss */
+.wikipage a.wiki_link.wiki_notfound {
+  color: red;
+}
+/* line 132, ../scss/site/docs.scss */
+.wikipage table {
+  border: solid 1px #666;
+  margin-bottom: 5px;
+}
+/* line 136, ../scss/site/docs.scss */
+.wikipage td {
+  border: solid 1px #999;
+  padding: 2px 4px 2px 4px;
+}
+/* line 140, ../scss/site/docs.scss */
+.wikipage h1 {
+  font: 36px/36px "museo_slab500", Arial, Helvetica, sans-serif;
+  margin-top: 25px;
+  border-bottom: solid 2px #ccc;
+}
+/* line 145, ../scss/site/docs.scss */
+.wikipage h2 {
+  font: 28px/28px "museo_slab500", Arial, Helvetica, sans-serif;
+  margin-top: 20px;
+  border-bottom: solid 1px #ccc;
+}
+/* line 150, ../scss/site/docs.scss */
+.wikipage h3 {
+  font: 24px/24px "museo_slab500", Arial, Helvetica, sans-serif;
+  margin-top: 10px;
+  border-bottom: dotted 1px #ccc;
+}
+/* line 155, ../scss/site/docs.scss */
+.wikipage pre {
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  display: block;
+  font-family: monospace;
+  white-space: pre-wrap;
+  border: solid 1px #ccc;
+  background-color: #FFFFD8;
+  line-height: 1.3;
+  padding: 10px;
+  margin: 2px 0 2px 0;
+  overflow: auto;
+}
+/* line 169, ../scss/site/docs.scss */
+.wikipage dt {
+  font-weight: bold;
+}
+/* line 172, ../scss/site/docs.scss */
+.wikipage dd {
+  font-style: italic;
+}
+/* line 176, ../scss/site/docs.scss */
+.wikipage .wdocs-nav {
+  border-top: solid 1px #999;
+  color: #5082D9;
+  background-color: rgba(220, 220, 220, 0.7);
+}
+/* line 182, ../scss/site/docs.scss */
+.wikipage .cache-info, .wikipage .uuid {
+  color: #999;
+  font-size: smaller;
+  text-align: right;
+}
+
+/* line 190, ../scss/site/docs.scss */
+#content .bookcards {
+  padding: 0;
+  margin: 0;
+}
+/* line 195, ../scss/site/docs.scss */
+#content .bookcards ul li {
+  display: inline-block;
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 320px;
+  height: 140px;
+  margin: 0 10px 5px 0px;
+}
+/* line 200, ../scss/site/docs.scss */
+#content .bookcards ul li a {
+  border: solid 1px #ddd;
+  margin: 10px;
+  padding: 7px;
+  background: #e9eced;
+  display: block;
+  text-align: left;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+}
+/* line 208, ../scss/site/docs.scss */
+#content .bookcards ul li a:hover {
+  background: #e3e7e8;
+}
+/* line 212, ../scss/site/docs.scss */
+#content .bookcards ul li img {
+  float: left;
+  opacity: 0.4;
+}
+/* line 216, ../scss/site/docs.scss */
+#content .bookcards ul li h2 {
+  font: 28px/28px "museo_slab500", Arial, Helvetica, sans-serif;
+  padding: 0;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+/* line 222, ../scss/site/docs.scss */
+#content .bookcards ul li p {
+  font-size: smaller;
+  line-height: 1.2em;
+  margin: 0;
+  padding: 0 0 0 10px;
+  font-style: italic;
+  color: #666;
+  height: 60px;
+  overflow: auto;
+}
+
+/* line 236, ../scss/site/docs.scss */
+#wdocs_edit textarea {
+  width: 98%;
+}
+
+/* line 240, ../scss/site/docs.scss */
+#wdocs-versions.menu {
+  padding: 0px;
+  margin: 5px 0 0 0;
+  background-color: white;
+  border: solid 1px #999;
+}
+/* line 245, ../scss/site/docs.scss */
+#wdocs-versions.menu ul {
+  padding: 0 0 0 20px;
+  margin: 0px;
+  list-style-type: none;
+}
+/* line 249, ../scss/site/docs.scss */
+#wdocs-versions.menu ul li > ul {
+  padding: 10px;
+  background-color: white;
+  border: solid 1px #999;
+  display: none;
+  font-size: smaller;
+}
+/* line 256, ../scss/site/docs.scss */
+#wdocs-versions.menu ul li:hover > ul {
+  position: absolute;
+  display: block;
+  z-index: 99;
+}
+
+/* line 1, ../scss/base/base-reset.scss */
+body {
+  margin: 0;
+  color: #000000;
+  background: #f0f3f5;
+  font: 16px/24px "Open Sans", Arial, Helvetica, sans-serif;
+  min-width: 1020px;
+  overflow-y: scroll;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: none;
+}
+
+/* line 11, ../scss/base/base-reset.scss */
+* {
+  max-height: 100000px;
+}
+
+/* line 12, ../scss/base/base-reset.scss */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+  display: block;
+}
+
+/* line 27, ../scss/base/base-reset.scss */
+img {
+  border-style: none;
+}
+
+/* line 29, ../scss/base/base-reset.scss */
+a {
+  text-decoration: none;
+  color: #5082D9;
+}
+/* line 32, ../scss/base/base-reset.scss */
+a:hover {
+  color: #5082D9;
+  color: #3498db;
+}
+
+/* line 38, ../scss/base/base-reset.scss */
+input,
+textarea,
+select {
+  font: 100% Arial, Helvetica, sans-serif;
+  color: black;
+  vertical-align: middle;
+}
+
+/* line 46, ../scss/base/base-reset.scss */
+form,
+fieldset {
+  margin: 0;
+  padding: 0;
+  border-style: none;
+}
+
+/* line 53, ../scss/base/base-reset.scss */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/* line 59, ../scss/base/base-reset.scss */
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+  *overflow: visible;
+}
+
+/* line 68, ../scss/base/base-reset.scss */
+input[type="submit"]:hover,
+button:hover {
+  cursor: pointer;
+}
+
+/* line 73, ../scss/base/base-reset.scss */
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+textarea {
+  margin: 0;
+  padding: 4px 7px;
+  border: 1px solid #999999;
+}
+/* line 83, ../scss/base/base-reset.scss */
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+  border-color: #4d4d4d;
+}
+
+/* line 89, ../scss/base/base-reset.scss */
+textarea {
+  overflow: auto;
+  resize: vertical;
+  vertical-align: top;
+}
+
+/* line 95, ../scss/base/base-reset.scss */
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* line 101, ../scss/base/base-reset.scss */
+input[type="search"] {
+  -webkit-appearance: textfield;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+/* line 108, ../scss/base/base-reset.scss */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/* line 113, ../scss/base/base-reset.scss */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+  line-height: 1.2em;
+  margin: 0 0 1.2em;
+}
+
+/* line 119, ../scss/base/base-reset.scss */
+p {
+  margin: 0 0 1.2em;
+}
+
+/* line 123, ../scss/base/base-reset.scss */
+q {
+  quotes: none;
+}
+/* line 125, ../scss/base/base-reset.scss */
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
+/* line 131, ../scss/base/base-reset.scss */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+/* line 139, ../scss/base/base-reset.scss */
+sup {
+  top: -0.5em;
+}
+
+/* line 143, ../scss/base/base-reset.scss */
+sub {
+  bottom: -0.25em;
+}
+
+/* line 147, ../scss/base/base-reset.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 3, ../scss/markup-mixins.scss */
+.container-codeboard:after, .container:after, #nav ul:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+
+/* line 11, ../scss/markup-mixins.scss */
+#content .bookcards ul, #nav ul, .add-links ul, .column .libraries ul,
+.column .updates ul, #footer .copyrights, .footer-nav ul, .footer-nav ul li ul, #content ul.cards, .rss-block > ul, .widget ul, .social-networks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Codeboard */
+/* line 8, ../scss/site/codeboard.scss */
+#block-play_eiffel {
+  position: absolute;
+  top: 48px;
+}
+/* line 12, ../scss/site/codeboard.scss */
+#block-play_eiffel pre.prettyprint {
+  width: 490px;
+  padding-left: 18px;
+  border: solid 1px #fff;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.75);
+  height: 266px;
+}
+/* line 20, ../scss/site/codeboard.scss */
+#block-play_eiffel .holder-play {
+  width: 100%;
+}
+/* line 22, ../scss/site/codeboard.scss */
+#block-play_eiffel .holder-play .btn-holder {
+  width: 300px;
+  padding: 0 0 16px;
+  margin: 0 0 0 2px;
+}
+/* line 26, ../scss/site/codeboard.scss */
+#block-play_eiffel .holder-play .btn-holder .btn-play {
+  position: absolute;
+  top: 40px;
+  right: 10px;
+  background-color: #12273A;
+  background-image: -webkit-linear-gradient(top, #2B4054, #12273A);
+  background-image: -moz-linear-gradient(top, #2B4054, #12273A);
+  background-image: -ms-linear-gradient(top, #2B4054, #12273A);
+  background-image: -o-linear-gradient(top, #2B4054, #12273A);
+  background-image: linear-gradient(top, #2B4054, #12273A);
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  width: 143px;
+  height: 43px;
+  display: block;
+  font: 15px/43px "museo_sans500", Arial, Helvetica, sans-serif;
+  color: white;
+  letter-spacing: 1px;
+  text-align: center;
+}
+/* line 39, ../scss/site/codeboard.scss */
+#block-play_eiffel .holder-play .btn-holder .btn-play:hover {
+  background-color: #0C1A26;
+  background-image: -webkit-linear-gradient(top, #12273A, #0C1A26);
+  background-image: -moz-linear-gradient(top, #12273A, #0C1A26);
+  background-image: -ms-linear-gradient(top, #12273A, #0C1A26);
+  background-image: -o-linear-gradient(top, #12273A, #0C1A26);
+  background-image: linear-gradient(top, #12273A, #0C1A26);
+}
+
+/* line 47, ../scss/site/codeboard.scss */
+.container-codeboard {
+  margin-left: auto;
+  margin-right: auto;
+  width: 1020px;
+  width: 920px;
+  height: 800px;
+}
+
+/* line 54, ../scss/site/codeboard.scss */
+.ideHeader {
+  width: 100%;
+  height: 54px;
+  border: 1px solid #a9a9a9;
+}
+
+/* line 60, ../scss/site/codeboard.scss */
+.btn-codeboard {
+  background-color: #12273A;
+  background-image: -webkit-linear-gradient(top, #2B4054, #12273A);
+  background-image: -moz-linear-gradient(top, #2B4054, #12273A);
+  background-image: -ms-linear-gradient(top, #2B4054, #12273A);
+  background-image: -o-linear-gradient(top, #2B4054, #12273A);
+  background-image: linear-gradient(top, #2B4054, #12273A);
+  display: block;
+  margin: 0 auto;
+  font: 12px/35px "museo_sans500", Arial, Helvetica, sans-serif;
+  color: white;
+  text-align: center;
+  position: absolute;
+  top: 25px;
+  right: 230px;
+  padding: 0 2px 0 2px;
+}
+/* line 71, ../scss/site/codeboard.scss */
+.btn-codeboard:after {
+  background: #2B4054 no-repeat;
+  background-color: #2B4054;
+  width: 37px;
+  height: 37px;
+  position: absolute;
+  right: 16px;
+  top: 13px;
+}
+/* line 80, ../scss/site/codeboard.scss */
+.btn-codeboard:hover {
+  color: white;
+  background-color: #12273A;
+  background-color: #12273A;
+  background-image: -webkit-linear-gradient(top, #12273A, #12273A);
+  background-image: -moz-linear-gradient(top, #12273A, #12273A);
+  background-image: -ms-linear-gradient(top, #12273A, #12273A);
+  background-image: -o-linear-gradient(top, #12273A, #12273A);
+  background-image: linear-gradient(top, #12273A, #12273A);
+}
+
+/***********************/
+/*    Download         */
+/***********************/
+/* line 5, ../scss/site/download_product.scss */
+.toggleDownload {
+  cursor: pointer;
+}
+
+/* line 9, ../scss/site/download_product.scss */
+table.download_decorator {
+  margin-left: 0px;
+  margin-right: 20px;
+  border-collapse: collapse;
+  border-style: none;
+  text-align: left;
+}
+/* line 15, ../scss/site/download_product.scss */
+table.download_decorator a:link {
+  color: #6600CC;
+}
+/* line 18, ../scss/site/download_product.scss */
+table.download_decorator a:hover {
+  color: #00001E;
+}
+/* line 21, ../scss/site/download_product.scss */
+table.download_decorator a:visited {
+  color: #6600CC;
+}
+/* line 24, ../scss/site/download_product.scss */
+table.download_decorator a:active {
+  color: #6600CC;
+}
+/* line 27, ../scss/site/download_product.scss */
+table.download_decorator td {
+  padding-right: 10px;
+}
+/* line 30, ../scss/site/download_product.scss */
+table.download_decorator tr {
+  background-color: #f0f0f0;
+  color: #000080;
+}
+/* line 34, ../scss/site/download_product.scss */
+table.download_decorator tr:nth-child(0), table.download_decorator tr.first {
+  background-color: #0E9A8F;
+}
+/* line 37, ../scss/site/download_product.scss */
+table.download_decorator td, table.download_decorator th {
+  white-space: nowrap;
+  padding: 6px 10px;
+}
+/* line 41, ../scss/site/download_product.scss */
+table.download_decorator tt {
+  font-size: x-small;
+}
+/* line 44, ../scss/site/download_product.scss */
+table.download_decorator tr.highlight td {
+  font-weight: bold;
+}
+
+/* line 50, ../scss/site/download_product.scss */
+#block-download_area .holder {
+  border: none;
+  height: 150px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  width: 490px;
+  padding: 0;
+}
+/* line 56, ../scss/site/download_product.scss */
+#block-download_area .holder .row {
+  border-bottom: 1px solid #fff;
+}
+/* line 59, ../scss/site/download_product.scss */
+#block-download_area .holder .btn-holder {
+  padding: 0;
+  margin-left: 0;
+  width: 100%;
+  margin-bottom: 2px;
+  border: 1px solid #fff;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.75);
+}
+
+/* Custom */
+/* line 6, ../scss/site/custom.scss */
+.less.active .button-read-more {
+  display: none;
+}
+/* line 9, ../scss/site/custom.scss */
+.less.active .button-read-less {
+  display: block;
+}
+
+/* line 13, ../scss/site/custom.scss */
+.button-read-less {
+  display: none;
+}
+
+/* line 16, ../scss/site/custom.scss */
+.more {
+  margin-top: 10px;
+}
+/* line 18, ../scss/site/custom.scss */
+.more table {
+  margin: 0;
+  padding: 0;
+}
+
+/* Link */
+/* line 26, ../scss/site/custom.scss */
+a.link-options {
+  color: white;
+}
+/* line 28, ../scss/site/custom.scss */
+a.link-options:hover {
+  color: black;
+}
+
+/* line 33, ../scss/site/custom.scss */
+a.link-platforms {
+  color: #191922;
+}
+/* line 35, ../scss/site/custom.scss */
+a.link-platforms:hover {
+  color: black;
+}
+
+/* Welcome message */
+/* line 42, ../scss/site/custom.scss */
+#block-front_header_welcome .holder {
+  width: 490px;
+  padding: 0;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  border: 1px solid #fff;
+  background-color: rgba(255, 255, 255, 0.75);
+  height: 115px;
+}
+/* line 49, ../scss/site/custom.scss */
+#block-front_header_welcome .holder h3 {
+  padding: 10px;
+  text-align: center;
+}
+
+/* line 57, ../scss/site/custom.scss */
+#primary-tabs ul.horizontal {
+  list-style-type: none;
+}
+/* line 59, ../scss/site/custom.scss */
+#primary-tabs ul.horizontal li {
+  display: inline;
+  padding: 2px 5px;
+  border: solid 1px #ccf;
+}
+/* line 64, ../scss/site/custom.scss */
+#primary-tabs ul.horizontal li.active {
+  border-color: #99f #99f #ddd;
+  border-style: solid solid none;
+  border-width: 2px 1px 0;
+  padding: 2px 7px 1px;
+}
+
+/* line 73, ../scss/site/custom.scss */
+#message li {
+  margin-bottom: 2px;
+  padding: 5px 2px 5px 3px;
+}
+/* line 76, ../scss/site/custom.scss */
+#message li.error {
+  background-color: #ffcbba;
+  border-left: solid 4px #f00;
+}
+/* line 80, ../scss/site/custom.scss */
+#message li.warning {
+  background-color: #ffc;
+  border-left: solid 4px #ffd200;
+}
+/* line 85, ../scss/site/custom.scss */
+#message li.notice {
+  background-color: #cff2ee;
+  border-left: solid 4px #77ff77;
+}
+
+/* line 92, ../scss/site/custom.scss */
+div.node-blog .info {
+  display: block;
+  font-size: smaller;
+  color: #777;
+  font-style: italic;
+}
+
+/* Hide author and date for CMS pages */
+/* line 100, ../scss/site/custom.scss */
+div.node-page .info {
+  display: none;
+}
+
+/* line 1, ../scss/site/eiffel_org_nodes.scss */
+table.eiffel_org_nodes {
+  width: 100%;
+}
+/* line 3, ../scss/site/eiffel_org_nodes.scss */
+table.eiffel_org_nodes caption {
+  font-size: 2rem;
+  color: #444;
+  margin: 1rem;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center left, center right;
+}
+/* line 13, ../scss/site/eiffel_org_nodes.scss */
+table.eiffel_org_nodes thead th {
+  background-color: #0E9A8F;
+  color: white;
+  border: 1px solid black;
+  text-align: left;
+  padding-left: 4px;
+}
+/* line 23, ../scss/site/eiffel_org_nodes.scss */
+table.eiffel_org_nodes tbody td {
+  border: 1px solid black;
+  font: 16px/24px "Open Sans", Arial, Helvetica, sans-serif;
+  padding-left: 4px;
+  display: table-cell;
+  vertical-align: top;
+}
+
+@font-face {
+  font-family: 'museo_slab500';
+  src: url("../fonts/museoslab_500-webfont.eot");
+  src: url("../fonts/museoslab_500-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/museoslab_500-webfont.woff") format("woff"), url("../fonts/museoslab_500-webfont.ttf") format("truetype"), url("../fonts/museoslab_500-webfont.svg#museo_slab500") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'museo_sans500';
+  src: url("../fonts/museosans_500-webfont.eot");
+  src: url("../fonts/museosans_500-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans_500-webfont.woff") format("woff"), url("../fonts/museosans_500-webfont.ttf") format("truetype"), url("../fonts/museosans_500-webfont.svg#museo_sans500") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+/* line 32, ../scss/all.scss */
+#wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* line 35, ../scss/all.scss */
+.w1 {
+  position: relative;
+  left: 50%;
+  float: left;
+  width: 100%;
+}
+
+/* line 41, ../scss/all.scss */
+.w2 {
+  position: relative;
+  left: -50%;
+  float: left;
+  width: 100%;
+}
+
+/* line 47, ../scss/all.scss */
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 1020px;
+}
+
+/* line 52, ../scss/all.scss */
+#header {
+  background: #0AA694 url(../images/bg-head.jpg);
+  position: relative;
+}
+/* line 55, ../scss/all.scss */
+#header:after {
+  background: url(../images/bg-head2.jpg);
+  width: 9999px;
+  left: 50%;
+  top: 0;
+  position: absolute;
+  height: 100%;
+  content: '';
+}
+
+/* line 66, ../scss/all.scss */
+.header-block {
+  min-height: 94px;
+  position: relative;
+  z-index: 2;
+  background: url(../images/bg-header.jpg) no-repeat 50% 0;
+}
+/* line 71, ../scss/all.scss */
+.header-block .header-holder {
+  padding: 0 0 10px;
+  position: relative;
+  z-index: 5;
+  width: 1200px;
+}
+
+/* line 79, ../scss/all.scss */
+.logo {
+  padding: 24px 0 0;
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 235px;
+}
+/* line 82, ../scss/all.scss */
+.logo a {
+  display: inline-block;
+  vertical-align: top;
+}
+/* line 85, ../scss/all.scss */
+.logo a img {
+  color: #fff;
+  font-size: 48px;
+  vertical-align: top;
+  margin: 0 0 0 -7px;
+}
+
+/* line 94, ../scss/all.scss */
+#nav {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 490px;
+  font-family: "museo_sans500", Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  text-transform: uppercase;
+  padding: 54px 0 0;
+  width: 660px;
+}
+/* line 101, ../scss/all.scss */
+#nav ul {
+  margin: 0 -11px;
+  text-align: left;
+  letter-spacing: 1px;
+}
+/* line 107, ../scss/all.scss */
+#nav ul li {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 3px 0 4px;
+  position: relative;
+  font-size: 15px;
+}
+/* line 113, ../scss/all.scss */
+#nav ul li a {
+  color: white;
+  padding: 2px;
+}
+/* line 117, ../scss/all.scss */
+#nav ul li:hover > a {
+  color: black;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  padding: 2px;
+  background-color: rgba(255, 255, 255, 0.6);
+  -webkit-box-shadow: 0 0 10px 0 rgba(17, 41, 53, 0.25);
+  box-shadow: 0 0 10px 0 rgba(17, 41, 53, 0.25);
+}
+/* line 126, ../scss/all.scss */
+#nav ul .active a {
+  color: white;
+}
+/* line 130, ../scss/all.scss */
+#nav ul a {
+  color: #112935;
+  display: block;
+}
+/* line 133, ../scss/all.scss */
+#nav ul a:hover {
+  color: white;
+}
+/* line 135, ../scss/all.scss */
+#nav ul .drop-slide-wrapper {
+  width: 175.5px;
+  left: 50% !important;
+  top: 100%;
+  margin: 0 0 0 -86px;
+}
+/* line 141, ../scss/all.scss */
+#nav ul .dropdown {
+  width: 100%;
+  text-align: left;
+  padding: 16px 0 0;
+}
+/* line 146, ../scss/all.scss */
+#nav ul:hover .dropdown {
+  display: block;
+}
+/* line 149, ../scss/all.scss */
+#nav ul ul {
+  background: #4a6d82;
+  border: 1px solid #abc4d4;
+  text-align: center;
+  font-size: 14px;
+  line-height: 21px;
+  position: relative;
+  padding: 1px 0 3px;
+  margin: 0;
+  -webkit-box-shadow: 0 0 10px 0 rgba(17, 41, 53, 0.25);
+  box-shadow: 0 0 10px 0 rgba(17, 41, 53, 0.25);
+}
+/* line 159, ../scss/all.scss */
+#nav ul ul:after, #nav ul ul:before {
+  bottom: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+/* line 170, ../scss/all.scss */
+#nav ul ul:after {
+  border-color: rgba(74, 109, 130, 0);
+  border-bottom-color: #4a6d82;
+  border-width: 9px 6px;
+  margin-left: -6px;
+}
+/* line 176, ../scss/all.scss */
+#nav ul ul:before {
+  border-color: rgba(171, 196, 212, 0);
+  border-bottom-color: #abc4d4;
+  border-width: 10px 7px;
+  margin-left: -7px;
+}
+/* line 182, ../scss/all.scss */
+#nav ul ul li {
+  display: block;
+  margin: 0;
+}
+/* line 186, ../scss/all.scss */
+#nav ul ul a {
+  color: #abc4d4;
+  padding: 3px 0 3px;
+  position: relative;
+}
+/* line 190, ../scss/all.scss */
+#nav ul ul a:after, #nav ul ul a:before {
+  width: 4px;
+  height: 100%;
+  background: #1a3d50;
+  position: absolute;
+  top: 0;
+  left: -4px;
+  display: none;
+  content: '';
+}
+/* line 201, ../scss/all.scss */
+#nav ul ul a:before {
+  left: auto;
+  right: -4px;
+}
+/* line 205, ../scss/all.scss */
+#nav ul ul a:hover {
+  color: white;
+  background: #1a3d50;
+}
+/* line 209, ../scss/all.scss */
+#nav ul ul a:hover:after, #nav ul ul a:hover:before {
+  display: block;
+}
+
+/* line 219, ../scss/all.scss */
+.home #nav {
+  font-size: 22px;
+  padding: 56px 0 0;
+}
+/* line 222, ../scss/all.scss */
+.home #nav ul {
+  margin: 0 -30px 0 -16px;
+  text-align: left;
+}
+/* line 225, ../scss/all.scss */
+.home #nav ul li {
+  margin: 0 7px;
+}
+/* line 228, ../scss/all.scss */
+.home #nav ul .dropdown {
+  padding: 14px 0 0;
+}
+/* line 231, ../scss/all.scss */
+.home #nav ul ul {
+  margin: 0;
+  text-align: center;
+}
+/* line 234, ../scss/all.scss */
+.home #nav ul ul li {
+  display: block;
+  margin: 0;
+}
+
+/* line 243, ../scss/all.scss */
+.header-right {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 235px;
+  margin-left: 0px;
+  padding: 11px 0 0;
+}
+
+/* line 249, ../scss/all.scss */
+.add-links {
+  overflow: hidden;
+  margin: 0 0 20px;
+}
+/* line 252, ../scss/all.scss */
+.add-links ul {
+  text-align: right;
+  font: 12px/18px "museo_sans500", Arial, Helvetica, sans-serif;
+  margin: 0 -7px 0 0;
+  text-transform: uppercase;
+}
+/* line 258, ../scss/all.scss */
+.add-links ul li {
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  padding: 0 8px;
+}
+/* line 263, ../scss/all.scss */
+.add-links ul li:after {
+  position: absolute;
+  width: 1px;
+  height: 12px;
+  background: #1f3d4d;
+  top: 50%;
+  left: 0;
+  margin: -6px 0 0;
+  content: '';
+}
+/* line 273, ../scss/all.scss */
+.add-links ul li:first-child:after {
+  display: none;
+}
+/* line 276, ../scss/all.scss */
+.add-links ul li a {
+  color: #99cc33;
+}
+/* line 278, ../scss/all.scss */
+.add-links ul li a:hover {
+  color: #c7ec7e;
+}
+
+/* line 286, ../scss/all.scss */
+.search-form {
+  width: 192.5px;
+  padding: 4px 5px 4px 21px;
+  height: 18px;
+  background: white;
+  float: right;
+  position: relative;
+  -webkit-box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.4);
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+/* line 295, ../scss/all.scss */
+.search-form input[type="search"],
+.search-form input[type="text"] {
+  border: 0;
+  padding: 0;
+  float: right;
+  background: white;
+  height: 18px;
+  width: 192.5px;
+  outline: none;
+  font-size: 12px;
+  line-height: 18px;
+}
+/* line 307, ../scss/all.scss */
+.search-form input[type="image"] {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 6px;
+  left: 5px;
+}
+
+/* line 315, ../scss/all.scss */
+.search-form.parent-focus {
+  -webkit-box-shadow: 0 0 5px rgba(13, 65, 67, 0.9), inset 1px 1px 1px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 5px rgba(13, 65, 67, 0.9), inset 1px 1px 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* line 320, ../scss/all.scss */
+.promo-area {
+  padding: 80px 0 20px;
+  min-height: 300px;
+  position: relative;
+}
+/* line 324, ../scss/all.scss */
+.promo-area .social-networks {
+  position: absolute;
+  top: 0;
+  right: 0px;
+}
+/* line 329, ../scss/all.scss */
+.promo-area .holder {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 575px;
+  overflow: hidden;
+  padding: 10px 0 0 9px;
+  float: right;
+  display: inline-block;
+  clear: both;
+  margin-bottom: 15px;
+}
+/* line 337, ../scss/all.scss */
+.promo-area .holder h1 {
+  font: 36px/36px "museo_sans500", Arial, Helvetica, sans-serif;
+  color: #112935;
+  margin: 0 0 35px;
+  letter-spacing: 2px;
+}
+/* line 343, ../scss/all.scss */
+.promo-area .holder .btn-holder {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 320px;
+  border: 1px solid #98dcd4;
+  padding: 0 0 16px;
+  margin: 0 0 0 2px;
+  float: left;
+}
+/* line 349, ../scss/all.scss */
+.promo-area .holder .btn-holder .row {
+  overflow: hidden;
+  color: #112935;
+  margin: 0 0 14px;
+  font: 14px/19px "museo_sans500", Arial, Helvetica, sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #98dcd4;
+}
+/* line 357, ../scss/all.scss */
+.promo-area .holder .btn-holder .row .release {
+  float: left;
+  padding: 0 8px;
+}
+/* line 362, ../scss/all.scss */
+.promo-area .holder .btn-holder .btn-download {
+  background-color: #769830;
+  background-image: -webkit-linear-gradient(top, #99cc33, #769830);
+  background-image: -moz-linear-gradient(top, #99cc33, #769830);
+  background-image: -ms-linear-gradient(top, #99cc33, #769830);
+  background-image: -o-linear-gradient(top, #99cc33, #769830);
+  background-image: linear-gradient(top, #99cc33, #769830);
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  width: 235px;
+  height: 63px;
+  display: block;
+  margin: 0 auto 13px auto;
+  font: 30px/63px "museo_sans500", Arial, Helvetica, sans-serif;
+  color: white;
+  letter-spacing: 1px;
+  text-align: center;
+  position: relative;
+  padding: 0 57px 6px 0;
+}
+/* line 375, ../scss/all.scss */
+.promo-area .holder .btn-holder .btn-download:after {
+  background: url(../images/ico-download.png) no-repeat;
+  width: 37px;
+  height: 37px;
+  position: absolute;
+  right: 16px;
+  top: 13px;
+  content: '';
+}
+/* line 384, ../scss/all.scss */
+.promo-area .holder .btn-holder .btn-download:hover {
+  background-color: #6a8c28;
+  background-image: -webkit-linear-gradient(top, #89bc2b, #6a8c28);
+  background-image: -moz-linear-gradient(top, #89bc2b, #6a8c28);
+  background-image: -ms-linear-gradient(top, #89bc2b, #6a8c28);
+  background-image: -o-linear-gradient(top, #89bc2b, #6a8c28);
+  background-image: linear-gradient(top, #89bc2b, #6a8c28);
+}
+
+/* line 392, ../scss/all.scss */
+.promo-area .holder .btn-holder {
+  padding: 0 0 0px;
+}
+
+/* line 396, ../scss/all.scss */
+#breadcrumb {
+  margin-bottom: 10px;
+  font-size: smaller;
+}
+
+/* line 401, ../scss/all.scss */
+#main {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 28px 0;
+}
+/* line 404, ../scss/all.scss */
+#main:after, #main:before {
+  position: absolute;
+  width: 100%;
+  height: 22px;
+  content: '';
+}
+/* line 411, ../scss/all.scss */
+#main:after {
+  top: 0;
+  background-color: #f0f3f5;
+  background-image: -webkit-linear-gradient(top, #d1dae0, #f0f3f5);
+  background-image: -moz-linear-gradient(top, #d1dae0, #f0f3f5);
+  background-image: -ms-linear-gradient(top, #d1dae0, #f0f3f5);
+  background-image: -o-linear-gradient(top, #d1dae0, #f0f3f5);
+  background-image: linear-gradient(top, #d1dae0, #f0f3f5);
+}
+/* line 415, ../scss/all.scss */
+#main:before {
+  bottom: 1px;
+  background-color: #d1dae0;
+  background-image: -webkit-linear-gradient(top, #f0f3f5, #d1dae0);
+  background-image: -moz-linear-gradient(top, #f0f3f5, #d1dae0);
+  background-image: -ms-linear-gradient(top, #f0f3f5, #d1dae0);
+  background-image: -o-linear-gradient(top, #f0f3f5, #d1dae0);
+  background-image: linear-gradient(top, #f0f3f5, #d1dae0);
+}
+
+/* line 422, ../scss/all.scss */
+.home #main {
+  background: #353637;
+  padding: 50px 0 38px;
+  border-bottom: 1px solid white;
+  margin: 0 0 1px;
+}
+/* line 427, ../scss/all.scss */
+.home #main:after, .home #main:before {
+  display: none;
+}
+
+/* line 434, ../scss/all.scss */
+.column {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 320px;
+}
+/* line 436, ../scss/all.scss */
+.column h2 {
+  color: #99cc33;
+  margin: 0 0 19px;
+  padding: 0 0 15px;
+  border-bottom: 1px solid #bfd1da;
+  font: 28px/28px "museo_slab500", Arial, Helvetica, sans-serif;
+}
+/* line 442, ../scss/all.scss */
+.column h2 a {
+  color: #99cc33;
+}
+/* line 444, ../scss/all.scss */
+.column h2 a:hover {
+  color: white;
+}
+/* line 447, ../scss/all.scss */
+.column .news-holder,
+.column .blog-holder {
+  overflow: hidden;
+  width: 277.5px;
+  color: #abc4d4;
+}
+/* line 452, ../scss/all.scss */
+.column .news-holder .holder,
+.column .blog-holder .holder {
+  overflow: hidden;
+}
+/* line 457, ../scss/all.scss */
+.column .news-holder h2 {
+  margin: 0 0 28px;
+}
+/* line 461, ../scss/all.scss */
+.column .news {
+  overflow: hidden;
+  margin: 0 0 20px;
+}
+/* line 464, ../scss/all.scss */
+.column .news p {
+  margin: 0 0 12px;
+}
+/* line 468, ../scss/all.scss */
+.column .date {
+  display: block;
+  text-transform: uppercase;
+  color: #0fa096;
+  margin: 0 0 2px;
+  font: 12px "museo_sans500", Arial, Helvetica, sans-serif;
+}
+/* line 475, ../scss/all.scss */
+.column .blog-holder {
+  margin: 0 0 0 27px;
+}
+/* line 477, ../scss/all.scss */
+.column .blog-holder .blog-post {
+  overflow: hidden;
+  margin: 0 0 13px;
+}
+/* line 480, ../scss/all.scss */
+.column .blog-holder .blog-post p {
+  margin: 0 0 10px;
+}
+/* line 484, ../scss/all.scss */
+.column .blog-holder h3 {
+  color: white;
+  margin: 0 0 9px;
+  font: 24px/24px "museo_sans500", Arial, Helvetica, sans-serif;
+}
+/* line 488, ../scss/all.scss */
+.column .blog-holder h3 a {
+  color: white;
+}
+/* line 490, ../scss/all.scss */
+.column .blog-holder h3 a:hover {
+  color: #c7ec7e;
+}
+/* line 496, ../scss/all.scss */
+.column .libraries,
+.column .updates {
+  width: 269px;
+  overflow: hidden;
+  margin: 0 0 34px 55px;
+}
+/* line 501, ../scss/all.scss */
+.column .libraries h2,
+.column .updates h2 {
+  border-bottom: 1px solid #292626;
+  margin: 0 0 16px;
+}
+/* line 505, ../scss/all.scss */
+.column .libraries ul,
+.column .updates ul {
+  overflow: hidden;
+  font-family: "museo_sans500", Arial, Helvetica, sans-serif;
+}
+/* line 509, ../scss/all.scss */
+.column .libraries ul li,
+.column .updates ul li {
+  border-bottom: 1px solid #292626;
+  padding: 16px 0 5px;
+}
+/* line 512, ../scss/all.scss */
+.column .libraries ul li:first-child,
+.column .updates ul li:first-child {
+  padding-top: 0;
+}
+/* line 513, ../scss/all.scss */
+.column .libraries ul li .date,
+.column .updates ul li .date {
+  display: inline-block;
+  margin: 0 5px 0 0;
+}
+/* line 517, ../scss/all.scss */
+.column .libraries ul li a,
+.column .updates ul li a {
+  color: #7FB514;
+}
+/* line 519, ../scss/all.scss */
+.column .libraries ul li a:hover,
+.column .updates ul li a:hover {
+  color: #c7ec7e;
+}
+
+/* line 528, ../scss/all.scss */
+#footer {
+  background: #4c6877;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  font-size: 13px;
+  color: #6d8083;
+}
+/* line 533, ../scss/all.scss */
+#footer .copyrights {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 1000px;
+  margin-bottom: 40px;
+  border-top: 1px solid #1a3d50;
+  padding: 8px 0 0;
+}
+/* line 536, ../scss/all.scss */
+#footer .copyrights a {
+  color: #abc4d4;
+}
+/* line 542, ../scss/all.scss */
+#footer .copyrights li {
+  float: left;
+  padding: 0 7px 0;
+  position: relative;
+}
+/* line 546, ../scss/all.scss */
+#footer .copyrights li:after {
+  background: url(../images/sep2.png) no-repeat;
+  width: 2px;
+  height: 14px;
+  position: absolute;
+  top: 6px;
+  left: 0;
+  content: '';
+}
+/* line 554, ../scss/all.scss */
+#footer .copyrights li:after a {
+  display: inline-block;
+}
+/* line 558, ../scss/all.scss */
+#footer .copyrights li:first-child {
+  padding-left: 0;
+}
+/* line 560, ../scss/all.scss */
+#footer .copyrights li:first-child:after {
+  display: none;
+}
+
+/* line 568, ../scss/all.scss */
+.footer-holder {
+  overflow: hidden;
+  padding: 44px 0 60px;
+  min-height: 150px;
+}
+/* line 572, ../scss/all.scss */
+.footer-holder .btn-holder {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 235px;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+/* line 576, ../scss/all.scss */
+.footer-holder .btn-holder .btn {
+  background-color: #769830;
+  background-image: -webkit-linear-gradient(top, #99cc33, #769830);
+  background-image: -moz-linear-gradient(top, #99cc33, #769830);
+  background-image: -ms-linear-gradient(top, #99cc33, #769830);
+  background-image: -o-linear-gradient(top, #99cc33, #769830);
+  background-image: linear-gradient(top, #99cc33, #769830);
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 150px;
+  height: 32px;
+  display: block;
+  margin: 0 0 5px 0px;
+  color: white;
+  letter-spacing: 1px;
+  position: relative;
+  padding: 15px 42px 0px 14px;
+  font: 16px/16px "museo_sans500", Arial, Helvetica, sans-serif;
+}
+/* line 588, ../scss/all.scss */
+.footer-holder .btn-holder .btn:after {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  content: '';
+}
+/* line 597, ../scss/all.scss */
+.footer-holder .btn-holder .btn.btn-download {
+  background-color: #769830;
+  background-image: -webkit-linear-gradient(top, #99cc33, #769830);
+  background-image: -moz-linear-gradient(top, #99cc33, #769830);
+  background-image: -ms-linear-gradient(top, #99cc33, #769830);
+  background-image: -o-linear-gradient(top, #99cc33, #769830);
+  background-image: linear-gradient(top, #99cc33, #769830);
+  color: white;
+}
+/* line 600, ../scss/all.scss */
+.footer-holder .btn-holder .btn.btn-download:after {
+  background: url(../images/download_b_30x30.png) no-repeat;
+}
+/* line 603, ../scss/all.scss */
+.footer-holder .btn-holder .btn.btn-download:hover {
+  background-color: #6a8c28;
+  background-image: -webkit-linear-gradient(top, #89bc2b, #6a8c28);
+  background-image: -moz-linear-gradient(top, #89bc2b, #6a8c28);
+  background-image: -ms-linear-gradient(top, #89bc2b, #6a8c28);
+  background-image: -o-linear-gradient(top, #89bc2b, #6a8c28);
+  background-image: linear-gradient(top, #89bc2b, #6a8c28);
+}
+/* line 607, ../scss/all.scss */
+.footer-holder .btn-holder .btn.btn-tryonline {
+  background-color: #12273A;
+  background-image: -webkit-linear-gradient(top, #2B4054, #12273A);
+  background-image: -moz-linear-gradient(top, #2B4054, #12273A);
+  background-image: -ms-linear-gradient(top, #2B4054, #12273A);
+  background-image: -o-linear-gradient(top, #2B4054, #12273A);
+  background-image: linear-gradient(top, #2B4054, #12273A);
+  color: white;
+}
+/* line 610, ../scss/all.scss */
+.footer-holder .btn-holder .btn.btn-tryonline:after {
+  background: url(../images/play12_b_30x30.png) no-repeat;
+}
+/* line 613, ../scss/all.scss */
+.footer-holder .btn-holder .btn.btn-tryonline:hover {
+  background-color: #12273A;
+  background-color: #12273A;
+  background-image: -webkit-linear-gradient(top, #12273A, #12273A);
+  background-image: -moz-linear-gradient(top, #12273A, #12273A);
+  background-image: -ms-linear-gradient(top, #12273A, #12273A);
+  background-image: -o-linear-gradient(top, #12273A, #12273A);
+  background-image: linear-gradient(top, #12273A, #12273A);
+}
+/* line 618, ../scss/all.scss */
+.footer-holder .btn-holder .btn.btn-contribute {
+  background-color: #2b4175;
+  background-image: -webkit-linear-gradient(top, #3c75d8, #2b4175);
+  background-image: -moz-linear-gradient(top, #3c75d8, #2b4175);
+  background-image: -ms-linear-gradient(top, #3c75d8, #2b4175);
+  background-image: -o-linear-gradient(top, #3c75d8, #2b4175);
+  background-image: linear-gradient(top, #3c75d8, #2b4175);
+  color: white;
+}
+/* line 621, ../scss/all.scss */
+.footer-holder .btn-holder .btn.btn-contribute:after {
+  background: url(../images/arrows_b_30x30.png) no-repeat;
+}
+/* line 624, ../scss/all.scss */
+.footer-holder .btn-holder .btn.btn-contribute:hover {
+  background-color: #2b4175;
+  background-image: -webkit-linear-gradient(top, #2A56A3, #2b4175);
+  background-image: -moz-linear-gradient(top, #2A56A3, #2b4175);
+  background-image: -ms-linear-gradient(top, #2A56A3, #2b4175);
+  background-image: -o-linear-gradient(top, #2A56A3, #2b4175);
+  background-image: linear-gradient(top, #2A56A3, #2b4175);
+}
+/* line 630, ../scss/all.scss */
+.footer-holder .social-holder {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 235px;
+  padding: 2px 0 0;
+}
+
+/* line 636, ../scss/all.scss */
+.footer-nav {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 490px;
+  margin-right: auto;
+  margin-left: auto;
+}
+/* line 640, ../scss/all.scss */
+.footer-nav ul {
+  overflow: hidden;
+  text-transform: uppercase;
+  font: 16px "museo_sans500", Arial, Helvetica, sans-serif;
+}
+/* line 645, ../scss/all.scss */
+.footer-nav ul li {
+  width: 150px;
+  float: left;
+  padding: 0 10px 6px 0;
+}
+/* line 649, ../scss/all.scss */
+.footer-nav ul li:first-child {
+  width: 116px;
+}
+/* line 652, ../scss/all.scss */
+.footer-nav ul li a {
+  color: white;
+  display: inline-block;
+}
+/* line 655, ../scss/all.scss */
+.footer-nav ul li a:hover {
+  color: #abc4d4;
+}
+/* line 659, ../scss/all.scss */
+.footer-nav ul li ul {
+  overflow: hidden;
+  text-transform: capitalize;
+  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  padding: 6px 0 0;
+}
+/* line 667, ../scss/all.scss */
+.footer-nav ul li ul li a {
+  color: #abc4d4;
+  display: inline-block;
+}
+/* line 670, ../scss/all.scss */
+.footer-nav ul li ul li a:hover {
+  color: #fff;
+}
+
+/* line 680, ../scss/all.scss */
+#content {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 1000px;
+  border: none;
+  overflow: hidden;
+}
+/* line 684, ../scss/all.scss */
+#content .holder {
+  margin-left: 0px;
+  margin-right: 0px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+/* line 690, ../scss/all.scss */
+#content.with-first-sidebar, #content.with-second-sidebar {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 745px;
+}
+/* line 693, ../scss/all.scss */
+#content.with-first-sidebar.with-second-sidebar {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 490px;
+}
+/* line 696, ../scss/all.scss */
+#content .head {
+  overflow: hidden;
+  color: #13a69a;
+  padding: 0 50px 0 0;
+  margin: 0 0 5px;
+}
+/* line 701, ../scss/all.scss */
+#content .head h1 {
+  margin: 0 0 -1px;
+}
+/* line 704, ../scss/all.scss */
+#content .head p {
+  margin: 0 0 10px;
+}
+/* line 708, ../scss/all.scss */
+#content .ico {
+  display: inline-block;
+  vertical-align: top;
+  background: #1f3d4d;
+  margin: 2px 5px 0 0;
+  width: 18px;
+  height: 18px;
+  padding: 5px;
+  -webkit-border-radius: 100%;
+  border-radius: 100%;
+}
+/* line 717, ../scss/all.scss */
+#content .ico img {
+  vertical-align: top;
+}
+/* line 721, ../scss/all.scss */
+#content h1 {
+  color: #1f3d4d;
+  margin: 0 0 35px;
+  letter-spacing: 2px;
+  font: 36px/36px "museo_slab500", Arial, Helvetica, sans-serif;
+}
+/* line 726, ../scss/all.scss */
+#content h1 .ico {
+  margin: 2px 10px 0 0;
+  width: 21px;
+  height: 21px;
+  padding: 5px;
+}
+
+/* Content */
+/* line 737, ../scss/all.scss */
+#content ul.cards {
+  overflow: hidden;
+  padding: 8px 0 0 8px;
+  margin: 0;
+}
+/* line 744, ../scss/all.scss */
+#content ul.cards li {
+  background: #e9eced;
+  width: 320px;
+  height: 320px;
+  float: left;
+  margin: 0 18px 26px 18px;
+  text-align: center;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+}
+/* line 752, ../scss/all.scss */
+#content ul.cards li:hover {
+  background: #e3e7e8;
+}
+/* line 755, ../scss/all.scss */
+#content ul.cards li > a {
+  display: block;
+  padding: 18px 5px 5px 5px;
+}
+/* line 759, ../scss/all.scss */
+#content ul.cards li .ico {
+  width: 52px;
+  height: 52px;
+  padding: 10px;
+  display: inline-block;
+  vertical-align: top;
+  background: #1e3b4b;
+  margin: 0 0 15px;
+  -webkit-border-radius: 100%;
+  border-radius: 100%;
+}
+/* line 769, ../scss/all.scss */
+#content ul.cards li h2 {
+  color: #99cc33;
+  margin: 0 0 8px;
+  font: 28px/28px "museo_slab500", Arial, Helvetica, sans-serif;
+}
+/* line 774, ../scss/all.scss */
+#content ul.cards li p {
+  color: #0C0D0D;
+}
+/* line 776, ../scss/all.scss */
+#content ul.cards li p a {
+  display: inline-block;
+}
+/* line 781, ../scss/all.scss */
+#content ul.cards li.large-card {
+  height: 365px;
+}
+/* line 784, ../scss/all.scss */
+#content ul.cards li.big-card {
+  height: 305px;
+}
+/* line 787, ../scss/all.scss */
+#content ul.cards li.medium-card {
+  height: 225px;
+}
+/* line 790, ../scss/all.scss */
+#content ul.cards li.small-card {
+  height: 165px;
+}
+/* line 795, ../scss/all.scss */
+#content ul.cms-page-links {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 1000px;
+  background: #e9eced;
+  height: 100%;
+  width: 95%;
+  float: left;
+  margin: 0 20px 30px 20px;
+  padding: 10px 10px 10px 10px;
+  text-align: center;
+  list-style-type: none;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  display: block;
+}
+/* line 807, ../scss/all.scss */
+#content ul.cms-page-links > li {
+  width: 150px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background-color: white;
+  display: inline-block;
+}
+/* line 812, ../scss/all.scss */
+#content ul.cms-page-links > li:hover {
+  background: #e3e7e8;
+}
+/* line 820, ../scss/all.scss */
+#content .promo-area {
+  padding: 0 0 0 0px;
+  min-height: 0px;
+}
+/* line 825, ../scss/all.scss */
+#content .info-block {
+  overflow: hidden;
+  position: relative;
+}
+/* line 828, ../scss/all.scss */
+#content .info-block:after {
+  background: url(../images/sep.png) no-repeat;
+  width: 22px;
+  height: 2px;
+  position: absolute;
+  bottom: 1px;
+  left: 0;
+  content: "";
+}
+/* line 837, ../scss/all.scss */
+#content .info-block h2 {
+  color: #99cc33;
+  margin: 0 0 19px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid #bfd1da;
+  font: 28px/28px "museo_slab500", Arial, Helvetica, sans-serif;
+}
+/* line 844, ../scss/all.scss */
+#content .info-block .post {
+  overflow: hidden;
+  margin: 0 0 13px;
+}
+/* line 847, ../scss/all.scss */
+#content .info-block .post h3 {
+  color: #0d4143;
+  margin: 0 0 9px;
+  font: 24px/24px "museo_sans500", Arial, Helvetica, sans-serif;
+}
+/* line 851, ../scss/all.scss */
+#content .info-block .post h3 a {
+  color: #0d4143;
+}
+/* line 853, ../scss/all.scss */
+#content .info-block .post h3 a:hover {
+  color: #4c6877;
+}
+/* line 858, ../scss/all.scss */
+#content .info-block .post .date {
+  display: block;
+  text-transform: uppercase;
+  color: #0fa096;
+  margin: 0 0 2px;
+  font: 12px "museo_sans500", Arial, Helvetica, sans-serif;
+}
+/* line 865, ../scss/all.scss */
+#content .info-block .post p {
+  margin: 0 0 10px;
+}
+/* line 867, ../scss/all.scss */
+#content .info-block .post p a {
+  font: 12px "museo_sans500", Arial, Helvetica, sans-serif;
+  color: #1f3d4d;
+  text-transform: uppercase;
+}
+/* line 871, ../scss/all.scss */
+#content .info-block .post p a:hover {
+  color: #4c6877;
+}
+
+/* #content */
+/* line 880, ../scss/all.scss */
+.rss-block {
+  overflow: hidden;
+  padding: 8px 0 0 40px;
+}
+/* line 883, ../scss/all.scss */
+.rss-block > ul {
+  margin: 0 0 0 -70px;
+}
+/* line 886, ../scss/all.scss */
+.rss-block > ul > li {
+  width: 303px;
+  float: left;
+  margin: 0 0 54px 33px;
+}
+/* line 888, ../scss/all.scss */
+.rss-block > ul > li:not(:last-child) {
+  border-right: dotted 1px #99cc33;
+}
+/* line 891, ../scss/all.scss */
+.rss-block > ul > li > h2 {
+  font: 28px-8/28px-8 "museo_slab500", Arial, Helvetica, sans-serif;
+}
+/* line 894, ../scss/all.scss */
+.rss-block > ul > li .feed {
+  font-size: 14px;
+  line-height: 14px;
+}
+/* line 897, ../scss/all.scss */
+.rss-block > ul > li .feed .description {
+  line-height: 18px;
+}
+
+/* line 906, ../scss/all.scss */
+#sidebar {
+  border: none;
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 235px;
+  padding: 0;
+  position: relative;
+  top: -3px;
+  margin: 0px 2px 0 2px;
+}
+/* line 913, ../scss/all.scss */
+#sidebar.holder {
+  padding: 0 5px 5px 5px;
+}
+/* line 916, ../scss/all.scss */
+#sidebar div.title, #sidebar h2 {
+  color: #99cc33;
+  margin: 0 0 17px;
+  padding: 0 0 15px;
+  border-bottom: 1px solid #becbd3;
+  font: 28px/28px "museo_slab500", Arial, Helvetica, sans-serif;
+}
+/* line 922, ../scss/all.scss */
+#sidebar div.title a, #sidebar h2 a {
+  color: #99cc33;
+}
+/* line 924, ../scss/all.scss */
+#sidebar div.title a:hover, #sidebar h2 a:hover {
+  color: white;
+}
+
+/* Code elements */
+/* line 932, ../scss/all.scss */
+code, eiffel {
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  display: block;
+  font-family: monospace;
+  white-space: pre-wrap;
+  tab-size: 4;
+  -moz-tab-size: 4;
+  /* Code for Firefox */
+  -o-tab-size: 4;
+  /* Code for Opera 10.6-12.1 */
+  border: solid 1px #ccc;
+  background-color: #fff;
+  line-height: 1.3;
+  padding: 10px;
+  margin: 2px 0 2px 0;
+}
+/* line 946, ../scss/all.scss */
+code.inline, eiffel.inline {
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  border: dotted 1px #ddd;
+  display: inline-block;
+  padding: 0 2px 0 2px;
+  margin: 0;
+}
+/* line 953, ../scss/all.scss */
+code .typ, eiffel .typ {
+  color: #00f;
+}
+/* line 956, ../scss/all.scss */
+code .atg, eiffel .atg {
+  color: #000;
+}
+/* line 959, ../scss/all.scss */
+code .fcl, eiffel .fcl {
+  font-style: normal;
+  color: #000;
+}
+/* line 963, ../scss/all.scss */
+code .com, eiffel .com {
+  font-style: italic;
+}
+
+/* ... */
+/* line 970, ../scss/all.scss */
+.widget {
+  overflow: hidden;
+  margin: 0 0 34px;
+}
+/* line 973, ../scss/all.scss */
+.widget h2 {
+  margin: 0 0 16px;
+}
+/* line 976, ../scss/all.scss */
+.widget ul {
+  font-family: "museo_sans500", Arial, Helvetica, sans-serif;
+}
+/* line 979, ../scss/all.scss */
+.widget ul li {
+  border-bottom: 1px solid #becbd3;
+  padding: 16px 0 5px;
+}
+/* line 982, ../scss/all.scss */
+.widget ul li:first-child {
+  padding-top: 0;
+}
+/* line 985, ../scss/all.scss */
+.widget ul li.date {
+  display: inline-block;
+  margin: 0 5px 0 0;
+  text-transform: uppercase;
+  color: #1da699;
+  font: 12px "museo_sans500", Arial, Helvetica, sans-serif;
+}
+/* line 992, ../scss/all.scss */
+.widget ul li a {
+  color: #4c6877;
+}
+/* line 994, ../scss/all.scss */
+.widget ul li a:hover {
+  color: #1f3d4d;
+}
+
+/* line 1003, ../scss/all.scss */
+.social-networks {
+  float: right;
+}
+/* line 1006, ../scss/all.scss */
+.social-networks li {
+  float: left;
+  margin: 0 0 0 10px;
+}
+/* line 1009, ../scss/all.scss */
+.social-networks li a {
+  display: block;
+  width: 35px;
+  height: 34px;
+  background: url(../images/ico-social.png) no-repeat;
+  overflow: hidden;
+  text-indent: -9999px;
+}
+/* line 1015, ../scss/all.scss */
+.social-networks li a:hover {
+  background: url(../images/ico-social-h.png) no-repeat;
+}
+/* line 1017, ../scss/all.scss */
+.social-networks li .facebook {
+  width: 34px;
+}
+/* line 1020, ../scss/all.scss */
+.social-networks li .linkedin {
+  background-position: -44px 0;
+}
+/* line 1022, ../scss/all.scss */
+.social-networks li .linkedin:hover {
+  background-position: -44px 0;
+}
+/* line 1024, ../scss/all.scss */
+.social-networks li .youtube {
+  background-position: -89px 0;
+}
+/* line 1026, ../scss/all.scss */
+.social-networks li .youtube:hover {
+  background-position: -89px 0;
+}
+/* line 1028, ../scss/all.scss */
+.social-networks li .twitter {
+  background-position: -134px 0;
+}
+/* line 1030, ../scss/all.scss */
+.social-networks li .twitter:hover {
+  background-position: -134px 0;
+}
+/* line 1032, ../scss/all.scss */
+.social-networks li .googleplus {
+  background-position: -179px 0;
+  width: 34px;
+}
+/* line 1035, ../scss/all.scss */
+.social-networks li .googleplus:hover {
+  background-position: -179px 0;
+}
+
+/* line 1040, ../scss/all.scss */
+.social-plugin {
+  overflow: hidden;
+  margin: 0 0 30px -2px;
+}
+/* line 1043, ../scss/all.scss */
+.social-plugin img {
+  vertical-align: top;
+}
+
+/* line 1048, ../scss/all.scss */
+.popular {
+  padding: 12px 0 0;
+}
+/* line 1050, ../scss/all.scss */
+.popular li {
+  padding-left: 37px !important;
+  position: relative;
+}
+/* line 1053, ../scss/all.scss */
+.popular li img {
+  position: absolute;
+  top: 10px;
+  left: 0;
+}
+/* line 1059, ../scss/all.scss */
+.popular li:first-child img {
+  top: -5px;
+}
+
+/* line 1067, ../scss/all.scss */
+#primary-tabs ul.horizontal {
+  list-style-type: none;
+}
+/* line 1069, ../scss/all.scss */
+#primary-tabs ul.horizontal li {
+  display: inline;
+  padding: 2px 5px;
+  border: solid 1px #ccf;
+}
+/* line 1074, ../scss/all.scss */
+#primary-tabs ul.horizontal li.active {
+  border-color: #99f #99f #ddd;
+  border-style: solid solid none;
+  border-width: 2px 1px 0;
+  padding: 2px 7px 1px;
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-18-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-18-0 http://www.eiffel.com/developers/xml/configuration-1-18-0.xsd" name="eel" uuid="2A5F116C-6A76-4AB7-81A0-A73DF516F4F3" library_target="eel">
+	<target name="eel">
+		<root all_classes="true"/>
+		<file_rule>
+			<exclude>/.hg$</exclude>
+			<exclude>/.svn$</exclude>
+			<exclude>/CVS$</exclude>
+			<exclude>/EIFGENs$</exclude>
+		</file_rule>
+		<option warning="true">
+		</option>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="eapml" location="$ISE_LIBRARY\contrib\library\math\eapml\eapml.ecf"/>
+		<cluster name="eel" location=".\src\" recursive="true">
+			<file_rule>
+				<exclude>/x509$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

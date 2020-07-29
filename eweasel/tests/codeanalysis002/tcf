@@ -1,0 +1,17 @@
+test_name ca-load-preferences
+test_description Test preference loading from file.
+
+copy_sub Ace $TEST Ace
+copy_raw test.e $CLUSTER test.e
+copy_raw alldisabled.xml $TEST alldisabled.xml
+
+-- Loading the preference doesn't make sense if you are going to override
+-- them with a forced rules list, but it still works
+analyze_code loadprefs alldisabled.xml rule "CA080 CA001"
+analyze_code_result violation "TEST CA080:12"
+
+-- The following should also pass the test.
+analyze_code loadprefs alldisabled.xml
+analyze_code_result ok
+
+test_end

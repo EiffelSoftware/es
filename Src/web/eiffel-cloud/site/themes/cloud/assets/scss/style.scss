@@ -1,0 +1,125 @@
+@import "common.scss";
+@import "cloud.scss";
+
+$header-text-fgcolor: black;
+$header-bgcolor: transparent;
+$header-hover-bgcolor: #888;
+$header-hover-fgcolor: #fff;
+$footer-bgcolor: #ccc;
+$footer-fgcolor: #333;
+$footer-hover-fgcolor: #33f;
+
+html {
+	height:100%;
+}
+body {
+	margin: 0;
+	padding: 0;
+	min-height:100%;
+	position: relative;
+	background-color: white;
+	font-family: roboto;
+}
+
+
+a {
+	color: blue;
+	text-decoration: none;
+}
+
+div#message li.error,
+div.error {
+	color: red;
+	background-color: #fdd;
+	/* border: solid 1px #f00; */
+	padding: 10px;
+}
+
+div.login-box {
+	@extend .box;
+	border: solid 3px #6a6;
+	background-color: #eee;
+}
+
+#header {
+	display: flex;
+	flex-direction: row wrap;
+	background-color: $header-bgcolor;
+	background: url(../images/outer_header_bg.jpg) repeat-x 0 0;
+	color: $header-text-fgcolor;
+	font-family: roboto;
+	font-size: 110%;
+	#logo {
+		padding: 10px 20px 0 20px;
+	}
+	#menu-bar {
+		ul.horizontal {
+			margin: 10px 0 0 0;
+			li {
+				margin: 0 10px 5px 0;
+				padding: 5px 10px;
+				display: inline-block;
+				border: none;
+				a {
+						color: $header-text-fgcolor;
+				}
+				&.active {
+					border: solid 2px $header-text-fgcolor;
+				}
+				&:hover {
+					a {
+						color: $header-hover-fgcolor;
+					}
+					background-color: $header-hover-bgcolor;
+					border-bottom: solid 4px $header-text-fgcolor;
+					margin-bottom: 1px;
+				}
+			}
+		}
+	}
+}
+div#content {
+	max-width: 800px;
+	padding: 10px 0 50px 0;
+	margin: 0 auto 0 auto;
+}
+div#footer, footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding: 10px 0 10px 0;
+	margin-top: 10px;
+	color: $footer-fgcolor;
+	background-color: $footer-bgcolor;
+	div.footer_copyright {
+		text-align: center;
+		a {
+			color: $footer-hover-fgcolor;
+		}
+	}
+}
+
+div.menu.tabs ul.horizontal {
+	list-style-type: none;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: flex-start;
+	li {
+		padding-left: 1em;
+		padding-right: 1em;
+		padding-top: 2px;
+		border-left: solid 1px #ccc;
+		border-top: solid 2px #eee;
+		border-bottom: solid 1px #ddd;
+		&:hover {
+			font-weight: bold;
+		}
+		&.active {
+			border-top: solid 2px #ccc;
+			border-bottom: solid 1px transparent;
+		}
+	}
+	li:last-child {
+		border-right: solid 1px #ccc;
+	}
+}

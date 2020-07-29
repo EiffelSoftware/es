@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<project name="PROJECT_ec_bench" default="help">
+	<description>
+		description: "ec bench compilation"
+	</description>
+	<inherit>
+		<parent location="${PROJECT_ec_bench.absdir}/_inc/_eiffel_tools_compilation.eant">
+			<redefine target="init"/>
+			<redefine target="copy_resources"/>
+		</parent>
+	</inherit>
+
+	<target name="init" >
+		<precursor/>
+		<geant target="set_ECF" arguments="${EIFFEL_SRC}${path_separator}Eiffel${path_separator}Ace${path_separator}ec.ecf" />
+		<geant target="set_TARGET" arguments="bench" />
+		<geant target="set_NAME" arguments="ec" />
+	</target>
+
+	<target name="copy_resources" if="$is_windows">
+		<argument name="a_dir" />
+		<precursor arguments="$a_dir" />
+		<set name="_ecf_dir" value="${EIFFEL_SRC}${path_separator}Eiffel${path_separator}Ace" />
+		<copy dir="$_ecf_dir" file="ec.rc" to_directory="$a_dir" />
+		<copy dir="$_ecf_dir" file="ec.ico" to_directory="$a_dir" />
+		<copy dir="$_ecf_dir" file="ec.exe.manifest" to_directory="$a_dir" />
+		<unset name="_ecf_dir" />
+	</target>
+
+</project>

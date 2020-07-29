@@ -1,0 +1,68 @@
+// Generated .IDL file (by the OLE/COM Object Viewer)
+// 
+// typelib filename: EiffelSoftware.MetadataConsumer.tlb
+
+[
+  uuid(8E61CD57-7F8F-3AB5-B3BB-76952253802B),
+  version(7.2),
+  custom(90883F05-3D28-11D2-8F17-00A0C9A6186D, "EiffelSoftware.MetadataConsumer, Version=7.2.9.376, Culture=neutral, PublicKeyToken=def26f296efef469")
+
+]
+library EiffelSoftware_MetadataConsumer
+{
+    // TLib :     // TLib : mscorlib.dll : {BED7F4EA-1A96-11D2-8F08-00A0C9A6186D}
+    importlib("mscorlib.tlb");
+    // TLib : OLE Automation : {00020430-0000-0000-C000-000000000046}
+    importlib("stdole2.tlb");
+
+    // Forward declare all types defined in this typelib
+    interface EiffelSoftware_MetadataConsumer_Interop_I_COM_CACHE_MANAGER;
+
+    [
+      odl,
+      uuid(2C108F65-24F1-4E93-BFAE-3262937B5D31),
+      version(1.0),
+      dual,
+      oleautomation,
+      custom(0F21F359-AB84-41E8-9A78-36D110E6D2F9, "EiffelSoftware.MetadataConsumer.Interop.I_COM_CACHE_MANAGER")    
+
+    ]
+    interface EiffelSoftware_MetadataConsumer_Interop_I_COM_CACHE_MANAGER : IDispatch {
+        [id(0x60020000)]
+        HRESULT consume_assembly(
+                        [in] BSTR a_name, 
+                        [in] BSTR a_version, 
+                        [in] BSTR a_culture, 
+                        [in] BSTR a_key, 
+                        [in] VARIANT_BOOL a_info_only);
+        [id(0x60020001)]
+        HRESULT consume_assembly_from_path(
+                        [in] BSTR a_path, 
+                        [in] VARIANT_BOOL a_info_only, 
+                        [in] BSTR a_references);
+        [restricted] void Missing9();
+        [id(0x60020003)]
+        HRESULT initialize();
+        [id(0x60020004)]
+        HRESULT initialize_with_path([in] BSTR a_path);
+        [id(0x60020005)]
+        HRESULT is_initialized([out, retval] VARIANT_BOOL* pRetVal);
+        [id(0x60020006)]
+        HRESULT is_successful([out, retval] VARIANT_BOOL* pRetVal);
+        [id(0x60020007)]
+        HRESULT last_error_message([out, retval] BSTR* pRetVal);
+        [id(0x60020008)]
+        HRESULT unload();
+    };
+
+    [
+      uuid(64E0AD08-417E-4243-B533-561A05F4B5E6),
+      version(1.0),
+      custom(0F21F359-AB84-41E8-9A78-36D110E6D2F9, "EiffelSoftware.MetadataConsumer.Interop.COM_CACHE_MANAGER")
+    ]
+    coclass EiffelSoftware_MetadataConsumer_Interop_COM_CACHE_MANAGER {
+        interface _Object;
+        [default] interface EiffelSoftware_MetadataConsumer_Interop_I_COM_CACHE_MANAGER;
+        interface ISponsor;
+    };
+};

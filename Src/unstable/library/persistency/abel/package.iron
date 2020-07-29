@@ -1,0 +1,20 @@
+package abel
+
+project
+	abel_backend_couchdb = "backend_couchdb/backend_couchdb.ecf"
+	abel_connector_mysql = "connector_mysql/connector_mysql.ecf"
+	abel_connector_sqlite = "connector_sqlite/connector_sqlite.ecf"
+	abel_core = "core/core.ecf"
+
+note
+	title: Eiffel ABEL
+	description: "[
+			A library for unified access to persistence services.
+		]"
+	tags: persistency,database,dbms,rdbms,odbms,sql,nosql,mysq,sqlite,couchdb
+	copyright: 1984-2016, Eiffel Software and others.
+	license: Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)
+	link[license]: http://www.eiffel.com/licensing/forum.txt
+	link[source]: https://svn.eiffel.com/eiffelstudio/trunk/Src/unstable/library/persistency/abel
+
+end

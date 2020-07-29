@@ -1,0 +1,30 @@
+{
+	"database": {
+		"datasource": {
+			"driver": "SQL Server",
+			"environment": "test"
+		},
+		"environments": {
+			"test": {
+                "connection_string":"Server=JVELILLA;Database=support;Uid=jv;Pwd=test123;TrustedConnection=Yes"
+			},
+			"development": {
+				"connection_string":"Server=sql.ise;Database=EiffelDB;Uid=xxx;Pwd=xxx;"
+				 },
+			"production": {
+                "connection_string":"Server=JVELILLA\\SQLEXPRESS;Database=example;Uid=sa;Pwd=Eiffel1405;TrustedConnection=Yes"
+			}
+		}
+	},
+	"settings": {
+		"use_safe_redirection": true
+		},
+	"smtp": {
+		"server": "localhost"
+		},
+	"logger": { 
+			"level":"debug",
+			"backup_count":"4"
+		}
+}
+

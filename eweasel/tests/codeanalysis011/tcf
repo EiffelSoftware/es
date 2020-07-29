@@ -1,0 +1,20 @@
+
+--| Copyright (c) 1993-2006 University of Southern California and contributors.
+--| All rights reserved.
+--| Your use of this work is governed under the terms of the GNU General
+--| Public License version 2.
+
+-- This is a test control file
+
+test_name ca-060-001
+test_description Test rule CA060 - Inspect instruction has no 'when' branch
+copy_sub Ace $TEST Ace
+copy_raw test.e $CLUSTER test.e
+
+analyze_code rule CA060
+
+-- The following two violations should have a different message, but unfortunately we cannot test that.
+analyze_code_result violation "TEST CA060:39 CA060:42"
+
+
+test_end

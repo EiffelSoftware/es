@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ $# -le 0 ]; then
+	echo Usage: run_eweasel_catalog catalog
+	exit 1
+fi
+
+. $(dirname $0)/set_eweasel_env
+
+$EWEASEL/spec/$ISE_PLATFORM/bin/eweasel-mt $EWEASEL_ARGS -order -keep failed -catalog $1

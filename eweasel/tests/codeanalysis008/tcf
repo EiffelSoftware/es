@@ -1,0 +1,17 @@
+
+--| Copyright (c) 1993-2006 University of Southern California and contributors.
+--| All rights reserved.
+--| Your use of this work is governed under the terms of the GNU General
+--| Public License version 2.
+
+-- This is a test control file
+
+test_name ca-030-001
+test_description Test rule CA030 - Unnecessary sign operator
+copy_sub Ace $TEST Ace
+copy_raw test.e $CLUSTER test.e
+
+analyze_code rule CA030
+analyze_code_result violation "TEST CA030:24 CA030:25 CA030:25 CA030:26 CA030:27 CA030:28 CA030:29 CA030:30 CA030:35 CA030:36 CA030:38 CA030:39"
+
+test_end

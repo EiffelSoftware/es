@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<code_template format="1.0.0">
+   <metadata>
+      <title>Not File Exists</title>
+      <description>Code template contract predicate to ensure a file does not exist on a local or networked drive</description>
+      <author>Eiffel Software</author>
+      <shortcut>not_file_exists</shortcut>
+      <categories>
+         <category>Eiffel</category>
+         <category>code</category>
+         <category>contract</category>
+		 <category>invariant</category>
+		 <category>precondition</category>
+		 <category>postcondition</category>
+      </categories>
+   </metadata>
+   
+   <declarations>
+      <object id="file" editable="true" conforms_to="STRING_GENERAL">
+         <description>A string variable containing a path to a file</description>
+      </object>
+   </declarations>
+   
+   <templates>
+      <template>not_${file}_exists: not (create {RAW_FILE}.make (${file})).exists${end}</template>
+   </templates>
+</code_template>

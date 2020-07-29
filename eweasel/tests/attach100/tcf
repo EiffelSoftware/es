@@ -1,0 +1,20 @@
+test_name 	 targeted-equality-operand
+test_description An operand of an equality using ~ or /~  is targeted.
+
+copy_sub	Ace $TEST Ace
+copy_raw	test1.e $CLUSTER test.e
+
+compile_melted
+compile_result	ok
+
+copy_raw	test2.e $CLUSTER test.e
+
+compile_melted
+compile_result	validity_error TEST VEVI
+
+copy_raw	test3.e $CLUSTER test.e
+
+resume_compile
+compile_result	validity_error TEST VEVI
+
+test_end

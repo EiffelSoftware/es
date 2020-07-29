@@ -1,0 +1,202 @@
+<?php
+// $Id$
+
+/*
+ * Help
+ */
+function isedoc_help($path, $arg) {
+	$output = '';
+	switch ($path) {
+		case "admin/help#isedoc":
+		$output = '<p>'.t("Import/Export books").'</p>';
+		break;
+	}
+	return $output;
+} // function isedoc_help
+
+/**
+ * Implementation of hook_perm().
+ */
+function isedoc_perm() {
+  return array('admin isedoc', 'query isedoc');
+}
+
+
+/*
+ * Block
+ */
+function isedoc_block($op = 'list', $delta = 0) {
+	if ($op == 'list') {
+		$block[0]["info"] = t('ISE docs');
+		return $block;
+	} else if ($op == 'view') {
+		$block_content = '';
+		$links = array();
+		if (user_access('import isedoc')) {
+			if (module_exists('isedoc_import')) {
+			  $links[] = l('Import into...','admin/content/isedoc_import');
+			} else {
+			  $links[] = l('Enabled Import ...','admin/build/modules');
+			}
+		}
+		if (user_access('export isedoc')) {
+			if (module_exists('isedoc_export')) {
+			  $links[] = l('Export from ...','admin/content/isedoc_export');
+			} else {
+			  $links[] = l('Enabled Export ...','admin/build/modules');
+			}
+		}
+		$n = menu_get_object();
+		if ($n) {
+		  $links[] = l('What links here','node/'.$n->nid.'/whatlinkshere');
+
+                  $l_url = url("node/".$n->nid, array('absolute' => True));
+		  $links[] = l('Wikipedia backlinks', "http://en.wikipedia.org/w/index.php?title=Special:LinkSearch&target=" . rawurlencode($l_url));
+		  $links[] = l('Google backlinks', "http://www.google.com/search?q=" . rawurlencode ('link:' . $l_url));
+		}
+
+		if (user_access('admin isedoc')) {
+			$links[] = l('Update books','isedoc/update/_');
+		}
+		if (user_access('query isedoc')) {
+			$links[] = l('Check/report','isedoc/report/doc/_');
+		}
+		if (isedoc_user_can_edit()) {
+			$links[] = l('List Templates','isedoc/templates');
+		}
+
+		$block_content .= theme('item_list', $links);
+		if ($block_content == '') {
+			return;
+		}
+		$block['subject'] = 'Doc Control';
+		$block['content'] = $block_content;
+		return $block;
+	}
+} // function isedoc_block
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function isedoc_nodeapi(&$node, $op, $form = NULL, $a4 = NULL) {
+  switch ($op) {
+    case 'prepare':
+      if ($node->type == 'doc' and is_callable(array($node, 'field_uuid'), TRUE)) {
+        $l_uuid = $node->field_uuid[0]['value'];
+        //drupal_set_message("uuid=[$l_uuid]");
+        if ($l_uuid === NULL) {
+          $l_uuid = isedoc_uuid();
+          $node->field_uuid[0]['value'] = $l_uuid;
+          //drupal_set_message(t("Set the UUID value to [$l_uuid]"));
+        }
+      }
+      break;
+  }
+}
+
+/*
+ * Menu
+ */
+
+function isedoc_menu() {
+  $items = array();
+  $items['isedoc/update/%'] = array(
+    'title' => t('Update documentation pages'),
+    'page callback' => 'isedoc_update_pages',
+    'page arguments' => array(2,3),
+    'access arguments' => array('admin isedoc'),
+    'file' => 'isedoc.update.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['isedoc/report/%/%'] = array(
+    'title' => t('Check documentation pages and report'),
+    'page callback' => 'isedoc_report',
+    'page arguments' => array(2,3,4),
+    'access arguments' => array('query isedoc'),
+    'file' => 'isedoc.report.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/settings/isedoc'] = array(
+    'title' => 'IseDoc',
+    'description' => 'ISE Documentation settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('isedoc_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'isedoc.admin.inc',
+  );
+  $items['admin/settings/isedoc/nodes'] = array(
+    'title' => 'General',
+    'description' => 'General Settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('isedoc_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'isedoc.admin.inc',
+    'weight' => '-10',
+  );  
+  $items['node/%node/whatlinkshere'] = array(
+    'title' => t('References'),
+    'page callback' => 'isedoc_whatlinkshere',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'file' => 'isedoc.whatlinkshere.inc',
+    'weight' => 1,
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['isedoc/templates'] = array(
+    'title' => t('Templates'),
+    'page callback' => 'isedoc_list_templates',
+    'page arguments' => array(2),
+    'access arguments' => array('edit any doc content'),
+    'file' => 'isedoc.queries.inc',
+    'weight' => 1,
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['isedoc/static/%'] = array(
+    'title' => t('Redirect to static content'),
+    'page callback' => 'isedoc_static_query',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'file' => 'isedoc.static.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['isedoc/redirect/%/%'] = array(
+    'title' => t('Redirect isedoc'),
+    'page callback' => 'isedoc_redirect_query',
+    'page arguments' => array(2,3,4),
+    'access arguments' => array('access content'),
+    'file' => 'isedoc.redirect_query.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['isedoc/uuid/%'] = array(
+    'title' => t('Redirect using UUID'),
+    'page callback' => 'isedoc_uuid_query',
+    'page arguments' => array(2,3),
+    'access arguments' => array('access content'),
+    'file' => 'isedoc.uuid_query.inc',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/*
+ * Lib
+ */
+
+function isedoc_uuid($prefix = '') {
+	$chars = uniqid(md5(rand()));
+	$uuid  = substr($chars,0,8) . '-';
+	$uuid .= substr($chars,8,4) . '-';
+	$uuid .= substr($chars,12,4) . '-';
+	$uuid .= substr($chars,16,4) . '-';
+	$uuid .= substr($chars,20,12);
+	return $prefix . $uuid;
+}
+
+function isedoc_user_can_edit($type='doc') {
+	return user_access('edit any '.$type.' content');
+}
+
+?>

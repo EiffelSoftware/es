@@ -1,0 +1,16 @@
+package gobo
+
+note
+	title: Gobo Eiffel Project
+	description: "[
+			The Gobo Eiffel Project provides the Eiffel community with free and portable Eiffel tools and libraries.
+			See  package 'ise_gobo' to include easily the library via .ecf files.
+		]"
+	tags: gobo,kernel,structure,io,buffer,xml
+	license: MIT License
+	copyright: Copyright (c) 1997-2016, Eric Bezault and others
+	link[doc]: "Documentation" http://www.gobosoft.com/
+	link[source]: "github" https://github.com/gobo-eiffel/gobo
+	link[license]: https://github.com/gobo-eiffel/gobo/blob/master/License.txt
+
+end

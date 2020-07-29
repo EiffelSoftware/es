@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-20-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-20-0 http://www.eiffel.com/developers/xml/configuration-1-20-0.xsd" name="test">
+	<target name="test">
+		<description>
+			--| Copyright (c) 1993-2017 University of Southern California, Eiffel Software and contributors.
+			--| All rights reserved.
+			--| Your use of this work is governed under the terms of the GNU General
+			--| Public License version 2.
+		</description>
+		<root cluster="root_cluster" class="TEST" feature="make"/>
+		<option warning="true" manifest_array_type="mismatch_warning">
+			<assertions precondition="true" postcondition="true" invariant="true"/>
+		</option>
+		<setting name="console_application" value="true"/>
+		$EWEASEL_DOTNET_SETTING
+		<precompile name="precompile" location="$PRECOMPILED_BASE_SCOOP_SAFE"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" use_application_options="true"/>
+		<cluster name="root_cluster" location="$CLUSTER\"/>
+	</target>
+</system>

@@ -1,0 +1,14 @@
+package nino
+
+project
+	nino = "nino.ecf"
+
+note
+	title: Eiffel Nino Web Server
+	description: Simple HTTPd server written in Eiffel
+	tags: web, httpd, server
+	copyright: Javier Velilla, Jocelyn Fiat and Eiffel Software.
+	license: Eiffel Forum v2
+	link[license]: http://www.eiffel.com/licensing/forum.txt
+
+end

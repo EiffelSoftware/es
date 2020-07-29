@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-18-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-18-0 http://www.eiffel.com/developers/xml/configuration-1-18-0.xsd" name="mysqli" uuid="7D057A3A-1347-4D72-8112-E97763A1C5B5" library_target="mysqli">
+	<target name="mysqli">
+		<description>MySQLi access library 
+
+			Notes:
+			On Windows, you need to have in your environment:
+				$(MYSQL) set to the directory where the MySQL C Connector is installed</description>
+		<root all_classes="true"/>
+		<external_include location="/usr/include/mysql">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_include>
+		<external_include location="$(MYSQL)\include">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+		<external_object location="/usr/lib/libz.a">
+			<condition>
+				<platform excluded_value="windows macintosh"/>
+			</condition>
+		</external_object>
+		<external_object location="/usr/lib/libz.dylib">
+			<condition>
+				<platform value="macintosh"/>
+			</condition>
+		</external_object>
+		<external_object location="$(MYSQL)\lib\mysqlclient.lib">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_object>
+		<external_library location="-lmysqlclient">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_library>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<cluster name="mysqli" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/EIFGENs$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

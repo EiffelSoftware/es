@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-20-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-20-0 http://www.eiffel.com/developers/xml/configuration-1-20-0.xsd" name="string_manipulator_client" uuid="AD165F40-2615-4124-B38A-F3E996BDFFAA">
+	<target name="string_manipulator_client">
+		<description>StringManipulator EiffelCOM component client.</description>
+		<root cluster="root_cluster" class="APPLICATION" feature="make"/>
+		<option warning="true" full_class_checking="false">
+			<assertions precondition="true"/>
+		</option>
+		<setting name="platform" value="windows"/>
+		<setting name="dead_code_removal" value="all"/>
+		<capability>
+			<concurrency support="none"/>
+			<void_safety support="none"/>
+		</capability>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="string_manipulator" location="..\generated\Client\string_manipulator_idl.ecf" readonly="false"/>
+		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf"/>
+		<cluster name="root_cluster" location=".\"/>
+	</target>
+</system>

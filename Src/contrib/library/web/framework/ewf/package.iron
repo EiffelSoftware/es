@@ -1,0 +1,57 @@
+package ewf
+
+setup
+	compile_library = libfcgi/Clib
+
+project
+	ewsgi = "ewsgi/ewsgi.ecf"
+	ewsgi_spec = "ewsgi/ewsgi_spec.ecf"
+	connector_cgi = "ewsgi/connectors/cgi/cgi.ecf"
+	connector_libfcgi = "ewsgi/connectors/libfcgi/libfcgi.ecf"
+	connector_standalone = "ewsgi/connectors/standalone/standalone.ecf"
+	encoder = "text/encoder/encoder.ecf"
+	wsf = "wsf/wsf.ecf"
+	wsf_extension = "wsf/wsf_extension.ecf"
+	wsf_policy_driven = "wsf/wsf_policy_driven.ecf"
+	wsf_router_context = "wsf/wsf_router_context.ecf"
+	wsf_session = "wsf/wsf_session.ecf"
+	wsf_cgi = "wsf/connector/cgi.ecf"
+	wsf_libfcgi = "wsf/connector/libfcgi.ecf"
+	wsf_standalone = "wsf/connector/standalone.ecf"
+	default_cgi = "wsf/default/cgi.ecf"
+	default_libfcgi = "wsf/default/libfcgi.ecf"
+	default_standalone = "wsf/default/standalone.ecf"
+	wsf_html = "wsf_html/wsf_html.ecf"
+	wsf_proxy = "wsf_proxy/wsf_proxy.ecf"
+	connector_nino = "ewsgi/connectors/nino/nino.ecf"
+	connector_null = "ewsgi/connectors/null/null.ecf"
+	httpd = "httpd/httpd.ecf"
+	libfcgi = "libfcgi/libfcgi.ecf"
+	wsf_nino = "wsf/connector/nino.ecf"
+	wsf_openshift = "wsf/connector/openshift.ecf"
+	wsf_standalone_websocket = "wsf/connector/standalone_websocket.ecf"
+	default_nino = "wsf/default/nino.ecf"
+	default_openshift = "wsf/default/openshift.ecf"
+
+note
+	title: EiffelWeb framework
+	description: "[
+EiffelWeb framework.
+Include:
+	- wsf and ewsgi: core of the Eiffel Web Framework, used to build web server application.
+	- EWSGI connectors and their WSF integrations.
+	- Various wsf extensions (extension, session, policy driven, ..)
+	- text encoder (html, percent encoding, ...)
+	- wsf html: to generate and handle html widgets such as web forms.
+	- wsf proxy: to add reverse proxy behavior.
+				]"
+
+	collection: EWF
+	tags: ewf,web,server,httpd,request,connector,policy,session,widget,form,proxy,network
+	copyright: 2011-2016, Jocelyn Fiat, Javier Velilla, Olivier Ligot, Colin Adams, Eiffel Software and others
+	license: Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)
+	link[license]: http://www.eiffel.com/licensing/forum.txt
+	link[source]: "Github" https://github.com/EiffelWebFramework/EWF
+	link[doc]: "Documentation" http://eiffelwebframework.github.io/EWF/
+
+end

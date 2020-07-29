@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include includes\Preprocessors.wxi?>
+  
+  <Fragment>
+    <!-- BINARIES -->
+    <Binary Id="setup.dll" SourceFile="$(sys.SOURCEFILEDIR)binaries\$(var.Platform)\setup.dll" />
+    <!-- END BINARIES -->
+		
+    <!-- CUSTOM ACTIONS -->
+    <CustomAction Id="InitializeProperties" BinaryKey="setup.dll" DllEntry="initialize_properties" Return="check"  Execute="immediate"/>
+    <CustomAction Id="EvaluateCCompiler" BinaryKey="setup.dll" DllEntry="evaluate_c_compiler" Return="check" Execute="immediate"/>
+    <CustomAction Id="ShowCCompilerHowTo" BinaryKey="setup.dll" DllEntry="show_c_compiler_how_to" Return="ignore" Execute="immediate"/>
+    <CustomAction Id="ShowCConfigurationError" BinaryKey="setup.dll" DllEntry="show_c_configuration_error" Return="ignore" Execute="immediate"/>
+    <CustomAction Id="ShowCConfigurationWarning" BinaryKey="setup.dll" DllEntry="show_c_configuration_warning" Return="ignore" Execute="immediate"/>
+    <CustomAction Id="CheckEnvironmentVariables" BinaryKey="setup.dll" DllEntry="check_environment_variables" Return="check" Execute="immediate"/>
+    <?ifdef Enterprise?>
+      <CustomAction Id="RetrieveCdKey" BinaryKey="setup.dll" DllEntry="retrieve_cd_key" Return="check"  Execute="immediate"/>
+      <CustomAction Id="ValidateCdKey" BinaryKey="setup.dll" DllEntry="is_cd_key_valid" Return="check"  Execute="immediate"/>
+      <CustomAction Id="PrepareInstallCdKey" BinaryKey="setup.dll" DllEntry="prepare_install_cd_key" Execute="immediate"/>
+      <CustomAction Id="InstallCdKey" BinaryKey="setup.dll" DllEntry="install_cd_key" Impersonate="no" Execute="deferred"/>
+    <?endif?>
+    <!-- END CUSTOM ACTIONS -->
+
+    <CustomAction Id="SET_INSTALLDIR" Property="INSTALLDIR" Value="[INSTALLDIR]" Execute="firstSequence" />
+	<CustomAction Id="SET_IS_DOTNET_INSTALLED" Property="IS_DOTNET_INSTALLED" Value="1" Execute="firstSequence" />
+</Fragment>
+</Wix>

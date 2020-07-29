@@ -1,0 +1,17 @@
+test_name 	 like-current-void-safety
+test_description Handling of "like Current" depends the void safety options.
+
+copy_raw	test.e $CLUSTER test.e
+
+copy_sub	Ace $TEST Ace
+
+compile_melted
+compile_result	ok
+cleanup_compile
+
+copy_sub	Ace_safe $TEST Ace
+
+compile_melted
+compile_result	validity_error TEST VEVI
+
+test_end

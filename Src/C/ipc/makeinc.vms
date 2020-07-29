@@ -1,0 +1,36 @@
+# makeinc.vms (EIFFEL_SRC:[C.ipc]makeinc.vms) - vms/axp
+# ipc level makeinc.vms for [.ipc...]
+# $Id$
+#######################################################################
+# 
+#
+
+CC = ipc_cc
+
+# common stuff for building the ipc libraries
+#IPC_CINCLUDES = [C.IPC.SHARED],[C.RUN-TIME],[C.RUN-TIME.INCLUDE],[C.IDRS]
+IPC_CINCLUDES = [C.RUN-TIME],[C.RUN-TIME.INCLUDE],[C.IDRS]
+ifneq ($(IPC_CINCLUDES),)
+  ifneq ($(CINCLUDES),)
+    CINCLUDES +=,$(IPC_CINCLUDES)
+  else
+    CINCLUDES = $(IPC_CINCLUDES)
+  endif
+endif
+
+# define this to enable IPC logging
+#IPC_LOG_ENABLE = USE_ADD_LOG,LOGGING_LEVEL=100
+IPC_CDEFINES = $(IPC_LOG_ENABLE)
+ifneq ($(IPC_CDEFINES),)
+  ifneq ($(CDEFINES),)
+    CDEFINES += ,$(IPC_CDEFINES)
+  else
+    CDEFINES = $(IPC_CDEFINES)
+  endif
+endif
+
+# define vms specific symbols for compiling, etc.
+include EIFFEL_SRC:[C]makeinc.vms
+
+
+# end C/ipc/Makeinc.VMS (aka EIFFEL_SRC:[C.ipc]Makeinc.VMS)

@@ -1,0 +1,48 @@
+INCLUDE_PATH = $(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\include
+DELDIR = rd /q /s
+LN = copy 
+RM = del
+CP = copy
+CFLAGS = -tWM -DEIF_THREADS -I"$(INCLUDE_PATH)"
+EC = "$(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\bin\ec"
+TARGET = classic
+EIFLIB = EIFGENs\$(TARGET)\W_code\libbank_account.lib 
+LIBS = 
+OBJECTS = main.obj fext.obj
+
+all: $(OBJECTS) compile_eiffel make_cecil bank_account.exe
+
+compile_eiffel:
+	$(EC) -freeze -c_compile
+
+main.obj: main.c
+	$(CC) $(CFLAGS) -c main.c 
+
+fext.obj: fext.c
+	$(CC) $(CFLAGS) -c fext.c 
+
+make_cecil:
+	cd EIFGENs\$(TARGET)\W_code
+	$(MAKE) cecil
+	cd ..\..\..
+
+bank_account.exe: $(OBJECTS) EIFGENs\$(TARGET)\W_code\libbank_account.lib
+	$(LN) EIFGENs\$(TARGET)\W_code\bank_account.melted bank_account.melted
+	ilink32 -ap -c -Tpe main.obj c0w32.obj, $@,,\
+		EIFGENs\$(TARGET)\W_code\libbank_account.lib CW32MT IMPORT32 OLE2w32,,
+
+clean:
+	$(RM) main.obj 
+	$(RM) fext.obj 
+	$(RM) core 
+	$(RM) bank_account.epr
+	$(RM) bank_account.ilc
+	$(RM) bank_account.ild
+	$(RM) bank_account.ilf
+	$(RM) bank_account.ils
+	$(RM) bank_account.map
+	$(RM) bank_account.melted
+	$(RM) bank_account.rc
+	$(RM) bank_account.tds
+	$(DELDIR) EIFGENs
+	

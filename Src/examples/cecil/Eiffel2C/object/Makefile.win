@@ -1,0 +1,35 @@
+INCLUDE_PATH = $(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\include
+DELDIR = rd /q /S
+LN = copy 
+RM = del
+CP = copy
+EC = "$(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\bin\ec"
+ECF = cecil.ecf
+TARGET = classic
+WCODE = EIFGENs\$(TARGET)\W_code
+EIFLIB = $(WCODE)\libcecil.lib 
+CFLAGS = -DEIF_WIN32 -MT
+LIBS = 
+OBJECT = fext.obj
+
+all: $(OBJECT) compile_eiffel mklink
+
+compile_eiffel:
+	$(EC) -config $(ECF) -freeze -c_compile
+
+mklink:
+	$(LN) $(WCODE)\cecil.exe .
+	$(LN) $(WCODE)\cecil.melted .
+
+$(OBJECT): fext.c
+	$(CC) -I"$(INCLUDE_PATH)" -c fext.c 
+
+clean:
+	$(RM) $(OBJECT) 
+	$(RM) core 
+	$(RM) cecil.epr
+	$(RM) cecil.rc
+	$(RM) cecil.melted
+	$(RM) cecil.exe
+	$(DELDIR) EIFGENs
+	

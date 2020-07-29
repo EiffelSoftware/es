@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<code_template format="1.0.0">
+   <metadata>
+      <title>Detached</title>
+      <description>Code template contract predicate to ensure an entity is detached</description>
+      <author>Eiffel Software</author>
+      <shortcut>detached</shortcut>
+      <categories>
+         <category>Eiffel</category>
+         <category>code</category>
+         <category>contract</category>
+		 <category>precondition</category>
+		 <category>postcondition</category>
+      </categories>
+   </metadata>
+   
+   <declarations>
+      <object id="var" editable="true" conforms_to="ANY">
+         <description>An entity that should be detached</description>
+      </object>
+   </declarations>
+   
+   <templates>
+      <template>${var}_deatached: ${var} = Void${end}</template>
+   </templates>
+</code_template>

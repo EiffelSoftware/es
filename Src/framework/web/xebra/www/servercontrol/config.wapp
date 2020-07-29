@@ -1,0 +1,19 @@
+{
+	"ecf": "$XEBRA_DEV/www/servercontrol/servercontrol.ecf",
+	"name": "servercontrol",
+	"port": "55003",
+	"server_host": "localhost",
+	"taglibs":
+	[
+		{ 
+			"name": "xebra_taglibrary_base",
+			"ecf":  "xebra_taglibrary_base.ecf",
+			"path": "$XEBRA_LIBRARY/xebra_taglibrary_base"
+		},
+		{
+			"name": "xebra_taglibrary_form",
+			"ecf":  "xebra_taglibrary_form.ecf",
+			"path": "$XEBRA_LIBRARY/xebra_taglibrary_form"
+		}
+	]
+}

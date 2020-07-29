@@ -1,0 +1,31 @@
+test_name ca-various-warnings
+test_description Test various different command line arguments and syntax variants and check the output warnings.
+
+copy_sub Ace $TEST Ace
+copy_raw test.e $CLUSTER test.e
+
+analyze_code rule "CA043 (maximum_depth=3);"
+analyze_code_result ok
+
+analyze_code rule "CA043 CA080"
+analyze_code_result ok
+
+analyze_code rule "CA043();;;;;CA080()"
+analyze_code_result ok
+
+analyze_code rule "CA000 CA000"
+analyze_code_result rule_warning
+
+analyze_code class TEST loaddefaults
+analyze_code_result ok
+
+analyze_code class NON_EXISTING loaddefaults
+analyze_code_result class_warning
+
+analyze_code class "" loaddefaults
+analyze_code_result ok
+
+analyze_code rule "CA080 (syntax error" loaddefaults
+analyze_code_result command_line_option_error
+
+test_end

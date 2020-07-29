@@ -1,0 +1,81 @@
+#!/bin/sh
+
+if [ $# -eq 0 ]; then 
+	echo Usage: make_images platform
+	exit 1
+fi
+
+ISE_PLATFORM=$1; export ISE_PLATFORM
+
+# Set up the environment
+. ./set_aliases
+OLD_PATH=$PATH
+INIT_DIR=`pwd`
+EIFFEL_SRC=$EXPORT_DIR; export EIFFEL_SRC
+ISE_EIFFEL=$FINAL_INSTALL_DIR; export ISE_EIFFEL
+INSTALL_DIR=$FINAL_INSTALL_DIR
+
+echo >> $COMPILE_LOG
+
+if [ -z "$ISE_PLATFORM" ]; then
+	remtrace Couldnt find environment variable ISE_PLATFORM
+	CANCEL
+fi
+
+# Check everything's fine
+if [ ! -d $EXPORT_DIR ]; then
+	remtrace Couldnt find the directory with the compressed files.
+	CANCEL
+fi
+
+if [ -f bin/ec_ent.tar.bz2 ]; then
+	MULTIPLE_EDITIONS="True"
+else
+	MULTIPLE_EDITIONS=""
+fi
+
+cd $EXPORT_DIR
+
+# Copy runtime files
+cp -r runtimes/* $INSTALL_DIR/studio/spec/$ISE_PLATFORM/lib
+
+remtrace Preparing Standard version
+bunzip2 -c $EXPORT_DIR/ecs/ec_std.bz2 > $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ec
+bunzip2 -c $EXPORT_DIR/ecs/ecb_std.bz2 > $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ecb
+chmod a+rx $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ec
+chmod go-w $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ec 
+chmod a+rx $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ecb
+chmod go-w $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ecb
+if [ -f licensing/eiffelstudio/license.txt ]; then
+	cp licensing/eiffelstudio/license.txt $INSTALL_DIR/LICENSE
+fi
+
+remtrace Building Standard CD image
+pax -w -f Eiffel_${STUDIO_VERSION_MAJOR_MINOR}_rev_$FILE_SVN_REVISION-$ISE_PLATFORM.tar Eiffel_${STUDIO_VERSION_MAJOR_MINOR}
+bzip2 Eiffel_${STUDIO_VERSION_MAJOR_MINOR}_rev_$FILE_SVN_REVISION-$ISE_PLATFORM.tar
+
+if [ "$MULTIPLE_EDITIONS" ]; then
+	remtrace Preparing Enterprise version
+	bunzip2 -c $EXPORT_DIR/ecs/ec_ent.bz2 > $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ec
+	bunzip2 -c $EXPORT_DIR/ecs/ecb_ent.bz2 > $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ecb
+	chmod a+rx $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ec
+	chmod go-w $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ec 
+	chmod a+rx $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ecb
+	chmod go-w $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ecb
+	if [ -f licensing/eiffelstudio/license.txt ]; then
+		cp licensing/eiffelstudio/license.txt $INSTALL_DIR/LICENSE
+	fi
+
+	remtrace copying CD key validator
+	move bin/setup $INSTALL_DIR/register
+	chmod a+rx $INSTALL_DIR/register
+	mkdir $INSTALL_DIR/setup
+	cp $INSTALL_DIR/studio/bitmaps/png/logo.png $INSTALL_DIR/setup/install_logo.png
+	cp $INSTALL_DIR/studio/bitmaps/png/activation.png $INSTALL_DIR/setup/install_left.png
+
+	remtrace Building Enterprise CD image
+	pax -w -f Eiffel_${STUDIO_VERSION_MAJOR_MINOR}_ent_$FILE_SVN_REVISION-$ISE_PLATFORM.tar Eiffel_${STUDIO_VERSION_MAJOR_MINOR} 
+
+	bzip2 Eiffel_${STUDIO_VERSION_MAJOR_MINOR}_ent_$FILE_SVN_REVISION-$ISE_PLATFORM.tar
+fi
+

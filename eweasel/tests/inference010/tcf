@@ -1,0 +1,10 @@
+test_name 	 inference-manifest-array
+test_description Manifest array can be used both ways to infer type information.
+
+copy_sub 	 Ace $TEST Ace
+copy_raw 	 test.e  $CLUSTER test.e
+
+compile_melted
+compile_result   validity_error TEST "Syntax Error:11" "Syntax Error:11" "Syntax Error:11" "Syntax Error:12" "Syntax Error:13"
+
+test_end

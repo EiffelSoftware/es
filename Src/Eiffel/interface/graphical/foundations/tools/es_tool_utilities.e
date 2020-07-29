@@ -1,0 +1,191 @@
+﻿note
+	description: "[
+		Utility functions for working with {ES_TOOL} instances.
+	]"
+	legal: "See notice at end of class."
+	status: "See notice at end of class.";
+	date: "$Date$";
+	revision: "$Revision$"
+
+class
+	ES_TOOL_UTILITIES
+
+inherit
+	ANY
+
+	EIFFEL_LAYOUT
+		export
+			{NONE} all
+		end
+
+feature {NONE} -- Helpers
+
+	file_utils: attached GOBO_FILE_UTILITIES
+			-- Access to file utilies
+		once
+			create Result
+		end
+
+feature -- Query
+
+	tool_id (a_tool: attached ES_TOOL [EB_TOOL]): attached STRING_32
+			-- Retrieves a type identifier, used in storing and retrieving layout information, for a tool.
+			--
+			-- `a_tool': A tool descriptor to retrieve a type identifier for.
+			-- `Result': A unique identifier for the tool descriptor.
+		require
+			a_tool_is_interface_usable: a_tool.is_interface_usable
+		local
+			l_type: STRING_32
+			l_edition: NATURAL_8
+		do
+			l_type := a_tool.generating_type.name_32
+			create Result.make (l_type.count + 2)
+			Result.append (l_type)
+
+			if a_tool.is_multiple_edition then
+				l_edition := a_tool.edition
+				if l_edition > 1 then
+					Result.append_character (':')
+					Result.append_natural_8 (l_edition)
+				end
+			end
+		ensure
+			not_result_is_empty: not Result.is_empty
+			result_consistent: Result.is_equal (tool_id (a_tool))
+		end
+
+	tool_info (a_tool_id: STRING_32): detachable TUPLE [type: TYPE [ES_TOOL [EB_TOOL]]; edition: NATURAL_8]
+			-- Examines a tool identifier and splits it into a tool type and edition.
+			--
+			-- `a_tool_id': A tool identifier as created with `tool_id'
+			-- `Result': The parsed information split into a tool type and edition; Void if the parse failed.
+		require
+			a_tool_id_attached: a_tool_id /= Void
+			not_a_tool_id_is_empty: not a_tool_id.is_empty
+		local
+			l_pos: INTEGER
+			l_type: STRING_32
+			l_edition: STRING_32
+			l_internal: INTERNAL
+			l_id: INTEGER
+		do
+			l_pos := a_tool_id.index_of (':', 1)
+			if l_pos > 1 then
+				l_type := a_tool_id.substring (1, l_pos - 1)
+				if l_pos < a_tool_id.count then
+					l_edition := a_tool_id.substring (l_pos + 1, a_tool_id.count)
+				end
+			else
+				l_type := a_tool_id
+			end
+
+			create l_internal
+			l_type := l_type.as_upper
+			if l_internal.is_valid_type_string (l_type) then
+				l_id := l_internal.dynamic_type_from_string (l_type)
+				if
+					l_id > 0 and then
+					attached {TYPE [ES_TOOL [EB_TOOL]]} l_internal.type_of_type (l_id) as l_tool_type
+				then
+					Result := [l_tool_type, {NATURAL_8} 0]
+
+						-- Set edition
+					if l_edition = Void then
+						Result.edition := 1
+					elseif l_edition.is_natural_8 then
+						Result.edition := l_edition.to_natural_8
+					else
+							-- Invalid edition, therefore nothing can be returned.
+						check not attached Result end
+					end
+				end
+			end
+		ensure
+			result_type_attached: Result /= Void implies Result.type /= Void
+			result_edition_big_enough: Result /= Void implies Result.edition > 0
+		end
+
+	tool_associated_name (a_tool: attached ES_TOOL [EB_TOOL]): READABLE_STRING_32
+			-- The tool's associated name, used for modularizing development of a tool.
+			--
+			-- `a_tool': A tool descriptor to retrieve a type identifier for.
+			-- `Result': The tool name.
+		require
+			a_tool_is_interface_usable: a_tool.is_interface_usable
+		local
+			s: STRING_32
+		do
+			s := a_tool.generating_type.name_32.as_lower
+			if s.starts_with (once {STRING_32} "es_") then
+					-- Remove ES_ prefix.
+				s.remove_head (3)
+				if s.ends_with (once {STRING_32} "_tool") then
+						-- Remove _TOOL suffix.
+					s.remove_tail (5)
+				else
+					check use_standard_name_convention: False end
+				end
+			else
+				check use_standard_name_convention: False end
+			end
+			Result := s
+			check not_result_is_empty: not Result.is_empty end
+		ensure
+			result_consistent: Result.is_equal (tool_associated_name (a_tool))
+		end
+
+	tool_associated_path (a_tool: ES_TOOL [EB_TOOL]): PATH
+			-- The tool's associated folder, used for modularizing development of a tool.
+			--
+			-- `a_tool': A tool descriptor to retrieve a type identifier for.
+			-- `Result': A directory name, which may or may not exist.
+		require
+			a_tool_is_interface_usable: a_tool.is_interface_usable
+		local
+			u: FILE_UTILITIES
+		do
+			Result := eiffel_layout.tools_path
+			u.create_directory (Result.name)
+
+				-- Build folder and create it
+			Result := Result.extended (a_tool.name)
+			u.create_directory (Result.name)
+		ensure
+			not_result_is_empty: not Result.is_empty
+			result_consistent: Result.is_equal (tool_associated_path (a_tool))
+		end
+
+;note
+	copyright:	"Copyright (c) 1984-2017, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+
+end

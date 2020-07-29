@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="edk" uuid="B92E14E2-C92D-43FE-998E-33EF854677E1" library_target="edk">
+	<target name="edk">
+		<description>Eiffel Drawing Kit (EDK): Multiplatform drawing kit.
+		      Copyright (c) 1984-2019, Eiffel Software and others.
+		      Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt).</description>
+		<root all_classes="true"/>
+		<file_rule>
+			<exclude>/EIFGEN.{0,1}$</exclude>
+			<exclude>/\.svn$</exclude>
+			<exclude>/temp$</exclude>
+		</file_rule>
+		<option warning="error" namespace="EiffelSoftware.Library">
+			<debug name="edk_events" enabled="true"/>
+			<debug name="edk_native_events" enabled="false"/>
+			<warning name="obsolete_feature" value="all"/>
+		</option>
+		<capability>
+			<concurrency support="thread"/>
+		</capability>
+		<external_include location="$(ISE_LIBRARY)\library\edk\include"/>
+		<external_object location="$(ISE_LIBRARY)\library\edk\spec\$ISE_C_COMPILER\$ISE_PLATFORM\lib\edk.lib"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
+		<cluster name="edk" location=".\" recursive="true">
+			<option namespace="edk">
+			</option>
+		</cluster>
+	</target>
+	<target name="edk_dotnet" extends="edk">
+		<setting name="msil_generation" value="true"/>
+	</target>
+</system>

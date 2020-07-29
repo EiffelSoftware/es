@@ -1,0 +1,2 @@
+create table DB_NUMERIC (int_16 SMALLINT, int_32 INT, int_64 BIGINT, real_32_t FLOAT, real_64_t REAL, numeric_t DECIMAL(19,10))
+insert into DB_NUMERIC (int_16, int_32, int_64, real_32_t, real_64_t, numeric_t) values (1, 10000, 100000000, 7898.34, 999999.999999, -999999999.999999)

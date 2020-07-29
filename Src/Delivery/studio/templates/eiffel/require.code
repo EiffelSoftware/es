@@ -1,0 +1,25 @@
+<code_template format="1.0.0">
+    <metadata>
+      <title>require</title>
+      <description>Code template for a precondition contract clause.</description>
+      <author>Eiffel Software</author>
+      <shortcut>require</shortcut>
+      <categories>
+        <category>code</category>
+      </categories>
+    </metadata>
+	
+    <declarations>	
+      <literal id="else" editable="false">
+        <description>Optional "else" keyword that is added by the tool when working with a feature redeclaration. The literal is empty by default and is substituted with " else" programmatically.</description>
+        <default/>
+      </literal>
+    </declarations>
+	
+	<templates>
+		<template>
+<![CDATA[require$else
+	$selection$cursor]]>
+		</template>	
+	</templates>
+</code_template>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-18-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-18-0 http://www.eiffel.com/developers/xml/configuration-1-18-0.xsd" name="wex" uuid="07E81055-A76C-4736-AEEA-A2A67E04E32B" library_target="wex">
+	<target name="wex">
+		<root all_classes="true"/>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true"/>
+		</option>
+		<setting name="platform" value="windows"/>
+		<capability>
+			<void_safety support="none"/>
+		</capability>
+		<external_include location="$(ISE_LIBRARY)\contrib\library\graphic\toolkit\wex\library\Wex\spec\windows\include"/>
+		<external_include location="$(ISE_LIBRARY)\contrib\library\graphic\toolkit\wex\library\Wex\clib"/>
+		<external_object location="winmm.lib"/>
+		<external_object location="$(ISE_LIBRARY)\contrib\library\graphic\toolkit\wex\library\Wex\spec\$(ISE_C_COMPILER)\$(ISE_PLATFORM)\lib\cwex.lib"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf"/>
+		<cluster name="root_cluster" location=".\"/>
+		<cluster name="wex_framework" location="$ISE_LIBRARY\contrib\library\graphic\toolkit\wex\library\wex\Framework\"/>
+		<cluster name="wex_mci_consants" location="$ISE_LIBRARY\contrib\library\graphic\toolkit\wex\library\wex\MCI_Constants\"/>
+		<cluster name="wex_mci_devices" location="$ISE_LIBRARY\contrib\library\graphic\toolkit\wex\library\wex\MCI_Devices\"/>
+		<cluster name="wex_mci_structures" location="$ISE_LIBRARY\contrib\library\graphic\toolkit\wex\library\wex\MCI_Structures\"/>
+		<cluster name="wex_mci_support" location="$ISE_LIBRARY\contrib\library\graphic\toolkit\wex\library\wex\MCI_Support\"/>
+		<cluster name="wex_splash" location="$ISE_LIBRARY\contrib\library\graphic\toolkit\wex\library\wex\Splash\"/>
+		<cluster name="wex_window_extras" location="$ISE_LIBRARY\contrib\library\graphic\toolkit\wex\library\wex\Window_Extras\"/>
+		<cluster name="wex_windows" location="$ISE_LIBRARY\contrib\library\graphic\toolkit\wex\library\wex\Windows\"/>
+	</target>
+</system>

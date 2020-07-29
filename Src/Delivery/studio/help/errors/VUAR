@@ -1,0 +1,22 @@
+VUAR, chapter 22 (Type checking), page 369
+
+     An export-valid call of target type `ST'  and feature
+     `fname' appearing in a class `C'  where it  denotes a
+     feature  `sf'  is  argument-valid  if  and only if it
+     satisfies the following conditions:
+
+
+       1 The number of  actual  arguments  is  the same as
+         the number of formal arguments declared for `sf'.
+
+       2 Every actual  argument of the call is  compatible
+         with the corresponding formal argument of `sf'.
+
+       3 If an actual argument of a separate call is of  a
+         reference type, the corresponding formal argument
+         must be declared as separate.
+
+       4 If an actual argument of a separate call is of an
+         expanded type,   its base class does not include,
+         directly   or   indirectly,    any   non-separate
+         attribute of a reference type.

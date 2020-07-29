@@ -1,0 +1,412 @@
+call %~dp0init.btm
+
+remtrace Compile C code of the libraries
+remtrace "A tout seigneur tout honneur", let's start with the run-time
+iff not exist %INSTALL_DIR\releases then
+	md %INSTALL_DIR\releases
+endiff
+iff not exist %INSTALL_DIR\releases\enterprise_version then
+	md %INSTALL_DIR\releases\enterprise_version
+endiff
+iff not exist %INSTALL_DIR\releases\enterprise_version-axar then
+	md %INSTALL_DIR\releases\enterprise_version-axar
+endiff
+iff not exist %INSTALL_DIR\releases\standard_version then
+	md %INSTALL_DIR\releases\standard_version
+endiff
+
+remtrace Compile the run-times
+remtrace Compile a run-time for MinGW
+cdd %EIFFEL_SRC\C
+call configure.bat clean >>& %INSTALL_LOG
+iff not defined WIN64 then
+	call configure.bat win32 g >>& %INSTALL_LOG
+else
+	call configure.bat win64 g >>& %INSTALL_LOG
+endiff
+cd %EIFFEL_SRC
+safe_copy C\run-time\LIB\*.a %STUDIO_DIR\studio\spec\%ISE_PLATFORM\lib\mingw
+
+remtrace Compile a dynamic run-time for MinGW
+cdd %EIFFEL_SRC\C
+call configure.bat clean >>& %INSTALL_LOG
+iff not defined WIN64 then
+	call configure.bat win32 g dll >>& %INSTALL_LOG
+else
+	call configure.bat win64 g >>& %INSTALL_LOG
+endiff
+cd %EIFFEL_SRC
+safe_copy C\run-time\LIB\*dll* %STUDIO_DIR\studio\spec\%ISE_PLATFORM\lib\mingw
+
+remtrace Copy the configuration file
+iff not defined WIN64 then
+	safe_copy %EIFFEL_SRC\C\CONFIGS\windows-x86-mingw %STUDIO_DIR\studio\config\%ISE_PLATFORM\mingw\config.sh
+else
+	safe_copy %EIFFEL_SRC\C\CONFIGS\windows-x86-64-mingw %STUDIO_DIR\studio\config\%ISE_PLATFORM\mingw\config.sh
+endiff
+
+IF "%ISE_C_COMPILER%" NEQ "msc_vc140" (
+	IF "%HAS_VC_MSC_VC140%" == "True" (
+	  remtrace Compile the run-time for Microsoft (msc_vc140)
+	  espawn -u:%ISE_VC_MSC_VC140% "%COMSPEC% /c %INIT_DIR%\make_runtimes.btm msc_vc140"
+	)
+)
+IF "%ISE_C_COMPILER%" NEQ "msc" (
+	IF "%HAS_VC_MSC%" == "True" (
+	  remtrace Compile the run-time for Microsoft (msc)
+	  espawn -u:%ISE_VC_MSC% "%COMSPEC% /c %INIT_DIR%\make_runtimes.btm msc"
+	)
+)
+
+rem Compile last, the version of the runtime corresponding to the compiler compiling the executables
+IF "%ISE_C_COMPILER%" NEQ "" (
+  remtrace Compile the run-time for Microsoft (%ISE_C_COMPILER%)
+  espawn -u:%ISE_C_COMPILER_VER% "%COMSPEC% /c %INIT_DIR%\make_runtimes.btm %ISE_C_COMPILER%"
+)
+
+remtrace Copy the header files
+safe_copy %EIFFEL_SRC\C\run-time\*.h %STUDIO_DIR\studio\spec\%ISE_PLATFORM\include
+safe_copy %EIFFEL_SRC\C\run-time\eif_stack.decl %STUDIO_DIR\studio\spec\%ISE_PLATFORM\include
+safe_copy %EIFFEL_SRC\C\run-time\eif_stack.interface %STUDIO_DIR\studio\spec\%ISE_PLATFORM\include
+cd %EIFFEL_SRC
+
+remtrace Copy the MSYS part
+safe_copy %EIFFEL_SRC\C\shell\bin\rt_converter.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin\
+safe_copy %EIFFEL_SRC\C\shell\bin\sed.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin\
+safe_copy %EIFFEL_SRC\C\shell\bin\mkdir.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin\
+safe_copy %EIFFEL_SRC\C\shell\bin\*.dll %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin\
+safe_md %STUDIO_DIR\studio\spec\%ISE_PLATFORM\etc
+echo Dummy >> %STUDIO_DIR\studio\spec\%ISE_PLATFORM\etc\dummy.txt
+
+remtrace Then the C libraries
+cd %EIFFEL_SRC\C_library
+fullrd .libs
+
+remtrace libpng
+cd %EIFFEL_SRC\C_library\libpng
+default_make
+remtrace zlib
+cd %EIFFEL_SRC\C_library\zlib
+default_make
+
+REM These directories should already have been created by make_delivery. Whatever...
+safe_md %STUDIO_DIR\studio\spec
+safe_md %STUDIO_DIR\studio\spec\%ISE_PLATFORM
+safe_md %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin
+
+remtrace CLI writer
+cd %EIFFEL_SRC\framework\cli_writer\Clib
+default_make 
+
+remtrace CLI debugger
+cd %EIFFEL_SRC\framework\cli_debugger\Clib
+default_make
+
+REM Compiling EiffelStudio stuff
+iff defined NO_STANDARD_BUILD then
+	remtrace NO_STANDARD_BUILD=BUILD_ENTERPRISE_ONLY
+	remtrace Recompile EiffelStudio
+	cdd %FINALIZATION_DIR
+	safe_copy %EIFFEL_SRC\Eiffel\Ace\*.* .
+	safe_copy %EIFFEL_SRC\tools\estudio_enterprise\ec.ecf ec.ecf
+	iff not exist ec.ecf then
+		remerror Cannot find the finalization Ace for EiffelStudio
+		CANCEL_ON_ERROR
+	endiff
+
+	remtrace Enterprise edition
+	cdd %EIFFEL_SRC\Eiffel\API\constants
+	set_version %EIFFEL_SRC 0000 system_constants.e
+	sed -e "s/Version_type_name:\ STRING\ =\ \".*\"/Version_type_name:\ STRING\ =\ \"Enterprise\ Edition\"/g" system_constants.e >> new_system_constants.e
+	move new_system_constants.e system_constants.e
+	cdd %FINALIZATION_DIR
+
+	clean_project
+	finalize ec.ecf bench
+	cleanup_eiffel bench ec.exe
+	iff exist ec.exe then
+		move ec.exe %INSTALL_DIR\releases\enterprise_version
+	else
+		remerror Could not finalize a new "enterprise_version" EiffelStudio
+		CANCEL_ON_ERROR
+	endiff
+
+	clean_project
+	finalize ec.ecf batch
+	cleanup_eiffel batch ecb.exe
+	iff not exist ecb.exe then
+		remerror Could not finalize a new batch version of the compiler
+		CANCEL_ON_ERROR
+	endiff
+	move ecb.exe %INSTALL_DIR\releases\enterprise_version
+
+	exprtfile -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/scripts/licensing/eiffelstudio/license.txt > %INSTALL_DIR\releases\enterprise_version\LICENSE
+
+else
+	iff not defined NO_NEW_EC then
+		iff not defined NO_STANDARD_BUILD then
+			remtrace Standard edition
+			cdd %EIFFEL_SRC\Eiffel\API\constants
+			remtrace update version for system_constants.e
+			set_version %EIFFEL_SRC 0000 system_constants.e
+			cdd %FINALIZATION_DIR
+			safe_copy %EIFFEL_SRC\Eiffel\Ace\*.* .
+
+			clean_project
+			remtrace finalize Standard edition "batch"
+			finalize ec.ecf batch
+			cleanup_eiffel batch ecb.exe
+			iff exist ecb.exe then
+				move ecb.exe %INSTALL_DIR\releases\standard_version
+			else
+				remerror Could not finalize a new batch version of the compiler
+				CANCEL_ON_ERROR
+			endiff
+
+			clean_project
+			remtrace finalize Standard edition "bench"
+			finalize ec.ecf bench
+			cleanup_eiffel bench ec.exe
+			iff exist ec.exe then
+				move ec.exe %INSTALL_DIR\releases\standard_version
+			else
+				remerror Could not finalize a new "standard_edition" EiffelStudio
+				CANCEL_ON_ERROR
+			endiff
+
+			exprtfile -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/scripts/licensing/eiffelstudio/license.txt > %INSTALL_DIR\releases\standard_version\LICENSE
+		endiff
+		iff not defined NO_AXAR_ENTERPRISE_BUILD then
+			remtrace AXAR-Enterprise edition for EiffelStudio
+			cdd %EIFFEL_SRC\Eiffel\API\constants
+			safe_copy system_constants.e system_constants.e-BAK
+			sed -e "s/Version_type_name:\ STRING\ =\ \".*\"/Version_type_name:\ STRING\ =\ \"AXAR-Enterprise\ Edition\"/g" system_constants.e >> new_system_constants.e
+			move new_system_constants.e system_constants.e
+			cdd %FINALIZATION_DIR
+
+			safe_md %EIFFEL_SRC\Eiffel\interface\new_graphical\overrides\axar
+			safe_copy %EIFFEL_SRC\tools\estudio_enterprise\axar\*.e %EIFFEL_SRC\Eiffel\interface\new_graphical\overrides\axar\.
+			remtrace Backup original es_ide_settings.e
+			move %EIFFEL_SRC\tools\estudio_enterprise\es_ide_settings.e %EIFFEL_SRC\tools\estudio_enterprise\es_ide_settings.e-BAK
+
+			clean_project
+			finalize ec.ecf batch
+			cleanup_eiffel batch ecb.exe
+			iff exist ecb.exe then
+				remtrace Copy AXAR ecb.exe to release
+				move ecb.exe %INSTALL_DIR\releases\enterprise_version-axar\ecb.exe
+			else
+				remerror Could not finalize a new "enterprise_version-axar" batch version of the compiler
+				CANCEL_ON_ERROR
+			endiff
+
+			clean_project
+			finalize ec.ecf bench
+			cleanup_eiffel bench ec.exe
+			iff exist ec.exe then
+				remtrace Copy AXAR ec.exe to release
+				move ec.exe %INSTALL_DIR\releases\enterprise_version-axar\ec.exe
+			else
+				remerror Could not finalize a new "enterprise_version-axar" EiffelStudio
+				CANCEL_ON_ERROR
+			endiff
+
+			exprtfile -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/scripts/licensing/eiffelstudio/license.txt > %INSTALL_DIR\releases\enterprise_version-axar\LICENSE
+
+			remtrace Clean AXAR additional file.
+			fullrd %EIFFEL_SRC\Eiffel\interface\new_graphical\overrides\axar
+			remtrace Restore original es_ide_settings.e
+			move %EIFFEL_SRC\tools\estudio_enterprise\es_ide_settings.e-BAK %EIFFEL_SRC\tools\estudio_enterprise\es_ide_settings.e
+			cdd %EIFFEL_SRC\Eiffel\API\constants
+			move system_constants.e-BAK system_constants.e
+		endiff
+		iff not defined NO_ENTERPRISE_BUILD then
+			remtrace Enterprise edition for EiffelStudio
+			cdd %EIFFEL_SRC\Eiffel\API\constants
+			safe_copy system_constants.e system_constants.e-BAK
+			sed -e "s/Version_type_name:\ STRING\ =\ \".*\"/Version_type_name:\ STRING\ =\ \"Enterprise\ Edition\"/g" system_constants.e >> new_system_constants.e
+			move new_system_constants.e system_constants.e
+			cdd %FINALIZATION_DIR
+
+			clean_project
+			finalize ec.ecf batch
+			cleanup_eiffel batch ecb.exe
+			iff exist ecb.exe then
+				move ecb.exe %INSTALL_DIR\releases\enterprise_version
+			else
+				remerror Could not finalize a new "enterprise_version" batch version of the compiler
+				CANCEL_ON_ERROR
+			endiff
+
+			clean_project
+			safe_copy ec.ecf ec.ecf-bak
+			safe_copy %EIFFEL_SRC\tools\estudio_enterprise\ec.ecf ec.ecf
+			finalize ec.ecf bench
+			cleanup_eiffel bench ec.exe
+			iff exist ec.exe then
+				move ec.exe %INSTALL_DIR\releases\enterprise_version
+			else
+				remerror Could not finalize a new "enterprise_version" EiffelStudio
+				CANCEL_ON_ERROR
+			endiff
+
+			exprtfile -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/scripts/licensing/eiffelstudio/license.txt > %INSTALL_DIR\releases\enterprise_version\LICENSE
+
+			remtrace Restore non enterprise edition files
+			move ec.ecf-bak ec.ecf
+			cdd %EIFFEL_SRC\Eiffel\API\constants
+			move system_constants.e-BAK system_constants.e
+		endiff
+	endiff
+endiff
+
+remtrace Recompile finish_freezing
+iff not exist %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin\finish_freezing.exe then
+	cdd %EIFFEL_SRC\tools\finish_freezing
+	cd Clib
+	default_make 
+	cd ..
+	clean_project
+	finalize finish_freezing.ecf finish_freezing
+	cleanup_eiffel finish_freezing finish_freezing.exe
+	iff exist finish_freezing.exe then
+		move finish_freezing.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin
+	else
+		remerror Could not finalize a new finish_freezing
+		CANCEL_ON_ERROR
+	endiff
+endiff
+
+remtrace Recompile emake
+cdd %EIFFEL_SRC\tools\eiffel_make
+clean_project
+finalize emake.ecf
+cleanup_eiffel emake emake.exe
+iff exist emake.exe then
+	move emake.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin
+else
+	remerror Could not finalize a new emake
+	CANCEL_ON_ERROR
+endiff
+
+remtrace Recompile quick_finalize
+cdd %EIFFEL_SRC\tools\quick_finalize
+clean_project
+finalize quick_finalize.ecf
+cleanup_eiffel quick_finalize quick_finalize.exe
+iff  exist quick_finalize.exe then
+	move quick_finalize.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin
+else
+	remerror Could not finalize a new quick_finalize
+	CANCEL_ON_ERROR
+endiff
+
+remtrace Put ecdbgd.exe in the new delivery
+REM It should already have been compiled by the configure of the run-time.
+cdd %EIFFEL_SRC\C\ipc\daemon
+iff exist ecdbgd.exe then
+	move ecdbgd.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin
+else
+	remerror Could not finalize a new ecdbgd
+	CANCEL_ON_ERROR
+endiff
+
+remtrace Put x2c.exe in the new delivery
+REM It should already have been compiled by the configure of the run-time.
+cdd %EIFFEL_SRC\C\run-time
+iff exist x2c.exe then
+	move x2c.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin
+else
+	remerror Could not finalize a new x2c
+	CANCEL_ON_ERROR
+endiff
+
+remtrace Recompile h2e
+cdd %EIFFEL_SRC\library\wel\extra
+clean_project
+finalize h2e.ecf
+cleanup_eiffel h2e h2e.exe
+iff exist h2e.exe then
+	move h2e.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin
+else
+	remerror Could not finalize a new h2e
+	CANCEL_ON_ERROR
+endiff
+
+
+remtrace Recompile estudio.exe
+cdd %EIFFEL_SRC\tools\estudio\config
+clean_project
+finalize estudio.ecf estudio
+cleanup_eiffel estudio estudio.exe
+iff exist estudio.exe then
+	move estudio.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin
+else
+	remerror Could not finalize a new estudio
+	CANCEL_ON_ERROR
+endiff
+
+remtrace get GDI+ for platforms that don't have it
+cdd %EIFFEL_SRC\tools
+if EXIST %INIT_DIR%\isesvn\tools\gdiplus (
+	xcopy %INIT_DIR%\isesvn\tools\gdiplus gdiplus /E /I /Y
+) else (
+	co %DEFAULT_ISE_SVN%/Src/tools/gdiplus gdiplus
+)
+move gdiplus\gdiplus.dll %INSTALL_DIR\releases
+
+remtrace Recompiling EiffelBuild
+cdd %INIT_DIR
+call make_build.btm
+
+remtrace Recompiling Vision2 tour
+cdd %INIT_DIR
+call make_vision2_demo.btm
+
+iff defined EIF_BUILD_LEGACY_PP then
+	remtrace Recompile Legacy++
+	cdd %EIFFEL_SRC\tools\legacy\PCCTS
+	safe_md bin
+	espawn -u:%ISE_C_COMPILER_VER% "%COMSPEC% /c nmake -f makefile.win"
+	cd ..
+	cd legacy
+	espawn -u:%ISE_C_COMPILER_VER% "%COMSPEC% /c nmake -f makefile.win"
+	iff exist legacy.exe then
+		move legacy.exe %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin
+	else
+		remerror Could not generate legacy.exe
+		REM CANCEL_ON_ERROR
+	endiff
+endiff
+
+remtrace Getting eweasel source code
+safe_md %EIFFEL_SRC\eweasel
+co -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/eweasel/source %EIFFEL_SRC\eweasel\source
+remtrace Compiling eweasel
+safe_md %STUDIO_DIR\eweasel
+safe_md %STUDIO_DIR\eweasel\spec
+safe_md %STUDIO_DIR\eweasel\spec\%ISE_PLATFORM
+safe_md %STUDIO_DIR\eweasel\spec\%ISE_PLATFORM\bin
+cdd %EIFFEL_SRC\eweasel\source
+clean_project
+set OLD_EWEASEL=%EWEASEL
+set EWEASEL=%EIFFEL_SRC\eweasel
+finalize eweasel.ecf eweasel_st
+cleanup_eiffel eweasel_st eweasel.exe
+move eweasel.exe %STUDIO_DIR\eweasel\spec\%ISE_PLATFORM\bin
+finalize eweasel.ecf eweasel_mt
+cleanup_eiffel eweasel_mt eweasel-mt.exe
+move eweasel-mt.exe %STUDIO_DIR\eweasel\spec\%ISE_PLATFORM\bin
+set EWEASEL=%OLD_EWEASEL
+set OLD_EWEASEL=
+
+cdd %INIT_DIR
+call make_tools.btm
+
+cdd %INIT_DIR
+call make_gobo_tools.btm
+
+cdd %INIT_DIR
+call make_dotnet.btm
+cdd %EIFFEL_SRC
+

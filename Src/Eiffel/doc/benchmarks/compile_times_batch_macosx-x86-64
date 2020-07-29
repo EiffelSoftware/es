@@ -1,0 +1,62 @@
+MacMini with OSX 10.9 (Intel Core i7-3720QM  2.6GHz (Turbo 3.6 GHz))
+
+17.05
+=====
+Apple LLVM version 8.0.0 (clang-800.0.42.1)
+17.05.10.0136 non-RTEA, non-MT, inlinig_size = 8, full class checking, gobo 4.1, exe size = 18379584):
+78.707u 7.502s 1:26.38 99.7% 0+0k 0+1118io 0pf+0w
+
+17.05.10.0136 non-RTEA, non-MT, inlinig_size = 8, full class checking, gobo 4.0d, exe size = 18375488):
+79.427u 7.675s 1:27.25 99.8% 0+0k 9+1045io 0pf+0w
+
+17.05.9.9997 non-RTEA, non-MT, inlining_size = 8, full class checking):
+80.015u 7.713s 1:27.87 99.8% 0+0k 1+1260io 0pf+0w
+
+17.05.9.9782 non-RTEA, non-MT, inlining_size = 8, full class checking):
+77.803u 7.542s 1:25.50 99.8% 0+0k 15+1109io 0pf+0w
+
+16.11
+=====
+Apple LLVM version 8.0.0 (clang-800.0.38)
+16.11.9.9556 non-RTEA, non-MT, inlining_size = 8, full class checking):
+77.539u 7.444s 1:25.13 99.8% 0+0k 6+1138io 0pf+0w
+
+Apple LLVM version 7.0.2 (clang-700.1.81)
+16.11.9.8996 non-RTEA, non-MT, inlining_size = 8, full class checking):
+75.968u 6.694s 1:22.94 99.6% 0+0k 29+1127io 0pf+0w
+
+16.05
+=====
+Apple LLVM version 7.0.2 (clang-700.1.81)
+16.05.9.8559 non-RTEA, non-MT, inlining_size = 8, full class checking):
+77.466u 6.832s 1:24.43 99.8% 0+0k 0+1367io 0pf+0w
+
+15.05
+====
+Apple LLVM version 6.1.0 (clang-602.0.53) (based on LLVM 3.6.0svn)
+15.05.9.7585 non-RTEA, non-MT, inlining_size = 8, full class checking):
+78.884u 6.707s 1:25.72 99.8% 0+0k 0+1601io 0pf+0w
+
+15.05.9.7431 non-RTEA, non-MT, inlining_size = 8, full class checking):
+79.842u 6.709s 1:26.71 99.8% 0+0k 3+1671io 0pf+0w
+
+14.11
+=====
+Apple LLVM version 5.1 (clang-503.0.40) (based on LLVM 3.4svn)
+14.11.9.5817 non-RTEA, non-MT, inlining_size = 8, full class checking):
+81.504u 6.732s 1:28.42 99.7%    0+0k 93+2741io 0pf+0w
+
+14.05
+=====
+Apple LLVM version 5.0 (clang-500.2.79) (based on LLVM 3.3svn)
+14.05.9.4544 non-RTEA, non-MT, inlining_size = 8, full class checking):
+77.039u 6.516s 1:23.61 99.9% 0+0k 19+2189io 0pf+0w
+
+14.05.9.4181 non-RTEA, non-MT, inlining_size = 8, not full class checking):
+73.527u 5.978s 1:19.54 99.9% 0+0k 25+2249io 0pf+0w
+70.844u 5.951s 1:16.83 99.9% 0+0k 6+2191io 0pf+0w
+
+13.11
+=====
+Apple LLVM version 5.0 (clang-500.2.79) (based on LLVM 3.3svn)
+78.704u 7.139s 1:27.33 98.2% 0+0k 0+3165io 2244pf+0w

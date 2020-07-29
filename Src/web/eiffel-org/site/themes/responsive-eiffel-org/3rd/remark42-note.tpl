@@ -1,0 +1,1 @@
+<div id="message" ><li class="notice">INFORMATION: for confidentiality concern, the current website eiffel.org is now using a self-hosted instance of https://remark42.com/ service for comments (and not anymore DISQUS).</li></div>

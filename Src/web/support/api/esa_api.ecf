@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-18-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-18-0 http://www.eiffel.com/developers/xml/configuration-1-18-0.xsd" name="esa_api" uuid="8B2873E9-8E2A-4490-8B6C-1122B579FD1D" library_target="esa_api">
+	<target name="common" abstract="true">
+		<file_rule>
+			<exclude>/.svn$</exclude>
+			<exclude>/CVS$</exclude>
+			<exclude>/EIFGENs$</exclude>
+		</file_rule>
+		<option warning="true">
+			<debug name="esa" enabled="true"/>
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="console_application" value="true"/>
+		<setting name="exception_trace" value="true"/>
+		<capability>
+			<concurrency support="none" use="thread"/>
+		</capability>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="conneg" location="$ISE_LIBRARY\contrib\library\network\protocol\content_negotiation\conneg.ecf"/>
+		<library name="crypto" location="$ISE_LIBRARY\unstable\library\text\encryption\crypto\crypto.ecf"/>
+		<library name="encoder" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\text\encoder\encoder.ecf"/>
+		<library name="esa_core" location="..\core\esa_core.ecf"/>
+		<library name="esa_db" location="..\db\esa_db.ecf" readonly="false"/>
+		<library name="http" location="$ISE_LIBRARY\contrib\library\network\protocol\http\http.ecf"/>
+		<library name="http_authorization" location="$ISE_LIBRARY\contrib\library\network\authentication\http_authorization\http_authorization.ecf" readonly="false"/>
+		<library name="json" location="$ISE_LIBRARY\contrib\library\text\parser\json\library\json.ecf" readonly="false"/>
+		<library name="logging" location="$ISE_LIBRARY\library\runtime\logging\logging.ecf"/>
+		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
+		<library name="notification_email" location="$ISE_LIBRARY\contrib\library\runtime\process\notification_email\notification_email.ecf" readonly="false"/>
+		<library name="smarty" location="$ISE_LIBRARY\contrib\library\text\template\smarty\smarty.ecf" readonly="false"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf"/>
+		<library name="wsf_extension" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf_extension.ecf" readonly="false"/>
+	</target>
+	<target name="esa_api_any" extends="common">
+		<root class="ESA_SERVER" feature="make_and_launch"/>
+		<library name="any_launcher" location="$ISE_LIBRARY\unstable\library\web\cms\launcher\any.ecf" readonly="false"/>
+		<cluster name="src" location=".\src\" recursive="true"/>
+	</target>
+	<target name="esa_api_cgi" extends="common">
+		<root class="ESA_SERVER" feature="make_and_launch"/>
+		<capability>
+			<concurrency use="none"/>
+		</capability>
+		<library name="cgi_launcher" location="$ISE_LIBRARY\unstable\library\web\cms\launcher\cgi.ecf" readonly="false"/>
+		<cluster name="src" location=".\src\" recursive="true"/>
+	</target>
+	<target name="esa_api_libfcgi" extends="common">
+		<root class="ESA_SERVER" feature="make_and_launch"/>
+		<capability>
+			<concurrency use="none"/>
+		</capability>
+		<library name="libfcgi_launcher" location="$ISE_LIBRARY\unstable\library\web\cms\launcher\libfcgi.ecf" readonly="false"/>
+		<cluster name="src" location=".\src\" recursive="true"/>
+	</target>
+	<target name="esa_api_standalone" extends="common">
+		<root class="ESA_SERVER" feature="make_and_launch"/>
+		<capability>
+			<concurrency support="thread" use="thread"/>
+		</capability>
+		<library name="standalone_launcher" location="$ISE_LIBRARY\unstable\library\web\cms\launcher\standalone.ecf" readonly="false"/>
+		<variable name="httpd_ssl_disabled" value="false"/>
+		<cluster name="src" location=".\src\" recursive="true"/>
+	</target>
+	<target name="esa_api_test" extends="common">
+		<root class="APPLICATION_TEST" feature="make"/>
+		<capability>
+			<concurrency support="thread" use="thread"/>
+		</capability>
+		<library name="default_standalone" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\default\standalone.ecf"/>
+		<library name="ewsgi" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\ewsgi\ewsgi.ecf" readonly="false">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" supplier_precondition="true"/>
+			</option>
+		</library>
+		<library name="http_client" location="$ISE_LIBRARY\contrib\library\network\http_client\http_client.ecf"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
+		<library name="base_process" location="$ISE_LIBRARY\library\process\base\base_process.ecf"/>
+		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
+		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
+		<library name="wgi_standalone" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\ewsgi\connectors\standalone\standalone.ecf"/>
+		<library name="wsf_standalone" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone.ecf"/>
+		<library name="standalone_launcher" location="$ISE_LIBRARY\unstable\library\web\cms\launcher\standalone.ecf" readonly="false"/>
+		<cluster name="src" location="src\" recursive="true"/>
+		<cluster name="test" location="test\" recursive="true"/>
+	</target>
+	<target name="esa_api" extends="esa_api_standalone">
+	</target>
+</system>

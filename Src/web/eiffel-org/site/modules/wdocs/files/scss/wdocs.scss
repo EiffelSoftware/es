@@ -1,0 +1,186 @@
+/* Wikidocs Table of contents */
+
+.wiki-toc {
+	-moz-box-shadow:    -3px 5px 4px 0 #99c;
+	-webkit-box-shadow: -3px 5px 4px 0 #99c;
+	box-shadow:         -3px 5px 4px 0 #99c;
+
+	padding: 5px;
+	line-height: 1.2em;
+
+	border: solid 1px #ccc;
+	font-size: smaller;
+	>ul, >ol { padding: 0; }
+
+	&.wiki-toc-auto {
+		float: right;
+		clear: right;
+	}
+	list-style-position: inside;
+
+	span.title {
+		font-weight: bold;
+		display: block;
+		text-align: center;
+		margin-bottom: 1ex;
+	}
+	a {
+		text-decoration: none;
+	}
+	&.horizontal {
+		padding: 5px;
+		li {
+			&::before { content: "| " }
+			display: inline;
+			padding: 0 5px 0 0;
+		}
+	}
+}
+
+/* Override default margins of Table of contents */
+
+div#content {
+	.wiki-toc {
+		margin-top: 0px;
+		margin-left: 2em;
+	}
+}
+
+.wikipage {
+	p.tpl, div.tpl {
+		margin: 10px 50px 10px 10px;
+		padding: 8px;
+		border: solid 1px;
+		&.header-message {
+			margin-left: auto;
+			margin-right: auto;
+			text-align: center;
+			width: 350px;
+		}
+	}
+	span.tpl {
+		padding: 1px 3px 1px 3px;
+	}
+	.tpl {
+		color: black;
+		&.header-message {
+			background-color: #FFEEBF;
+			border-color: #FFB55F;
+		}
+		&.definition-message {
+			background-color: #EFFFF0;
+			border-color: #0A7D19;
+		}
+		&.note-message {
+			color: #00529B;
+			background-color: #eef7fb;
+		}
+		&.recommended-message {
+			background-color: #EEEEFF;
+		}
+		&.rule-message {
+			background-color: #f3eada;
+		}
+		&.sample-message {
+			background-color: #eef7fb;
+		}
+		&.seealso-message {
+			background-color: #eef7fb;
+		}
+		&.tip-message {
+			background-color: #eef7fb;
+		}
+		&.key-message {
+			color: black;
+			background-color: #fafafa;
+			border: solid 1px;
+			white-space:nowrap;
+		}
+
+		&.info-message {
+			color: #00529B;
+			background-color: #BDE5F8;
+		}
+		&.success-message {
+			color: #4F8A10;
+			background-color: #DFF2BF;
+		}
+		&.warning-message {
+			color: #9F6000;
+			background-color: #FEEFB3;
+		}
+		&.error-message {
+			color: #D8000C;
+			background-color: #FFBABA;
+		}
+	}
+
+	div.tpl i {
+		margin:10px 22px;
+		font-size:2em;
+		vertical-align:middle;
+	}
+
+	.tpl, h1, h2, h3, code {
+		overflow: hidden;
+	}
+}
+
+div#content.doc {
+	ul.message {
+		list-style-type: none;
+		li.warning {
+			padding: 5px;
+			border-left: solid 4px #ffd200;
+			background-color: #ffc;
+			a {
+				border: solid 1px #ccc;
+				padding: 2px;
+				background-color: #eee;
+				display: inline-block;
+			}
+		}
+	}
+}
+
+div.wdocs-versions {
+	float: right;
+	display: inline-block;
+	font-size: 80%;
+	font-style: italic;
+	margin: 0;
+	&>ul {
+		padding-left: 2px;
+		list-style-type: none;
+		display: inline-block;
+		li.active {
+			font-weight: bold;
+		}
+		&>li:not(:last-child) { border-right: solid 1px #ccc; } 
+		&>li {
+			a:hover {
+				text-decoration: underline;
+			}
+			padding: 0 6px 0 2px;
+			margin: 0 2px 0 2px;
+			display: inline-block;
+			border: none;
+		}
+		&>li>ul {
+			padding: 10px;
+			background-color: white;
+			border: solid 1px #999;
+			display: none;
+			font-weight: normal;
+		}
+		&>li:hover>ul {
+			position: absolute;
+			display: block;
+			z-index: 99;
+			li {
+				display: block;
+			}
+		}	
+	}
+}
+

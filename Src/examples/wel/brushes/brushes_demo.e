@@ -1,0 +1,47 @@
+note
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+class
+	BRUSHES_DEMO
+
+inherit
+	WEL_APPLICATION
+		redefine
+			idle_action
+		end
+
+create
+	make
+
+feature
+
+	main_window: MAIN_WINDOW
+			-- Create the application's main window
+		once
+			enable_idle_action
+			create Result.make
+		end
+
+	idle_action
+			-- The message queue is empty.
+			-- Execute the rectangle_demo if it exists.
+		do
+			if attached {RECTANGLE_DEMO} main_window.rectangle_demo as l_demo and then l_demo.exists then
+				l_demo.draw
+			end
+		end
+
+note
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
+
+
+end -- class BRUSHES_DEMO
+

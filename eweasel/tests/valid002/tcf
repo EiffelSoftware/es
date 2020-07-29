@@ -1,0 +1,38 @@
+
+--| Copyright (c) 1993-2006 University of Southern California and contributors.
+--| All rights reserved.
+--| Your use of this work is governed under the terms of the GNU General
+--| Public License version 2.
+
+-- This is a test control file
+
+test_name bad-infix-feature
+test_description Violate validity constraint VFAV(1)
+copy_sub Ace $TEST Ace
+
+define		HEADER "feat alias "not" (n: INTEGER): INTEGER"
+copy_sub	test.e $CLUSTER test.e
+compile_melted
+compile_result	validity_error TEST VFAV(1)
+
+define		HEADER "feat alias "+" (n, m: INTEGER): REAL"
+copy_sub	test.e $CLUSTER test.e
+resume_compile
+compile_result	validity_error TEST VFAV(1)
+
+define		HEADER "feat alias "&    " (n: INTEGER): INTEGER"
+copy_sub	test.e $CLUSTER test.e
+resume_compile
+compile_result	syntax_error TEST 9
+
+define		HEADER "feat alias "&" (n: INTEGER): INTEGER"
+copy_sub	test.e $CLUSTER test.e
+resume_compile
+compile_result	syntax_error TEST 9
+
+define		HEADER "infix "&" (n: INTEGER): INTEGER"
+copy_sub	test.e $CLUSTER test.e
+resume_compile
+compile_result	syntax_error TEST 9
+
+test_end

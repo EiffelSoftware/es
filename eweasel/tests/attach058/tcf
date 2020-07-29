@@ -1,0 +1,73 @@
+test_name 	 void-safety-level
+test_description Different void safety levels produce different results,
+
+copy_raw	a.e $CLUSTER a.e
+
+-- Inheritance checks
+define NA "--"
+define NT ""
+copy_sub	test.e $CLUSTER test.e
+
+define VOID_SAFETY_A "all"
+define VOID_SAFETY_TEST "all"
+define VOID_SAFETY_MAX "all"
+copy_sub	Ace $TEST Ace
+compile_melted
+compile_result	validity_error NONE VD80 VD80; TEST VDRD(2) VDRD(2) VDRD(2) VDRD(2) VDRD(2) VDRD(2) VDRD(2) VDRD(2)
+
+define VOID_SAFETY_A "none"
+define VOID_SAFETY_TEST "all"
+define VOID_SAFETY_MAX "none"
+copy_sub	Ace $TEST Ace
+resume_compile
+compile_result	validity_warning NONE VD80 VD80
+
+define VOID_SAFETY_A "all"
+define VOID_SAFETY_TEST "none"
+define VOID_SAFETY_MAX "none"
+copy_sub	Ace $TEST Ace
+compile_melted
+compile_result	validity_warning NONE VD80 VD80
+
+define VOID_SAFETY_A "none"
+define VOID_SAFETY_TEST "none"
+define VOID_SAFETY_MAX "none"
+copy_sub	Ace $TEST Ace
+compile_melted
+compile_result	validity_warning NONE VD80 VD80
+
+-- Conformance and initialization checks
+define NA ""
+define NT "--"
+copy_sub	test.e $CLUSTER test.e
+
+define VOID_SAFETY_A "all"
+define VOID_SAFETY_TEST "all"
+define VOID_SAFETY_MAX "all"
+copy_sub	Ace $TEST Ace
+compile_melted
+compile_result	validity_error NONE VD80 VD80; TEST VEVI VUTA(2) VUTA(2) VUTA(2) VUTA(2) VUTA(2) VUTA(2) VUTA(2) VUTA(2) VUTA(2); A VUTA(2) VEVI
+
+define VOID_SAFETY_A "none"
+define VOID_SAFETY_TEST "all"
+define VOID_SAFETY_MAX "none"
+copy_sub	Ace $TEST Ace
+resume_compile
+compile_result	validity_warning NONE VD80 VD80
+
+define VOID_SAFETY_A "all"
+define VOID_SAFETY_TEST "none"
+define VOID_SAFETY_MAX "none"
+copy_sub	Ace $TEST Ace
+compile_melted
+compile_result	validity_warning NONE VD80 VD80
+
+define VOID_SAFETY_A "none"
+define VOID_SAFETY_TEST "none"
+define VOID_SAFETY_MAX "none"
+copy_sub	Ace $TEST Ace
+compile_melted
+compile_result	validity_warning NONE VD80 VD80
+cleanup_compile
+
+test_end
