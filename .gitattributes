@@ -7663,7 +7663,9 @@ Src/web/eiffel-org/www-setup/readme.html svneol=native#text/xml
 Src/web/eiffel_download/IIRF.ini -text
 Src/web/eiffel_download/download_tables.sql -text
 Src/web/eiffel_download/ewf_download.ecf svneol=native#text/xml
+Src/web/eiffel_download/site/config/downloads_enterprise_configuration.json -text
 Src/web/eiffel_download/site/config/downloads_gpl_configuration.json -text
+Src/web/eiffel_download/site/config/downloads_standard_configuration.json -text
 Src/web/eiffel_download/site/www/template/html/email_video_resources.html svneol=native#text/xml
 Src/web/eiffel_download/sp_download_script.sql -text
 Src/web/support/api/IIRF.ini -text
