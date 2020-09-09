@@ -1494,6 +1494,7 @@ Src/Delivery/studio/bitmaps/src/res/cog_green.svg -text
 Src/Delivery/studio/bitmaps/src/res/compile.svg -text
 Src/Delivery/studio/bitmaps/src/res/curly_brackets.svg -text
 Src/Delivery/studio/bitmaps/src/res/deferred.svg -text
+Src/Delivery/studio/bitmaps/src/res/deferred_nw.svg -text
 Src/Delivery/studio/bitmaps/src/res/document.svg -text
 Src/Delivery/studio/bitmaps/src/res/documents.svg -text
 Src/Delivery/studio/bitmaps/src/res/editor.svg -text
@@ -1530,6 +1531,7 @@ Src/Delivery/studio/bitmaps/src/res/old/class_frozen.svg -text
 Src/Delivery/studio/bitmaps/src/res/old/class_uncompiled.svg -text
 Src/Delivery/studio/bitmaps/src/res/old/feature_frozen.svg -text
 Src/Delivery/studio/bitmaps/src/res/once.svg -text
+Src/Delivery/studio/bitmaps/src/res/once_se.svg -text
 Src/Delivery/studio/bitmaps/src/res/overridden.svg -text
 Src/Delivery/studio/bitmaps/src/res/override.svg -text
 Src/Delivery/studio/bitmaps/src/res/override2.svg -text
@@ -1539,6 +1541,7 @@ Src/Delivery/studio/bitmaps/src/res/pinned.svg -text
 Src/Delivery/studio/bitmaps/src/res/pnd_dotted_line_ne.svg -text
 Src/Delivery/studio/bitmaps/src/res/question_mark_yellow.svg -text
 Src/Delivery/studio/bitmaps/src/res/readonly.svg -text
+Src/Delivery/studio/bitmaps/src/res/readonly_ne.svg -text
 Src/Delivery/studio/bitmaps/src/res/red_cross.svg -text
 Src/Delivery/studio/bitmaps/src/res/refresh.svg -text
 Src/Delivery/studio/bitmaps/src/res/save.svg -text
