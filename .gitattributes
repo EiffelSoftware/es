@@ -6714,6 +6714,8 @@ Src/tools/wrapc/src/library/build.eant svneol=native#text/xml
 Src/tools/wrapc/src/library/library.ecf svneol=native#text/xml
 Src/tools/wrapc/src/library/parser/c_parser/ewg_c_scanner.l -text
 Src/tools/wrapc/src/library/wrapc_kernel_safe.ecf svneol=native#text/xml
+Src/tools/wrapc/testing/config.xml svneol=native#text/xml
+Src/tools/wrapc/testing/wrapc_testing.ecf svneol=native#text/xml
 Src/tools/wrapc/utils/wrapc_utils.ecf svneol=native#text/xml
 Src/tools/wrapc/wrapcui/wrapcui.ecf svneol=native#text/xml
 Src/unstable/library/base2/todo -text
