@@ -6076,7 +6076,6 @@ Src/help/wizards/support/wizard/estudio_gui_wizard.ecf svneol=native#text/xml
 Src/help/wizards/support/wizard/examples/demo/console_wizard.ecf svneol=native#text/xml
 Src/help/wizards/support/wizard/examples/demo/rootdir/demo.dsc -text
 Src/help/wizards/support/wizard/examples/demo/rootdir/resources/${APP_NAME}.ecf svneol=native#text/xml
-Src/help/wizards/support/wizard/examples/demo/rootdir/resources/ewf.ini -text
 Src/help/wizards/support/wizard/examples/demo/wizard.dbg.profiles.xml svneol=native#text/xml
 Src/help/wizards/support/wizard/examples/demo/wizard.ecf svneol=native#text/xml
 Src/help/wizards/wizard.ico -text
