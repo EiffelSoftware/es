@@ -8859,6 +8859,8 @@ eweasel/tests/melt110/Ace svneol=native#text/xml
 eweasel/tests/once001/Ace -text
 eweasel/tests/once004/Ace -text
 eweasel/tests/once005/Ace -text
+eweasel/tests/once024/Ace svneol=native#text/xml
+eweasel/tests/once024/output svneol=native#text/plain
 eweasel/tests/path001/Ace svneol=native#text/xml
 eweasel/tests/path002/Ace svneol=native#text/xml
 eweasel/tests/pretty029/Ace svneol=native#text/xml
