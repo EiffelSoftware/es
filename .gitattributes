@@ -6078,7 +6078,6 @@ Src/help/wizards/support/wizard/examples/demo/rootdir/resources/${APP_NAME}.ecf 
 Src/help/wizards/support/wizard/examples/demo/wizard.dbg.profiles.xml svneol=native#text/xml
 Src/help/wizards/support/wizard/examples/demo/wizard.ecf svneol=native#text/xml
 Src/help/wizards/wizard.ico -text
-Src/help/wizards/wrapc/console_wizard.ecf svneol=native#text/xml
 Src/help/wizards/wrapc/rootdir/resources/library/${LIB_NAME}.ecf svneol=native#text/xml
 Src/help/wizards/wrapc/rootdir/resources/library/build.eant svneol=native#text/xml
 Src/help/wizards/wrapc/rootdir/resources/library/config.xml svneol=native#text/xml
