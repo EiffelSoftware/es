@@ -6729,6 +6729,7 @@ Src/tools/resource_bench/toolbar.bmp svneol=native#unset
 Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/unicode/gelex_category.sh eol=lf
 Src/tools/visitor_factory/visitor_factory.lic -text
+Src/tools/wrapc/.travis.yml -text
 Src/tools/wrapc/build.eant svneol=native#text/xml
 Src/tools/wrapc/config/wrap_c_application.eant svneol=native#text/xml
 Src/tools/wrapc/config/wrap_c_c_compilation.eant svneol=native#text/xml
@@ -6739,6 +6740,7 @@ Src/tools/wrapc/doc/WrapC_flow.png -text
 Src/tools/wrapc/doc/application_components.png -text
 Src/tools/wrapc/doc/struct_wrapper.png -text
 Src/tools/wrapc/doc/wrap_c_flow.png -text
+Src/tools/wrapc/doc/wrapc_logo.svg -text
 Src/tools/wrapc/examples/callback/example/hello_world/build.eant svneol=native#text/xml
 Src/tools/wrapc/examples/callback/example/hello_world/system.ecf svneol=native#text/xml
 Src/tools/wrapc/examples/callback/library/build.eant svneol=native#text/xml
