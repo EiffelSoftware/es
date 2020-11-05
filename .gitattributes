@@ -6768,6 +6768,7 @@ Src/tools/wrapc/testing/wrapc_testing.ecf svneol=native#text/xml
 Src/tools/wrapc/utils/wrapc_utils.ecf svneol=native#text/xml
 Src/tools/wrapc/wrapcui/wrapcui.ecf svneol=native#text/xml
 Src/unstable/library/base2/todo -text
+Src/unstable/library/base_extension/structure/graph/doc/olivier_jeger_extending_EiffelBase_final.pdf -text svneol=unset#unset
 Src/unstable/library/compression/bzip2/Readme.txt -text
 Src/unstable/library/compression/zlib/Readme.txt -text
 Src/unstable/library/compression/zlib/example/basic_functions/basic_functions.ecf svneol=native#text/xml
