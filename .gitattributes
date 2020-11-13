@@ -6985,9 +6985,12 @@ Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/es_cloud-admin.scss -text
 Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/es_cloud.scss -text
 Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/pricing.scss -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_0.sql -text
+Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_2.sql -text
+Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_3.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_0-1_1.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_1-1_2.sql -text
+Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_2-1_3.sql -text
 Src/web/eiffel-cloud/modules/jwt_auth/jwt_auth.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/modules/jwt_auth/site/config/config.ini -text
 Src/web/eiffel-cloud/modules/jwt_auth/site/scripts/install.sql -text
