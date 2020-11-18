@@ -1801,6 +1801,9 @@ Src/Delivery/studio/wizards/new_projects/wizard/resources/eiffel_wizard_icon.png
 Src/Delivery/studio/wizards/others/precompile/pixmaps/eiffel_wizard.png -text
 Src/Delivery/studio/wizards/others/precompile/pixmaps/eiffel_wizard_icon.png -text
 Src/Delivery/studio/wizards/others/precompile/pixmaps/wizard.png -text
+Src/Delivery/tools/spec/unix/estudio-open-file -text
+Src/Delivery/tools/spec/unix/estudio-open-url -text
+Src/Delivery/tools/spec/unix/estudio-terminal -text
 Src/Delivery/vision2_demo/bitmaps/png/documentation.png -text
 Src/Delivery/vision2_demo/bitmaps/png/image1.png -text
 Src/Delivery/vision2_demo/bitmaps/png/image2.png -text
