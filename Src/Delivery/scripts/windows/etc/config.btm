@@ -26,7 +26,7 @@ endiff
 
 REM Tag to export files from public SVN repository
 iff not defined DEFAULT_PUBLIC_SVN then
-	set DEFAULT_PUBLIC_SVN=https://svn.eiffel.com/eiffelstudio/trunk
+	set DEFAULT_PUBLIC_SVN=https://svn.eiffel.com/eiffelstudio/branches/Eiffel_20.11
 endiff
 iff not defined PUBLIC_SVN_REVISION then
 	set PUBLIC_SVN_REVISION=HEAD
@@ -37,7 +37,7 @@ endiff
 
 REM Tag to export files in SVN at ISE
 iff not defined DEFAULT_ISE_SVN then
-	set DEFAULT_ISE_SVN=svn://%USERNAME%@svn.ise/ise_svn/trunk
+	set DEFAULT_ISE_SVN=svn://%USERNAME%@svn.ise/ise_svn/branches/Eiffel_20.11
 endiff
 
 iff not defined ISE_VC_MSC then
