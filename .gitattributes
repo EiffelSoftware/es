@@ -6942,6 +6942,9 @@ Src/unstable/library/web/cms/modules/google_search_20/google_search_20.ecf svneo
 Src/unstable/library/web/cms/modules/google_search_20/site/config/google_search_20.json-dist -text
 Src/unstable/library/web/cms/modules/google_search_20/site/files/css/gcse.css -text
 Src/unstable/library/web/cms/modules/google_search_20/site/files/scss/gcse.scss -text
+Src/unstable/library/web/cms/modules/jwt_auth/jwt_auth.ecf svneol=native#text/xml
+Src/unstable/library/web/cms/modules/jwt_auth/site/config/config.ini -text
+Src/unstable/library/web/cms/modules/jwt_auth/site/scripts/install.sql -text
 Src/unstable/library/web/cms/modules/messaging/messaging.ecf svneol=native#text/xml
 Src/unstable/library/web/cms/modules/messaging/site/files/scss/messaging.scss -text
 Src/unstable/library/web/cms/modules/node/node.ecf svneol=native#text/xml
@@ -6998,9 +7001,6 @@ Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_0-1_1.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_1-1_2.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_2-1_3.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_3-1_4.sql -text
-Src/web/eiffel-cloud/modules/jwt_auth/jwt_auth.ecf svneol=native#text/xml
-Src/web/eiffel-cloud/modules/jwt_auth/site/config/config.ini -text
-Src/web/eiffel-cloud/modules/jwt_auth/site/scripts/install.sql -text
 Src/web/eiffel-cloud/modules/shop/shop.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/modules/shop/site/files/css/shop.css -text
 Src/web/eiffel-cloud/modules/shop/site/files/scss/shop.scss -text
