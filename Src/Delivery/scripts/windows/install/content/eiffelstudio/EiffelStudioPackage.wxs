@@ -78,9 +78,12 @@
 			</Component>
 			<Directory Id="Dir.gcc" Name="gcc"/>
 			<Directory Id="Dir.Core.examples" Name="examples"/>
-			<Directory Id="Dir.Core.library" Name="library">
-				<Directory Id="Dir.Core.library.gobo" Name="gobo"/>
+			<Directory Id="Dir.Core.contrib" Name="contrib">
+				<Directory Id="Dir.Core.contrib.library.gobo" Name="gobo"/>
 			</Directory>
+			<Directory Id="Dir.Core.library" Name="library"/>
+			<Directory Id="Dir.Core.unstable" Name="unstable"/>
+			<Directory Id="Dir.Core.tools" Name="tools"/>
 			<!-- To comment when building complete delivery -->
 			<!--
 			<Directory Id="Dir.Core.esbuilder.spec.$(var.IsePlatform).bin" Name="testing1"/>
@@ -89,7 +92,23 @@
 		</DirectoryRef>
 
 		<DirectoryRef Id="TARGETDIR">
-			<Directory Id="DesktopFolder" Name="." />
+    		<Directory Id="DesktopFolder" Name="Desktop">
+        		<Component Id="ApplicationShortcutDesktop" Guid="D14CE80C-7D36-4C61-B555-7897D385A17D">
+            		<Shortcut Id="estudioDesktopShortcut"
+                		Name="EiffelStudio $(var.ProductVersion) ($(var.Platform))"
+                		Description="Launch EiffelStudio $(var.ProductVersion)"
+    					Target="[INSTALLDIR]studio\spec\$(var.IsePlatform)\bin\estudio.exe"
+                		/>
+            		<RemoveFolder Id="DesktopFolder" On="uninstall"/>
+            		<RegistryValue
+                		Root="HKCU"
+    					Key="Software\ISE\$(var.ProductKey)"
+                		Name="installed"
+                		Type="integer"
+                		Value="1"
+                		KeyPath="yes"/>
+        		</Component>
+    		</Directory>
 			<Directory Id="ProgramMenuFolder" Name=".">
 				<Directory Id="EiffelStudio" Name="$(var.Product) $(var.ProductVersion) ($(var.Platform))">
 					<Directory Id="EiffelStudio.Documentation" Name="Documentation"/>
@@ -146,8 +165,8 @@
 					Description="GUI Builder using EiffelVision2" Show="normal" Directory="EiffelStudio"
 					Target="[INSTALLDIR]esbuilder\spec\$(var.IsePlatform)\bin\esbuilder.exe"
 					/>
-				<Shortcut Id="estudio.exe" Name="$(var.Product) $(var.ProductVersion)"
-					Description="EiffelStudio development environment" Show="normal" Directory="EiffelStudio"
+				<Shortcut Id="estudio.exe" Name="$(var.Product) $(var.ProductVersion) ($(var.Platform))"
+					Description="EiffelStudio development environment" Show="normal" Directory="ProgramMenuFolder"
 					Target="[INSTALLDIR]studio\spec\$(var.IsePlatform)\bin\estudio.exe"
 					/>
 				<Shortcut Id="esvars.bat" Name="$(var.Product) $(var.ProductVersion) Command Prompt"
@@ -163,10 +182,6 @@
 				<util:InternetShortcut Id="EiffelStudio.Documentation.General" Name="Eiffel Developer Help Center" Target="http://docs.eiffel.com/" Directory="EiffelStudio.Documentation"/>
 				<util:InternetShortcut Id="EiffelStudio.Documentation.COM" Name="EiffelCOM Wizard Documentation" Target="http://docs.eiffel.com/book/platform-specifics/eiffelcom-wizard" Directory="EiffelStudio.Documentation"/>
 				<util:InternetShortcut Id="EiffelStudio.Documentation.ResourceBench" Name="ResourceBench Documentation" Target="http://docs.eiffel.com/book/platform-specifics/resourcebench" Directory="EiffelStudio.Documentation"/>
-				<Shortcut Id="vision2_demo.exe" Name="EiffelVision2 Demo"
-					Description="EiffelVision2 overview presentation" Show="normal" Directory="EiffelStudio.Documentation"
-					Target="[INSTALLDIR]vision2_demo\spec\$(var.IsePlatform)\bin\vision2_demo.exe"
-					/>
 				<Shortcut Id="com_wizard.exe" Name="EiffelCOM Wizard" 
 					Description="A wizard that helps you use and create COM components with Eiffel" Show="normal"
 					Target="[INSTALLDIR]wizards\com\com_wizard_launcher.exe" Directory="EiffelStudio.Tools"
@@ -188,6 +203,7 @@
 			<Feature Id="MainProgram" Title="Program" TypicalDefault="install" Level="1" Display="hidden">
 				<ComponentRef Id="Comp.studio_registries" />
 				<ComponentRef Id="Comp.studio_shortcuts" />
+				<ComponentRef Id="ApplicationShortcutDesktop" />
 				<ComponentRef Id="Comp.Core.esbuilder.spec.$(var.IsePlatform).bin.esbuilder.exe" />
 				<ComponentRef Id="Comp.Core.studio.spec.$(var.IsePlatform).bin.estudio.exe" />
 				<ComponentGroupRef Id="Core"/>
@@ -206,8 +222,20 @@
 				<ComponentGroupRef Id="Core.library"/>
 			</Feature>
 
-			<Feature Id="Gobo_feature" Title="Gobo" TypicalDefault="install" Level="1" Display="hidden">
-				<ComponentGroupRef Id="Core.library.gobo"/>
+			<Feature Id="Contrib_feature" Title="Contrib" TypicalDefault="install" Level="1" Display="hidden">
+				<ComponentGroupRef Id="Core.contrib"/>
+			</Feature>
+
+			<Feature Id="Contrib_gobo_feature" Title="Gobo" TypicalDefault="install" Level="1" Display="hidden">
+				<ComponentGroupRef Id="Core.contrib.library.gobo"/>
+			</Feature>
+
+			<Feature Id="Unstable_feature" Title="Unstable" TypicalDefault="install" Level="1" Display="hidden">
+				<ComponentGroupRef Id="Core.unstable"/>
+			</Feature>
+
+			<Feature Id="Tools_feature" Title="Tools" TypicalDefault="install" Level="1" Display="hidden">
+				<ComponentGroupRef Id="Core.tools"/>
 			</Feature>
 
 			<Feature Id="gdiplus_feature" Title="GDI+" TypicalDefault="install" Level="1" Display="hidden">
