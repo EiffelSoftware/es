@@ -7280,6 +7280,7 @@ Src/web/eiffel-org/site/modules/contact/files/scss/contact.scss -text
 Src/web/eiffel-org/site/modules/core/scripts/core.sql -text
 Src/web/eiffel-org/site/modules/core/scripts/updates/core-1.0.0.1.sql -text
 Src/web/eiffel-org/site/modules/custom_block/config/custom_block.json -text
+Src/web/eiffel-org/site/modules/custom_block/files/scss/style.scss -text
 Src/web/eiffel-org/site/modules/eiffel_download/files/css/download.css -text
 Src/web/eiffel-org/site/modules/eiffel_download/files/scss/download-admin.scss -text
 Src/web/eiffel-org/site/modules/eiffel_download/files/scss/download.scss -text
