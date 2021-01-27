@@ -6996,6 +6996,7 @@ Src/web/eiffel-cloud/modules/es_cloud/site/files/css/pricing.css -text
 Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/common.scss -text
 Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/es_cloud-admin.scss -text
 Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/es_cloud.scss -text
+Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/es_forms.scss -text
 Src/web/eiffel-cloud/modules/es_cloud/site/files/scss/pricing.scss -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_0.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_2.sql -text
@@ -7059,6 +7060,7 @@ Src/web/eiffel-cloud/site/modules/es_cloud/files/css/pricing.css -text
 Src/web/eiffel-cloud/site/modules/es_cloud/files/scss/common.scss -text
 Src/web/eiffel-cloud/site/modules/es_cloud/files/scss/es_cloud-admin.scss -text
 Src/web/eiffel-cloud/site/modules/es_cloud/files/scss/es_cloud.scss -text
+Src/web/eiffel-cloud/site/modules/es_cloud/files/scss/es_forms.scss -text
 Src/web/eiffel-cloud/site/modules/es_cloud/files/scss/pricing.scss -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install-0.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install-1_0.sql -text
