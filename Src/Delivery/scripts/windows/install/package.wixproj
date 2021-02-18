@@ -129,6 +129,36 @@
     <VerboseOutput>False</VerboseOutput>
     <LinkerAdditionalOptions>-reusecab -cc bin\studio_std_x86\cabs</LinkerAdditionalOptions>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'studio_branded_x64' ">
+    <OutputPath>bin\studio_branded_x64\</OutputPath>
+    <IntermediateOutputPath>bin\studio_branded_x64\</IntermediateOutputPath>
+    <DefineConstants>x64;EiffelStudio;Branded;IsePlatform=win64</DefineConstants>
+    <IncludeSearchPaths>
+    </IncludeSearchPaths>
+    <Pedantic>False</Pedantic>
+    <ShowSourceTrace>False</ShowSourceTrace>
+    <SuppressSchemaValidation>False</SuppressSchemaValidation>
+    <SuppressSpecificWarnings>
+    </SuppressSpecificWarnings>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <VerboseOutput>False</VerboseOutput>
+    <LinkerAdditionalOptions>-reusecab -cc bin\studio_branded_x64\cabs</LinkerAdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'studio_branded_x86' ">
+    <OutputPath>bin\studio_branded_x86\</OutputPath>
+    <IntermediateOutputPath>bin\studio_branded_x86\</IntermediateOutputPath>
+    <DefineConstants>x86;EiffelStudio;Branded;IsePlatform=windows</DefineConstants>
+    <IncludeSearchPaths>
+    </IncludeSearchPaths>
+    <Pedantic>False</Pedantic>
+    <ShowSourceTrace>False</ShowSourceTrace>
+    <SuppressSchemaValidation>False</SuppressSchemaValidation>
+    <SuppressSpecificWarnings>
+    </SuppressSpecificWarnings>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <VerboseOutput>False</VerboseOutput>
+    <LinkerAdditionalOptions>-reusecab -cc bin\studio_branded_x86\cabs</LinkerAdditionalOptions>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'studio_ent_x64' ">
     <OutputPath>bin\studio_ent_x64\</OutputPath>
     <IntermediateOutputPath>bin\studio_ent_x64\</IntermediateOutputPath>
@@ -202,6 +232,7 @@
     <Compile Include="content\eiffelstudio\studio_examples.wxs" />
     <Compile Include="content\eiffelstudio\studio_gdiplus.wxs" />
     <Compile Include="content\eiffelstudio\studio_std_ec.wxs" />
+    <Compile Include="content\eiffelstudio\studio_branded_ec.wxs" />
 	<Compile Include="content\eiffelstudio\studio_libraries.wxs" />
     <Compile Include="content\eiffelstudio\studio_contrib.wxs" />
     <Compile Include="content\eiffelstudio\studio_unstable.wxs" />
