@@ -30,7 +30,8 @@ WXS = \
 	studio_gobo.wxs \
 	studio_gdiplus.wxs \
 	studio_ent_ec.wxs \
-	studio_std_ec.wxs
+	studio_std_ec.wxs \
+	studio_branded_ec.wxs
 
 WXS_STD = \
 	studio_gcc.wxs \
@@ -55,6 +56,18 @@ WXS_ENT = \
 	studio_gobo.wxs \
 	studio_gdiplus.wxs \
 	studio_ent_ec.wxs
+
+WXS_BRANDED = \
+	studio_gcc.wxs \
+	studio_core.wxs \
+	studio_examples.wxs \
+	studio_libraries.wxs \
+	studio_contrib.wxs \
+	studio_unstable.wxs \
+	studio_tools.wxs \
+	studio_gobo.wxs \
+	studio_gdiplus.wxs \
+	studio_branded_ec.wxs
 
 
 build: $(WXS)
@@ -119,6 +132,11 @@ studio_gdiplus.wxs:
 		-fi:gdiplus.dll -de:"\*" > $@.tmp
 	move $@.tmp $@
 
+studio_branded_ec.wxs:
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\branded_version" \
+		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"branded_ec" -n:"Core." > $@.tmp
+	move $@.tmp $@
+
 studio_ent_ec.wxs:
 	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\enterprise_version" \
 		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"enterprise_ec" -n:"Core." > $@.tmp
@@ -141,12 +159,17 @@ enterprise_x86: $(WXS_ENT)
 standard_x86: $(WXS_STD)
 	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_std_x86 /p:Platform=x86 ..\..\package.sln
 
+branded_x86: $(WXS_BRANDED)
+	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_branded_x86 /p:Platform=x86 ..\..\package.sln
+
 enterprise_x64: $(WXS_ENT)
 	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_ent_x64 /p:Platform=x64 ..\..\package.sln
 
 standard_x64: $(WXS_STD)
 	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_std_x64 /p:Platform=x64 ..\..\package.sln
 
+branded_x64: $(WXS_BRANDED)
+	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_branded_x64 /p:Platform=x64 ..\..\package.sln
 
 ###################################################################
 #

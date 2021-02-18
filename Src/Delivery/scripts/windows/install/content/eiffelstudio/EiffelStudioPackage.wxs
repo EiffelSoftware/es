@@ -210,7 +210,11 @@
 				<?ifdef Enterprise ?>
 					<ComponentGroupRef Id="enterprise_ec"/>
 				<?else?>
-					<ComponentGroupRef Id="standard_ec"/>
+					<?ifdef Branded ?>
+						<ComponentGroupRef Id="branded_ec"/>
+					<?else?>
+						<ComponentGroupRef Id="standard_ec"/>
+					<?endif?>
 				<?endif?>
 			</Feature>
 
