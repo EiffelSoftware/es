@@ -173,9 +173,6 @@ branded_x86: $(WXS_BRANDED)
 standard_x86: $(WXS_STD)
 	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_std_x86 /p:Platform=x86 ..\..\package.sln
 
-branded_x86: $(WXS_BRANDED)
-	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_branded_x86 /p:Platform=x86 ..\..\package.sln
-
 enterprise_x64: $(WXS_ENT)
 	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_ent_x64 /p:Platform=x64 ..\..\package.sln
 
@@ -184,9 +181,6 @@ branded_x64: $(WXS_BRANDED)
 
 standard_x64: $(WXS_STD)
 	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_std_x64 /p:Platform=x64 ..\..\package.sln
-
-branded_x64: $(WXS_BRANDED)
-	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_branded_x64 /p:Platform=x64 ..\..\package.sln
 
 ###################################################################
 #
