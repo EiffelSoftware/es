@@ -1138,6 +1138,8 @@ Src/Delivery/scripts/windows/inc/set_has_c_compiler.btm -text
 Src/Delivery/scripts/windows/init.btm -text
 Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_branded_ec.wxs -text
 Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_contrib.wxs -text
+Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_contrib_library.wxs -text
+Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_contrib_library_gobo.wxs -text
 Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_tools.wxs -text
 Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_unstable.wxs -text
 Src/Delivery/scripts/windows/install/images/app.ico -text
