@@ -1136,6 +1136,7 @@ Src/Delivery/scripts/windows/inc/display_environment.btm -text
 Src/Delivery/scripts/windows/inc/get_environment_confirmation.btm -text
 Src/Delivery/scripts/windows/inc/set_has_c_compiler.btm -text
 Src/Delivery/scripts/windows/init.btm -text
+Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_branded_ec_wxs -text
 Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_contrib.wxs -text
 Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_contrib_library.wxs -text
 Src/Delivery/scripts/windows/install/content/eiffelstudio/studio_contrib_library_gobo.wxs -text
@@ -1165,6 +1166,7 @@ Src/Delivery/scripts/windows/install/interface/DialogMaintenanceWelcome.wxs -tex
 Src/Delivery/scripts/windows/install/interface/DialogVerifyReadyMaintain.wxs -text
 Src/Delivery/scripts/windows/install/licenses/eiffelenvision/enterprise.rtf -text
 Src/Delivery/scripts/windows/install/licenses/eiffelenvision/free.rtf -text
+Src/Delivery/scripts/windows/install/licenses/eiffelstudio/branded.rtf -text
 Src/Delivery/scripts/windows/install/licenses/eiffelstudio/enterprise.rtf -text
 Src/Delivery/scripts/windows/install/licenses/eiffelstudio/gpl.rtf -text svneol=unset#unset
 Src/Delivery/scripts/windows/install/licenses/eiffelstudio/license.rtf -text
