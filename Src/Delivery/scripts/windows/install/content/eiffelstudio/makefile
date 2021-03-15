@@ -143,11 +143,6 @@ studio_gdiplus.wxs:
 		-fi:gdiplus.dll -de:"\*" > $@.tmp
 	move $@.tmp $@
 
-studio_branded_ec.wxs:
-	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\branded_version" \
-		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"branded_ec" -n:"Core." > $@.tmp
-	move $@.tmp $@
-
 studio_ent_ec.wxs:
 	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\enterprise_version" \
 		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"enterprise_ec" -n:"Core." > $@.tmp
