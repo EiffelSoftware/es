@@ -66,9 +66,10 @@ WXS_BRANDED = \
 	studio_examples.wxs \
 	studio_libraries.wxs \
 	studio_contrib.wxs \
+	studio_contrib_library.wxs \
+	studio_contrib_library_gobo.wxs \
 	studio_unstable.wxs \
 	studio_tools.wxs \
-	studio_gobo.wxs \
 	studio_gdiplus.wxs \
 	studio_branded_ec.wxs
 
