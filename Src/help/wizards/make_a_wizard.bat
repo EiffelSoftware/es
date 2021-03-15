@@ -19,17 +19,20 @@ cd/d %TEMP%\%3
 copy/b %EIFFEL_SRC%\help\wizards\wizard.ico .
 copy/b %EIFFEL_SRC%\help\wizards\wizard.rc .
 %ISE_EIFFEL%\studio\spec\%ISE_PLATFORM%\bin\ec -finalize -config %EIFFEL_SRC%\help\wizards\%3.ecf -project_path %TEMP%\%3 -c_compile
-echo -----------------------------------------------------------------
-echo ------- Compress generated executable file ----------------------
-echo -----------------------------------------------------------------
-cd/d %TEMP%\%3\EIFGENs\wizard\F_code
-iff not defined WIN64 then
-	upx wizard.exe
-endiff
+
+::DISABLED as upx cause trouble with antivirus
+::echo -----------------------------------------------------------------
+::echo ------- Compress generated executable file ----------------------
+::echo -----------------------------------------------------------------
+::cd/d %TEMP%\%3\EIFGENs\wizard\F_code
+::iff not defined WIN64 then
+::	upx wizard.exe
+::endiff
+
 echo -----------------------------------------------------------------
 echo ------- Copying generated executable file into Delivery ---------
 echo -----------------------------------------------------------------
-copy/b wizard.exe %DELIVERY%\studio\wizards\%1\%2\spec\%ISE_PLATFORM%
+copy /b %TEMP%\%3\EIFGENs\wizard\F_code\wizard.exe %DELIVERY%\studio\wizards\%1\%2\spec\%ISE_PLATFORM%
 cd %TEMP%
 popd
 echo -----------------------------------------------------------------
