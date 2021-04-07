@@ -1210,7 +1210,6 @@ Src/Delivery/studio/bitmaps/src/build_small_icons.sh eol=lf
 Src/Delivery/studio/bitmaps/src/build_svg_matrix.sh eol=lf
 Src/Delivery/studio/bitmaps/src/clean_overlays.sh eol=lf
 Src/Delivery/studio/bitmaps/src/extract_all_png.sh eol=lf
-Src/Delivery/studio/bitmaps/src/icons-svg.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/icons.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/icons/1/1.png -text
 Src/Delivery/studio/bitmaps/src/icons/1/1.svg -text
