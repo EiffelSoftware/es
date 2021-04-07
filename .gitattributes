@@ -1954,6 +1954,7 @@ Src/Delivery/studio/bitmaps/src/icons/icons_24x24.png -text
 Src/Delivery/studio/bitmaps/src/icons/icons_24x24.svg -text
 Src/Delivery/studio/bitmaps/src/icons/icons_32x32.png -text
 Src/Delivery/studio/bitmaps/src/icons/icons_32x32.svg -text
+Src/Delivery/studio/bitmaps/src/inc/legacy_png_matrix_from_subpixmaps.sh eol=lf
 Src/Delivery/studio/bitmaps/src/inc/matrix_from_subpixmaps.sh eol=lf
 Src/Delivery/studio/bitmaps/src/inc/matrix_to_subpixmaps.sh eol=lf
 Src/Delivery/studio/bitmaps/src/inc/svgbuilder.sh eol=lf
