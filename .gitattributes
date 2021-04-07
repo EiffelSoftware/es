@@ -1176,6 +1176,7 @@ Src/Delivery/studio/bitmaps/png/10x10.png -text
 Src/Delivery/studio/bitmaps/png/12x12.png -text
 Src/Delivery/studio/bitmaps/png/16x16.png -text
 Src/Delivery/studio/bitmaps/png/activation.png -text
+Src/Delivery/studio/bitmaps/png/all_icons.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/png/bm_About.png -text
 Src/Delivery/studio/bitmaps/png/bm_wizard_blue.png -text
 Src/Delivery/studio/bitmaps/png/bm_wizard_profiler_icon.png -text
@@ -1533,6 +1534,7 @@ Src/Delivery/studio/bitmaps/src/icons/19/10.svg -text
 Src/Delivery/studio/bitmaps/src/icons/19/11.png -text
 Src/Delivery/studio/bitmaps/src/icons/19/11.svg -text
 Src/Delivery/studio/bitmaps/src/icons/19/12.png -text
+Src/Delivery/studio/bitmaps/src/icons/19/13.png -text
 Src/Delivery/studio/bitmaps/src/icons/19/2.png -text
 Src/Delivery/studio/bitmaps/src/icons/19/3.png -text
 Src/Delivery/studio/bitmaps/src/icons/19/4.png -text
@@ -1553,6 +1555,7 @@ Src/Delivery/studio/bitmaps/src/icons/20/1.png -text
 Src/Delivery/studio/bitmaps/src/icons/20/1.svg -text
 Src/Delivery/studio/bitmaps/src/icons/20/10.png -text
 Src/Delivery/studio/bitmaps/src/icons/20/10.svg -text
+Src/Delivery/studio/bitmaps/src/icons/20/11.png -text
 Src/Delivery/studio/bitmaps/src/icons/20/11.svg -text
 Src/Delivery/studio/bitmaps/src/icons/20/12.png -text
 Src/Delivery/studio/bitmaps/src/icons/20/13.png -text
@@ -1958,11 +1961,14 @@ Src/Delivery/studio/bitmaps/src/icons/icons_24x24.png -text
 Src/Delivery/studio/bitmaps/src/icons/icons_24x24.svg -text
 Src/Delivery/studio/bitmaps/src/icons/icons_32x32.png -text
 Src/Delivery/studio/bitmaps/src/icons/icons_32x32.svg -text
+Src/Delivery/studio/bitmaps/src/icons/png.html svneol=native#text/xml
+Src/Delivery/studio/bitmaps/src/icons/svg.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/inc/legacy_png_matrix_from_subpixmaps.sh eol=lf
 Src/Delivery/studio/bitmaps/src/inc/matrix_from_subpixmaps.sh eol=lf
 Src/Delivery/studio/bitmaps/src/inc/matrix_to_subpixmaps.sh eol=lf
 Src/Delivery/studio/bitmaps/src/inc/svgbuilder.sh eol=lf
 Src/Delivery/studio/bitmaps/src/index.html svneol=native#text/xml
+Src/Delivery/studio/bitmaps/src/mini.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/mini/1/1.png -text
 Src/Delivery/studio/bitmaps/src/mini/1/1.svg -text
 Src/Delivery/studio/bitmaps/src/mini/1/10.png -text
@@ -2091,6 +2097,8 @@ Src/Delivery/studio/bitmaps/src/mini/mini_15x15.svg -text
 Src/Delivery/studio/bitmaps/src/mini/mini_20x20.png -text
 Src/Delivery/studio/bitmaps/src/mini/mini_20x20.svg -text
 Src/Delivery/studio/bitmaps/src/mini/mini_icons.svg -text
+Src/Delivery/studio/bitmaps/src/mini/png.html svneol=native#text/xml
+Src/Delivery/studio/bitmaps/src/mini/svg.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/quick_build_all_matrix.sh eol=lf
 Src/Delivery/studio/bitmaps/src/quick_build_icons_matrix.sh eol=lf
 Src/Delivery/studio/bitmaps/src/res/3dots.svg -text
@@ -2129,6 +2137,7 @@ Src/Delivery/studio/bitmaps/src/res/folder.svg -text
 Src/Delivery/studio/bitmaps/src/res/folders.svg -text
 Src/Delivery/studio/bitmaps/src/res/gear_green.svg -text
 Src/Delivery/studio/bitmaps/src/res/green_mark.svg -text
+Src/Delivery/studio/bitmaps/src/res/index.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/res/info.svg -text
 Src/Delivery/studio/bitmaps/src/res/instance-free.svg -text
 Src/Delivery/studio/bitmaps/src/res/instance-free_ne.svg -text
@@ -2153,7 +2162,6 @@ Src/Delivery/studio/bitmaps/src/res/once.svg -text
 Src/Delivery/studio/bitmaps/src/res/once_se.svg -text
 Src/Delivery/studio/bitmaps/src/res/overridden.svg -text
 Src/Delivery/studio/bitmaps/src/res/override.svg -text
-Src/Delivery/studio/bitmaps/src/res/override2.svg -text
 Src/Delivery/studio/bitmaps/src/res/packaged.svg -text
 Src/Delivery/studio/bitmaps/src/res/pen.svg -text
 Src/Delivery/studio/bitmaps/src/res/pinned.svg -text
@@ -2179,6 +2187,7 @@ Src/Delivery/studio/bitmaps/src/res/warning.svg -text
 Src/Delivery/studio/bitmaps/src/res/water_drop.svg -text
 Src/Delivery/studio/bitmaps/src/res/white_mark.svg -text
 Src/Delivery/studio/bitmaps/src/res/window.svg -text
+Src/Delivery/studio/bitmaps/src/small.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/small/1/1.png -text
 Src/Delivery/studio/bitmaps/src/small/1/1.svg -text
 Src/Delivery/studio/bitmaps/src/small/1/10.png -text
@@ -2204,6 +2213,7 @@ Src/Delivery/studio/bitmaps/src/small/1/8.svg -text
 Src/Delivery/studio/bitmaps/src/small/1/9.png -text
 Src/Delivery/studio/bitmaps/src/small/1/9.svg -text
 Src/Delivery/studio/bitmaps/src/small/12x12.png -text
+Src/Delivery/studio/bitmaps/src/small/png.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/small/small_12x12.png -text
 Src/Delivery/studio/bitmaps/src/small/small_12x12.svg -text
 Src/Delivery/studio/bitmaps/src/small/small_15x15.png -text
@@ -2213,6 +2223,7 @@ Src/Delivery/studio/bitmaps/src/small/small_18x18.svg -text
 Src/Delivery/studio/bitmaps/src/small/small_24x24.png -text
 Src/Delivery/studio/bitmaps/src/small/small_24x24.svg -text
 Src/Delivery/studio/bitmaps/src/small/small_icons.svg -text
+Src/Delivery/studio/bitmaps/src/small/svg.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/svg_cli.py eol=lf
 Src/Delivery/studio/bitmaps/src/svgcleaner -text
 Src/Delivery/studio/bitmaps/src/tools/build_html_index.ecf svneol=native#text/xml
