@@ -1201,11 +1201,13 @@ Src/Delivery/studio/bitmaps/src/build_all_diff.sh eol=lf
 Src/Delivery/studio/bitmaps/src/build_all_icons_matrix.sh eol=lf
 Src/Delivery/studio/bitmaps/src/build_diff.sh eol=lf
 Src/Delivery/studio/bitmaps/src/build_icons.sh eol=lf
+Src/Delivery/studio/bitmaps/src/build_icons_matrix.sh eol=lf
 Src/Delivery/studio/bitmaps/src/build_mini_icons.sh eol=lf
 Src/Delivery/studio/bitmaps/src/build_overlays.sh eol=lf
 Src/Delivery/studio/bitmaps/src/build_res.sh eol=lf
 Src/Delivery/studio/bitmaps/src/build_small_icons.sh eol=lf
 Src/Delivery/studio/bitmaps/src/build_svg_matrix.sh eol=lf
+Src/Delivery/studio/bitmaps/src/clean_overlays.sh eol=lf
 Src/Delivery/studio/bitmaps/src/extract_all_png.sh eol=lf
 Src/Delivery/studio/bitmaps/src/icons/1/1.svg -text
 Src/Delivery/studio/bitmaps/src/icons/1/10.svg -text
@@ -1523,6 +1525,8 @@ Src/Delivery/studio/bitmaps/src/mini/mini_15x15.svg -text
 Src/Delivery/studio/bitmaps/src/mini/mini_20x20.png -text
 Src/Delivery/studio/bitmaps/src/mini/mini_20x20.svg -text
 Src/Delivery/studio/bitmaps/src/mini/mini_icons.svg -text
+Src/Delivery/studio/bitmaps/src/quick_build_all_matrix.sh eol=lf
+Src/Delivery/studio/bitmaps/src/quick_build_icons_matrix.sh eol=lf
 Src/Delivery/studio/bitmaps/src/res/3dots.svg -text
 Src/Delivery/studio/bitmaps/src/res/_empty.svg -text
 Src/Delivery/studio/bitmaps/src/res/any.svg -text
