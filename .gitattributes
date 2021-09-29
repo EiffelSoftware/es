@@ -7060,6 +7060,7 @@ Src/tools/button_clicker/button_clicker.ico -text
 Src/tools/button_clicker/button_clicker.lic -text
 Src/tools/bytecode_tool/README.TXT -text
 Src/tools/bytecode_tool/bytecode_tool.lic -text
+Src/tools/cloud_checker/cloud_checker.ecf svneol=native#text/xml
 Src/tools/com_wizard/launcher/com_wizard_launcher.lic -text
 Src/tools/com_wizard/root/com_wizard.lic -text
 Src/tools/com_wizard/root/resources/eiffel_software.png -text
