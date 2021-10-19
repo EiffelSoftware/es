@@ -7672,7 +7672,8 @@ Src/web/eiffel-cloud/site/modules/auth/mail_templates/account_welcome.html svneo
 Src/web/eiffel-cloud/site/modules/auth/mail_templates/admin_account_evaluation.html svneol=native#text/xml
 Src/web/eiffel-cloud/site/modules/contact/files/scss/contact.scss -text
 Src/web/eiffel-cloud/site/modules/core/scripts/core.sql -text
-Src/web/eiffel-cloud/site/modules/core/scripts/updates/core-1.0.0.1.sql -text
+Src/web/eiffel-cloud/site/modules/core/scripts/update/core-1_0_0_0-1_0_0_1.sql -text
+Src/web/eiffel-cloud/site/modules/core/scripts/update/core-1_0_0_1-1_1_0_1.sql -text
 Src/web/eiffel-cloud/site/modules/core/scripts/user_profile.sql -text
 Src/web/eiffel-cloud/site/modules/custom_block/config/custom_block.json -text
 Src/web/eiffel-cloud/site/modules/custom_block/files/css/style.css -text
