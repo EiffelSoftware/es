@@ -9715,6 +9715,8 @@ eweasel/tests/syntax073/Ace svneol=native#text/xml
 eweasel/tests/syntax073/output_p -text
 eweasel/tests/syntax074/Ace svneol=native#text/xml
 eweasel/tests/syntax075/Ace svneol=native#text/xml
+eweasel/tests/syntax076/Ace svneol=native#text/xml
+eweasel/tests/syntax076/output svneol=native#text/plain
 eweasel/tests/table008/Ace -text
 eweasel/tests/table014/Ace svneol=native#text/xml
 eweasel/tests/term001/notes -text
