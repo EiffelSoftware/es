@@ -186,7 +186,7 @@ feature {NONE} -- Initialization
 			c_get_screen_geometry (l_workarea)
 			screen_virtual_width := {GTK}.gdk_rectangle_struct_width (l_workarea)
 			screen_virtual_height := {GTK}.gdk_rectangle_struct_height (l_workarea)
-
+			l_workarea.memory_free
 		end
 
 	gdk_display_supports_composite_symbol: POINTER
@@ -1451,6 +1451,7 @@ feature -- Implementation
 			Result := stored_display_data
 		end
 
+
 	update_display_data
 			-- Update stored values with current values.
 		local
@@ -1464,9 +1465,12 @@ feature -- Implementation
 			l_stored_display_data := stored_display_data
 
 			l_device := {GDK_HELPERS}.default_device
+			{GDK_HELPERS}.device_get_position (l_device, $temp_x, $temp_y)
 			l_window := {GDK}.gdk_device_get_window_at_position (l_device, $temp_x, $temp_y)
+
 			if not l_window.is_default_pointer then
 				l_window := {GDK}.gdk_window_get_device_position (l_window, l_device, $temp_x, $temp_y, $temp_mask)
+				{GDK_HELPERS}.device_get_position (l_device, $temp_x, $temp_y)
 				l_stored_display_data.window := l_window
 				l_stored_display_data.x := temp_x + screen_virtual_x
 				l_stored_display_data.y := temp_y + screen_virtual_y
