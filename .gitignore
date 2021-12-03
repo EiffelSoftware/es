@@ -184,6 +184,7 @@ Src/C_library/zlib/zlib1.res
 Src/Delivery/scripts/windows/DELIV
 Src/Delivery/scripts/windows/install/redist/bin
 Src/Delivery/scripts/windows/install/redist/obj
+Src/Delivery/scripts/windows/misc/_EV_CODE_SIGNING
 Src/Delivery/studio/wizards/new_projects/dotnet/spec
 Src/Delivery/studio/wizards/new_projects/vision2/spec
 Src/Delivery/studio/wizards/new_projects/wel/spec
