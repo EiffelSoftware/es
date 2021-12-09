@@ -1171,6 +1171,7 @@ Src/Delivery/scripts/windows/install/licenses/eiffelstudio/enterprise.rtf -text
 Src/Delivery/scripts/windows/install/licenses/eiffelstudio/gpl.rtf -text svneol=unset#unset
 Src/Delivery/scripts/windows/install/licenses/eiffelstudio/license.rtf -text
 Src/Delivery/scripts/windows/install/licenses/eiffelstudio/university.rtf -text svneol=unset#unset
+Src/Delivery/scripts/windows/misc/local.bat.example -text
 Src/Delivery/scripts/windows/set_new_eiffelstudio_guid.sh eol=lf
 Src/Delivery/studio/bitmaps/png/10x10.png -text
 Src/Delivery/studio/bitmaps/png/12x12.png -text
