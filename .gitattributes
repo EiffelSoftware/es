@@ -13927,6 +13927,7 @@ free_add_ons/gcc/windows/msys/1.0/m.ico -text
 free_add_ons/gcc/windows/msys/1.0/msys.bat -text
 free_add_ons/gcc/windows/msys/1.0/msys.ico -text
 research/extension/autoproof/Eiffel/Ace/ec.ecf svneol=native#text/xml
+research/extension/autoproof/framework/eiffel2boogie/eiffel2boogie.lic -text
 research/extension/autoproof/framework/eiffel2boogie/tests/advanced/bags/output.txt -text
 research/extension/autoproof/framework/eiffel2boogie/tests/advanced/functional/output.txt -text
 research/extension/autoproof/framework/eiffel2boogie/tests/advanced/inheritance/output.txt -text
