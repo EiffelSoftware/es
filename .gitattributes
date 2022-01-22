@@ -7206,6 +7206,8 @@ Src/tools/ecf_tool/README.md -text
 Src/tools/ecf_tool/ecf_tool.ecf svneol=native#text/xml
 Src/tools/ecf_tool/license.lic -text
 Src/tools/ecf_tool/src/licence.lic -text
+Src/tools/eiffel_converter/ec.ecf svneol=native#text/xml
+Src/tools/eiffel_converter/ec.lic svneol=native#text/plain
 Src/tools/eiffel_echo/eiffel_echo.lic -text
 Src/tools/eiffel_image_embedder/eimgemb.lic -text
 Src/tools/eiffel_make/emake.lic -text
