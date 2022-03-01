@@ -1,11 +1,10 @@
 note
-	description: "Locator for C/C++ compiler for Visual Studio 2019."
-	author: ""
+	description: "Locator for C/C++ compiler for Visual Studio 2022."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	VS_2019_CONFIG
+	VS_2022_CONFIG
 
 inherit
 	VS_SETUP_CONFIG
@@ -17,7 +16,7 @@ feature -- Status Report
 
 	vs_version: INTEGER
 		do
-			Result := 16
+			Result := 17
 		end
 
 note
