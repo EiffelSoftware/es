@@ -10029,6 +10029,8 @@ eweasel/tests/valid295/Ace svneol=native#text/xml
 eweasel/tests/valid296/Ace svneol=native#text/xml
 eweasel/tests/valid297/Ace svneol=native#text/xml
 eweasel/tests/valid298/Ace svneol=native#text/xml
+eweasel/tests/valid299/Ace svneol=native#text/xml
+eweasel/tests/valid299/output svneol=native#text/plain
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text
