@@ -13994,3 +13994,4 @@ research/extension/autoproof/library/base/mml/sequence.bpl -text
 research/extension/autoproof/library/base/mml/set.bpl -text
 research/extension/autoproof/library/base/primes.sed -text
 research/extension/autoproof/library/base/std_files.sed eol=lf
+research/extension/autoproof/precomp/spec/platform/base2.ecf svneol=native#text/xml
