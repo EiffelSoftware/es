@@ -1175,6 +1175,7 @@ Src/Delivery/scripts/windows/install/licenses/eiffelstudio/university.rtf -text 
 Src/Delivery/scripts/windows/misc/es_signtool eol=lf
 Src/Delivery/scripts/windows/misc/ev_code_sign_release.sh eol=lf
 Src/Delivery/scripts/windows/misc/ev_code_sign_release_final.sh eol=lf
+Src/Delivery/scripts/windows/misc/ev_code_sign_setups.sh eol=lf
 Src/Delivery/scripts/windows/misc/jsign/config.rc -text
 Src/Delivery/scripts/windows/misc/jsign/setup.sh eol=lf
 Src/Delivery/scripts/windows/misc/local.bat.example -text
