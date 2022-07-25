@@ -5007,6 +5007,7 @@ Src/dotnet/codedom_provider_2.0/tools/manager/icons/new_wizard.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/revert.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/save.png -text
 Src/dotnet/consumer/resources/tray_icon.ico -text
+Src/dotnet/consumer_factory/consumer_factory.ecf svneol=native#text/xml
 Src/dotnet/consumer_interface/consumer_interface.ecf svneol=native#text/xml
 Src/dotnet/eac_browser/ressources/eac_ico/icon_all_features.ico -text
 Src/dotnet/eac_browser/ressources/eac_ico/icon_ancestors.ico -text
