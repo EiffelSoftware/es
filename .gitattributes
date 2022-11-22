@@ -2459,6 +2459,7 @@ Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.dia -text
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.png -text
 Src/Eiffel/edition/edition.ecf svneol=native#text/xml
 Src/Eiffel/edition/license.lic -text
+Src/Eiffel/eiffel/com_il_generation/Core/run-time/runtime_core.csproj -text
 Src/Eiffel/scm/lib/scm_plugins/scm_plugins.ecf svneol=native#text/xml
 Src/Eiffel/scm/scm.ecf svneol=native#text/xml
 Src/build/build.ico -text
