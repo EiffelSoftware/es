@@ -270,6 +270,10 @@ Src/contrib/library/graphic/toolkit/wex/library/wex/spec/bcb
 Src/contrib/library/graphic/toolkit/wex/library/wex/spec/mingw
 Src/contrib/library/graphic/toolkit/wex/library/wex/spec/msc
 Src/dotnet/codedom_provider_2.0/configuration/*.rc
+Src/dotnet/consumer_netcore/cs/md_consumer/bin
+Src/dotnet/consumer_netcore/cs/md_consumer/obj
+Src/dotnet/consumer_netcore/cs/md_consumer_app/bin
+Src/dotnet/consumer_netcore/cs/md_consumer_app/obj
 Src/examples/docking/simple/EIFGENs
 Src/examples/store/insert/EIFGENs
 Src/examples/store/nesting/EIFGENs

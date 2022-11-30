@@ -5016,6 +5016,7 @@ Src/dotnet/consumer_netcore/cs/md_consumer/build.eant svneol=native#text/xml
 Src/dotnet/consumer_netcore/cs/md_consumer/md_consumer.csproj -text
 Src/dotnet/consumer_netcore/cs/md_consumer/md_consumer.runtimeconfig.json -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/assembly_info_utils.cs -text
+Src/dotnet/consumer_netcore/cs/md_consumer/src/assembly_loader.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/consumer/assembly_consumer.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/consumer/common.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/consumer/consumer_serializer.cs -text
