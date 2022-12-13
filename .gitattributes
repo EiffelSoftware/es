@@ -80,6 +80,7 @@ Src/.git-svn/scm -text
 Src/.git-svn/users.txt -text
 Src/C/CONFIGS/freebsd-ppc -text
 Src/C/CONFIGS/freebsd-ppc-64 -text
+Src/C/CONFIGS/linux-arm64 -text
 Src/C/CONFIGS/linux-x86-64 eol=lf
 Src/C/CONFIGS/macosx-armv6 -text
 Src/C/Configure eol=lf
