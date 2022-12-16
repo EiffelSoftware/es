@@ -35,15 +35,15 @@
         <?endif?>
       <?endif?>
       <?ifdef x64?>
-        <?define ProductGuid = "F39AD306-1FBF-4BEC-9D9A-AC697010C836" ?>
-        <?define RegistriesGuid = "C372F25C-D02C-48F3-83A0-871342F36AFC" ?>
-        <?define ShortcutsGuid = "CB8F2F9D-6075-4C09-8487-314C922F15A4" ?>
+        <?define ProductGuid = "B6A5B53F-B7D8-4461-B221-B092C5905447" ?>
+        <?define RegistriesGuid = "CBCF0FC0-7CF7-4B3A-BDBD-561B84C7D421" ?>
+        <?define ShortcutsGuid = "DFDE4D0C-DF6D-4BA9-B065-BE3304FFD2EE" ?>
       <?else?>
-        <?define ProductGuid = "3BFAE54E-9FF4-4E3A-A3C3-29B339DEA8D1" ?>
-        <?define RegistriesGuid = "69740A02-0957-495C-B6A0-69BB29D1F607" ?>
-        <?define ShortcutsGuid = "89424C01-EFEF-4A1A-9A64-37A30DA11F17" ?>
+        <?define ProductGuid = "22534BB4-8129-466C-AA0D-D6427907ADAA" ?>
+        <?define RegistriesGuid = "C761E77F-6E85-416A-BD09-D6C0FB162B50" ?>
+        <?define ShortcutsGuid = "4C2B6A77-9C47-49F7-843E-EEF02CE9CFA2" ?>
       <?endif?>
-      <?define UpgradeGuid = "358A8C02-BB85-4953-B834-C493B5682DFD" ?>
+      <?define UpgradeGuid = "214CACAC-B604-42EF-BEB1-5C273F09AF38" ?>
       <?define Product = "EiffelStudio" ?>
       <?define ProductVersion = "22.12" ?>
       <?define ProductDescription = "EiffelStudio 22.12" Integrated Development Environment (IDE) Installer" ?>
