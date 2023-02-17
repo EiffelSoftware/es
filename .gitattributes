@@ -7251,6 +7251,7 @@ Src/tools/doc_builder/resources/syntax_definitions/java.syn_bin svneol=native#un
 Src/tools/doc_builder/resources/syntax_definitions/xml.syn_bin svneol=native#unset
 Src/tools/doc_builder/resources/templates/header_mainarea.jpg -text
 Src/tools/doc_builder/resources/xml/all_libs.lic -text
+Src/tools/dotnet/md_cache_browser/md_consumer_browser.ecf svneol=native#text/xml
 Src/tools/dotnet_reference_builder/dotnet_reference_builder.lic -text
 Src/tools/ecf_redirection/README.txt -text
 Src/tools/ecf_redirection/licence.lic -text
