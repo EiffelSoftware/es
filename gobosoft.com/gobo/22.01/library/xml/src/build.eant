@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<project name="xml_source" default="help">
+
+	<description>
+		description: "Eiffel Ant file for the Gobo Eiffel XML Library"
+		library: "Gobo Eiffel XML Library"
+		copyright: "Copyright (c) 2001-2019, Eric Bezault and others"
+		license: "MIT License"
+		date: "$Date$"
+		revision: "$Revision$"
+	</description>
+
+	<inherit>
+		<parent location="${GOBO}/library/common/config/basic.eant">
+			<redefine target="install"/>
+			<redefine target="clobber"/>
+		</parent>
+		<parent location="${GOBO}/library/common/config/ecf.eant"/>
+	</inherit>
+	
+	<target name="install" depend="init">
+		<description>
+			Install the Gobo Eiffel XML Library.
+			Generate scanner and parser files.
+			Regenerate ECF files.
+		</description>
+
+		<geant target="update_all_ecf"/>
+		<geant target="xm_eiffel_scanner"/>
+		<geant target="xm_eiffel_parser"/>
+	</target>
+
+	<target name="clobber" depend="init">
+		<description>
+			Remove all generated files.
+		</description>
+
+		<geant target="clean"/>
+		<delete file="parser/eiffel/xm_eiffel_scanner.e"/>
+		<delete file="parser/eiffel/xm_eiffel_parser.e"/>
+		<delete file="parser/eiffel/xm_eiffel_tokens.e"/>
+	</target>
+
+<!-- Implementation -->
+
+	<target name="xm_eiffel_scanner" dir="parser/eiffel" export="NONE">
+		<gelex input="xm_eiffel_scanner.l" output="xm_eiffel_scanner.e"/>
+	</target>
+	
+	<target name="xm_eiffel_parser" dir="parser/eiffel" export="NONE">
+		<geyacc input="xm_eiffel_parser.y" tokens="XM_EIFFEL_TOKENS" output="xm_eiffel_parser.e"/>
+	</target>
+
+</project>

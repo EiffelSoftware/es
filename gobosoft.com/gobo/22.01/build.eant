@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+
+<project name="gobo" default="help">
+
+	<description>
+		description: "Eiffel Ant file for Gobo Eiffel"
+		copyright: "Copyright (c) 2001-2018, Eric Bezault and others"
+		license: "MIT License"
+		date: "$Date$"
+		revision: "$Revision$"
+	</description>
+
+	<inherit>
+		<parent location="${GOBO}/library/common/config/packages.eant">
+			<redefine target="init"/>
+			<redefine target="other_help"/>
+		</parent>
+	</inherit>
+
+	<target name="develop" depend="init">
+		<description>
+			Install developer package.
+			The bootstrap should be run first.
+		</description>
+
+		<geant target="clobber"/>
+		<geant target="install"/>
+		<geant target="clean"/>
+	</target>
+
+	<target name="delivery" depend="init">
+		<description>
+			Build delivery package.
+			The bootstrap should be run first.
+		</description>
+		
+		<geant target="develop"/>
+		<delete>
+			<fileset directory="." include="@(**/.git*)"/>
+		</delete>
+		<delete file=".travis.yml"/>
+		<delete directory=".gitlab"/>
+		<delete directory=".sourceforge"/>
+		<delete directory="library/structure/doc/visio"/>
+		<delete directory="library/time/doc/visio"/>
+	</target>
+
+	<target name="web_site" depend="init">
+		<description>
+			Build documentation package for the Web site.
+			The bootstrap should be run first.
+		</description>
+		
+		<setenv name="path_to_gobo" value="http://www.gobosoft.com/eiffel/gobo/"/>
+		<geant target="delivery"/>		
+		<geant target="move_doc_files" arguments="library">
+			<fileset include="@(library/*/build.eant)">
+				<map type="glob" from="library/*/build.eant" to="*"/>
+			</fileset>
+		</geant>
+		<geant target="move_doc_files" arguments="tool">
+			<fileset include="@(tool/*/build.eant)">
+				<map type="glob" from="tool/*/build.eant" to="*"/>
+			</fileset>
+		</geant>
+		<move to_directory=".">
+			<fileset include="@(common/**/*)">
+				<map type="glob" from="common/*" to="*"/>
+			</fileset>
+		</move>
+		<delete directory="library"/>
+		<delete directory="tool"/>
+		<delete directory="common"/>
+		<delete>
+			<fileset directory="." include="**/*.@(eant|xml|xsl)"/>
+		</delete>
+	</target>
+	
+<!-- Implementation -->
+
+	<target name="init" export="NONE">
+		<geant target="init_os"/>
+	</target>
+
+	<target name="init_os" export="NONE">
+		<geant target="init_windows" if="${GOBO_OS}=windows"/>
+		<geant target="init_unix" unless="${GOBO_OS}=windows"/>
+	</target>
+
+	<target name="init_windows" export="NONE">
+		<!-- No special windows tasks needed for now but target is kept for possible future instructions -->
+	</target>
+
+	<target name="init_unix" export="NONE">
+		<!-- No special unix tasks needed for now but target is kept for possible future instructions -->
+	</target>
+
+	<target name="other_help" export="NONE">
+		<echo message="   geant develop"/>
+		<echo message="   geant delivery"/>
+		<echo message="   geant web_site"/>
+		<precursor/>
+	</target>
+
+	<target name="move_doc_files" export="NONE">
+		<description>
+			Move documentation files for the Web site.
+		</description>
+		<argument name="kind_type"/>
+		
+		<geant file="build.eant" target="do_move_doc_files" arguments="${kind_type},${fs.mapped_filename}"/>
+	</target>		
+	
+	<target name="do_move_doc_files">
+		<description>
+			Move documentation files for the Web site.
+		</description>
+		<argument name="kind_type"/>
+		<argument name="kind_name"/>
+		
+		<move to_directory="${kind_name}">
+			<fileset include="@(${kind_type}/${kind_name}/doc/**/*)">
+				<map type="glob" from="${kind_type}/${kind_name}/doc/*" to="*"/>
+			</fileset>
+		</move>
+	</target>
+	
+</project>

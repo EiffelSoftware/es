@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system
+	xmlns="http://www.eiffel.com/developers/xml/configuration-1-22-0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-22-0 http://www.eiffel.com/developers/xml/configuration-1-22-0.xsd"
+	name="gexslt"
+	uuid="E1FFE100-60B0-1009-0001-000000000001"
+	library_target="all_classes"
+>
+	<description>
+		system: "Gobo Eiffel XSLT 2.0 processor"
+		copyright: "Copyright (c) 2004-2019, Eric Bezault and others"
+		license: "MIT License"
+	</description>
+	<target name="all_classes">
+		<root all_classes="true"/>
+		<file_rule>
+			<exclude>/\.svn$</exclude>
+			<exclude>/\.git$</exclude>
+			<exclude>/EIFGENs$</exclude>
+		</file_rule>
+		<option>
+			<debug name="XPath Expression Parser" enabled="false"/>
+			<debug name="XPath Expression Parser - tokens" enabled="false"/>
+			<debug name="XSLT content output" enabled="false"/>
+			<debug name="XPath content emitter" enabled="false"/>
+			<debug name="XPath name pool - URIs" enabled="false"/>
+			<debug name="XPath name pool - namespaces" enabled="false"/>
+			<debug name="XSLT key manager" enabled="false"/>
+			<debug name="XSLT key function" enabled="false"/>
+			<debug name="XPath expression factory" enabled="false"/>
+			<debug name="XSLT template rules" enabled="false"/>
+			<debug name="XSLT pattern parsing" enabled="false"/>
+			<debug name="XSLT memo function" enabled="false"/>
+		</option>
+		<variable name="GOBO_LIBRARY" value="../../.."/>
+		<library name="free_elks" location="${GOBO_LIBRARY}/library/free_elks/library_${GOBO_EIFFEL}.ecf" readonly="true"/>
+		<library name="kernel" location="${GOBO_LIBRARY}/library/kernel/library.ecf" readonly="true"/>
+		<library name="structure" location="${GOBO_LIBRARY}/library/structure/library.ecf" readonly="true"/>
+		<library name="string" location="${GOBO_LIBRARY}/library/string/library.ecf" readonly="true"/>
+		<library name="utility" location="${GOBO_LIBRARY}/library/utility/library.ecf" readonly="true"/>
+		<library name="xml" location="${GOBO_LIBRARY}/library/xml/library.ecf" readonly="true"/>
+		<library name="xpath" location="${GOBO_LIBRARY}/library/xpath/library.ecf" readonly="true"/>
+		<library name="xslt" location="${GOBO_LIBRARY}/library/xslt/library.ecf" readonly="true"/>
+		<cluster name="gexslt" location="./"/>
+	</target>
+	<target name="gexslt" extends="all_classes">
+		<root class="GEXSLT" feature="execute"/>
+		<setting name="console_application" value="true"/>
+		<capability>
+			<concurrency use="none"/>
+		</capability>
+	</target>
+</system>
