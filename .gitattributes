@@ -1118,6 +1118,7 @@ Src/Delivery/scripts/unix/packaging/debian/rules -text
 Src/Delivery/scripts/unix/packaging/description -text
 Src/Delivery/scripts/unix/packaging/license -text
 Src/Delivery/scripts/unix/packaging/logo.png -text
+Src/Delivery/scripts/unix/update_config -text
 Src/Delivery/scripts/windows/bin/7z.dll -text
 Src/Delivery/scripts/windows/bin/7z.exe -text
 Src/Delivery/scripts/windows/call_make_dotnet.btm -text
