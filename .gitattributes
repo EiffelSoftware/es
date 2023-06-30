@@ -6514,6 +6514,7 @@ Src/dotnet/consumer_netcore/cs/md_consumer/src/md_consumer.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/support/type_name_solver.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer_app/app.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer_app/app.csproj -text
+Src/dotnet/consumer_netcore/cs/md_consumer_app/build.eant svneol=native#text/xml
 Src/dotnet/consumer_netcore/cs/md_consumer_host/md_consumer_host.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer_host/md_consumer_host.csproj -text
 Src/dotnet/consumer_netcore/cs/md_consumer_host/md_consumer_host.runtimeconfig.json -text
