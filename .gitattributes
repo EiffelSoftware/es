@@ -2249,11 +2249,7 @@ Src/Delivery/studio/bitmaps/src/small/svg.html svneol=native#text/xml
 Src/Delivery/studio/bitmaps/src/svg_cli.py eol=lf
 Src/Delivery/studio/bitmaps/src/svgcleaner -text
 Src/Delivery/studio/bitmaps/src/tools/build_html_index.ecf svneol=native#text/xml
-Src/Delivery/studio/config/unix/templates/netcore.deps.json.template -text
-Src/Delivery/studio/config/unix/templates/netcore.runtimeconfig.json.template -text
 Src/Delivery/studio/config/windows/msc/appl.ico -text
-Src/Delivery/studio/config/windows/templates/netcore.deps.json.template -text
-Src/Delivery/studio/config/windows/templates/netcore.runtimeconfig.json.template -text
 Src/Delivery/studio/eifinit/code_analysis.xml -text
 Src/Delivery/studio/eifinit/libraries.cfg -text
 Src/Delivery/studio/eifinit/precompiles.cfg -text
