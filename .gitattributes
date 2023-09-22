@@ -1106,7 +1106,6 @@ Src/Delivery/scripts/docker/unix/image/dockerfile-32bits -text
 Src/Delivery/scripts/docker/unix/image/dockerfile-64bits -text
 Src/Delivery/scripts/docker/unix/porterpackage/dockerfile -text
 Src/Delivery/scripts/unix/README.packaging -text
-Src/Delivery/scripts/unix/compile_dotnet -text
 Src/Delivery/scripts/unix/compile_eweasel -text
 Src/Delivery/scripts/unix/compile_other_libraries -text
 Src/Delivery/scripts/unix/make_debian_package -text
