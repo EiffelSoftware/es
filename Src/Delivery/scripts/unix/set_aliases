@@ -29,13 +29,13 @@ DOCUMENT_DIR=$WORKINGDIR
 EXPORT_DIR=$WORKINGDIR/PorterPackage
 # What tag to use to CVS export everything
 if [ ! "$DEFAULT_ISE_SVN" ]; then
-	DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/trunk
+	DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/branches/Eiffel_23.09
 fi
 if [ ! "$DEFAULT_ORIGO_SVN_ROOT" ]; then
 	DEFAULT_ORIGO_SVN_ROOT=https://svn.eiffel.com/eiffelstudio
 fi
 if [ ! "$DEFAULT_ORIGO_SVN" ]; then
-	DEFAULT_ORIGO_SVN=$DEFAULT_ORIGO_SVN_ROOT/trunk
+	DEFAULT_ORIGO_SVN=$DEFAULT_ORIGO_SVN_ROOT/branches/Eiffel_23.09
 fi
 # This section is commented out be cause it won't work on non-bash shell
 # we use the other one while waiting for a better solution
