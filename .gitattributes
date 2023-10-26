@@ -6513,6 +6513,17 @@ Src/dotnet/consumer_netcore/cs/md_consumer_app/build.eant svneol=native#text/xml
 Src/dotnet/consumer_netcore/cs/md_consumer_host/md_consumer_host.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer_host/md_consumer_host.csproj -text
 Src/dotnet/consumer_netcore/cs/md_consumer_host/md_consumer_host.runtimeconfig.json -text
+Src/dotnet/consumer_netcore/testing/TestBasic/cs/TestBasic.csproj -text
+Src/dotnet/consumer_netcore/testing/TestBasic/cs/TestBasic.runtimeconfig.json -text
+Src/dotnet/consumer_netcore/testing/TestBasic/cs/TestBasicNetFramework.csproj -text
+Src/dotnet/consumer_netcore/testing/TestBasic/cs/testbasic.cs -text
+Src/dotnet/consumer_netcore/testing/TestBasic/eiffel/test_basic.ecf svneol=native#text/xml
+Src/dotnet/consumer_netcore/testing/TestGeneric/app/Program.cs -text
+Src/dotnet/consumer_netcore/testing/TestGeneric/app/app.csproj -text
+Src/dotnet/consumer_netcore/testing/TestGeneric/cs/TestGeneric.csproj -text
+Src/dotnet/consumer_netcore/testing/TestGeneric/cs/TestGeneric.runtimeconfig.json -text
+Src/dotnet/consumer_netcore/testing/TestGeneric/cs/testgeneric.cs -text
+Src/dotnet/consumer_netcore/testing/TestGeneric/eiffel/test_generic.ecf svneol=native#text/xml
 Src/dotnet/eac_browser/ressources/eac_ico/icon_all_features.ico -text
 Src/dotnet/eac_browser/ressources/eac_ico/icon_ancestors.ico -text
 Src/dotnet/eac_browser/ressources/eac_ico/icon_assembly.ico -text
