@@ -6515,10 +6515,6 @@ Src/dotnet/consumer_netcore/cs/md_consumer_app/build.eant svneol=native#text/xml
 Src/dotnet/consumer_netcore/cs/md_consumer_host/md_consumer_host.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer_host/md_consumer_host.csproj -text
 Src/dotnet/consumer_netcore/cs/md_consumer_host/md_consumer_host.runtimeconfig.json -text
-Src/dotnet/consumer_netcore/cs/md_foo/build.eant svneol=native#text/xml
-Src/dotnet/consumer_netcore/cs/md_foo/md_foo.csproj -text
-Src/dotnet/consumer_netcore/cs/md_foo/md_foo.runtimeconfig.json -text
-Src/dotnet/consumer_netcore/cs/md_foo/src/md_foo.cs -text
 Src/dotnet/consumer_netcore/testing/TestBasic/cs/TestBasic.csproj -text
 Src/dotnet/consumer_netcore/testing/TestBasic/cs/TestBasic.runtimeconfig.json -text
 Src/dotnet/consumer_netcore/testing/TestBasic/cs/TestBasicNetFramework.csproj -text
