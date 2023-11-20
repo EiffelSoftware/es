@@ -6506,6 +6506,7 @@ Src/dotnet/consumer_netcore/cs/md_consumer/src/kernel/consumed_type.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/kernel/json_names.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/md_cache.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/md_consumer.cs -text
+Src/dotnet/consumer_netcore/cs/md_consumer/src/support/config.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/support/status_printer.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer/src/support/type_name_solver.cs -text
 Src/dotnet/consumer_netcore/cs/md_consumer_app/app.cs -text
