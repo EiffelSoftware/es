@@ -9349,6 +9349,7 @@ Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_3.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_4.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_5.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_6.sql -text
+Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install-1_7.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/install.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_0-1_1.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_1-1_2.sql -text
@@ -9356,6 +9357,7 @@ Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_2-1_3.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_3-1_4.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_4-1_5.sql -text
 Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_5-1_6.sql -text
+Src/web/eiffel-cloud/modules/es_cloud/site/scripts/update-1_6-1_7.sql -text
 Src/web/eiffel-cloud/modules/shop/shop.ecf svneol=native#text/xml
 Src/web/eiffel-cloud/modules/shop/site/files/css/shop.css -text
 Src/web/eiffel-cloud/modules/shop/site/files/scss/shop.scss -text
@@ -9419,6 +9421,7 @@ Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install-1_3.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install-1_4.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install-1_5.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install-1_6.sql -text
+Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install-1_7.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/install.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/update-1_0-1_1.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/update-1_1-1_2.sql -text
@@ -9426,6 +9429,7 @@ Src/web/eiffel-cloud/site/modules/es_cloud/scripts/update-1_2-1_3.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/update-1_3-1_4.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/update-1_4-1_5.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/update-1_5-1_6.sql -text
+Src/web/eiffel-cloud/site/modules/es_cloud/scripts/update-1_6-1_7.sql -text
 Src/web/eiffel-cloud/site/modules/es_cloud/scripts/update_0_to_1.sql -text
 Src/web/eiffel-cloud/site/modules/files/files/img/file-logo.png -text
 Src/web/eiffel-cloud/site/modules/files/files/js/src/basic.scss -text
