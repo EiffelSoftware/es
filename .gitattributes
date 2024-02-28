@@ -9458,7 +9458,7 @@ Src/web/eiffel-cloud/site/modules/jwt_auth/scripts/install-1_0.sql -text
 Src/web/eiffel-cloud/site/modules/jwt_auth/scripts/install-1_1.sql -text
 Src/web/eiffel-cloud/site/modules/jwt_auth/scripts/install.sql -text
 Src/web/eiffel-cloud/site/modules/jwt_auth/scripts/update-1_0-1_1.sql -text
-Src/web/eiffel-cloud/site/modules/jwt_auth/scripts/update/update-1_0-1_1.sql -text
+Src/web/eiffel-cloud/site/modules/jwt_auth/scripts/update/jwt_auth-1_0-1_1.sql -text
 Src/web/eiffel-cloud/site/modules/login_with_esa/config/config.ini -text
 Src/web/eiffel-cloud/site/modules/login_with_esa/scripts/install.sql -text
 Src/web/eiffel-cloud/site/modules/login_with_esa/scripts/update-1_0-1_1.sql -text
