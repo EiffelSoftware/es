@@ -8908,6 +8908,7 @@ Src/tools/doc_builder/resources/syntax_definitions/xml.syn_bin svneol=native#uns
 Src/tools/doc_builder/resources/templates/header_mainarea.jpg -text
 Src/tools/doc_builder/resources/xml/all_libs.lic -text
 Src/tools/dotnet/md_cache_browser/md_consumer_browser.ecf svneol=native#text/xml
+Src/tools/dotnet/pdb_analyzer/pdb_analyzer.ecf svneol=native#text/xml
 Src/tools/dotnet/pefile_analyzer/pe_analyzer.dbg.profiles.xml svneol=native#text/xml
 Src/tools/dotnet/pefile_analyzer/pe_analyzer.ecf svneol=native#text/xml
 Src/tools/dotnet_reference_builder/dotnet_reference_builder.lic -text
