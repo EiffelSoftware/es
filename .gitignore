@@ -155,7 +155,9 @@ Src/C/run-time/wkbench/*.obj
 Src/C/run-time/wkbench/*.pdb
 Src/C/run-time/x2c
 Src/C/shell/.bash_history
+Src/C_library/curl/builds
 Src/C_library/curl/lib/release-dll-ssl-dll
+Src/C_library/curl/spec
 Src/C_library/openssl/builds
 Src/C_library/openssl/crypto/bf/asm/*.asm
 Src/C_library/openssl/crypto/bf/asm/*.obj
