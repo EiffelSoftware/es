@@ -1229,20 +1229,15 @@ Src/Delivery/scripts/docker/unix/image/dockerfile-32bits -text
 Src/Delivery/scripts/docker/unix/image/dockerfile-64bits -text
 Src/Delivery/scripts/docker/unix/porterpackage/dockerfile -text
 Src/Delivery/scripts/spec/macosx/launcher/EiffelBuild.app/Contents/Info.plist -text
-Src/Delivery/scripts/spec/macosx/launcher/EiffelBuild.app/Contents/MacOS/estudio -text svneol=CR#unset
 Src/Delivery/scripts/spec/macosx/launcher/EiffelBuild.app/Contents/PkgInfo -text
 Src/Delivery/scripts/spec/macosx/launcher/EiffelBuild.app/Contents/Resources/estudio.icns -text
 Src/Delivery/scripts/spec/macosx/launcher/EiffelStudio.app/Contents/Info.plist -text
-Src/Delivery/scripts/spec/macosx/launcher/EiffelStudio.app/Contents/MacOS/estudio -text svneol=CR#unset
 Src/Delivery/scripts/spec/macosx/launcher/EiffelStudio.app/Contents/PkgInfo -text
-Src/Delivery/scripts/spec/macosx/launcher/EiffelStudio.app/Contents/Resources/EiffelLauncher -text svneol=CR#unset
 Src/Delivery/scripts/spec/macosx/launcher/EiffelStudio.app/Contents/Resources/estudio.icns -text
 Src/Delivery/scripts/spec/macosx/launcher/EiffelVision2_Demo.app/Contents/Info.plist -text
-Src/Delivery/scripts/spec/macosx/launcher/EiffelVision2_Demo.app/Contents/MacOS/estudio -text svneol=CR#unset
 Src/Delivery/scripts/spec/macosx/launcher/EiffelVision2_Demo.app/Contents/PkgInfo -text
 Src/Delivery/scripts/spec/macosx/launcher/EiffelVision2_Demo.app/Contents/Resources/estudio.icns -text
 Src/Delivery/scripts/spec/macosx/launcher/Eiffel_Console.app/Contents/Info.plist -text
-Src/Delivery/scripts/spec/macosx/launcher/Eiffel_Console.app/Contents/MacOS/estudio -text svneol=CR#unset
 Src/Delivery/scripts/spec/macosx/launcher/Eiffel_Console.app/Contents/PkgInfo -text
 Src/Delivery/scripts/spec/macosx/launcher/Eiffel_Console.app/Contents/Resources/estudio.icns -text
 Src/Delivery/scripts/unix/README.packaging -text
