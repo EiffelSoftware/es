@@ -75,6 +75,9 @@ if [ -z "$SVN_EIFFELSTUDIO_REPO" ]; then
 fi
 export DEFAULT_ORIGO_SVN_ROOT=$SVN_EIFFELSTUDIO_REPO
 echo DEFAULT_ORIGO_SVN_ROOT=$DEFAULT_ORIGO_SVN_ROOT
+# Todo: remove this as this should not be useful...
+export DEFAULT_ORIGO_SVN=$DEFAULT_ORIGO_SVN_ROOT$SVN_EIFFELSTUDIO_BRANCH
+echo DEFAULT_ORIGO_SVN=$DEFAULT_ORIGO_SVN
 
 if [ -z "$SVN_ISE_REPO" ]; then
 	export SVN_ISE_REPO=svn://svn.ise/ise_svn
