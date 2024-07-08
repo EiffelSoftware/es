@@ -1,0 +1,13 @@
+*.exe
+*.ilk
+*.obj
+*.lib
+*.a
+*.so
+*.pdb
+Makefile
+eif_config.h
+*/config.sh
+ipc/*/config.sh
+make.bat
+ipc/daemon/ecdbgd
