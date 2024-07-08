@@ -977,7 +977,6 @@ feature -- Links
 			lnk /= Void
 		local
 			w_link: WIKI_LINK
-			e_link: WIKI_EXTERNAL_LINK
 		do
 			if lnk.is_whitespace then
 				Result := Void
@@ -1004,7 +1003,7 @@ feature -- Links
 
 	visit_file_link (a_link: WIKI_FILE_LINK)
 		local
-			l_wiki_url, l_file_url, l_url: detachable READABLE_STRING_8
+			l_file_url, l_url: detachable READABLE_STRING_8
 			l_lnk_name: READABLE_STRING_8
 		do
 			if
