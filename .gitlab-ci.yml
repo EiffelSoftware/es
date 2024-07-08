@@ -33,7 +33,7 @@ testing_job:
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE == "push"
-      when: never      
+      when: manual      
 
 linux_compile_all_library_job:
   stage: test
@@ -58,7 +58,7 @@ linux_compile_all_library_job:
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE == "push"
-      when: never      
+      when: manual      
 
 linux_compile_all_tools_job:
   stage: test
@@ -82,7 +82,7 @@ linux_compile_all_tools_job:
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE == "push"
-      when: never      
+      when: manual      
 
 linux_eweasel_job:
   stage: test
@@ -102,7 +102,7 @@ linux_eweasel_job:
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE == "push"
-      when: never      
+      when: manual      
 
 stages:
   - test
