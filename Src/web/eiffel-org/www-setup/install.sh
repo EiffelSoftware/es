@@ -28,16 +28,16 @@
 #  $ curl -sSL https://www.eiffel.org/setup/install.sh | bash -s -- --url https://ftp.eiffel.com/pub/beta/nightly/Eiffel_20.05_rev_104521-linux-x86-64.tar.bz2 --install-dir /opt/eiffel/test --dir /opt/eiffel
 
 # Default values
-ISE_MAJOR_MINOR_LATEST=23.09
-ISE_BUILD_LATEST=107341
+ISE_MAJOR_MINOR_LATEST=24.05
+ISE_BUILD_LATEST=107822
 ISE_TYPE_LATEST=rev
 
-ISE_MAJOR_MINOR_NIGHTLY=23.09
-ISE_BUILD_NIGHTLY=107341
+ISE_MAJOR_MINOR_NIGHTLY=24.05
+ISE_BUILD_NIGHTLY=107822
 ISE_TYPE_NIGHTLY=rev
 
-ISE_MAJOR_MINOR_BETA=23.09
-ISE_BUILD_BETA=107341
+ISE_MAJOR_MINOR_BETA=24.05
+ISE_BUILD_BETA=107822
 ISE_TYPE_BETA=rev
 #ISE_BETA_DOWNLOAD_URL=http://downloads.sourceforge.net/eiffelstudio
 
