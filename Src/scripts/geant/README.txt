@@ -10,9 +10,9 @@ and other product from EiffelSoftware open source project.
 
 1) First you need to checkout the source.
 for instance
-svn checkout https://svn.eiffel.com/eiffelstudio/trunk Eiffel_dev
+git clone --depth 1 --single-branch --branch master https://gitlab.com/eiffelsoftware/es.git Eiffel_dev
 
-Note: the whole trunk or branches is checkouted into a single folder
+Note: the whole branch is checkout-ed into a single folder
 
 2) go to your compilation directory
 for instance
@@ -40,5 +40,5 @@ Those scripts are in progress for now.
 Please report any issue to jfiat@eiffel.com
 
 -------------------------------------------
- Web: http://svn.eiffel.com/eiffelstudio
+ Web: http://gitlab.com/eiffelsoftware/es
 -------------------------------------------

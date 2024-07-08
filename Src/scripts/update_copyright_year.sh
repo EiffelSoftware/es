@@ -5,7 +5,7 @@ curr_year=`date +%Y`
 function do_sed {
 	echo sed -i -e "$1" "$2" 
 	sed -i -e "$1" "$2" 
-	svn diff "$2"
+	git diff "$2"
 	echo $2 >> file_for_year_changes.log
 	echo $2 \\ >> commit_year_changes.sh
 }
@@ -14,7 +14,7 @@ function doall_sed {
 	for filename in $2*; do
 		echo sed -i -e "$1" "$filename" 
 		sed -i -e "$1" "$filename" 
-		svn diff "$filename"
+		git diff "$filename"
 		echo $filename >> file_for_year_changes.log
 		echo $filename \\ >> commit_year_changes.sh
 	done
@@ -33,7 +33,7 @@ echo EIFFEL_SRC=$EIFFEL_SRC
 echo  > file_for_year_changes.log
 echo  echo Update to year $curr_year > commit_year_changes.sh
 echo  export EIFFEL_SRC=#EIFFEL_SRC >> commit_year_changes.sh
-echo  svn commit \\ >> commit_year_changes.sh
+echo  git commit \\ >> commit_year_changes.sh
 
 # $EIFFEL_SRC/framework/environment/interface/eiffel_env.e
 do_sed "s/\(copyright_year: STRING = \"\)[0-9][0-9][0-9][0-9]/\1$curr_year/g" $EIFFEL_SRC/framework/environment/interface/eiffel_env.e

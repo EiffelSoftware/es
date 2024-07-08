@@ -24,6 +24,7 @@ echo %ISE_EIFFEL%\tools\spec\%ISE_PLATFORM%\bin\espawn.exe "regasm %ISE_EIFFEL%\
 echo %ISE_EIFFEL%\tools\spec\%ISE_PLATFORM%\bin\espawn.exe "regasm %ISE_EIFFEL%\studio\spec\%ISE_PLATFORM%\bin\EiffelSoftware.MetadataConsumer.dll" >> %TMP_SCRIPT_FILENAME%
 
 echo REM completed, see %TMP_SCRIPT_FILENAME%
+echo sudo %%cd%%\fix_dotnet.bat
 
 goto end
 
@@ -45,3 +46,4 @@ goto :EOF
 
 :end
 goto :EOF
+

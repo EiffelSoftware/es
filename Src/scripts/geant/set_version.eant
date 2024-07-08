@@ -49,18 +49,21 @@
 		<echo to_file="${set_version_fn}" append="false" >
 @echo off
 rem Set Version
-rem %1 : svn wc path
+rem %1 : wc path
 rem %2 : filename.e
 setlocal
-set SVNWCT=%1
+set WCT=%1
 set EFILE=%2
 set EFILE_TMP=%EFILE%.tmp
 set LC_MESSAGES=C
 
-svn info %SVNWCT% &gt; %EFILE_TMP%
-For /f &quot;tokens=1-4 delims=/ &quot; %%a in ('findstr /L /B /C:&quot;Last Changed Rev&quot; %EFILE_TMP%') do (set LASTREV=%%d)
-del %EFILE_TMP%
-if .%LASTREV%. == .. set LASTREV=0000 -- Script was unable to set this value
+set T_CWD=%CD%
+cd %WCT%
+FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list HEAD ^| wc -l`) DO (
+SET BUILDNUMBER=%%F
+)
+ECHO BUILDNUMBER=%BUILDNUMBER%
+if .%BUILDNUMBER%. == .. set BUILDNUMBER=0000 -- Script was unable to set this value
 
 for /f %%x in ('wmic path win32_utctime get /format:list ^| findstr &quot;=&quot;') do set %%x
  IF %month% LSS 10 SET month=0%month%
@@ -71,15 +74,16 @@ for /f %%x in ('wmic path win32_utctime get /format:list ^| findstr &quot;=&quot
 set CURRDATE=%Year%-%Month%-%Day%
 set CURRTIME=%hour%:%minute%:%second%
 
-echo Set version: LASTREV=%LASTREV%
-svn revert %EFILE%
-sed -e &quot;s/:= 0000/:= %LASTREV%/&quot; %EFILE% &gt; %EFILE_TMP%
+echo Set build number: BUILDNUMBER=%BUILDNUMBER%
+git checkout -- %EFILE%
+sed -e &quot;s/:= 0000/:= %BUILDNUMBER%/&quot; %EFILE% &gt; %EFILE_TMP%
 move %EFILE_TMP% %EFILE%
 
 rem update the version_info ...
-sed -e &quot;s/Version_info:\ STRING\ =\ \&quot;[0-9a-zA-Z_\,\ \/\:()\.\=\-]*\&quot;/Version_info:\ STRING\ =\ \&quot;Revision:\ %LASTREV% , Compilation:\ %CURRDATE%\ %CURRTIME% , Builder:\ %USERNAME%\&quot;/g&quot; %EFILE% &gt; %EFILE_TMP%
+sed -e &quot;s/Version_info:\ STRING\ =\ \&quot;[0-9a-zA-Z_\,\ \/\:()\.\=\-]*\&quot;/Version_info:\ STRING\ =\ \&quot;Build:\ %BUILDNUMBER% , Compilation:\ %CURRDATE%\ %CURRTIME% , Builder:\ %USERNAME%\&quot;/g&quot; %EFILE% &gt; %EFILE_TMP%
 move %EFILE_TMP% %EFILE%
 
+cd %T_CWD%
 endlocal
 @echo on
 		</echo>
@@ -98,23 +102,28 @@ endlocal
 		<echo to_file="${set_version_fn}" append="false" >
 #!/bin/sh
 
-# set version number in $2 to the latest SVN repository version number.
-# $1 = SVN repository
+# set build number in $2 to the git commits count number.
+# $1 = Working directory
 # $2 = file to process if any, otherwise display version on output
 
 LC_MESSAGES=C
 
-computed_svn_revision=`until svn info $1; do echo &quot;&quot;; done | grep &quot;Last Changed Rev&quot; | sed -e &quot;s/Last Changed Rev: //&quot;`
-if test "$computed_svn_revision" = "" ; then
+TMP_CWD=`pwd`
+cd $1
+computed_build_number=`git rev-list HEAD | wc -l`
+cd $TMP_CWD
+TMP_CWD=
+
+if test "$computed_build_number" = "" ; then
 	echo bad
-	computed_svn_revision='0000 -- Script was unable to set this value'
+	computed_build_number='0000 -- Script was unable to set this value'
 fi
 if test "$2" = "" ; then
-	echo $computed_svn_revision
+	echo $computed_build_number
 else
-	echo Set version: LASTREV=$computed_svn_revision
-	svn revert $2 #revert in case it was modification
-	sed -e "s/:= 0000/:= $computed_svn_revision/" $2 &gt; tmp
+	echo Set build number: $computed_build_number
+	git checkout -- $2
+	sed -e "s/:= 0000/:= $computed_build_number/" $2 &gt; tmp
 	mv tmp $2
 fi
 		</echo>
