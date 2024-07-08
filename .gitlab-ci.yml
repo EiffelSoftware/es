@@ -28,12 +28,12 @@ testing_job:
     - geant prepare
     - ec -config $ISE_LIBRARY/library/base/testing/testing.ecf -clean -tests
   rules:
-    - if: $CI_ENABLED == "true"
-  only:
-    refs:
-      - master
-      - merge_requests
-      - schedules
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"  && $CI_ENABLED == "true"
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: manual      
 
 linux_compile_all_library_job:
   stage: test
@@ -53,12 +53,12 @@ linux_compile_all_library_job:
     - export COMPILEALL_IGNORE=
     - sh $EIFFEL_SRC/scripts/CI/travis-ci-compile_all.sh $EIFFEL_SRC/$COMPILEALL_DIR $EIFFEL_SRC/$COMPILEALL_IGNORE
   rules:
-    - if: $CI_ENABLED == "true"
-  only:
-    refs:
-      - master
-      - merge_requests
-      - schedules
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"  && $CI_ENABLED == "true"
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: manual      
 
 linux_compile_all_tools_job:
   stage: test
@@ -77,12 +77,12 @@ linux_compile_all_tools_job:
     - export COMPILEALL_IGNORE=
     - sh $EIFFEL_SRC/scripts/CI/travis-ci-compile_all.sh $EIFFEL_SRC/$COMPILEALL_DIR $EIFFEL_SRC/$COMPILEALL_IGNORE
   rules:
-    - if: $CI_ENABLED == "true"
-  only:
-    refs:
-      - master
-      - merge_requests
-      - schedules
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"  && $CI_ENABLED == "true"
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: manual      
 
 linux_eweasel_job:
   stage: test
@@ -97,12 +97,12 @@ linux_eweasel_job:
     - export EWEASEL=$EIFFEL_SRC/../eweasel
     - sh $EIFFEL_SRC/scripts/CI/ci-eweasel.sh $dir $dir/test_dir
   rules:
-    - if: $CI_ENABLED == "true"
-  only:
-    refs:
-      - master
-      - merge_requests
-      - schedules
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"  && $CI_ENABLED == "true"
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: manual      
 
 stages:
   - test
