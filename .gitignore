@@ -4,3 +4,6 @@ EIFGENs/
 .*.swo
 *.pdb
 .vs/
+*.o
+*.obj
+

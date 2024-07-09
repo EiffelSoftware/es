@@ -3,8 +3,10 @@
 *.obj
 *.lib
 *.a
+*.o
 *.so
 *.pdb
+*.bak
 Makefile
 eif_config.h
 */config.sh
