@@ -41,6 +41,36 @@ feature -- Element change
 			items.force (i)
 		end
 
+	remove (a_parameter_name: READABLE_STRING_GENERAL)
+			-- Remove parameters named `a_parameter_name`
+		do
+			if attached parameters (a_parameter_name) as lst then
+				across
+					lst as ic
+				loop
+					items.prune_all (ic.item)
+				end
+			end
+		end
+
+	parameters (a_parameter_name: READABLE_STRING_GENERAL): detachable ITERABLE [G]
+			-- Parameters named `a_parameter_name`.
+		local
+			res: ARRAYED_LIST [G]
+		do
+			across
+				items as ic
+			loop
+				if a_parameter_name.same_string (ic.item.name) then
+					if res = Void then
+						create res.make (1)
+						Result := res
+					end
+					res.force (ic.item)
+				end
+			end
+		end
+
 feature -- Iteration
 
 	new_cursor: ARRAYED_LIST_ITERATION_CURSOR [G]
@@ -55,7 +85,7 @@ feature {NONE} -- Implementation
 
 invariant
 note
-	copyright: "2011-2017, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

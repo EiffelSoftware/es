@@ -154,6 +154,18 @@ feature -- Element change
 			form_parameters.force (create {HTTP_CLIENT_REQUEST_STRING_PARAMETER}.make (k, v))
 		end
 
+	remove_query_parameters (k: READABLE_STRING_GENERAL)
+			-- Remove all query parameters named `k`.
+		do
+			query_parameters.remove (k)
+		end
+
+	remove_form_parameters (k: READABLE_STRING_GENERAL)
+			-- Remove all form parameters named `k`.	
+		do
+			form_parameters.remove (k)
+		end
+
 	add_file_form_parameter (k: READABLE_STRING_GENERAL; a_location: READABLE_STRING_GENERAL; a_content_type: detachable READABLE_STRING_8)
 			-- Add a form file parameter named `k`, located at `a_location`, with optional content type `a_content_type`.
 		require
@@ -379,7 +391,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "2011-2017, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
