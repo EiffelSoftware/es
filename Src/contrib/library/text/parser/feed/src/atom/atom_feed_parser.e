@@ -35,11 +35,10 @@ feature -- Access
 			-- Feed from `xdoc' XML document.
 		local
 			l_title: READABLE_STRING_32
-			x_entry, x_link: detachable XML_ELEMENT
+			x_entry: detachable XML_ELEMENT
 			e: FEED_ITEM
 			l_author: FEED_AUTHOR
 			lnk: FEED_LINK
-			s: STRING_32
 		do
 			if
 				attached xdoc.element_by_name ("feed") as x_feed and then
