@@ -14,12 +14,16 @@ feature -- Factory
 			-- It requires either custom (de)serializers or reflector based solution.	
 		do
 			create Result
+		ensure
+			class
 		end
 
 	reflector_serialization: JSON_SERIALIZATION
 		do
 			Result := serialization
 			Result.register_default (create {JSON_REFLECTOR_SERIALIZATION})
+		ensure
+			class
 		end
 
 	smart_serialization: JSON_SERIALIZATION
@@ -33,9 +37,11 @@ feature -- Factory
 				-- Deserializers
 			Result.register (create {TABLE_JSON_DESERIALIZER [detachable ANY]}, {TABLE [detachable ANY, READABLE_STRING_GENERAL]})
 			Result.register (create {LIST_JSON_DESERIALIZER [detachable ANY]}, {LIST [detachable ANY]})
+		ensure
+			class
 		end
 
 note
-	copyright: "2010-2016, Javier Velilla and others https://github.com/eiffelhub/json."
+	copyright: "2010-2024, Javier Velilla, Jocelyn Fiat, Eiffel Software and others https://github.com/eiffelhub/json."
 	license: "https://github.com/eiffelhub/json/blob/master/License.txt"
 end
