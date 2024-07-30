@@ -50,7 +50,7 @@
 	<target name="install_framework" depend="install_framework_40"/>
 	<target name="compile_netcore" >
 		<echo message="- Compile .Net CORE Eiffel runtime" />
-		<exec executable="dotnet build -c Release runtime_core.csproj --restore --no-incremental" />
+		<exec executable="dotnet build -c Release runtime_core.csproj --restore --no-incremental" accept_errors="true"/>
 	</target>
 	<target name="install_netcore">
 		<echo message="- Install .Net CORE [EiffelSoftware.Runtime.dll] into ${cwd}${path_separator}netcore" />
