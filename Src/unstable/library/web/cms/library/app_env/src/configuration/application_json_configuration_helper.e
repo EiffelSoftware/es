@@ -6,6 +6,25 @@ note
 class
 	APPLICATION_JSON_CONFIGURATION_HELPER
 
+create
+	default_create,
+	make_with_resolver,
+	make_with_environment_resolver
+
+feature {NONE} -- Initialization
+
+	make_with_resolver (r: attached like resolver)
+		do
+			resolver := r
+		end
+
+	make_with_environment_resolver
+		do
+			make_with_resolver (create {APPLICATION_ENVIRONMENT_RESOLVER})
+		end
+
+	resolver: detachable APPLICATION_RESOLVER
+
 feature -- Application Configuration
 
 	new_smtp_configuration (a_path: PATH): READABLE_STRING_32
@@ -23,7 +42,7 @@ feature -- Application Configuration
 					attached {JSON_OBJECT} jv.item ("smtp") as l_smtp and then
 					attached {JSON_STRING} l_smtp.item ("server") as l_server
 				then
-					Result := l_server.item
+					Result := resolved_value (l_server.item)
 				end
 			end
 		end
@@ -47,7 +66,7 @@ feature -- Application Configuration
 					attached {JSON_OBJECT} l_environments.item (l_environment.item) as l_environment_selected and then
 					attached {JSON_STRING} l_environment_selected.item ("connection_string") as l_connection_string
 				then
-					create Result.make (l_driver.item, l_connection_string.unescaped_string_32)
+					create Result.make (resolved_value (l_driver.unescaped_string_32), resolved_value (l_connection_string.unescaped_string_32))
 					if attached l_environment_selected.item ("reuse") as j_reuse then
 						if
 							attached {JSON_STRING} j_reuse as js and then
@@ -78,7 +97,7 @@ feature -- Application Configuration
 					attached {JSON_OBJECT} jv.item ("logger") as l_logger and then
 					attached {JSON_STRING} l_logger.item ("level") as l_level
 				then
-					Result := l_level.item
+					Result := resolved_value (l_level.unescaped_string_32)
 				end
 			end
 		end
@@ -105,8 +124,19 @@ feature -- Application Configuration
 					attached {JSON_STRING} l_environment_selected.item ("connection_string") as l_connection_string and then
 					attached {JSON_STRING} l_environment_selected.item ("name") as l_name
 				then
-					create Result.make (l_driver.item, l_connection_string.unescaped_string_8)
+					create Result.make (resolved_value (l_driver.unescaped_string_32), resolved_value (l_connection_string.unescaped_string_32))
 				end
+			end
+		end
+
+feature -- Resolution
+
+	resolved_value (s: READABLE_STRING_GENERAL): STRING_32
+		do
+			if attached resolver as r then
+				Result := r.resolved_item (s)
+			else
+				Result := s.to_string_32
 			end
 		end
 
@@ -123,7 +153,7 @@ feature {NONE} -- JSON
 		end
 
 note
-	copyright: "2011-2020, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
+	copyright: "2011-2024, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 
 end

@@ -560,7 +560,7 @@ feature -- Access: storage
 
 	storage_configuration: detachable DATABASE_CONFIGURATION
 		do
-			Result := (create {APPLICATION_JSON_CONFIGURATION_HELPER}).new_database_configuration (environment.application_config_path)
+			Result := (create {APPLICATION_JSON_CONFIGURATION_HELPER}.make_with_environment_resolver).new_database_configuration (environment.application_config_path)
 		end
 
 	storage (a_error_handler: ERROR_HANDLER): detachable CMS_STORAGE

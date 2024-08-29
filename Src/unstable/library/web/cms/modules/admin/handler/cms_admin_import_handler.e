@@ -86,7 +86,7 @@ feature -- Execution
 								end
 								l_response.add_notice_message (s)
 							else
-								l_response.add_error_message ("Specified import folder is not found!")
+								l_response.add_error_message ("Specified import folder is not found! ["+ utf_8_encoded (l_importation.location.name) +"]")
 								fd.report_invalid_field ("folder", "Folder not found!")
 							end
 						else
