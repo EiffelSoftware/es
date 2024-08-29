@@ -14,46 +14,43 @@ inherit
 
 feature -- Access
 
-	resolved_item (s: READABLE_STRING_GENERAL): STRING_32
+	expanded_variable (a_expr: READABLE_STRING_GENERAL): detachable READABLE_STRING_GENERAL
+			-- <Precursor/>
 		local
-			i,j,n: INTEGER
+			i,j: INTEGER
+			vn: READABLE_STRING_GENERAL
+			dft: detachable READABLE_STRING_GENERAL
 			c: CHARACTER_32
-			vn: READABLE_STRING_32
+			l_is_set_and_non_empty: BOOLEAN
+			err: BOOLEAN
 		do
-			from
-				i := 1
-				n := s.count
-				create Result.make (n)
-			until
-				i > n
-			loop
-				c := s [i]
-				inspect c
-				when '$' then
-					if i < n then
-						i := i + 1
-						if s [i] = '{' then
-							j := s.index_of ('}', i + 1)
-							if j > i then
-								vn := s.substring (i + 1, j - 1)
-								if attached execution_environment.item (vn) as v then
-									Result.append_string_general (v)
-								else
-									Result.extend ('$')
-									Result.extend ('{')
-									Result.append_string_general (vn)
-									Result.extend ('}')
-								end
-								i := j
-							end
-						end
-					else
-						Result.extend (c)
-					end
-				else
-					Result.extend (c)
+			dft := Void
+			vn := a_expr
+
+			i := a_expr.index_of (':', 1)
+			if i > 1 then
+				l_is_set_and_non_empty := True
+				c := a_expr [i + 1]
+				vn := a_expr.substring (1, i - 1)
+				dft := a_expr.substring (i + 2, a_expr.count)
+				err := c /= '-'
+			else
+				j := a_expr.index_of ('-', 1)
+				if j > 0 then
+					vn := a_expr.substring (1, i - 1)
+					dft := a_expr.substring (i + 1, a_expr.count)
 				end
-				i := i + 1
+			end
+			if err then
+					-- TODO: handle error ...
+			elseif attached execution_environment.item (vn) as v then
+				if l_is_set_and_non_empty and v.is_empty then
+					Result := dft
+				else
+					Result := v
+				end
+			else
+				Result := dft
 			end
 		end
 
