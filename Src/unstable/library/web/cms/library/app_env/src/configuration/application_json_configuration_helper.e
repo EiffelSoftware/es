@@ -63,7 +63,7 @@ feature -- Application Configuration
 					attached {JSON_STRING} l_datasource.item ("driver") as l_driver and then
 					attached {JSON_STRING} l_datasource.item ("environment") as l_environment and then
 					attached {JSON_OBJECT} l_database.item ("environments") as l_environments and then
-					attached {JSON_OBJECT} l_environments.item (l_environment.item) as l_environment_selected and then
+					attached {JSON_OBJECT} l_environments.item (resolved_value (l_environment.item)) as l_environment_selected and then
 					attached {JSON_STRING} l_environment_selected.item ("connection_string") as l_connection_string
 				then
 					create Result.make (resolved_value (l_driver.unescaped_string_32), resolved_value (l_connection_string.unescaped_string_32))
