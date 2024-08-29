@@ -100,7 +100,10 @@ feature -- Visitor Pattern
 
 	visit_json_object_member (a_json_name: JSON_STRING; a_json_value: JSON_VALUE)
 			-- Visit object member `a_json_name`: `a_json_value`.
+		local
+			l_output: like output
 		do
+			l_output := output
 			a_json_name.accept (Current)
 			l_output.put_character (':')
 			a_json_value.accept (Current)
@@ -113,12 +116,12 @@ feature -- Visitor Pattern
 		do
 			l_output := output
 			l_output.put_character ('%"')
-			l_output.append (a_json_string.item)
+			l_output.put_string (a_json_string.item)
 			l_output.put_character ('%"')
 		end
 
 note
-	copyright: "2010-2024, Javier Velilla, Jocelyn Fiat, Eiffel Software and others https://github.com/eiffelhub/json."
+	copyright: "2010-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others https://github.com/eiffelhub/json."
 	license: "https://github.com/eiffelhub/json/blob/master/License.txt"
 end
 
