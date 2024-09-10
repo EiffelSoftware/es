@@ -172,18 +172,28 @@ feature -- Execution
 				m.set_status_code ({HTTP_STATUS_CODE}.temp_redirect)
 			end
 			m.header.put_content_type_with_charset ("application/json", "utf-8")
-
 			if attached request.http_access_control_request_headers as l_headers then
 				header.put_access_control_allow_headers (l_headers)
 			end
+
 			create l_methods.make_from_iterable (<<"GET", "POST">>)
 --			l_methods := router.allowed_methods_for_request (request)
 			if not l_methods.is_empty then
 				m.header.put_allow (l_methods)
 				m.header.put_access_control_allow_methods (l_methods)
 			end
-			m.header.put_access_control_allow_all_origin
+--			m.header.put_access_control_allow_all_origin
+
+			m.header.append_header_object (header)
+
+			prepare_page_response_before_sending (m)
+
 			response.send (m)
+		end
+
+	prepare_page_response_before_sending (m: WSF_PAGE_RESPONSE)
+		do
+			-- Redefine ....
 		end
 
 feature {NONE} -- Implementation factory
