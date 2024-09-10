@@ -17,7 +17,7 @@ feature -- Access
 			-- 	${VARNAME-default}  -> value of VAR if set, otherwise default
 		local
 			i,j,n: INTEGER
-			c: CHARACTER_32
+			prev,c: CHARACTER_32
 			vn: READABLE_STRING_32
 		do
 			from
@@ -30,13 +30,16 @@ feature -- Access
 				c := s [i]
 				inspect c
 				when '$' then
-					if i < n then
-						i := i + 1
-						if s [i] = '{' then
+					if
+						prev /= '\' and -- If $ is escaped ...
+						i < n
+					then
+						if s [i + 1] = '{' then
+							i := i + 1
 							j := s.index_of ('}', i + 1)
 							if j > i then
 								vn := s.substring (i + 1, j - 1)
-								if attached expanded_variable (vn) as v then
+								if attached expanded_expression (vn) as v then
 									Result.append_string_general (v)
 								else
 									Result.extend ('$')
@@ -45,7 +48,12 @@ feature -- Access
 									Result.extend ('}')
 								end
 								i := j
+							else
+								Result.extend (c)
+								Result.extend ('{')
 							end
+						else
+							Result.extend (c)
 						end
 					else
 						Result.extend (c)
@@ -54,15 +62,55 @@ feature -- Access
 					Result.extend (c)
 				end
 				i := i + 1
+				prev := c
 			end
 		end
 
-	expanded_variable (a_expr: READABLE_STRING_GENERAL): detachable READABLE_STRING_GENERAL
+	expanded_expression (a_expr: READABLE_STRING_GENERAL): detachable READABLE_STRING_GENERAL
 			-- Expand `a_expr`
 			-- Supporting:
 			-- 	${VARNAME}          -> value of VAR
 			-- 	${VARNAME:-default} -> value of VAR if set and non-empty, otherwise default
 			-- 	${VARNAME-default}  -> value of VAR if set, otherwise default
+		local
+			i,j: INTEGER
+			vn: READABLE_STRING_GENERAL
+			dft: detachable READABLE_STRING_GENERAL
+			c: CHARACTER_32
+			l_is_set_and_non_empty: BOOLEAN
+			err: BOOLEAN
+		do
+			dft := Void
+			vn := a_expr
+
+			i := a_expr.index_of (':', 1)
+			if i > 1 then
+				l_is_set_and_non_empty := True
+				c := a_expr [i + 1]
+				vn := a_expr.substring (1, i - 1)
+				dft := a_expr.substring (i + 2, a_expr.count)
+				err := c /= '-'
+			else
+				j := a_expr.index_of ('-', 1)
+				if j > 0 then
+					vn := a_expr.substring (1, j - 1)
+					dft := a_expr.substring (j + 1, a_expr.count)
+				end
+			end
+			if err then
+					-- TODO: handle error ...
+			elseif attached expanded_variable (vn) as v then
+				if l_is_set_and_non_empty and v.is_empty then
+					Result := dft
+				else
+					Result := v
+				end
+			else
+				Result := dft
+			end
+		end
+
+	expanded_variable (vn: READABLE_STRING_GENERAL): detachable READABLE_STRING_GENERAL
 		deferred
 		end
 
