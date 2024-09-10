@@ -46,10 +46,31 @@ feature -- Execution
 				f := importation_web_form (l_response)
 				create s.make_empty
 				f.append_to_html (l_response.wsf_theme, s)
+				append_available_sub_directories (s)
 				l_response.set_main_content (s)
 				l_response.execute
 			else
 				send_access_denied (req, res)
+			end
+		end
+
+	append_available_sub_directories (s: STRING_8)
+		local
+			fut: FILE_UTILITIES
+		do
+			if
+				attached api.site_location.extended (import_folder_name) as l_import_dir and then
+				attached fut.directory_names (l_import_dir.name) as l_dirs
+			then
+				s.append ("<div>Sub directories:<ul>")
+				across
+					l_dirs as ic
+				loop
+					s.append ("<li>")
+					s.append (utf_8_encoded (ic.item))
+					s.append ("</li>")
+				end
+				s.append ("</ul>%N")
 			end
 		end
 
@@ -98,6 +119,7 @@ feature -- Execution
 				end
 				create s.make_empty
 				f.append_to_html (l_response.wsf_theme, s)
+				append_available_sub_directories (s)
 				l_response.set_main_content (s)
 				l_response.execute
 			else
