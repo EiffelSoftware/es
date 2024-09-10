@@ -35,6 +35,7 @@ feature -- Factory
 	new_response (req: WSF_REQUEST; res: WSF_RESPONSE): HM_WEBAPI_RESPONSE
 		do
 			create {JSON_WEBAPI_RESPONSE} Result.make (req, res, api)
+			Result.header.put_access_control_allow_all_origin
 		end
 
 	new_signed_response (a_key: READABLE_STRING_8; req: WSF_REQUEST; res: WSF_RESPONSE): HM_WEBAPI_RESPONSE
@@ -112,10 +113,14 @@ feature {NONE} -- Builder
 
 	add_user_links_to (u: CMS_USER; rep: HM_WEBAPI_RESPONSE)
 		do
-			rep.add_link ("account", "user/" + u.id.out, rep.api.webapi_path ("/user/" + u.id.out))
+			if not rep.has_link ("account") then
+				rep.add_link ("account", "user/" + u.id.out, rep.api.webapi_path ("/user/" + u.id.out))
+			else
+				check no_duplicated_link: False end
+			end
 		end
 
 note
-	copyright: "2011-2022, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end
