@@ -31,7 +31,7 @@ feature -- Factory
 			conn: detachable DATABASE_CONNECTION
 			l_connection_string: READABLE_STRING_32
 		do
-			if cfg.driver.is_case_insensitive_equal ("mysql") then
+			if cfg.driver.is_case_insensitive_equal_general ("mysql") then
 				l_connection_string := cfg.connection_string
 
 				if attached reuseable_connection.item as d then
@@ -65,7 +65,7 @@ feature -- Factory
 						end
 					end
 				else
-					a_error_handler.add_custom_error (0, "Could not connect to the MySQL storage", Void)
+					a_error_handler.add_custom_error (0, "Could not connect to the MySQL storage", l_connection_string)
 				end
 			else
 				-- Wrong mapping between storage name and storage builder!
