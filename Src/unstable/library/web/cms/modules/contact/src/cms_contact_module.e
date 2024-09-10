@@ -426,6 +426,7 @@ feature {NONE} -- Contact Message
 			p: detachable PATH
 			tpl: CMS_SMARTY_TEMPLATE_BLOCK
 			exp: CMS_STRING_EXPANDER [READABLE_STRING_8]
+			tb_res: CMS_STRING_TABLE_RESOLVER [READABLE_STRING_8]
 		do
 			debug ("cms_contact")
 --				write_debug_log (generator + ".email_html_message for [" + a_message_id + " ]")
@@ -470,12 +471,13 @@ feature {NONE} -- Contact Message
 					end
 				end
 
-				create exp.make
+				create tb_res.make (a_html_encoded_values.count)
 				across
 					a_html_encoded_values as ic
 				loop
-					exp.put (ic.item, ic.key)
+					tb_res.put (ic.item, ic.key)
 				end
+				create exp.make (tb_res)
 				exp.expand_string (Result)
 				debug ("cms_contact")
 --					write_debug_log (generator + ".email_html_message using built-in message:" + Result)
