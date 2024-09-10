@@ -10,7 +10,31 @@ class
 inherit
 	EQA_TEST_SET
 
-feature -- Test routines	
+	SHARED_EXECUTION_ENVIRONMENT
+		undefine
+			default_create
+		end
+
+feature -- Test routines
+
+	test_env
+		local
+			exp: CMS_STRING_EXPANDER [STRING_32]
+			text: STRING
+		do
+			create exp.make (create {CMS_STRING_ENVIRONMENT_RESOLVER})
+
+			execution_environment.put ("bar", "FOO")
+
+			text := "foo=${FOO-nothing}"
+			exp.expand_string (text)
+			assert ("foo", text.same_string ("foo=bar"))
+
+			text := "user=${USER-anonymous}"
+			exp.expand_string (text)
+			assert ("user", not text.same_string ("user=anonymous"))
+
+		end
 
 	test_simple
 		local
