@@ -210,7 +210,29 @@ feature -- Create
 			retry
 		end
 
+	safe_delete_directory (p: PATH): BOOLEAN
+			-- Delete directory at `p`
+			-- and return True if `p` does not exist anymore, return False on failure
+		local
+			retried: BOOLEAN
+			d: DIRECTORY
+		do
+			Result := False
+			if not retried then
+				create d.make_with_path (p)
+				if d.exists then
+					d.recursive_delete
+					Result := not d.exists
+				else
+					Result := True
+				end
+			end
+		rescue
+			retried := True
+			retry
+		end
+
 note
-	copyright: "2011-2020, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end

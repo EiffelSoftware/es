@@ -64,7 +64,7 @@ feature -- HTTP Methods
 			else
 				l_denied := True
 			end
-			if l_denied then
+			if not l_is_fresh_installation and l_denied then
 				send_custom_access_denied ("You do not have permission to access CMS installation procedure!", Void, req, res)
 			else
 				create s.make_empty
@@ -145,6 +145,6 @@ feature -- HTTP Methods
 		end
 
 note
-	copyright: "2011-2020, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end

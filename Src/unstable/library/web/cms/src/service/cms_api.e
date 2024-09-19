@@ -945,7 +945,7 @@ feature -- Filters and Formats
 			end
 		end
 
-feature -- Template
+feature -- Template / Smarty
 
 	resolved_smarty_template_text (a_loc: PATH): detachable READABLE_STRING_8
 			-- Resolved smarty template located at `a_loc`.

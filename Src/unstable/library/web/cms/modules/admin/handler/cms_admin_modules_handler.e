@@ -45,23 +45,23 @@ feature -- Execution
 			f: CMS_FORM
 			l_denied: BOOLEAN
 		do
-			if
-				attached {WSF_STRING} req.query_parameter ("op") as l_op and then l_op.same_string ("uninstall") and then
-				attached {WSF_TABLE} req.query_parameter ("module_uninstallation") as tb
-			then
-				create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
-				if attached api.setup.string_8_item ("administration.installation_access") as l_access then
-					if l_access.is_case_insensitive_equal ("none") then
-						l_denied := True
-					elseif l_access.is_case_insensitive_equal ("permission") then
-						l_denied := not r.has_permission ({CMS_ADMIN_MODULE_ADMINISTRATION}.perm_admin_modules)
-					end
-				else
+			create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
+			if attached api.setup.string_8_item ("administration.installation_access") as l_access then
+				if l_access.is_case_insensitive_equal ("none") then
 					l_denied := True
+				elseif l_access.is_case_insensitive_equal ("permission") then
+					l_denied := not r.has_permission ({CMS_ADMIN_MODULE_ADMINISTRATION}.perm_admin_modules)
 				end
-				if l_denied then
-					send_custom_access_denied ("You do not have permission to access CMS module uninstallation procedure!", Void, req, res)
-				else
+			else
+				l_denied := True
+			end
+			if l_denied then
+				send_custom_access_denied ("You do not have permission to access CMS module uninstallation procedure!", Void, req, res)
+			else
+				if
+					attached {WSF_STRING} req.query_parameter ("op") as l_op and then l_op.same_string ("uninstall") and then
+					attached {WSF_TABLE} req.query_parameter ("module_uninstallation") as tb
+				then
 					create s.make_empty
 					across
 						tb as ic
@@ -82,24 +82,10 @@ feature -- Execution
 					s.append (r.link ("Back to modules management", r.location, Void))
 					r.set_main_content (s)
 					r.execute
-				end
-			elseif
-				attached {WSF_STRING} req.query_parameter ("op") as l_op and then l_op.same_string ("update") and then
-				attached {WSF_TABLE} req.query_parameter ("module_update") as tb
-			then
-				create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
-				if attached api.setup.string_8_item ("administration.installation_access") as l_access then
-					if l_access.is_case_insensitive_equal ("none") then
-						l_denied := True
-					elseif l_access.is_case_insensitive_equal ("permission") then
-						l_denied := not r.has_permission ({CMS_ADMIN_MODULE_ADMINISTRATION}.perm_admin_modules)
-					end
-				else
-					l_denied := True
-				end
-				if l_denied then
-					send_custom_access_denied ("You do not have permission to access CMS module update procedure!", Void, req, res)
-				else
+				elseif
+					attached {WSF_STRING} req.query_parameter ("op") as l_op and then l_op.same_string ("update") and then
+					attached {WSF_TABLE} req.query_parameter ("module_update") as tb
+				then
 					create s.make_empty
 					across
 						tb as ic
@@ -124,18 +110,17 @@ feature -- Execution
 					s.append (r.link ("Back to modules management", r.location, Void))
 					r.set_main_content (s)
 					r.execute
-				end
-			else
-				create {GENERIC_VIEW_CMS_RESPONSE} r.make (req, res, api)
-				create s.make_empty
+				else
+					create s.make_empty
 
-				f := installed_modules_collection_web_form (r)
-				f.append_to_html (r.wsf_theme, s)
-				f := modules_to_install_collection_web_form (r)
-				f.append_to_html (r.wsf_theme, s)
-				r.set_page_title ("Modules")
-				r.set_main_content (s)
-				r.execute
+					f := installed_modules_collection_web_form (r)
+					f.append_to_html (r.wsf_theme, s)
+					f := modules_to_install_collection_web_form (r)
+					f.append_to_html (r.wsf_theme, s)
+					r.set_page_title ("Modules")
+					r.set_main_content (s)
+					r.execute
+				end
 			end
 		end
 
