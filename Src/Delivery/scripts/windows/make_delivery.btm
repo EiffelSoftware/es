@@ -111,7 +111,7 @@ md %INSTALL_DIR
 md %STUDIO_DIR
 cdd %STUDIO_DIR
 remtrace studio
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/studio studio
+es_exprt /Src/Delivery/studio studio
 fullrd studio\bitmaps\src
 fullrf studio\bitmaps\png\icons_16x16.png
 fullrf studio\bitmaps\png\small_12x12.png
@@ -134,7 +134,7 @@ xcopy msc msc_vc140 /E /I
 
 safe_md %STUDIO_DIR\tools
 cdd %STUDIO_DIR\tools
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/tools/iron/delivery/iron iron
+es_exprt /Src/tools/iron/delivery/iron iron
 cdd %STUDIO_DIR\tools\iron\spec
 if not "windows"=="%ISE_PLATFORM" ren windows %ISE_PLATFORM
 fullrd unix
@@ -145,11 +145,11 @@ fullrd script
 cdd %STUDIO_DIR
 
 remtrace esbuilder
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/esbuilder esbuilder
+es_exprt /Src/Delivery/esbuilder esbuilder
 remtrace vision2 tour
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/vision2_demo vision2_demo
+es_exprt /Src/Delivery/vision2_demo vision2_demo
 remtrace examples
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/examples examples
+es_exprt /Src/examples examples
 cd examples
 fullrd obsolete
 fullrd eiffeltest
@@ -188,47 +188,47 @@ remtrace precomp
 safe_md %STUDIO_DIR\precomp
 safe_md %STUDIO_DIR\precomp\spec
 cd %STUDIO_DIR\precomp\spec
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/precomp/spec/platform %ISE_PLATFORM
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/precomp/spec/dotnet %ISE_PLATFORM-dotnet
+es_exprt /Src/Delivery/precomp/spec/platform %ISE_PLATFORM
+es_exprt /Src/Delivery/precomp/spec/dotnet %ISE_PLATFORM-dotnet
 cdd %STUDIO_DIR
 remtrace wizards
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery/wizards wizards
+es_exprt /Src/Delivery/wizards wizards
 fullrf %STUDIO_DIR\studio\wizards\new_projects\wizard.dsc
 fullrd %STUDIO_DIR\studio\wizards\new_projects\wizard
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/help/wizards/ewf/rootdir %STUDIO_DIR\studio\wizards\new_projects\ewf
+es_exprt /Src/help/wizards/ewf/rootdir %STUDIO_DIR\studio\wizards\new_projects\ewf
 move %STUDIO_DIR\studio\wizards\new_projects\ewf\ewf.dsc %STUDIO_DIR\studio\wizards\new_projects\ewf.dsc
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/help/wizards/library/rootdir %STUDIO_DIR\studio\wizards\new_projects\library
+es_exprt /Src/help/wizards/library/rootdir %STUDIO_DIR\studio\wizards\new_projects\library
 move %STUDIO_DIR\studio\wizards\new_projects\library\library.dsc %STUDIO_DIR\studio\wizards\new_projects\library.dsc
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/help/wizards/wrapc/rootdir %STUDIO_DIR\studio\wizards\new_projects\wrapc
+es_exprt /Src/help/wizards/wrapc/rootdir %STUDIO_DIR\studio\wizards\new_projects\wrapc
 move %STUDIO_DIR\studio\wizards\new_projects\wrapc\wrapc.dsc %STUDIO_DIR\studio\wizards\new_projects\wrapc.dsc
 
 remtrace C_library
 safe_md %STUDIO_DIR\C_library
 cdd %STUDIO_DIR\C_library
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/C_library/libpng libpng
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/C_library/zlib zlib
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/C_library/curl curl
+es_exprt /Src/C_library/libpng libpng
+es_exprt /Src/C_library/zlib zlib
+es_exprt /Src/C_library/curl curl
 safe_md openssl
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/C_library/openssl/clibs_openssl.ecf openssl
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/C_library/openssl/include openssl/include
+es_exprt /Src/C_library/openssl/clibs_openssl.ecf openssl
+es_exprt /Src/C_library/openssl/include openssl/include
 cdd %STUDIO_DIR
 remtrace root
-exprt -N -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/Delivery Delivery
+es_exprt -N /Src/Delivery Delivery
 move Delivery\*.* . >>& %INSTALL_LOG
 give_time_to move Delivery files.
 fullrd Delivery >>& %INSTALL_LOG
 fullrf INSTALL README make_install compile_libraries
 remtrace eweasel (just the necessary)
-exprt -N -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/eweasel eweasel
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/eweasel/bin eweasel/bin
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/eweasel/control eweasel/control
+es_exprt -N /eweasel eweasel
+es_exprt /eweasel/bin eweasel/bin
+es_exprt /eweasel/control eweasel/control
 fullrf %STUDIO_DIR\eweasel\INSTALL
 
 remtrace MinGW files
 cdd %STUDIO_DIR
 safe_md gcc
 cd gcc
-exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/free_add_ons/gcc/%ISE_PLATFORM% %ISE_PLATFORM%
+es_exprt /free_add_ons/gcc/%ISE_PLATFORM% %ISE_PLATFORM%
 
 remtrace Create directories
 cdd %STUDIO_DIR
@@ -320,11 +320,11 @@ iff not defined NO_COMPILE then
 	REM Clean up the files
 	remtrace Update all source files.
 	cdd %EIFFEL_SRC\..
-	co -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src %EIFFEL_SRC
+	es_co /Src %EIFFEL_SRC
 
-	set SVN_VERSION=%@EXECSTR[set_version %EIFFEL_SRC]
-	remtrace Building the revision %SVN_VERSION%
-	echo %STUDIO_VERSION_MAJOR_MINOR% %SVN_VERSION% > %WORK_DIR%\%STUDIO_VERSION_MAJOR_MINOR%_%SVN_VERSION%.txt
+	set STUDIO_BUILD_ID=%@EXECSTR[set_version %EIFFEL_SRC]
+	remtrace "Building the version for %STUDIO_BUILD_ID%"
+	echo %STUDIO_VERSION_MAJOR_MINOR% %STUDIO_BUILD_ID% > %WORK_DIR%\%STUDIO_VERSION_MAJOR_MINOR%_%STUDIO_BUILD_ID%.txt
 
 	iff not defined NO_ENTERPRISE_BUILD then
 		remtrace ISE specific files
@@ -332,18 +332,18 @@ iff not defined NO_COMPILE then
 		iff EXIST %INIT_DIR%\isesvn\library\keygen then
 			xcopy %INIT_DIR%\isesvn\library\keygen library\keygen /E /I /Y
 		else
-			co -r %ISE_SVN_REVISION% %DEFAULT_ISE_SVN%/Src/library/keygen library/keygen
+			es_co /Src/library/keygen library/keygen
 		endiff
 		cd tools
 		iff EXIST %INIT_DIR%\isesvn\tools\activation then
 			xcopy %INIT_DIR%\isesvn\tools\activation activation /E /I /Y
 		else
-			co -r %ISE_SVN_REVISION% %DEFAULT_ISE_SVN%/Src/tools/activation activation
+			es_co /Src/tools/activation activation
 		endiff
 		iff EXIST %INIT_DIR%\isesvn\tools\estudio_enterprise then
 			xcopy %INIT_DIR%\isesvn\tools\estudio_enterprise estudio_enterprise /E /I /Y
 		else
-			co -r %ISE_SVN_REVISION% %DEFAULT_ISE_SVN%/Src/tools/estudio_enterprise estudio_enterprise
+			es_co /Src/tools/estudio_enterprise estudio_enterprise
 		endiff
 	endiff
 

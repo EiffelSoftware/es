@@ -309,18 +309,18 @@ feature {NONE} -- Usage
 			Result.append ((create {EIFFEL_CONSTANTS}).two_digit_minimum_minor_version)
 			Result.append_character ('.')
 				-- We put (9999 + 1) because if we were to put 10000 the 4 zeros
-				-- will get replaced by the delivery scripts (see comments for `svn_revision').
-			Result.append_integer (svn_revision // (9999 + 1))
+				-- will get replaced by the delivery scripts (see comments for `build_id').
+			Result.append_integer (build_id // (9999 + 1))
 			Result.append_character ('.')
-			Result.append_integer (svn_revision \\ (9999 + 1))
+			Result.append_integer (build_id \\ (9999 + 1))
 		end
 
-	svn_revision: INTEGER
-			-- SVN revision that build the compiler.
-			-- We use `0000' because it is replaced by the actual svn revision number
+	build_id: INTEGER
+			-- Build id used in the product version.
+			-- We use `0000` because it is replaced by the actual build number
 			-- when doing a delivery.
 		do
-			Result := 0000
+			Result := 0000 --| BUILD_ID (keep this comment for delivery script)
 		end
 
 	switches: ARRAYED_LIST [ARGUMENT_SWITCH]

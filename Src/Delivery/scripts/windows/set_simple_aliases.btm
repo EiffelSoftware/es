@@ -43,10 +43,75 @@ alias cancel `echo Exiting... & echo Total time used: & echo %@TIMER[2] & set PA
 alias CANCEL_ON_ERROR `iff not "%DELIV_SKIP_ERROR%" == "True" then & CANCEL & endiff`
 
 REM CVS Commands: checkout, export
-alias co `call  %INIT_DIR\svn_command.bat co --quiet %$ >>& %INSTALL_LOG`
-alias exprt `call %INIT_DIR\svn_command.bat --force export --quiet %$ >>& %INSTALL_LOG`
-REM We cannot redirect the output here, since the output is redirected to a file
-alias exprtfile `call %INIT_DIR\svn_command.bat cat %$` 
+
+:ISE_CHECKOUT
+:: svn checkout for the ISE repository
+	if "%1" EQU "-N" (
+		set l_opts="-N"
+		shift
+	)
+	set l_path=%1
+	shift
+	call %INIT_DIR\svn_command.bat checkout --quiet %l_opts% -r %ISE_SVN_REVISION% %DEFAULT_ISE_SVN%%l_path% %$ >>& %INSTALL_LOG
+goto:EOF
+
+:ISE_EXPRT
+:: svn export for the ISE repository
+	if "%1" EQU "-N" (
+		set l_opts="-N"
+		shift
+	)
+	set l_path=%1
+	shift
+	call %INIT_DIR\svn_command.bat --force export --quiet -r %ISE_SVN_REVISION% %DEFAULT_ISE_SVN%%l_path% %$ >>& %INSTALL_LOG
+goto:EOF
+
+:ISE_EXPRT_FILE
+:: svn cat for the ISE repository
+	set l_path=%1
+	shift
+	set l_dest=%1
+	shift
+	call %INIT_DIR\svn_command.bat cat -r %ISE_SVN_REVISION% %DEFAULT_ISE_SVN%%l_path% %$  > %l_dest%
+goto:EOF
+
+:ES_CHECKOUT
+:: svn checkout for the EiffelStudio repository
+	if "%1" EQU "-N" (
+		set l_opts="-N"
+		shift
+	)
+	set l_path=%1
+	shift
+	call %INIT_DIR\svn_command.bat checkout --quiet %l_opts% -r %PUBLIC_SVN_REVISION% %DEFAULT_PUBLIC_SVN%%l_path% %$ >>& %INSTALL_LOG
+goto:EOF
+
+:ES_EXPRT
+:: svn export for the EiffelStudio repository
+	if "%1" EQU "-N" (
+		set l_opts="-N"
+		shift
+	)
+	set l_path=%1
+	shift
+	call %INIT_DIR\svn_command.bat --force export --quiet %l_opts% -r %PUBLIC_SVN_REVISION% %DEFAULT_PUBLIC_SVN%%l_path% %$ >>& %INSTALL_LOG
+goto:EOF
+
+:ES_EXPRT_FILE
+:: svn cat for the EiffelStudio repository
+	set l_path=%1
+	shift
+	set l_dest=%1
+	shift
+	call %INIT_DIR\svn_command.bat cat -r %ISE_SVN_REVISION% %DEFAULT_ISE_SVN%%l_path% %$  > %l_dest%
+goto:EOF
+
+alias ise_co call:ISE_CHECKOUT %$ >>& %INSTALL_LOG`
+alias ise_exprt call:ISE_EXPRT %$ >>& %INSTALL_LOG`
+alias es_co call:ES_CHECKOUT %$ >>& %INSTALL_LOG`
+alias es_exprt call:ES_EXPRT %$ >>& %INSTALL_LOG`
+alias ise_exprtfile call:ISE_EXPRT_FILE %$ >>& %INSTALL_LOG`
+alias es_exprtfile call:ES_EXPRT_FILE %$ >>& %INSTALL_LOG`
 
 REM C Compilation
 REM `default_make` will compile just for the value of ISE_C_COMPILER (currently defaulting to the Microsoft
@@ -85,3 +150,4 @@ REM file sharing
 ::alias share_delivery `cp %1 %INIT_DIR%\nightly`
 alias share_delivery `call  %INIT_DIR\share_delivery.bat %1 >>& %INSTALL_LOG`
 
+:EOF

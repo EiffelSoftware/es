@@ -23,9 +23,9 @@ feature -- Access
 			Result.append_character ('.')
 				-- We put (9999 + 1) because if we were to put 10000 the 4 zeros
 				-- will get replaced by the delivery scripts (see comments for `snv_revision').
-			Result.append ((svn_revision // (9999 + 1).as_natural_32).as_natural_16.out)
+			Result.append ((build_id // (9999 + 1).as_natural_32).as_natural_16.out)
 			Result.append_character ('.')
-			Result.append ((svn_revision \\ (9999 + 1).as_natural_32).as_natural_16.out)
+			Result.append ((build_id \\ (9999 + 1).as_natural_32).as_natural_16.out)
 		end
 
 	t_Copyright_info: STRING
@@ -51,12 +51,12 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	svn_revision: NATURAL_32
-			-- SVN revision that build EiffelBuild.
-			-- We use `0000' because it is replaced by the actual svn revision number
+	build_id: NATURAL_32
+			-- Build id for EiffelBuild.
+			-- We use `0000' because it is replaced by the actual build id number
 			-- when doing a delivery.
 		do
-			Result := 0000
+			Result := 0000 --| BUILD_ID (keep this comment for delivery script)
 		end
 
 invariant

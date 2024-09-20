@@ -16,7 +16,7 @@ iff not defined NO_COMPILE then
 	if EXIST %INIT_DIR%\isesvn\library\headers.tar.gz (
 		copy %INIT_DIR%\isesvn\library\headers.tar.gz headers\headers.tar.gz
 	) else (
-		exprtfile %DEFAULT_ISE_SVN%/Src/library/headers.tar.gz > headers\headers.tar.gz
+		ise_exprtfile /Src/library/headers.tar.gz headers\headers.tar.gz
 	)
 	cd headers
 	tar xvfz headers.tar.gz
