@@ -227,7 +227,7 @@ _get_es() {
 		mkdir -p `dirname $dir`
 	fi
 	if [ ! -d "$dir" ]; then
-		echo Get ES source into $dir
+		echo Get ES source into $dir >> $INSTALL_LOG
 		#gitcmd=git clone --depth 1 --single-branch --branch $DEFAULT_ES_BRANCH  $DEFAULT_ES_ROOT $dir 
 		gitcmd="git clone --single-branch --branch $DEFAULT_ES_BRANCH  $DEFAULT_ES_ROOT $dir "
 		echo $gitcmd >> $INSTALL_LOG;
@@ -307,7 +307,7 @@ esac
 
 if [ -d "$dir" ]; then
 	if [ -d "${dest}" ]; then
-		echo "Dir already exists"
+		echo "Dir already exists" >> $INSTALL_LOG
 	fi
 	mkdir -p ${dest}
 	if [ "$rec" = "false" ]; then
@@ -319,7 +319,7 @@ if [ -d "$dir" ]; then
 		# Note: even if the local files are modified, git archive gets the not modified files and dirs
 		cd "$dir"
 		git archive --format="tar" ${branch} | tar -x -C ${dest}
-		cd -
+		cd - > /dev/null
 	fi
 else
 	echo "Export ${path} [NOT FOUND] directory $dir is missing" >> $INSTALL_LOG

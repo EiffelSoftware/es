@@ -7,13 +7,13 @@
 
 # get build id 
 
-cd $1
-computed_svn_revision=`git rev-list HEAD | wc -l`
-cd -
+cd $1 > /dev/null
+computed_build_id=`git rev-list HEAD | wc -l`
+cd - > /dev/null
 
 if [ "$2" = "" -o "$3" = "" ]; then
-	echo $computed_svn_revision
+	echo $computed_build_id
 else
-	sed -e "s/$2/$computed_svn_revision/" $3 > tmp
+	sed -e "s/$2/$computed_build_id/" $3 > tmp
 	mv tmp $3
 fi
