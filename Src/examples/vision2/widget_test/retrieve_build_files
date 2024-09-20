@@ -17,7 +17,7 @@ cp -rf $deliv_dir/vision2_demo _Delivery_vision2_demo
 cp -r _Delivery_vision2_demo/templates ./
 
 # Copy icons for different widget types across.
-cp -r Delivery_esbuilder_bitmaps ./bitmaps
+cp -r _Delivery_esbuilder_bitmaps ./bitmaps
 
 # Copy icons for standard buttons.
 cp _Delivery_vision2_demo/bitmaps/png/documentation.png ./bitmaps/png/
@@ -31,4 +31,5 @@ cp _Delivery_vision2_demo/bitmaps/png/image2.png ./bitmaps/png/
 cp $EIFFEL_SRC/library/vision2/Clib/default_vision2_icon.ico vision2_demo.ico
 
 # Remove all temporary checked out files.
-rm -rf _Delivery
+rm -rf _Delivery_esbuilder_bitmaps
+rm -rf _Delivery_vision2_demo

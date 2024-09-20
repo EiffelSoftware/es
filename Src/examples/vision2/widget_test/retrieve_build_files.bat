@@ -18,13 +18,13 @@ REM Copy icons for different widget types across. The /E option moves the whole 
 XCOPY /Y /E /I _Delivery_esbuilder_bitmaps .\bitmaps
 
 REM Copy icons for standard buttons.
-XCOPY /Y _Delivery\vision2_demo\bitmaps\ico\documentation.ico .\bitmaps\ico\
-XCOPY /Y _Delivery\vision2_demo\bitmaps\ico\testing.ico .\bitmaps\ico\
-XCOPY /Y _Delivery\vision2_demo\bitmaps\ico\properties.ico .\bitmaps\ico\
-XCOPY /Y _Delivery\vision2_demo\bitmaps\ico\size_down.ico .\bitmaps\ico\
-XCOPY /Y _Delivery\vision2_demo\bitmaps\ico\size_up.ico .\bitmaps\ico\
-XCOPY /Y _Delivery\vision2_demo\bitmaps\png\image1.png .\bitmaps\png\
-XCOPY /Y _Delivery\vision2_demo\bitmaps\png\image2.png .\bitmaps\png\
+XCOPY /Y _Delivery_vision2_demo\bitmaps\ico\documentation.ico .\bitmaps\ico\
+XCOPY /Y _Delivery_vision2_demo\bitmaps\ico\testing.ico .\bitmaps\ico\
+XCOPY /Y _Delivery_vision2_demo\bitmaps\ico\properties.ico .\bitmaps\ico\
+XCOPY /Y _Delivery_vision2_demo\bitmaps\ico\size_down.ico .\bitmaps\ico\
+XCOPY /Y _Delivery_vision2_demo\bitmaps\ico\size_up.ico .\bitmaps\ico\
+XCOPY /Y _Delivery_vision2_demo\bitmaps\png\image1.png .\bitmaps\png\
+XCOPY /Y _Delivery_vision2_demo\bitmaps\png\image2.png .\bitmaps\png\
 
 REM Copy image used for executable icon.
 
@@ -33,4 +33,7 @@ ren default_vision2_icon.ico vision2_demo.ico
 
 
 REM Remove all temporary checked out files.
-rd /Q /S _Delivery
+rd /Q /S _Delivery_esbuilder_bitmaps
+rd /Q /S _Delivery_vision2_demo
+
+
