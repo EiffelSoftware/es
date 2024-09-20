@@ -2,31 +2,33 @@
 
 # Check out the appropriate tag depending on arguments
 if [ $# -eq 0 ]; then
-	svntag="https://svn.eiffel.com/eiffelstudio/trunk"
+	deliv_dir=$EIFFEL_SRC/Delivery
 else
-	svntag=$*
+	deliv_dir=$1
 fi
 
 # Check out bitmaps from Build delivery
-until svn co $svntag/Src/Delivery/esbuilder/bitmaps Delivery/esbuilder/bitmaps; do echo "svn failure, retrying..."; done
+cp -rf $deliv_dir/esbuilder/bitmaps _Delivery_esbuilder_bitmaps
 
 # Check out files from vision2_tour
-until svn co $svntag/Src/Delivery/vision2_demo Delivery/vision2_demo; do echo "svn failure, retrying..."; done
+cp -rf $deliv_dir/vision2_demo _Delivery_vision2_demo
 
 # Copy template files
-cp -r Delivery/vision2_demo/templates ./
+cp -r _Delivery_vision2_demo/templates ./
 
 # Copy icons for different widget types across.
-cp -r Delivery/esbuilder/bitmaps ./
+cp -r Delivery_esbuilder_bitmaps ./bitmaps
 
 # Copy icons for standard buttons.
-cp Delivery/vision2_demo/bitmaps/png/documentation.png ./bitmaps/png/
-cp Delivery/vision2_demo/bitmaps/png/testing.png ./bitmaps/png/
-cp Delivery/vision2_demo/bitmaps/png/properties.png ./bitmaps/png/
-cp Delivery/vision2_demo/bitmaps/png/size_down.png ./bitmaps/png/
-cp Delivery/vision2_demo/bitmaps/png/size_up.png ./bitmaps/png/
-cp Delivery/vision2_demo/bitmaps/png/image1.png ./bitmaps/png/
-cp Delivery/vision2_demo/bitmaps/png/image2.png ./bitmaps/png/
+cp _Delivery_vision2_demo/bitmaps/png/documentation.png ./bitmaps/png/
+cp _Delivery_vision2_demo/bitmaps/png/testing.png ./bitmaps/png/
+cp _Delivery_vision2_demo/bitmaps/png/properties.png ./bitmaps/png/
+cp _Delivery_vision2_demo/bitmaps/png/size_down.png ./bitmaps/png/
+cp _Delivery_vision2_demo/bitmaps/png/size_up.png ./bitmaps/png/
+cp _Delivery_vision2_demo/bitmaps/png/image1.png ./bitmaps/png/
+cp _Delivery_vision2_demo/bitmaps/png/image2.png ./bitmaps/png/
+
+cp $EIFFEL_SRC/library/vision2/Clib/default_vision2_icon.ico vision2_demo.ico
 
 # Remove all temporary checked out files.
-rm -rf Delivery
+rm -rf _Delivery

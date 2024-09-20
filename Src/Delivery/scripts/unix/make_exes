@@ -19,7 +19,7 @@ if [ -z "$NO_EWEASEL" ]; then
 	remtrace Getting eweasel source code
 	cd $EIFFEL_SRC
 	safe_md $EIFFEL_SRC/eweasel
-	co -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/eweasel/source $EIFFEL_SRC/eweasel/source
+	es_co /eweasel/source $EIFFEL_SRC/eweasel/source
 	remtrace Compiling eweasel
 	safe_md $INSTALL_DIR/eweasel
 	safe_md $INSTALL_DIR/eweasel/spec
@@ -56,10 +56,10 @@ fi
 if [ ! -z "$INCLUDE_GUI" ]; then
 	remtrace Recompile Vision2 Tour
 	cd $EIFFEL_SRC
-	exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/vision2/widget_test vision2_demo
+	es_exprt /Src/examples/vision2/widget_test vision2_demo
 	cd $EIFFEL_SRC/vision2_demo
 	safe_md $EXPORT_DIR/vision2_demo
-	set -- -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN
+	set -- $EIFFEL_SRC/Delivery
 	. ./retrieve_build_files >> $INSTALL_LOG 2>&1
 	. ./retrieve_flat_short >> $INSTALL_LOG 2>&1
 	cd $EIFFEL_SRC/vision2_demo
@@ -297,7 +297,7 @@ if [ "$MULTIPLE_EDITIONS" ]; then
 		remtrace Compiling CD key validator
 		cd $EIFFEL_SRC/tools
 
-		exprt $DEFAULT_ISE_SVN/Src/tools/cd_key_validator cd_key_validator
+		ise_exprt /Src/tools/cd_key_validator cd_key_validator
 		if [ -d cd_key_validator ]; then
 			cd cd_key_validator/eiffel_studio_52
 			clean_project

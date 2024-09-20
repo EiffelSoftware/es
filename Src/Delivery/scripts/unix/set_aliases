@@ -11,7 +11,13 @@ if [ -z "$INIT_DIR" ]; then
 	INIT_DIR=$WORKINGDIR
 fi
 
+if [ -f "$INIT_DIR/.env" ]; then
+	echo Loading local environment $INIT_DIR/.env
+	. "$INIT_DIR/.env"
+fi
+
 if [ -f "$INIT_DIR/set_custom_aliases" ]; then
+	echo Loading custom aliases  $INIT_DIR/set_custom_aliases
 	. "$INIT_DIR/set_custom_aliases"
 fi
 
@@ -27,29 +33,34 @@ FINAL_INSTALL_DIR=$WORKINGDIR/Eiffel_$STUDIO_VERSION_MAJOR_MINOR
 DOCUMENT_DIR=$WORKINGDIR
 # Where all.tar.bz2 files should be stored
 EXPORT_DIR=$WORKINGDIR/PorterPackage
-# What tag to use to CVS export everything
+SCM_DIR=$WORKINGDIR/Sources
+
+# What repo and branch to use to export everything (ISE svn repo, and Git repo)
 if [ ! "$DEFAULT_ISE_SVN" ]; then
 	DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/trunk
 fi
-if [ ! "$DEFAULT_ORIGO_SVN_ROOT" ]; then
-	DEFAULT_ORIGO_SVN_ROOT=https://svn.eiffel.com/eiffelstudio
+if [ ! "$DEFAULT_ES_ROOT" ]; then
+	# Note: it could be similar to 
+	# DEFAULT_ES_ROOT=https://oauth2:{{glpat-ACCESS-TOKEN}}@gitlab.com/eiffelsoftware/es.git
+	DEFAULT_ES_ROOT=https://gitlab.com/eiffelsoftware/es.git
 fi
-if [ ! "$DEFAULT_ORIGO_SVN" ]; then
-	DEFAULT_ORIGO_SVN=$DEFAULT_ORIGO_SVN_ROOT/trunk
-fi
-# This section is commented out be cause it won't work on non-bash shell
-# we use the other one while waiting for a better solution
-#if [ ! "$ORIGO_SVN_REVISION" ]; then
-#	mkdir -p /tmp/eiffelstudio_revision
-#	svn checkout --config-option config:miscellany:use-commit-times=yes $DEFAULT_ORIGO_SVN_ROOT/revision /tmp/eiffelstudio_revision
-#	ORIGO_SVN_REVISION=$(svnversion /tmp/eiffelstudio_revision)
-#fi
-if [ ! "$ORIGO_SVN_REVISION" ]; then
-	ORIGO_SVN_REVISION=HEAD
+if [ ! "$DEFAULT_ES_BRANCH" ]; then
+	DEFAULT_ES_BRANCH=master
 fi
 
-# Used to create the revision on the package.
-FILE_SVN_REVISION=""
+# This section is commented out be cause it won't work on non-bash shell
+# we use the other one while waiting for a better solution
+#if [ ! "$ES_BUILD_ID" ]; then
+#	mkdir -p /tmp/eiffelstudio_revision
+#	svn checkout --config-option config:miscellany:use-commit-times=yes $DEFAULT_ORIGO_SVN_ROOT/revision /tmp/eiffelstudio_revision
+#	ES_BUILD_ID=$(svnversion /tmp/eiffelstudio_revision)
+#fi
+if [ ! "$ES_BUILD_ID" ]; then
+	ES_BUILD_ID=HEAD
+fi
+
+# Used to create the build id on the package.
+BUILD_ID=""
 # Version of GTK to build "ec"
 #GTK_DIR=gtk2
 GTK_DIR=gtk3
@@ -183,15 +194,121 @@ TERMINATE
 exit 1
 }
 
-# SVN Commands: checkout, export
-co ()
+# SCM Commands: clone, export
+ise_co ()
 {
 until  svn checkout --config-option config:miscellany:use-commit-times=yes $* >> $INSTALL_LOG; do echo "svn checkout .. $* failed, retrying..."; done
 }
-exprt ()
+#
+ise_exprt ()
 {
-until  svn --force export --config-option config:miscellany:use-commit-times=yes $* >> $INSTALL_LOG; do echo "svn export .. $* failed, retrying..."; done
+repo=$DEFAULT_ISE_SVN
+path=$1
+dest=$1
+	# svn export from ISE svn repository $repo the path $path into path $dest
+
+until \
+	svn --force export --config-option config:miscellany:use-commit-times=yes $repo$path $dest >> $INSTALL_LOG; \
+	do
+		echo "svn export .. $* failed, retrying..."; 
+	done
 }
+
+_get_es() {
+	dir=$1
+	if [ ! -d `dirname $dir` ]; then
+		mkdir -p `dirname $dir`
+	fi
+	if [ ! -d "$dir" ]; then
+		echo Get ES source into $dir
+    	echo git clone --depth 1 --single-branch --branch $DEFAULT_ES_BRANCH  $DEFAULT_ES_ROOT $dir  >> $INSTALL_LOG;
+
+    	until \
+    		git clone --depth 1 --single-branch --branch $DEFAULT_ES_BRANCH  $DEFAULT_ES_ROOT $dir >> $INSTALL_LOG; \
+    	do \
+    		echo "git clone ES repo into $dir failed, retrying...";\ >> $INSTALL_LOG
+    	done
+	fi
+}
+_get_es_export()
+{
+	dir=$1
+	_get_es $dir
+}
+
+es_co ()
+{
+repo=$DEFAULT_ES_ROOT
+branch=$DEFAULT_ES_BRANCH
+commit_id=$ES_BUILD_ID
+if [ "$1" = "-N" ]; then
+	rec=false
+	shift
+else
+	rec=true
+fi
+path=$1
+dest=`realpath $2`
+
+_get_es "$SCM_DIR/repo-es"
+
+if [ -d "$SCM_DIR/repo-es${path}" ]; then 
+	if [ "$res" = "false" ]; then
+		# FIXME: hopefully the files are not modified...
+		mkdir -p ${dest}
+		cp "$SCM_DIR/repo-es${path}/*" ${dest}/.
+	else
+		# FIXME: cp or ln or rsync ?
+		ln -s "$SCM_DIR/repo-es${path}" "$dest" >> $INSTALL_LOG
+	fi
+else
+	echo "Missing $SCM_DIR/repo-es${path}" >> $INSTALL_LOG
+fi
+}
+
+es_exprt ()
+{
+repo=$DEFAULT_ES_ROOT
+branch=$DEFAULT_ES_BRANCH
+commit_id=$ES_BUILD_ID
+if [ "$1" = "-N" ]; then
+	rec=false
+	shift
+else
+	rec=true
+fi
+path=$1
+dest=`realpath $2`
+
+dir="$SCM_DIR/repo-es"
+_get_es $dir
+case "${path}" in
+	/*) dir="$dir${path}" ;;
+	*) dir="$dir/${path}" ;;
+esac
+
+if [ -d "$dir" ]; then
+	if [ -d "${dest}" ]; then
+		echo "Dir already exists"
+	fi
+	mkdir -p ${dest}
+	if [ "$rec" = "false" ]; then
+		# FIXME: hopefully the files are not modified...
+		for p in $dir/* ; do
+			[ -f "$p" ] && cp -p "$p" ${dest}/.
+		done
+	else
+		# Note: even if the local files are modified, git archive gets the not modified files and dirs
+		cd "$dir"
+		git archive --format="tar" ${branch} | tar -x -C ${dest}
+		cd -
+	fi
+else
+	echo "Export ${path} [NOT FOUND] directory $dir is missing" >> $INSTALL_LOG
+fi
+
+}
+
 
 # C Compilation
 default_make ()

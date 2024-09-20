@@ -45,8 +45,9 @@ echo EXPORT_DIR ____ $EXPORT_DIR
 echo DOCUMENT_DIR __ $DOCUMENT_DIR
 echo Log file ______ $INSTALL_LOG
 echo = Source location =
-echo Generated revision _ $ORIGO_SVN_REVISION
-echo DEFAULT_ORIGO_SVN __ $DEFAULT_ORIGO_SVN
+echo Generated revision _ $ES_BUILD_ID
+echo DEFAULT_ES_ROOT __ $DEFAULT_ES_ROOT
+echo DEFAULT_ES_BRANCH __ $DEFAULT_ES_BRANCH
 echo DEFAULT_ISE_SVN ____ $DEFAULT_ISE_SVN
 echo = Compiler version =
 echo ecb version is _____ $(ecb -version)
