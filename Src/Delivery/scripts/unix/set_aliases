@@ -39,6 +39,10 @@ SCM_DIR=$WORKINGDIR/Sources
 if [ ! "$DEFAULT_ISE_SVN" ]; then
 	DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/trunk
 fi
+if [ ! "$ISE_SVN_REVISION" ]; then
+	ISE_SVN_REVISION=HEAD
+fi
+
 if [ ! "$DEFAULT_ES_ROOT" ]; then
 	# Note: it could be similar to 
 	# DEFAULT_ES_ROOT=https://oauth2:{{glpat-ACCESS-TOKEN}}@gitlab.com/eiffelsoftware/es.git
@@ -248,17 +252,9 @@ _get_es() {
     	done
 	fi
 }
-_get_es_export()
-{
-	dir=$1
-	_get_es $dir
-}
 
 es_co ()
 {
-repo=$DEFAULT_ES_ROOT
-branch=$DEFAULT_ES_BRANCH
-commit_id=$ES_BUILD_ID
 if [ "$1" = "-N" ]; then
 	rec=false
 	shift
@@ -268,27 +264,31 @@ fi
 path=$1
 dest=`realpath $2`
 
-_get_es "$SCM_DIR/repo-es"
+dir="$SCM_DIR/repo-es"
+_get_es $dir
+case "${path}" in
+	/*) dir="$dir${path}" ;;
+	*) dir="$dir/${path}" ;;
+esac
 
-if [ -d "$SCM_DIR/repo-es${path}" ]; then 
-	if [ "$res" = "false" ]; then
+if [ -d "$dir" ]; then 
+	if [ "$rec" = "false" ]; then
 		# FIXME: hopefully the files are not modified...
 		mkdir -p ${dest}
-		cp "$SCM_DIR/repo-es${path}/*" ${dest}/.
+		for p in $dir/* ; do
+			[ -f "$p" ] && cp -p "$p" ${dest}/.
+		done
 	else
 		# FIXME: cp or ln or rsync ?
-		ln -s "$SCM_DIR/repo-es${path}" "$dest" >> $INSTALL_LOG
+		ln -s "$dir" "$dest" >> $INSTALL_LOG
 	fi
 else
-	echo "Missing $SCM_DIR/repo-es${path}" >> $INSTALL_LOG
+	echo "Checkout ${path} [NOT FOUND] directory $dir is missing" >> $INSTALL_LOG
 fi
 }
 
 es_exprt ()
 {
-repo=$DEFAULT_ES_ROOT
-branch=$DEFAULT_ES_BRANCH
-commit_id=$ES_BUILD_ID
 if [ "$1" = "-N" ]; then
 	rec=false
 	shift
@@ -318,7 +318,7 @@ if [ -d "$dir" ]; then
 	else
 		# Note: even if the local files are modified, git archive gets the not modified files and dirs
 		cd "$dir"
-		git archive --format="tar" ${branch} | tar -x -C ${dest}
+		git archive --format="tar" ${DEFAULT_ES_BRANCH} | tar -x -C ${dest}
 		cd - > /dev/null
 	fi
 else
