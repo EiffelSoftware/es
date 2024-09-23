@@ -42,7 +42,7 @@ sed -e "s/Version_info:\ STRING\ =\ \"[0-9a-zA-Z_\,\ \/\:()\.\=\-]*\"/Version_in
 move %EFILE_TMP% %EFILE%
 goto END
 
-:DISPLAY_SVN_REVISION
+:DISPLAY_BUILD_ID
 echo %LASTREV%
 goto END
 

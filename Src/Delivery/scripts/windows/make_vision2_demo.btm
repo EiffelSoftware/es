@@ -9,7 +9,7 @@ iff exist %T_VISION2_DEMO_STUDIO_FILE% then
 	remtrace Reuse existing vision2_demo
 else
 	cdd %EIFFEL_SRC
-	es_exprt /Src/examples/vision2/widget_test vision2_demo
+	es_exprt Src/examples/vision2/widget_test vision2_demo
 
 	REM Must now call batch files here, to generate the flatshorts and also retrieve the
 	REM build files needed by the test

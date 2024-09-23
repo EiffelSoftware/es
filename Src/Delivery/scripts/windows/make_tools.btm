@@ -161,8 +161,8 @@ iff exist %STUDIO_DIR%\tools\spec\%ISE_PLATFORM%\bin\eiffel_ribbon.exe then
 else
 	safe_md %STUDIO_DIR%\tools\ribbon
 	cdd %STUDIO_DIR%\tools\ribbon
-	es_exprt /Src/tools/eiffel_ribbon/template template
-	es_exprt /Src/tools/eiffel_ribbon/images images
+	es_exprt Src/tools/eiffel_ribbon/template template
+	es_exprt Src/tools/eiffel_ribbon/images images
 	cdd %EIFFEL_SRC%\tools\eiffel_ribbon
 	clean_project
 	finalize eiffel_ribbon.ecf

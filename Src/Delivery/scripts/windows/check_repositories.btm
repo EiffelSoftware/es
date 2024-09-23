@@ -1,0 +1,7 @@
+@echo off
+call %~dp0init.btm
+
+echo Latest revision for %DEFAULT_ES_ROOT%
+git ls-remote %DEFAULT_ES_ROOT% %DEFAULT_ES_BRANCH%
+echo Latest revision for %DEFAULT_ISE_SVN%
+svn info %DEFAULT_ISE_SVN% | grep Revision

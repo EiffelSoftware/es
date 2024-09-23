@@ -5,19 +5,11 @@ elseiff exist %~dp0machines\local.btm then
 	call %~dp0machines\local.btm
 endiff
 
-REM Backward compatibility
-iff defined DEFAULT_ORIGO_SVN then
-	set DEFAULT_PUBLIC_SVN=%DEFAULT_ORIGO_SVN%
-endiff
-iff defined ORIGO_SVN_REVISION then
-	set PUBLIC_SVN_REVISION=%ORIGO_SVN_REVISION%
-endiff
-
 REM General configuration
 iff not defined STUDIO_VERSION_MAJOR_MINOR then
 echo "-------------------"
 	call %~dp0..\inc\get_eiffel_version.bat STUDIO_VERSION_MAJOR_MINOR
-::	set STUDIO_VERSION_MAJOR_MINOR=19.05
+::	set STUDIO_VERSION_MAJOR_MINOR=24.05
 endiff
 
 iff not defined WORK_DIR then
@@ -25,19 +17,22 @@ iff not defined WORK_DIR then
 endiff
 
 REM Tag to export files from public SVN repository
-iff not defined DEFAULT_PUBLIC_SVN then
-	set DEFAULT_PUBLIC_SVN=https://svn.eiffel.com/eiffelstudio/trunk
+iff not defined DEFAULT_ES_ROOT then
+	set DEFAULT_ES_ROOT=https://gitlab.com/eiffelsoftware/es.git
 endiff
-iff not defined PUBLIC_SVN_REVISION then
-	set PUBLIC_SVN_REVISION=HEAD
+iff not defined DEFAULT_ES_BRANCH then
+	set DEFAULT_ES_BRANCH=master
 endiff
-iff not defined ISE_SVN_REVISION then
-	set ISE_SVN_REVISION=HEAD
+iff not defined ES_BUILD_ID then
+	set ES_BUILD_ID=HEAD
 endiff
 
 REM Tag to export files in SVN at ISE
 iff not defined DEFAULT_ISE_SVN then
 	set DEFAULT_ISE_SVN=svn://%USERNAME%@svn.ise/ise_svn/trunk
+endiff
+iff not defined ISE_SVN_REVISION then
+	set ISE_SVN_REVISION=HEAD
 endiff
 
 iff not defined ISE_VC_MSC then

@@ -77,14 +77,14 @@ echo Extra menu
 @echo 1: make_dotnet
 @echo 2: make_wizards
 @echo 3: hack ...
-@echo 4: check svn repositories
+@echo 4: check repositories
 @echo -------------------
 @echo q: quit
 CHOICE /C 1234q /M " > selection:"
 if .%ERRORLEVEL%. == .1. GOTO call_make_dotnet
 if .%ERRORLEVEL%. == .2. GOTO call_make_wizards
 if .%ERRORLEVEL%. == .3. GOTO call_hack
-if .%ERRORLEVEL%. == .4. GOTO call_check_svn_repositories
+if .%ERRORLEVEL%. == .4. GOTO call_check_repositories
 if .%ERRORLEVEL%. == .5. goto end
 goto end
 
@@ -108,8 +108,8 @@ goto end
 %TCCLECMD% /C make_delivery.btm no_msi
 goto end
 
-:call_check_svn_repositories
-%TCCLECMD% /C check_svn_repositories.btm
+:call_check_repositories
+%TCCLECMD% /C check_repositories.btm
 goto end
 
 :make_std_delivery
