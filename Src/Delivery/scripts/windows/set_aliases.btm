@@ -28,6 +28,7 @@ endiff
 echo WORK_DIR=%WORK_DIR%
 
 set DELIV_DIR=%WORK_DIR%\build
+set SCM_DIR=%WORK_DIR%\Sources
 
 REM The file where all output is stored
 set INSTALL_LOG=%DELIV_DIR%\install.log

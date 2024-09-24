@@ -1,28 +1,28 @@
 @echo off
 rem Set Version
-rem %1 : svn wc path
+rem %1 : wc path
 rem %2 : 0000
 rem %3 : filename.e
 setlocal
-set SVNWCT=%1
+set WCT=%1
 set REVVAL=%2
 set EFILE=%3
 set EFILE_TMP=%EFILE%.tmp
 set LC_MESSAGES=C
 
-svn info %SVNWCT% > %EFILE_TMP%
-For /f "tokens=1-4 delims=/ " %%a in ('findstr /L /B /C:"Last Changed Rev" %EFILE_TMP%') do (set LASTREV=%%d)
-del /Q %EFILE_TMP%
-if .%LASTREV%. == .. set LASTREV=%REVVAL% -- Script was unable to set this value
+set T_CWD=%CD%
+cd %WCT%
+FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list HEAD ^| wc -l`) DO (
+SET BUILDNUMBER=%%F
+)
+FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse HEAD`) DO (
+SET BUILDSHA1=%%F
+)
+ECHO BUILDNUMBER=%BUILDNUMBER%
+if .%BUILDNUMBER%. == .. set BUILDNUMBER=%REVVAL% -- Script was unable to set this value
 
-if .%EFILE%. == .. GOTO DISPLAY_SVN_REVISION
+if .%EFILE%. == .. GOTO DISPLAY_BUILD_ID
 
-REM echo Set version: LASTREV=%LASTREV%
-svn revert -q %EFILE% 
-sed -e "s/:= %REVVAL%/:= %LASTREV%/" %EFILE% > %EFILE_TMP%
-move /Y %EFILE_TMP% %EFILE% >nul
-
-REM update the version_info ...
 for /f %%x in ('wmic path win32_utctime get /format:list ^| findstr "="') do set %%x
  IF %month% LSS 10 SET month=0%month%
  IF %day% LSS 10 SET day=0%day%
@@ -32,16 +32,22 @@ for /f %%x in ('wmic path win32_utctime get /format:list ^| findstr "="') do set
 set CURRDATE=%Year%-%Month%-%Day%
 set CURRTIME=%hour%:%minute%:%second%
 
-sed -e "s/Version_info:\ STRING\ =\ \"[0-9a-zA-Z_\,\ \/\:()\.\=\-]*\"/Version_info:\ STRING\ =\ \"Revision:\ %LASTREV% , Compilation:\ %CURRDATE%\ %CURRTIME%\"/g" %EFILE% > %EFILE_TMP%
-::sed -e "s/Version_info:\ STRING\ =\ \"[0-9a-zA-Z_\,\ \/\:()\.\=\-]*\"/Version_info:\ STRING\ =\ \"Revision:\ %LASTREV% , Compilation:\ %CURRDATE%\ %CURRTIME% , Builder:\ %USERNAME%\"/g" %EFILE% > %EFILE_TMP%
-move /Y %EFILE_TMP% %EFILE% >nul
+echo Set build number: BUILDNUMBER=%BUILDNUMBER%
+git checkout -- %EFILE%
+sed -e "s/:= 0000/:= %BUILDNUMBER%/" %EFILE% > %EFILE_TMP%
+move %EFILE_TMP% %EFILE%
+
+rem update the version_info ...
+sed -e "s/Version_info:\ STRING\ =\ \"[0-9a-zA-Z_\,\ \/\:()\.\=\-]*\"/Version_info:\ STRING\ =\ \"Build:\ %BUILDNUMBER% (%BUILDSHA1%) , Compilation:\ %CURRDATE%\ %CURRTIME%\"/g" %EFILE% > %EFILE_TMP%
+move %EFILE_TMP% %EFILE%
 goto END
 
-:DISPLAY_SVN_REVISION
+:DISPLAY_BUILD_ID
 echo %LASTREV%
 goto END
 
 :END
-
+cd %T_CWD%
 endlocal
 @echo on
+

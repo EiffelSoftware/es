@@ -9,15 +9,15 @@ iff exist %T_VISION2_DEMO_STUDIO_FILE% then
 	remtrace Reuse existing vision2_demo
 else
 	cdd %EIFFEL_SRC
-	exprt -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN/Src/examples/vision2/widget_test vision2_demo
+	es_exprt Src/examples/vision2/widget_test vision2_demo
 
 	REM Must now call batch files here, to generate the flatshorts and also retrieve the
 	REM build files needed by the test
 
 	cdd %EIFFEL_SRC\vision2_demo
 
-	call retrieve_build_files.bat -r %PUBLIC_SVN_REVISION %DEFAULT_PUBLIC_SVN  >>& %INSTALL_LOG
-	call retrieve_flat_short.bat >>& %INSTALL_LOG
+	call retrieve_build_files.bat %EIFFEL_SRC%\Delivery >>& %INSTALL_LOG
+	call retrieve_flat_short.bat %EIFFEL_SRC%\Delivery >>& %INSTALL_LOG
 
 	cdd %EIFFEL_SRC\vision2_demo
 	clean_project

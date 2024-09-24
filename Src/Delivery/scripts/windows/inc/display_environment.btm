@@ -17,8 +17,9 @@ iff defined NO_REUSE then
 endiff
 echo Log file location: %INSTALL_LOG%
 echo The private ISE svn repository: %DEFAULT_ISE_SVN%
-echo The public svn repository: %DEFAULT_PUBLIC_SVN%
-echo The revision that will be generated: %PUBLIC_SVN_REVISION%
+echo The ES repository: %DEFAULT_ES_ROOT%
+echo The ES branch: %DEFAULT_ES_BRANCH%
+echo The revision that will be generated: %ES_BUILD_ID%
 echo ecb version:
 ecb -version
 echo The C environment: ISE_C_COMPILER=%ISE_C_COMPILER% (ISE_C_COMPILER_VER=%ISE_C_COMPILER_VER%)

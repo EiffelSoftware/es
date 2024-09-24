@@ -7,13 +7,14 @@ call %INIT_DIR\set_aliases.btm
 REM Adding Wix to the path.
 set PATH=%PATH;%@EXECSTR[cd]\wix
 
-set EIFFEL_SRC=%TMP_EIFFEL_SRC
-set ISE_LIBRARY=%TMP_EIFFEL_SRC
-set ISE_SRC=%TMP_EIFFEL_SRC
+set EIFFEL_SRC=%TMP_EIFFEL_SRC%
+set ISE_LIBRARY=%TMP_EIFFEL_SRC%
+set ISE_SRC=%TMP_EIFFEL_SRC%
 
 :: Make sure required directories exist
 REM Create parent dir of %INSTALL_LOG if it does not exist.
 echo DELIV_DIR=[%DELIV_DIR%]
+echo SCM_DIR=[%SCM_DIR%]
 echo INSTALL_LOG=[%INSTALL_LOG%]
 set_parent_dir_of PDIR %INSTALL_LOG%
 iff not isdir %PDIR then

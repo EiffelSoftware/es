@@ -11,9 +11,9 @@ iff not defined INSTALL_DIR then
 	CANCEL
 endiff
 
-set SVN_VERSION=%@EXECSTR[set_version %EIFFEL_SRC]
+set STUDIO_BUILD_ID=%@EXECSTR[set_version %EIFFEL_SRC]
 
-remtrace Build Installation for %SVN_VERSION%
+remtrace Build Installation for %STUDIO_BUILD_ID%
 
 cdd %INIT_DIR%\install
 safe_md %INIT_DIR%\install\bin
@@ -40,7 +40,7 @@ iff .%1.==.. then
 		default_make
 
 		cdd %EIFFEL_SRC%\tools
-		co -r %PUBLIC_SVN_REVISION% %DEFAULT_PUBLIC_SVN%/Src/tools/hallow hallow
+		es_co Src/tools/hallow hallow
 		cd %EIFFEL_SRC%\tools\hallow
 		clean_project
 		iff "%USE_NET20%" EQ "True" then
@@ -77,8 +77,8 @@ iff .%1.==.. then
 				endiff
 				xcopy /E /I /Y %INIT_DIR%\isesvn\tools\setup setup
 			else
-				remtrace Get ISE SVN tools setup from subversion
-				co %DEFAULT_ISE_SVN%/Src/tools/setup setup
+				remtrace Get ISE tools setup from the ISE subversion repository
+				ise_co Src/tools/setup setup
 			endiff
 		endiff
 
@@ -142,22 +142,22 @@ iff not defined NO_ENTERPRISE_BUILD then
 	remtrace Preparing Enterprise edition
 	remtrace Clean previous ENT WIX files
 	fullrd %INIT_DIR%\install\bin\studio_ent_%WINNAME%
-	espawn -u:%ISE_C_COMPILER_VER% "nmake /nologo enterprise_%WINNAME"
-	safe_copy %INIT_DIR%\install\bin\studio_ent_%WINNAME%\package.msi %INSTALL_DIR%\setups\enterprise\%STUDIO_NAME%_ent_%SVN_VERSION-%ISE_PLATFORM%.msi
+	espawn -u:%ISE_C_COMPILER_VER% "nmake /nologo enterprise_%WINNAME%"
+	safe_copy %INIT_DIR%\install\bin\studio_ent_%WINNAME%\package.msi %INSTALL_DIR%\setups\enterprise\%STUDIO_NAME%_ent_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.msi
 
 	remtrace Preparing Branded edition
 	remtrace Clean previous Branded WIX files
 	fullrd %INIT_DIR%\install\bin\studio_branded_%WINNAME%
-	espawn -u:%ISE_C_COMPILER_VER% "nmake /nologo branded_%WINNAME"
-	safe_copy %INIT_DIR%\install\bin\studio_branded_%WINNAME%\package.msi %INSTALL_DIR%\setups\branded\%STUDIO_NAME%_branded_%SVN_VERSION-%ISE_PLATFORM%.msi
+	espawn -u:%ISE_C_COMPILER_VER% "nmake /nologo branded_%WINNAME%"
+	safe_copy %INIT_DIR%\install\bin\studio_branded_%WINNAME%\package.msi %INSTALL_DIR%\setups\branded\%STUDIO_NAME%_branded_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.msi
 endiff
 
 iff not defined NO_STANDARD_BUILD then
 	remtrace Preparing Standard edition
 	remtrace Clean previous Standard WIX files
 	fullrd %INIT_DIR%\install\bin\studio_std_%WINNAME%
-	espawn -u:%ISE_C_COMPILER_VER%  "nmake /nologo standard_%WINNAME"
-	safe_copy %INIT_DIR%\install\bin\studio_std_%WINNAME%\package.msi %INSTALL_DIR%\setups\standard\%STUDIO_NAME%_rev_%SVN_VERSION-%ISE_PLATFORM%.msi
+	espawn -u:%ISE_C_COMPILER_VER%  "nmake /nologo standard_%WINNAME%"
+	safe_copy %INIT_DIR%\install\bin\studio_std_%WINNAME%\package.msi %INSTALL_DIR%\setups\standard\%STUDIO_NAME%_rev_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.msi
 endiff
 
 :BUILD_ZIP
@@ -166,7 +166,7 @@ remtrace Building the Zips
 remtrace ==============================================
 iff not defined NO_STANDARD_BUILD then
 	cdd %INSTALL_DIR
-	iff exist %INSTALL_DIR%\setups\standard\%STUDIO_NAME%_rev_%SVN_VERSION-%ISE_PLATFORM%.7z then
+	iff exist %INSTALL_DIR%\setups\standard\%STUDIO_NAME%_rev_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z then
 		remtrace Standard archive: reuse
 	else
 		iff EXIST EiffelStudio then
@@ -180,16 +180,16 @@ iff not defined NO_STANDARD_BUILD then
 		else
 			remtrace Missing Standard license text
 		endiff
-		7z a -t7z -mx9 -r %INSTALL_DIR%\setups\standard\%STUDIO_NAME%_rev_%SVN_VERSION-%ISE_PLATFORM%.7z %STUDIO_NAME% >>& %INSTALL_LOG
+		7z a -t7z -mx9 -r %INSTALL_DIR%\setups\standard\%STUDIO_NAME%_rev_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z %STUDIO_NAME% >>& %INSTALL_LOG%
 	endiff
 	remtrace Uploading Standard packages online
 	cdd %INSTALL_DIR%\setups\standard
-	call share_delivery %STUDIO_NAME%_rev_%SVN_VERSION%-%ISE_PLATFORM%.7z standard
+	call share_delivery %STUDIO_NAME%_rev_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z standard
 	iff not defined NO_MSI then
-		call share_delivery %STUDIO_NAME%_rev_%SVN_VERSION%-%ISE_PLATFORM%.msi standard
+		call share_delivery %STUDIO_NAME%_rev_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.msi standard
 	endiff
-	iff not EXIST %STUDIO_NAME%_rev_%SVN_VERSION%-%ISE_PLATFORM%.7z then
-		if EXIST %~dp0notify.bat %~dp0notify.bat "Failure : no %STUDIO_NAME%_rev_%SVN_VERSION%-%ISE_PLATFORM%.7z release!"
+	iff not EXIST %STUDIO_NAME%_rev_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z then
+		if EXIST %~dp0notify.bat %~dp0notify.bat "Failure : no %STUDIO_NAME%_rev_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z release!"
 	endiff
 else
 	remtrace DO NOT Build Standard Zip
@@ -197,7 +197,7 @@ endiff
 
 iff not defined NO_ENTERPRISE_BUILD then
 	cdd %INSTALL_DIR
-	iff exist %INSTALL_DIR%\setups\enterprise\%STUDIO_NAME%_ent_%SVN_VERSION-%ISE_PLATFORM%.7z then
+	iff exist %INSTALL_DIR%\setups\enterprise\%STUDIO_NAME%_ent_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z then
 		remtrace Enterprise archive: reuse
 	else
 		remtrace Enterprise archive
@@ -211,19 +211,19 @@ iff not defined NO_ENTERPRISE_BUILD then
 		else
 			remtrace Missing Enterprise license text
 		endiff
-		7z a -t7z -mx9 -r %INSTALL_DIR%\setups\enterprise\%STUDIO_NAME%_ent_%SVN_VERSION-%ISE_PLATFORM%.7z %STUDIO_NAME% >>& %INSTALL_LOG
+		7z a -t7z -mx9 -r %INSTALL_DIR%\setups\enterprise\%STUDIO_NAME%_ent_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z %STUDIO_NAME% >>& %INSTALL_LOG%
 	endiff
 remtrace Uploading ENT packages online
 	cdd %INSTALL_DIR%\setups\enterprise
-	call share_delivery %STUDIO_NAME%_ent_%SVN_VERSION%-%ISE_PLATFORM%.7z enterprise
+	call share_delivery %STUDIO_NAME%_ent_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z enterprise
 	iff not defined NO_MSI then
-		call share_delivery %STUDIO_NAME%_ent_%SVN_VERSION%-%ISE_PLATFORM%.msi enterprise
+		call share_delivery %STUDIO_NAME%_ent_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.msi enterprise
 	endiff
 endiff
 
 iff not defined NO_ENTERPRISE_BUILD then
 	cdd %INSTALL_DIR
-	iff exist %INSTALL_DIR%\setups\branded\%STUDIO_NAME%_branded_%SVN_VERSION-%ISE_PLATFORM%.7z then
+	iff exist %INSTALL_DIR%\setups\branded\%STUDIO_NAME%_branded_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z then
 		remtrace Branded archive: reuse
 	else
 		remtrace Branded archive
@@ -237,13 +237,13 @@ iff not defined NO_ENTERPRISE_BUILD then
 		else
 			remtrace Missing Branded license text
 		endiff
-		7z a -t7z -mx9 -r %INSTALL_DIR%\setups\branded\%STUDIO_NAME%_branded_%SVN_VERSION-%ISE_PLATFORM%.7z %STUDIO_NAME% >>& %INSTALL_LOG
+		7z a -t7z -mx9 -r %INSTALL_DIR%\setups\branded\%STUDIO_NAME%_branded_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z %STUDIO_NAME% >>& %INSTALL_LOG%
 	endiff
 remtrace Uploading Branded packages online
 	cdd %INSTALL_DIR%\setups\branded
-	call share_delivery %STUDIO_NAME%_branded_%SVN_VERSION%-%ISE_PLATFORM%.7z branded
+	call share_delivery %STUDIO_NAME%_branded_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.7z branded
 	iff not defined NO_MSI then
-		call share_delivery %STUDIO_NAME%_branded_%SVN_VERSION%-%ISE_PLATFORM%.msi branded
+		call share_delivery %STUDIO_NAME%_branded_%STUDIO_BUILD_ID%-%ISE_PLATFORM%.msi branded
 	endiff
 endiff
 
@@ -254,4 +254,4 @@ fullrf %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin\ec.exe
 fullrf %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin\ecb.exe
 
 remtrace Your deliveries are now ready
-cdd %INIT_DIR
+cdd %INIT_DIR%

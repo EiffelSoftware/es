@@ -165,12 +165,12 @@ feature-- Versioning
 			-- Version of the compiler
 		once
 				-- We put (9999 + 1) because if we were to put 10000 the 4 zeros
-				-- will get replaced by the delivery scripts (see comments for `svn_revision'.
+				-- will get replaced by the delivery scripts (see comments for `build_id'.
 			create Result.make_version (
 				{EIFFEL_CONSTANTS}.major_version,
 				{EIFFEL_CONSTANTS}.minor_version,
-				(svn_revision // (9999 + 1).as_natural_32).as_natural_16,
-				(svn_revision \\ (9999 + 1).as_natural_32).as_natural_16)
+				(build_id // (9999 + 1).as_natural_32).as_natural_16,
+				(build_id \\ (9999 + 1).as_natural_32).as_natural_16)
 			Result.set_minimum_length_for_minor (2)
 			Result.set_minimum_length_for_build (4)
 		end
@@ -208,24 +208,24 @@ feature-- Versioning
 
 feature {AUXILIARY_FILES} -- Versioning
 
-	svn_revision: NATURAL_32
-			-- SVN revision that build the compiler.
-			-- We use `0000' because it is replaced by the actual svn revision number
+	build_id: NATURAL_32
+			-- Build id for this version.
+			-- We use `0000` because it is replaced by the actual build id number
 			-- when doing a delivery.
 		do
-			Result := 0000
+			Result := 0000 --| BUILD_ID (keep this comment for delivery script)
 		end
 
 	Version_tag: INTEGER = 0x027
 
-	Version_info: STRING = "";
+	Version_info: STRING = "Build: 98561 (061cc9a9d7c01b6b95f751fd5647ca9c5fa73aa2) , Compilation: 2024-09-20 16:32:14";
 			-- Information on the version
 			-- Default: ""
 			-- This can be used by developper to add specific information
 			-- displayed on About dialog
 
 note
-	copyright:	"Copyright (c) 1984-2020, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
