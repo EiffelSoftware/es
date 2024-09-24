@@ -29,7 +29,10 @@ goto EOF
 	cd "%dir%"
 
 	mkdir "%l_dest%"
-	git archive --format="tar" %DEFAULT_ES_BRANCH% | tar -x -C %l_dest%
+	git archive --format="tar" %DEFAULT_ES_BRANCH% > %l_dest%.tar 
+	cd %l_dest%
+	tar -xf %l_dest%.tar
+	rm %l_dest%.tar
 	cd %PREC_CWD%
 	unset PREC_CWD
 goto EOF

@@ -18,7 +18,7 @@ SET BUILDNUMBER=%%F
 FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse HEAD`) DO (
 SET BUILDSHA1=%%F
 )
-ECHO BUILDNUMBER=%BUILDNUMBER%
+:: ECHO BUILDNUMBER=%BUILDNUMBER%
 if .%BUILDNUMBER%. == .. set BUILDNUMBER=%REVVAL% -- Script was unable to set this value
 
 if .%EFILE%. == .. GOTO DISPLAY_BUILD_ID
@@ -43,7 +43,7 @@ move %EFILE_TMP% %EFILE%
 goto END
 
 :DISPLAY_BUILD_ID
-echo %LASTREV%
+echo %BUILDNUMBER%
 goto END
 
 :END

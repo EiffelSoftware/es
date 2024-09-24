@@ -28,8 +28,8 @@ goto EOF
 
 :NOT_REC
 :: FIXME jfiat [2024/09/23] : link or copy?
-:: mklink /J "%l_dest%"  "%dir%\"
-	XCOPY /Y /E /I "%dir%\" "%l_dest%\"
+::	XCOPY /Y /E /I "%dir%\" "%l_dest%\"
+	mklink /J "%l_dest%"  "%dir%\"
 goto EOF
 
 :NOT_FOUND

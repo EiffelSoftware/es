@@ -129,7 +129,7 @@ iff defined NO_STANDARD_BUILD then
 
 	remtrace Enterprise edition
 	cdd %EIFFEL_SRC%\Eiffel\API\constants
-	set_version %EIFFEL_SRC 0000 system_constants.e
+	set_version %EIFFEL_SRC% 0000 system_constants.e
 	sed -e "s/Version_type_name:\ STRING\ =\ \".*\"/Version_type_name:\ STRING\ =\ \"Enterprise\ Edition\"/g" system_constants.e >> new_system_constants.e
 	move new_system_constants.e system_constants.e
 	cdd %FINALIZATION_DIR
@@ -172,7 +172,7 @@ iff defined NO_STANDARD_BUILD then
 	endiff
 	set T_ECB_INSTALL_FILE=
 
-	es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt > %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
+	es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
 	set T_EDITION=
 else
 	iff not defined NO_NEW_EC then
@@ -225,7 +225,7 @@ else
 			endiff
 			set T_EC_INSTALL_FILE=
 
-			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt > %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
+			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
 			set T_EDITION=
 		endiff
 		iff not defined NO_ENTERPRISE_BUILD then
@@ -277,7 +277,7 @@ else
 			endiff
 			set T_EC_INSTALL_FILE=
 
-			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt > %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
+			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
 			set T_EDITION=
 
 			remtrace Restore non enterprise/branded edition files
@@ -334,7 +334,7 @@ else
 			endiff
 			set T_EC_INSTALL_FILE=
 
-			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt > %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
+			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
 			set T_EDITION=
 
 			remtrace Restore non enterprise edition files

@@ -209,9 +209,9 @@ cdd %STUDIO_DIR%\C_library
 es_exprt Src/C_library/libpng libpng
 es_exprt Src/C_library/zlib zlib
 es_exprt Src/C_library/curl curl
-safe_md openssl
-es_exprtfile Src/C_library/openssl/clibs_openssl.ecf > openssl\clibs_openssl.ecf
-es_exprt Src/C_library/openssl/include openssl\include
+REM safe_md openssl
+REM es_exprtfile Src/C_library/openssl/clibs_openssl.ecf openssl\clibs_openssl.ecf
+REM es_exprt Src/C_library/openssl/include openssl\include
 cdd %STUDIO_DIR%
 remtrace root
 es_exprt -N /Src/Delivery Delivery
@@ -280,6 +280,10 @@ elseiff "%HAS_VC_MSC_VC170%" == "True" then
 	remtrace Build the C libraries of non-Eiffel Software C libraries for msc_vc140 (%ISE_VC_MSC_VC170%)
 	call espawn -u:%ISE_VC_MSC_VC170% "%COMSPEC% /c compile_c_libraries.btm %STUDIO_DIR% msc_vc140"
 endiff
+
+cdd %INIT_DIR
+:: if ever a hack is needed
+if exists %INSTALL_DIR%\hack.bat call hack.bat
 
 cdd %INIT_DIR
 remtrace Build the C libraries of non-Eiffel Software C libraries for mingw

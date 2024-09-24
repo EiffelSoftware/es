@@ -20,7 +20,9 @@ del fix_dotnet.bat
 REM
 echo Reset Install scripts
 cd %~dp0..
-svn revert -R install
+git checkout -- install\Package*
+git checkout -- install\content
+
 echo - remove install\binaries
 if EXIST install\binaries rd /q/s install\binaries
 echo - remove install\bin\studio_std_x64 rd

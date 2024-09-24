@@ -27,6 +27,9 @@ iff not defined NO_COMPILE then
 	remtrace C_library libpng
 	cd %1\C_library\libpng
 	specific_make %2
+	remtrace C_library openssl
+	cd %1\C_library\openssl
+	specific_make %2
 	remtrace C_library curl
 	cd %1\C_library\curl
 	espawn "geant compile"

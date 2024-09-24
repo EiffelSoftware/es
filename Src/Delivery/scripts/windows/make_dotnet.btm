@@ -69,8 +69,13 @@ else
 		endiff
 		iff defined REUSE_MDCONSUMER then
 			remtrace REUSE installation MetadataConsumer dlls...
-			safe_copy %ISE_EIFFEL%\studio\spec\%ISE_PLATFORM%\bin\EiffelSoftware.MetadataConsumer.dll %STUDIO_DIR%\studio\spec\%ISE_PLATFORM%\bin
-			safe_copy %ISE_EIFFEL%\studio\spec\%ISE_PLATFORM%\bin\libEiffelSoftware.MetadataConsumer.dll %STUDIO_DIR%\studio\spec\%ISE_PLATFORM%\bin
+			iff exist %ISE_EIFFEL%\studio\spec\%ISE_PLATFORM%\bin\emdc.exe then
+				safe_copy %ISE_EIFFEL%\studio\spec\%ISE_PLATFORM%\bin\emdc.exe %STUDIO_DIR%\studio\spec\%ISE_PLATFORM%\bin
+				safe_copy %ISE_EIFFEL%\studio\spec\%ISE_PLATFORM%\bin\libemdc.dll %STUDIO_DIR%\studio\spec\%ISE_PLATFORM%\bin
+			else
+				safe_copy %ISE_EIFFEL%\tools\spec\%ISE_PLATFORM%\bin\emdc.exe %STUDIO_DIR%\studio\spec\%ISE_PLATFORM%\bin
+				safe_copy %ISE_EIFFEL%\tools\spec\%ISE_PLATFORM%\bin\libemdc.dll %STUDIO_DIR%\studio\spec\%ISE_PLATFORM%\bin
+			endiff
 		else
 			REM CANCEL_ON_ERROR
 		endiff

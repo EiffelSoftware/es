@@ -4,7 +4,7 @@ md unstable
 cd unstable
 
 remtrace README.txt
-es_exprt Src/unstable/README.txt README.txt
+es_exprtfile Src/unstable/README.txt  README.txt
 
 remtrace library
 es_exprt Src/unstable/library library
@@ -15,7 +15,7 @@ md contrib
 cd contrib
 
 remtrace README.txt
-es_exprt Src/contrib/README.txt README.txt
+es_exprtfile Src/contrib/README.txt  README.txt
 
 remtrace library
 es_exprt Src/contrib/library library
