@@ -1,0 +1,8 @@
+win64/
+windows/
+eiffel_win64/
+eiffel_windows/
+install/wix/v*/
+nightly/*
+headers/
+install/bin/studio_*/
