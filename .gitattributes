@@ -82,7 +82,7 @@ Ace			text
 *.css		text
 *.xsl		text
 *.scss		text
-*.bpl		text
+*.bpl		text=auto
 *.sql		text
 *.rc		text
 *.res		text
