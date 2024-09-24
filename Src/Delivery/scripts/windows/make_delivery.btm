@@ -283,7 +283,7 @@ endiff
 
 cdd %INIT_DIR
 :: if ever a hack is needed
-if exists %INSTALL_DIR%\hack.bat call hack.bat
+if exist %INSTALL_DIR%\hack.bat call hack.bat
 
 cdd %INIT_DIR
 remtrace Build the C libraries of non-Eiffel Software C libraries for mingw
