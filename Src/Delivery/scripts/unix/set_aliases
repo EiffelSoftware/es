@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ ! "$STUDIO_VERSION_MAJOR_MINOR" ]; then
-	STUDIO_VERSION_MAJOR_MINOR=24.05
+	STUDIO_VERSION_MAJOR_MINOR=24.09
 fi
 
 if [ -z "$WORKINGDIR" ]; then
