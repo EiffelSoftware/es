@@ -218,7 +218,7 @@ feature {AUXILIARY_FILES} -- Versioning
 
 	Version_tag: INTEGER = 0x027
 
-	Version_info: STRING = "Build: 98561 (061cc9a9d7c01b6b95f751fd5647ca9c5fa73aa2) , Compilation: 2024-09-20 16:32:14";
+	Version_info: STRING = "";
 			-- Information on the version
 			-- Default: ""
 			-- This can be used by developper to add specific information
