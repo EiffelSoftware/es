@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
 		dos2unix \
 		git \
 		subversion \
+		vim \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -35,7 +36,8 @@ RUN groupadd  "eiffel" && \
       --home-dir /home/eiffel \
       --shell /bin/bash \
       --gid eiffel \
-      eiffel # && \
+      eiffel 
+      # && \
       #chown -R eiffel:eiffel /home/eiffel #&& \
       #chmod a+w -R /home/eiffel/workspace
 
