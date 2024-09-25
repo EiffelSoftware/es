@@ -6,9 +6,9 @@
 
 if [ -n "$1" ]; then
 	export SVN_ISE_BRANCH=/branches/Eiffel_$1
-	export SVN_EIFFELSTUDIO_BRANCH=/branches/Eiffel_$1
+	export GIT_EIFFELSTUDIO_BRANCH=Eiffel_$1
 	if [ -n "$2" ]; then
-		export SVN_EIFFELSTUDIO_REPO_REVISION=$2
+		export GIT_EIFFELSTUDIO_REPO_ID=$2
 	fi
 fi
 
@@ -19,5 +19,5 @@ export include_64bits="true"
 #export include_32bits="true"
 #export include_32bits="false"
 
-./build_deliveries.sh
+./inc/build_deliveries.sh
 

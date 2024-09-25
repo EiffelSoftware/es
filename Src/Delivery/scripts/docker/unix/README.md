@@ -1,3 +1,5 @@
+WARNING: This content is obsolete
+
 docker-compose build
 docker-compose up
 see inside var/deliv-output/ folder for the .tar.bz2 file (and also the PorterPackage.tgz).

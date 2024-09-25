@@ -13,37 +13,39 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
         libssl-dev \
 		pax \
 		dos2unix \
+		git \
 		subversion \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 #Define delivery variables
-ENV USER_ID=1001 USER_GID=1001
-
 ENV ISE_PLATFORM=linux-x86-64
-ENV SVN_EIFFELSTUDIO_REPO=https://svn.eiffel.com/eiffelstudio
+ENV GIT_EIFFELSTUDIO_REPO=https://gitlab.com/eiffelsoftware/es.git
 ENV SVN_ISE_REPO=svn://svn.ise/ise_svn
 ENV EIFFEL_SETUP_CHANNEL=nightly
-#ENV SVN_EIFFELSTUDIO_REPO_REVISION=HEAD
-
-RUN mkdir -p /home/eiffel/deliv/output && mkdir /home/eiffel/workspace
-COPY ./src/build_porterpackage.sh /home/eiffel/build_porterpackage.sh
-RUN dos2unix /home/eiffel/build_porterpackage.sh
+#ENV GIT_EIFFELSTUDIO_BRANCH=master
 
 VOLUME /home/eiffel/deliv/output
-VOLUME /home/eiffel/Eiffel
+#VOLUME /home/eiffel/Eiffel
 
 # now creating user
-RUN groupadd --gid "${USER_GID}" "eiffel" && \
+RUN groupadd  "eiffel" && \
     useradd \
-      --uid ${USER_ID} \
-      --gid ${USER_GID} \
+      -m \
+      --home-dir /home/eiffel \
       --shell /bin/bash \
-      eiffel && \
-      chown -R eiffel:${USER_GID} /home/eiffel && \
-      chmod a+w -R /home/eiffel/workspace
+      --gid eiffel \
+      eiffel # && \
+      #chown -R eiffel:eiffel /home/eiffel #&& \
+      #chmod a+w -R /home/eiffel/workspace
 
 USER eiffel
 WORKDIR /home/eiffel
-CMD /bin/bash /home/eiffel/build_porterpackage.sh /home/eiffel/deliv
 
+RUN mkdir -p /home/eiffel/deliv/output && mkdir /home/eiffel/workspace && chown -R eiffel:eiffel /home/eiffel
+COPY --chown=eiffel  ./src/build_porterpackage.sh /home/eiffel/build_porterpackage.sh
+RUN dos2unix /home/eiffel/build_porterpackage.sh
+
+
+WORKDIR /home/eiffel
+CMD /bin/bash /home/eiffel/build_porterpackage.sh /home/eiffel/deliv

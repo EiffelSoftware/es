@@ -35,10 +35,10 @@ if [ -f "$STUDIO_PORTERPACKAGE_TAR" ]; then
 fi
 if [ -d "PorterPackage" ]; then
 	# Get revision!
-	DELIV_REVISION=`grep -s "FILE_SVN_REVISION=" PorterPackage/set_aliases | head -1 | sed -e 's/FILE_SVN_REVISION=\([0-9][0-9]*\).*/\1/'`
+	DELIV_ID=`grep -s "BUILD_ID=" PorterPackage/set_aliases | head -1 | sed -e 's/^BUILD_ID=\([0-9][0-9]*\).*/\1/'`
 
 	echo - Platform: $ISE_PLATFORM
-	echo - Revision: $DELIV_REVISION
+	echo - Build id: $DELIV_ID
 	if [ ! -d "${DELIV_IMAGE_OUTPUT}" ]; then
 		mkdir -p ${DELIV_IMAGE_OUTPUT}
 	fi
@@ -52,7 +52,7 @@ if [ -d "PorterPackage" ]; then
 	echo export DOTNET_ROOT=$DOTNET_ROOT >> ${DELIV_WS_DIR}/setup.rc
 	echo export PATH=$PATH >> ${DELIV_WS_DIR}/setup.rc
 
-	DELIV_LOGDIR=$DELIV_IMAGE_OUTPUT/${DELIV_REVISION}_${ISE_PLATFORM}_logs
+	DELIV_LOGDIR=$DELIV_IMAGE_OUTPUT/${DELIV_ID}_${ISE_PLATFORM}_logs
 	if [ -d "$DELIV_LOGDIR" ]; then
 		\rm -rf "$DELIV_LOGDIR"
 	fi

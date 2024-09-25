@@ -54,13 +54,13 @@ fi
 
 # This section is commented out be cause it won't work on non-bash shell
 # we use the other one while waiting for a better solution
-#if [ ! "$ES_BUILD_ID" ]; then
+#if [ ! "$ES_REPO_ID" ]; then
 #	mkdir -p /tmp/eiffelstudio_revision
 #	svn checkout --config-option config:miscellany:use-commit-times=yes $DEFAULT_ORIGO_SVN_ROOT/revision /tmp/eiffelstudio_revision
-#	ES_BUILD_ID=$(svnversion /tmp/eiffelstudio_revision)
+#	ES_REPO_ID=$(svnversion /tmp/eiffelstudio_revision)
 #fi
-if [ ! "$ES_BUILD_ID" ]; then
-	ES_BUILD_ID=HEAD
+if [ ! "$ES_REPO_ID" ]; then
+	ES_REPO_ID=HEAD
 fi
 
 # Used to create the build id on the package.

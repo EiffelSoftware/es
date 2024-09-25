@@ -419,8 +419,8 @@ if [ ! "$NO_INSTALL" ]; then
 	rm -f set_aliases
 	mv -f tmp set_aliases
 		# Update the revision number as well
-	ES_BUILD_ID=`$INIT_DIR/set_version.sh $EIFFEL_SRC`
-	sed -e "s/^ES_BUILD_ID.*$/ES_BUILD_ID=$ES_BUILD_ID/g" set_aliases > tmp
+	BUILD_ID=`$INIT_DIR/set_version.sh $EIFFEL_SRC`
+	sed -e "s/^BUILD_ID.*$/BUILD_ID=$BUILD_ID/g" set_aliases > tmp
 	rm -f set_aliases
 	mv -f tmp set_aliases
 	if [ ! -z "$IS_MINIMAL" ]; then
