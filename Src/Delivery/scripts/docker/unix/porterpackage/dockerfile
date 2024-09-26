@@ -39,6 +39,5 @@ WORKDIR $WORK_DIR
 COPY ./src/build_porterpackage.sh $WORK_DIR/build_porterpackage.sh
 RUN dos2unix $WORK_DIR/build_porterpackage.sh
 
-
 WORKDIR $WORK_DIR
 CMD /bin/bash $WORK_DIR/build_porterpackage.sh $WORK_DIR/deliv

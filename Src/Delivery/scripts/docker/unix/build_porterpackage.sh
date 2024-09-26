@@ -19,8 +19,13 @@ fi
 
 
 docker_image_name=local/eiffel-deliv-porterpackage
-docker rmi ${docker_image_name}
+local/eiffel-deliv-porterpackage
+if [ -z "$(docker images -q ${docker_image_name} 2> /dev/null)" ]; then
+	echo Remove image ${docker_image_name}
+	docker rmi ${docker_image_name}
+fi
 
+echo Build docker image ${docker_image_name}
 docker build -t ${docker_image_name} -f ./porterpackage/dockerfile porterpackage
 
 if [ -z "$SVN_ISE_REPO" ]; then
@@ -35,6 +40,7 @@ fi
 if [ -z "$make_delivery_args" ]; then
         make_delivery_args=
 fi
+
 echo Use EiffelStudio repo $GIT_EIFFELSTUDIO_REPO branch $GIT_EIFFELSTUDIO_BRANCH
 echo Use ISE repo $SVN_ISE_REPO
 
