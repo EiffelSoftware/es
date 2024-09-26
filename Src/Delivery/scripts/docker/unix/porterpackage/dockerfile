@@ -44,7 +44,11 @@ RUN groupadd  "eiffel" && \
 USER eiffel
 WORKDIR /home/eiffel
 
-RUN mkdir -p /home/eiffel/deliv/output && mkdir /home/eiffel/workspace && chown -R eiffel:eiffel /home/eiffel
+RUN \
+	chown -R eiffel:eiffel /home/eiffel \
+	&& mkdir -p /home/eiffel/deliv/output \
+	&& mkdir /home/eiffel/workspace \
+	&& chown -R eiffel:eiffel /home/eiffel
 COPY --chown=eiffel  ./src/build_porterpackage.sh /home/eiffel/build_porterpackage.sh
 RUN dos2unix /home/eiffel/build_porterpackage.sh
 
