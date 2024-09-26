@@ -19,7 +19,6 @@ fi
 
 
 docker_image_name=local/eiffel-deliv-porterpackage
-local/eiffel-deliv-porterpackage
 if [ -z "$(docker images -q ${docker_image_name} 2> /dev/null)" ]; then
 	echo Remove image ${docker_image_name}
 	docker rmi ${docker_image_name}
