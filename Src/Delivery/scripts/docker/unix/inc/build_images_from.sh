@@ -32,12 +32,9 @@ if [ -e "$porterpackage_archive" ]; then
 			--rm \
 			--name=eiffel-deliv-img-${deliv_platform} \
 			--network host \
-			--user $(id -u):$(id -g) \
-			-e USER_ID=$(id -u) \
-			-e USER_GID=$(id -g) \
-			-e PORTERPACKAGE_TAR=/home/eiffel/porterpackage.tar \
-        	--mount source=${docker_output_volume},target=/home/eiffel/deliv/image \
-			-v ${porterpackage_archive}:/home/eiffel/porterpackage.tar \
+			-e PORTERPACKAGE_TAR=/opt/eiffel/porterpackage.tar \
+        	--mount source=${docker_output_volume},target=/opt/eiffel/deliv/image \
+			-v ${porterpackage_archive}:/opt/eiffel/porterpackage.tar \
 			${docker_image_name}
 		#docker rmi $docker_image_name 
 		#

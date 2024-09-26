@@ -16,14 +16,14 @@ echo Install EiffelStudio
 if [ -z "$EIFFEL_SETUP_CHANNEL" ]; then
 	export EIFFEL_SETUP_CHANNEL=nightly
 fi
-if [ -d /home/eiffel/Eiffel-${EIFFEL_SETUP_CHANNEL}/studio ]; then
+if [ -d $WORK_DIR/Eiffel-${EIFFEL_SETUP_CHANNEL}/studio ]; then
 	echo "Already installed!"
 else
-	curl -sSL https://www.eiffel.org/setup/install.sh | bash -s -- --channel ${EIFFEL_SETUP_CHANNEL} --platform ${ISE_PLATFORM} --install-dir /home/eiffel/Eiffel-${EIFFEL_SETUP_CHANNEL} --dir /home/eiffel
+	curl -sSL https://www.eiffel.org/setup/install.sh | bash -s -- --channel ${EIFFEL_SETUP_CHANNEL} --platform ${ISE_PLATFORM} --install-dir $WORK_DIR/Eiffel-${EIFFEL_SETUP_CHANNEL} --dir $WORK_DIR
 fi
 
 # Define Eiffel environment variables
-export ISE_EIFFEL=/home/eiffel/Eiffel-${EIFFEL_SETUP_CHANNEL}
+export ISE_EIFFEL=$WORK_DIR/Eiffel-${EIFFEL_SETUP_CHANNEL}
 export ISE_LIBRARY=$ISE_EIFFEL
 export PATH=$PATH:$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin:$ISE_EIFFEL/tools/spec/$ISE_PLATFORM/bin:$ISE_EIFFEL/library/gobo/spec/$ISE_PLATFORM/bin:$ISE_EIFFEL/esbuilder/spec/$ISE_PLATFORM/bin
 

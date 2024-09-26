@@ -34,6 +34,7 @@ case "$op" in
 		./docker_op.sh pp vol st clean
 		./docker_op.sh i64 vol st clean
 		./docker_op.sh i32 vol st clean
+		docker rmi local/eiffel-deliv-porterpackage
 		;;
 	*)
 		echo "Usage: "

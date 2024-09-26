@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # Setup environment, and remaining installation steps
+echo id=`id`
 echo Current dir =`pwd` 
-ls -la
+echo WORK_DIR=$WORK_DIR
+
 cd workspace
-mkdir home
+mkdir -p home
 export HOME=$(pwd)/home
 export XDG_DATA_HOME=${HOME}/.local/share
 mkdir -p ${XDG_DATA_HOME}
@@ -48,20 +50,20 @@ echo Install EiffelStudio
 if [ -z "$EIFFEL_SETUP_CHANNEL" ]; then
 	export EIFFEL_SETUP_CHANNEL=nightly
 fi
-if [ -d /home/eiffel/Eiffel ]; then
-	ls -la  /home/eiffel/Eiffel
+if [ -d $WORK_DIR/Eiffel ]; then
+	ls -la  $WORK_DIR/Eiffel
 else
-	mkdir -p /home/eiffel/Eiffel
+	mkdir -p $WORK_DIR/Eiffel
 fi
-if [ -d /home/eiffel/Eiffel/${EIFFEL_SETUP_CHANNEL}/studio ]; then
+if [ -d $WORK_DIR/Eiffel/${EIFFEL_SETUP_CHANNEL}/studio ]; then
 	echo "Already installed!"
 else
 	echo Installing nighlty release from eiffel.org/setup.
-	curl -sSL https://www.eiffel.org/setup/install.sh | bash -s -- --channel ${EIFFEL_SETUP_CHANNEL} --platform ${ISE_PLATFORM} --install-dir /home/eiffel/Eiffel/${EIFFEL_SETUP_CHANNEL} --dir /home/eiffel
+	curl -sSL https://www.eiffel.org/setup/install.sh | bash -s -- --channel ${EIFFEL_SETUP_CHANNEL} --platform ${ISE_PLATFORM} --install-dir $WORK_DIR/Eiffel/${EIFFEL_SETUP_CHANNEL} --dir $WORK_DIR
 fi
 
 # Define Eiffel environment variables
-export ISE_EIFFEL=/home/eiffel/Eiffel/${EIFFEL_SETUP_CHANNEL}
+export ISE_EIFFEL=$WORK_DIR/Eiffel/${EIFFEL_SETUP_CHANNEL}
 export ISE_LIBRARY=$ISE_EIFFEL
 export PATH=$PATH:$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin:$ISE_EIFFEL/tools/spec/$ISE_PLATFORM/bin:$ISE_EIFFEL/library/gobo/spec/$ISE_PLATFORM/bin:$ISE_EIFFEL/esbuilder/spec/$ISE_PLATFORM/bin
 
@@ -95,7 +97,7 @@ echo Use EiffelStudio repo url: $DEFAULT_ES_ROOT branch $DEFAULT_ES_BRANCH
 echo Use ISE svn url: $DEFAULT_ISE_SVN
 
 # Main
-export DELIV_WORKSPACE=/home/eiffel/workspace
+export DELIV_WORKSPACE=$WORK_DIR/workspace
 
 # save setup in setup.rc for convenience
 echo export ISE_EIFFEL=$ISE_EIFFEL > ${DELIV_WORKSPACE}/setup.rc

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+echo id=`id`
+echo CurrDIR=`pwd`
+echo WORKD_DIR=$%WORKD_DIR
+
 # Setup environment, and remaining installation steps
 cd workspace
 mkdir home

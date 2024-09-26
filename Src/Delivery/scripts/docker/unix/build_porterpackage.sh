@@ -42,7 +42,7 @@ echo Use ISE repo $SVN_ISE_REPO
 
 if [ -d "$var_dir/eiffel" ]; then
 	echo Use Eiffel installation from $var_dir/eiffel/...
-    t_docker_vol_opts="-v $var_dir/eiffel:/home/eiffel/Eiffel"
+    t_docker_vol_opts="-v $var_dir/eiffel:/opt/eiffel/Eiffel"
 	#docker volume create eiffel-deliv-pp-eiffel
 fi
 
@@ -54,9 +54,6 @@ docker run \
 		--rm \
         --name=eiffel-deliv-pp \
         --network host \
-		--user $(id -u):$(id -g) \
-		-e USER_ID=$(id -u) \
-		-e USER_GID=$(id -g) \
         -e SVN_ISE_REPO=$SVN_ISE_REPO \
         -e SVN_ISE_BRANCH=$SVN_ISE_BRANCH \
         -e GIT_EIFFELSTUDIO_REPO=$GIT_EIFFELSTUDIO_REPO \
@@ -64,7 +61,7 @@ docker run \
         -e GIT_EIFFELSTUDIO_REPO_ID=$GIT_EIFFELSTUDIO_REPO_ID \
 		-e INCLUDE_ENTERPRISE=$include_enterprise \
 		-e MAKE_DELIVERY_ARGS=$make_delivery_args \
-        --mount source=${docker_output_volume},target=/home/eiffel/deliv/output ${t_docker_vol_opts} \
+        --mount source=${docker_output_volume},target=/opt/eiffel/deliv/output ${t_docker_vol_opts} \
         ${docker_image_name}
 
 

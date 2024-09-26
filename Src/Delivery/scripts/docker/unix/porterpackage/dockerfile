@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+ENV WORK_DIR=/opt/eiffel
+
 #Define delivery variables
 ENV ISE_PLATFORM=linux-x86-64
 ENV GIT_EIFFELSTUDIO_REPO=https://gitlab.com/eiffelsoftware/es.git
@@ -26,28 +28,17 @@ ENV SVN_ISE_REPO=svn://svn.ise/ise_svn
 ENV EIFFEL_SETUP_CHANNEL=nightly
 #ENV GIT_EIFFELSTUDIO_BRANCH=master
 
-VOLUME /home/eiffel/deliv/output
-#VOLUME /home/eiffel/Eiffel
+VOLUME $WORK_DIR/deliv/output
+#VOLUME $WORK_DIR/Eiffel
 
-# now creating user
-RUN groupadd  "eiffel" && \
-    useradd \
-      -m \
-      --home-dir /home/eiffel \
-      --shell /bin/bash \
-      --gid eiffel \
-      eiffel 
-      # && \
-      #chown -R eiffel:eiffel /home/eiffel #&& \
-      #chmod a+w -R /home/eiffel/workspace
+RUN mkdir -p $WORK_DIR/deliv/output && mkdir $WORK_DIR/workspace
+RUN ls -la -1R $WORK_DIR
 
-USER eiffel
-WORKDIR /home/eiffel
+WORKDIR $WORK_DIR
 
-RUN mkdir -p /home/eiffel/deliv/output && mkdir /home/eiffel/workspace && chown -R eiffel:eiffel /home/eiffel
-COPY --chown=eiffel  ./src/build_porterpackage.sh /home/eiffel/build_porterpackage.sh
-RUN dos2unix /home/eiffel/build_porterpackage.sh
+COPY ./src/build_porterpackage.sh $WORK_DIR/build_porterpackage.sh
+RUN dos2unix $WORK_DIR/build_porterpackage.sh
 
 
-WORKDIR /home/eiffel
-CMD /bin/bash /home/eiffel/build_porterpackage.sh /home/eiffel/deliv
+WORKDIR $WORK_DIR
+CMD /bin/bash $WORK_DIR/build_porterpackage.sh $WORK_DIR/deliv
