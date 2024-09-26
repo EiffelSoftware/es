@@ -232,8 +232,8 @@ _get_es() {
 	fi
 	if [ ! -d "$dir" ]; then
 		echo Get ES source into $dir >> $INSTALL_LOG
-		#gitcmd=git clone --depth 1 --single-branch --branch $DEFAULT_ES_BRANCH  $DEFAULT_ES_ROOT $dir 
-		gitcmd="git clone --single-branch --branch $DEFAULT_ES_BRANCH  $DEFAULT_ES_ROOT $dir "
+		#gitcmd=git clone --depth 1 --quiet --single-branch --branch $DEFAULT_ES_BRANCH  $DEFAULT_ES_ROOT $dir 
+		gitcmd="git clone --quiet --single-branch --branch $DEFAULT_ES_BRANCH  $DEFAULT_ES_ROOT $dir "
 		echo $gitcmd >> $INSTALL_LOG;
 
 		nb=0

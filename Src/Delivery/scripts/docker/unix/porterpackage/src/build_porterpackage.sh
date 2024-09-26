@@ -113,7 +113,7 @@ if [ -n "$DELIV_ID" ]; then
 	echo build id: $DELIV_ID
 fi
 
-git clone --single-branch --branch $GIT_EIFFELSTUDIO_BRANCH $GIT_EIFFELSTUDIO_REPO $DELIV_WORKSPACE/wc
+git clone --quiet --single-branch --branch $GIT_EIFFELSTUDIO_BRANCH $GIT_EIFFELSTUDIO_REPO $DELIV_WORKSPACE/wc
 ln -s $DELIV_WORKSPACE/wc/Src/Delivery/scripts/unix $DELIV_WORKSPACE/tmp
 
 echo Get revision from source code
