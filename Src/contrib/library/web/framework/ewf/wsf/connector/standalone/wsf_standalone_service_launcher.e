@@ -42,6 +42,8 @@ inherit
 
 	WSF_TIMEOUT_UTILITIES
 
+	SHARED_EXECUTION_ENVIRONMENT
+
 create
 	make,
 	make_and_launch
@@ -69,6 +71,10 @@ feature {NONE} -- Initialization
 			base_url := Void
 
 			if attached options as opts then
+				if attached {READABLE_STRING_GENERAL} opts.option ("environment") as l_env_location then
+					import_environment (l_env_location)
+				end
+
 				if attached {READABLE_STRING_GENERAL} opts.option ("server_name") as l_server_name then
 					server_name := l_server_name.to_string_8
 				end
@@ -148,6 +154,38 @@ feature {NONE} -- Initialization
 			conn.set_base (base_url)
 
 			update_configuration (conn.configuration)
+		end
+
+	import_environment (a_location: READABLE_STRING_GENERAL)
+			-- Import environment from `a_location`
+		local
+			f: PLAIN_TEXT_FILE
+			l_line: STRING_32
+			utf: UTF_CONVERTER
+			pos: INTEGER
+			retried: BOOLEAN
+		do
+			if not retried then
+				create f.make_with_name (a_location)
+				if f.exists and then f.is_access_readable then
+					f.open_read
+					from
+					until
+						f.end_of_file or f.exhausted
+					loop
+						f.read_line
+						l_line := utf.utf_8_string_8_to_escaped_string_32 (f.last_string)
+						pos := l_line.index_of ('=', 1)
+						if pos > 0 then
+							execution_environment.put (l_line.substring (pos + 1, l_line.count), l_line.head (pos -1))
+						end
+					end
+					f.close
+				end
+			end
+		rescue
+			retried := True
+			retry
 		end
 
 	force_single_threaded
