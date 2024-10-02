@@ -241,9 +241,13 @@ feature -- Helpers
 				loop
 					arg := ic.item
 					Result.append_character (' ')
-					Result.append_character ('%"')
-					append_escaped_string_to (arg, Result)
-					Result.append_character ('%"')
+					if arg.has (' ') then
+						Result.append_character ('%"')
+						append_escaped_string_to (arg, Result)
+						Result.append_character ('%"')
+					else
+						append_escaped_string_to (arg, Result)
+					end
 				end
 			end
 		end
