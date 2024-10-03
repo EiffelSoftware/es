@@ -74,6 +74,12 @@ feature -- Access
 	modules: CMS_MODULE_COLLECTION
 			-- <Precursor>
 
+	keys (a_name: detachable READABLE_STRING_GENERAL): detachable ITERABLE [READABLE_STRING_GENERAL]
+			-- Keys associated with `a_name` if set, otherwise with the root.
+		do
+			Result := configuration.keys (a_name)
+		end
+
 	text_item (a_name: READABLE_STRING_GENERAL): detachable READABLE_STRING_32
 			-- Configuration value associated with `a_name', if any.
 		do
@@ -201,6 +207,6 @@ feature -- Element change
 
 
 note
-	copyright: "2011-2022, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end

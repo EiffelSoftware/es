@@ -420,6 +420,25 @@ feature -- Settings
 
 feature -- Query
 
+	environment_items: detachable STRING_TABLE [detachable READABLE_STRING_32]
+			-- All items from the CMS_SETUP environment section.
+		do
+			if attached keys ("environment") as lst then
+				create Result.make (0)
+				across
+					lst as ic
+				loop
+					Result [ic.item] := environment_item (ic.item)
+				end
+			end
+		end
+
+	environment_item (a_name: READABLE_STRING_GENERAL): detachable READABLE_STRING_32
+			-- Value for CMS_SETUP environment section item associated with `a_name`.
+		do
+			Result := text_item ({STRING_32} "environment." + a_name.to_string_32)
+		end
+
 	text_item (a_name: READABLE_STRING_GENERAL): detachable READABLE_STRING_32
 			-- Configuration value associated with `a_name', if any.
 		deferred
@@ -458,6 +477,11 @@ feature -- Query
 			else
 				Result := a_default_value
 			end
+		end
+
+	keys (a_name: detachable READABLE_STRING_GENERAL): detachable ITERABLE [READABLE_STRING_GENERAL]
+			-- Keys associated with `a_name` if set, otherwise with the root.
+		deferred
 		end
 
 feature -- Access: directory
