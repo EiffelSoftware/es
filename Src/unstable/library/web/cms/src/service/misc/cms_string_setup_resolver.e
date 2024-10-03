@@ -34,6 +34,9 @@ feature -- Access
 			if res = Void then
 				res := setup.text_item (n)
 			end
+			if res /= Void then
+				Result := res.to_string_32
+			end
 		end
 
 feature {NONE} -- Internal
