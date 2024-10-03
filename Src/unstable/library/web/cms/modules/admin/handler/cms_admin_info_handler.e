@@ -10,6 +10,8 @@ inherit
 	CMS_HANDLER
 	WSF_URI_HANDLER
 
+	SHARED_EXECUTION_ENVIRONMENT
+
 create
 	make
 
@@ -28,6 +30,14 @@ feature -- Execution
 					r.set_title ("System Information")
 					r.add_to_primary_tabs (api.administration_link ("Administration", ""))
 					append_system_info_to (s)
+					if attached {WSF_STRING} req.query_parameter ("query") as p_query then
+						if
+							p_query.is_case_insensitive_equal ("environment")
+							or p_query.is_case_insensitive_equal ("env")
+						then
+							append_system_environment_to (s)
+						end
+					end
 					r.set_main_content (s)
 					r.execute
 				else
@@ -69,6 +79,42 @@ feature -- Execution
 			end
 			s.append ("</li>")
 			s.append ("</ul>")
+		end
+
+	append_system_environment_to (s: STRING)
+		local
+			l_mailer: NOTIFICATION_MAILER
+--			l_previous_mailer: NOTIFICATION_MAILER
+		do
+			s.append ("<h3>Environment</h3>")
+			s.append ("<h4>from Setup</h4>")
+			if attached api.setup.environment_items as l_site_envs then
+				s.append ("<ul>")
+				across
+					l_site_envs as ic
+				loop
+					s.append ("<li><strong>"+ html_encoded (ic.key) +":</strong> ")
+					if attached ic.item as v then
+						s.append (html_encoded (v))
+					else
+						s.append ("")
+					end
+					s.append ("</li>")
+				end
+				s.append ("</ul>")
+			end
+			s.append ("<h4>from Process</h4>")
+			if attached execution_environment.starting_environment as l_proc_envs then
+				s.append ("<ul>")
+				across
+					l_proc_envs as ic
+				loop
+					s.append ("<li><strong>"+ html_encoded (ic.key) +":</strong> ")
+					s.append (html_encoded (ic.item))
+					s.append ("</li>")
+				end
+				s.append ("</ul>")
+			end
 		end
 
 end
