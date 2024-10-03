@@ -232,6 +232,28 @@ feature -- Create
 			retry
 		end
 
+	safe_delete_file (p: PATH): BOOLEAN
+			-- Delete file at `p`
+			-- and return True if `p` does not exist anymore, return False on failure
+		local
+			retried: BOOLEAN
+			f: RAW_FILE
+		do
+			Result := False
+			if not retried then
+				create f.make_with_path (p)
+				if f.exists then
+					f.delete
+					Result := not f.exists
+				else
+					Result := True
+				end
+			end
+		rescue
+			retried := True
+			retry
+		end
+
 note
 	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
