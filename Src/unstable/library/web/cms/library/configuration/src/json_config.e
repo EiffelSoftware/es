@@ -60,6 +60,16 @@ feature -- Status report
 
 feature -- Access: Config Reader
 
+	keys (a_name: detachable READABLE_STRING_GENERAL): detachable ITERABLE [READABLE_STRING_GENERAL]
+			-- Keys associated with `a_name` if set, otherwise with the root.
+		do
+			if a_name = Void or else a_name.is_empty then
+				Result := table_keys ("")
+			elseif attached sub_config (a_name) as cfg then
+				Result := cfg.keys (Void)
+			end
+		end
+
 	utf_8_text_item (k: READABLE_STRING_GENERAL): detachable READABLE_STRING_8
 			-- String item associated with key `k'.	
 		do
@@ -151,12 +161,12 @@ feature -- Duplication
 
 feature -- Access
 
-	item (k: READABLE_STRING_GENERAL): detachable JSON_VALUE
+	item (k: detachable READABLE_STRING_GENERAL): detachable JSON_VALUE
 			-- Item associated with query `k' if any.
 			-- `k' can be a single name such as "foo",
 			-- or a qualified name such as "foo.bar" (assuming that "foo" is associated with a JSON object).
 		do
-			if k.is_empty then
+			if k = Void or else k.is_empty then
 				Result := json_value
 			elseif attached json_value as obj then
 				Result := object_json_value (obj, k.to_string_32)

@@ -25,6 +25,11 @@ feature -- Status report
 
 feature -- Query
 
+	keys (a_name: detachable READABLE_STRING_GENERAL): detachable ITERABLE [READABLE_STRING_GENERAL]
+			-- Keys associated with `a_name` if set, otherwise with the root.
+		deferred
+		end
+
 	resolved_text_item (k: READABLE_STRING_GENERAL): detachable READABLE_STRING_32
 			-- String item associated with key `k' and expanded to resolved variables ${varname}.
 		do

@@ -208,6 +208,24 @@ feature -- Duplication
 
 feature -- Access		
 
+	keys (a_name: detachable READABLE_STRING_GENERAL): detachable ITERABLE [READABLE_STRING_GENERAL]
+			-- Keys ass32ociated with `a_name` if set, otherwise with the root.
+		local
+			lst: ARRAYED_LIST [READABLE_STRING_GENERAL]
+		do
+			if a_name = Void or else a_name.is_empty then
+				create lst.make (items.count)
+				across
+					items as ic
+				loop
+					lst.force (ic.key)
+				end
+				Result := lst
+			elseif attached sub_config (a_name) as cfg then
+				Result := cfg.keys (Void)
+			end
+		end
+
 	item (k: READABLE_STRING_GENERAL): detachable ANY
 			-- Value associated with key `k'.
 		local
@@ -386,7 +404,7 @@ feature {NONE} -- Implementation
 			else
 				associated_path := p
 				l_last_section_name := last_section_name
-				last_section_name := Void
+				--last_section_name := Void
 				create f.make_with_path (p)
 				if f.exists and then f.is_access_readable then
 					f.open_read
