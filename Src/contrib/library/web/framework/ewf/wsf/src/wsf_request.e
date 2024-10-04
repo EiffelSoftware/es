@@ -393,6 +393,11 @@ feature -- Helper
 				request_method.is_case_insensitive_equal ({HTTP_REQUEST_METHODS}.method_post)
 		end
 
+	is_options_request_method: BOOLEAN
+		do
+			Result := request_method.is_case_insensitive_equal ({HTTP_REQUEST_METHODS}.method_options)
+		end
+
 	is_content_type_accepted (a_content_type: READABLE_STRING_GENERAL): BOOLEAN
 			-- Does client accepts content_type for the response?
 			--| Based on header "Accept:" that can be for instance
