@@ -36,11 +36,14 @@ feature -- Factory
 		do
 			create {JSON_WEBAPI_RESPONSE} Result.make (req, res, api)
 			Result.header.put_access_control_allow_all_origin
+			Result.header.put_access_control_allow_credentials (True)
 		end
 
 	new_signed_response (a_key: READABLE_STRING_8; req: WSF_REQUEST; res: WSF_RESPONSE): HM_WEBAPI_RESPONSE
 		do
 			create {SIGNED_JSON_WEBAPI_RESPONSE} Result.make (a_key, req, res, api)
+			Result.header.put_access_control_allow_all_origin
+			Result.header.put_access_control_allow_credentials (True)
 		end
 
 	new_error_response (msg: detachable READABLE_STRING_GENERAL; req: WSF_REQUEST; res: WSF_RESPONSE): like new_response

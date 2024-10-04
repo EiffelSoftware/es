@@ -31,8 +31,8 @@ feature {NONE} -- Router/administration
 		do
 			if attached module.jwt_auth_api as l_jwt_auth_api then
 				create h.make (Current, l_jwt_auth_api)
-				a_router.handle ("/user/{uid}/jwt_access_token", h, a_router.methods_get_post)
-				a_router.handle ("/user/{uid}/new_jwt_magic_link", h, a_router.methods_get_post)
+				a_router.handle ("/user/{uid}/jwt_access_token", h, a_router.methods_get_post + a_router.methods_options)
+				a_router.handle ("/user/{uid}/new_jwt_magic_link", h, a_router.methods_get_post + a_router.methods_options)
 
 				create h_si.make (Current, l_jwt_auth_api)
 				a_router.handle ("/auth/client-sign-in/", h_si, a_router.methods_post)

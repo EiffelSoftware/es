@@ -38,8 +38,13 @@ feature -- Execution
 			-- Execute handler for `req' and respond in `res'.
 		local
 			l_uid: READABLE_STRING_GENERAL
+			rep: like new_response
 		do
-			if attached {WSF_STRING} req.path_parameter ("uid") as p_uid then
+			if req.is_options_request_method then
+				rep := new_response (req, res)
+				rep.header.put_access_control_allow_credentials (True)
+				rep.execute
+			elseif attached {WSF_STRING} req.path_parameter ("uid") as p_uid then
 				l_uid := p_uid.value
 				if req.path_info.ends_with_general ("/new_jwt_magic_link") then
 					handle_new_jwt_magic_link (l_uid, req, res)

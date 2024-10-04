@@ -40,8 +40,8 @@ feature {NONE} -- Router/administration
 		do
 			create l_root.make (a_api)
 			l_root.set_router (a_router)
-			a_router.handle ("", l_root, a_router.methods_get)
-			a_router.handle ("/", l_root, a_router.methods_get)
+			a_router.handle ("", l_root, a_router.methods_get + a_router.methods_options)
+			a_router.handle ("/", l_root, a_router.methods_get + a_router.methods_options)
 			a_router.handle ("/user/{uid}/access_token", create {CMS_ACCESS_TOKEN_WEBAPI_HANDLER}.make (a_api), a_router.methods_get_post)
 			a_router.handle ("/user/{uid}", create {CMS_USER_WEBAPI_HANDLER}.make (a_api), a_router.methods_get)
 			a_router.handle ("/user/", create {CMS_USER_WEBAPI_HANDLER}.make (a_api), a_router.methods_get)
@@ -58,6 +58,6 @@ feature -- Access: filter
 		end
 
 note
-	copyright: "2011-2022, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end
