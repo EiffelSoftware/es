@@ -19,37 +19,72 @@ inherit
 			{NONE} all
 		end
 
-feature -- Encoders
+feature -- Decoders
 
-	utf_8_encoded (a_string: READABLE_STRING_GENERAL): STRING_8
-			-- `a_string' encoded using UTF-8.
+	utf_8_decoded (s: READABLE_STRING_8): STRING_32
+			-- `s' decoded from utf-8 encoding.	
 		local
 			utf: UTF_CONVERTER
 		do
-			Result := utf.utf_32_string_to_utf_8_string_8 (a_string)
+			Result := utf.utf_8_string_8_to_string_32 (s)
 		end
 
-	html_encoded (a_string: READABLE_STRING_GENERAL): STRING_8
-			-- `a_string' encoded for html output.
+	base64_decoded_string (s: READABLE_STRING_8): STRING_32
+			-- `s' decoded from BASE64 encoding.
+		local
+			b64: BASE64
 		do
-			Result := html_encoder.general_encoded_string (a_string)
+			create b64
+			Result := utf_8_decoded (b64.decoded_string (s))
 		end
 
-	safe_html_encoded (a_string: detachable READABLE_STRING_GENERAL): STRING_8
-			-- `a_string' encoded for html output or empty string.
+	url_decoded,
+	percent_decoded (s: READABLE_STRING_GENERAL): STRING_32
+			-- `s' decoded from percent encoding.
 		do
-			if a_string /= Void then
-				Result := html_encoded (a_string)
+			Result := percent_encoder.percent_decoded_string (s)
+		end
+
+feature -- Encoders
+
+	utf_8_encoded (s: READABLE_STRING_GENERAL): STRING_8
+			-- `s` encoded using UTF-8.
+		local
+			utf: UTF_CONVERTER
+		do
+			Result := utf.utf_32_string_to_utf_8_string_8 (s)
+		end
+
+	base64_encoded_string (s: READABLE_STRING_GENERAL): STRING_8
+			-- `s` encoded using BASE64.
+		local
+			b64: BASE64
+		do
+			create b64
+			Result := b64.encoded_string (utf_8_encoded (s))
+		end
+
+	html_encoded (s: READABLE_STRING_GENERAL): STRING_8
+			-- `s` encoded for html output.
+		do
+			Result := html_encoder.general_encoded_string (s)
+		end
+
+	safe_html_encoded (s: detachable READABLE_STRING_GENERAL): STRING_8
+			-- `s` encoded for html output or empty string.
+		do
+			if s /= Void then
+				Result := html_encoded (s)
 			else
 				Result := ""
 			end
 		end
 
 	url_encoded,
-	percent_encoded (a_string: READABLE_STRING_GENERAL): STRING_8
-			-- `a_string' encoded with percent encoding, mainly used for url.
+	percent_encoded (s: READABLE_STRING_GENERAL): STRING_8
+			-- `d' encoded with percent encoding, mainly used for url.
 		do
-			Result := percent_encoder.percent_encoded_string (a_string)
+			Result := percent_encoder.percent_encoded_string (s)
 		end
 
 feature -- Helpers / security vulnerabilities
@@ -227,6 +262,6 @@ feature -- Helper conversions to and from string
 		end
 
 note
-	copyright: "2011-2022, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end
