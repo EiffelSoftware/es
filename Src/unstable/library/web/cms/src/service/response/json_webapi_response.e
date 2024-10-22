@@ -163,28 +163,47 @@ feature -- Execution
 			m: WSF_PAGE_RESPONSE
 			j: STRING_8
 			l_methods: WSF_REQUEST_METHODS
+			h: HTTP_HEADER
 		do
 			j := resource.representation
 			create m.make_with_body (j)
 			m.set_status_code (status_code)
+			h := m.header
+
 			if attached redirection as loc then
-				m.header.put_location (loc)
+				h.put_location (loc)
 				m.set_status_code ({HTTP_STATUS_CODE}.temp_redirect)
 			end
-			m.header.put_content_type_with_charset ("application/json", "utf-8")
-			if attached request.http_access_control_request_headers as l_headers then
-				header.put_access_control_allow_headers (l_headers)
+				-- Set default value when `header` does not provide them.
+			if not header.has_content_type then
+				h.put_content_type_with_charset ("application/json", "utf-8")
 			end
 
-			create l_methods.make_from_iterable (<<"GET", "POST">>)
---			l_methods := router.allowed_methods_for_request (request)
-			if not l_methods.is_empty then
-				m.header.put_allow (l_methods)
-				m.header.put_access_control_allow_methods (l_methods)
+			if
+				not header.has ({HTTP_HEADER_NAMES}.header_access_control_allow_headers) and then
+				attached request.http_access_control_request_headers as l_headers
+			then
+				h.put_access_control_allow_headers (l_headers)
 			end
---			m.header.put_access_control_allow_all_origin
 
-			m.header.append_header_object (header)
+			if not header.has ({HTTP_HEADER_NAMES}.header_access_control_allow_methods) then
+				create l_methods.make_from_iterable (<<"GET", "POST">>)
+--				l_methods := router.allowed_methods_for_request (request)
+--				if not l_methods.is_empty then
+					h.put_allow (l_methods)
+					h.put_access_control_allow_methods (l_methods)
+--				end
+	--			m.header.put_access_control_allow_all_origin
+			end
+			if not header.has ({HTTP_HEADER_NAMES}.header_allow) then
+					-- If provided, header_access_control_allow_methods was set just before
+				if attached h.item ({HTTP_HEADER_NAMES}.header_access_control_allow_methods) as h_access_control_allow_methods then
+					h.put_header_key_value ({HTTP_HEADER_NAMES}.header_allow, h_access_control_allow_methods)
+				end
+			end
+
+				-- Append
+			h.append_header_object (header)
 
 			prepare_page_response_before_sending (m)
 
