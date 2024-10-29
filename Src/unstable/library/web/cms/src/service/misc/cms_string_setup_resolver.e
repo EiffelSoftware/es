@@ -42,8 +42,6 @@ feature -- Access
 feature {NONE} -- Internal
 
 	query_name (n: READABLE_STRING_GENERAL): STRING_32
-		local
-			qn: like query_name
 		do
 			Result := query_name_prefix
 			Result.keep_head (query_name_prefix_count)

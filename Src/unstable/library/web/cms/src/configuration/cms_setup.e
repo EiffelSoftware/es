@@ -515,7 +515,7 @@ feature -- Access: directory
 			Result["Cache"] := cache_location.name
 			Result["Files"] := files_location.name
 			Result["Temp"] := temp_location.name
-			if attached (create {APPLICATION_JSON_CONFIGURATION_HELPER}.make_with_environment_resolver).new_database_configuration (environment.application_config_path) as l_database_config then
+			if attached (create {APPLICATION_JSON_CONFIGURATION_HELPER}.make_with_resolver (create {CMS_ENVIRONMENT_RESOLVER}.make (Current))).new_database_configuration (environment.application_config_path) as l_database_config then
 				Result["Storage.connection_string"] := l_database_config.connection_string
 			end
 			create s.make (10)
@@ -584,7 +584,7 @@ feature -- Access: storage
 
 	storage_configuration: detachable DATABASE_CONFIGURATION
 		do
-			Result := (create {APPLICATION_JSON_CONFIGURATION_HELPER}.make_with_environment_resolver).new_database_configuration (environment.application_config_path)
+			Result := (create {APPLICATION_JSON_CONFIGURATION_HELPER}.make_with_resolver (create {CMS_ENVIRONMENT_RESOLVER}.make (Current))).new_database_configuration (environment.application_config_path)
 		end
 
 	storage (a_error_handler: ERROR_HANDLER): detachable CMS_STORAGE

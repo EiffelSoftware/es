@@ -55,7 +55,6 @@ feature -- Conversion
 	expand_string_8 (a_text: STRING_8)
 		local
 			vn: STRING_8
-			utf: UTF_CONVERTER
 			i,j,n,k,m: INTEGER
 			c, prev: CHARACTER_8
 		do
@@ -116,7 +115,6 @@ feature -- Conversion
 	expand_string_32 (a_text: STRING_32)
 		local
 			vn: STRING_32
-			utf: UTF_CONVERTER
 			i,j,n,k,m: INTEGER
 			c, prev: CHARACTER_32
 		do
