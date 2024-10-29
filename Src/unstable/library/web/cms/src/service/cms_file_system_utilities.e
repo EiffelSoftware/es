@@ -193,11 +193,23 @@ feature -- Create
 			-- and return True on success or if parent already exists, False on failure.
 		local
 			retried: BOOLEAN
+		do
+			Result := safe_create_directory (p.parent)
+		rescue
+			retried := True
+			retry
+		end
+
+	safe_create_directory (p: PATH): BOOLEAN
+			-- Create directory `p`
+			-- and return True on success or if directory already exists, False on failure.
+		local
+			retried: BOOLEAN
 			d: DIRECTORY
 		do
 			Result := False
 			if not retried then
-				create d.make_with_path (p.parent)
+				create d.make_with_path (p)
 				if d.exists then
 					Result := True
 				else
