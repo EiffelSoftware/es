@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
 			create l_manager.make (preferences, "refactoring.class_rename")
 			l_update_agent := agent update
 
-			file_rename_preference := l_manager.new_boolean_preference_value (l_manager, file_rename_string, False)
+			file_rename_preference := l_manager.new_boolean_preference_value (l_manager, file_rename_string, True)
 			file_rename_preference.change_actions.extend (l_update_agent)
 
 			is_duplicate_allowed_preference := l_manager.new_boolean_preference_value (l_manager, is_duplicate_allowed_string, False)
@@ -173,7 +173,7 @@ invariant
 	update_strings_preference_not_void: update_strings_preference /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

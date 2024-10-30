@@ -756,7 +756,7 @@
 	<PREF NAME="tools.refactoring.feature_rename.update_comments" DESCRIPTION="Should occurrences of the feature name in comments be changed?" HIDDEN="True"><BOOLEAN>False</BOOLEAN></PREF>
 	<PREF NAME="tools.refactoring.feature_rename.update_strings" DESCRIPTION="Should occurrences of the feature name in strings be changed?" HIDDEN="True"><BOOLEAN>False</BOOLEAN></PREF>
 
-	<PREF NAME="tools.refactoring.class_rename.file_rename" DESCRIPTION="Should file be renamed to a new name?" HIDDEN="True"><BOOLEAN>False</BOOLEAN></PREF>
+	<PREF NAME="tools.refactoring.class_rename.file_rename" DESCRIPTION="Should file be renamed to a new name?" HIDDEN="True"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="tools.refactoring.class_rename.old_class_name" DESCRIPTION="Old name of class" HIDDEN="True"><STRING>OLD_NAME</STRING></PREF>
 	<PREF NAME="tools.refactoring.class_rename.new_class_name" DESCRIPTION="New name of class" HIDDEN="True"><STRING>NEW_NAME</STRING></PREF>
 	<PREF NAME="tools.refactoring.class_rename.all_classes" DESCRIPTION="Should all classes be processed?" HIDDEN="True"><BOOLEAN>False</BOOLEAN></PREF>
