@@ -66,7 +66,6 @@ feature -- Access
 			a_id_not_void: a_id /= Void
 		local
 			l_nodes: like nodes
-			l_class: ES_CLASS
 		do
 			from
 				l_nodes := nodes
@@ -74,8 +73,32 @@ feature -- Access
 			until
 				l_nodes.after or Result /= Void
 			loop
-				l_class ?= l_nodes.item
-				if l_class /= Void and then l_class.es_class_id.is_equal (a_id) then
+				if
+					attached {ES_CLASS} l_nodes.item as l_class and then
+					l_class.es_class_id.is_equal (a_id)
+				then
+					Result := l_class
+				end
+				l_nodes.forth
+			end
+		end
+
+	class_of_name (a_name: READABLE_STRING_GENERAL): detachable ES_CLASS
+		require
+			a_name_set: a_name /= Void
+		local
+			l_nodes: like nodes
+		do
+			from
+				l_nodes := nodes
+				l_nodes.start
+			until
+				l_nodes.after or Result /= Void
+			loop
+				if
+					attached {ES_CLASS} l_nodes.item as l_class and then
+					l_class.name_32.same_string_general (a_name)
+				then
 					Result := l_class
 				end
 				l_nodes.forth
@@ -960,7 +983,7 @@ invariant
 	client_supplier_links_lookup_not_void: client_supplier_links_lookup /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2020, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

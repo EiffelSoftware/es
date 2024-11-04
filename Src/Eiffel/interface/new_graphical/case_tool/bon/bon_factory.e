@@ -16,11 +16,8 @@ feature -- Basic operations
 
 	new_class_figure (a_node: EG_NODE): EG_LINKABLE_FIGURE
 			-- Create a node figure for `a_node'.
-		local
-			ec: ES_CLASS
 		do
-			ec ?= a_node
-			if ec /= Void then
+			if attached {ES_CLASS} a_node as ec then
 				Result := create {BON_CLASS_FIGURE}.make_with_model (ec)
 				if not ec.is_needed_on_diagram then
 					Result.hide
@@ -33,11 +30,8 @@ feature -- Basic operations
 
 	new_cluster_figure (a_cluster: EG_CLUSTER): EG_CLUSTER_FIGURE
 			-- Create a cluster figure for `a_cluster'.
-		local
-			ec: ES_CLUSTER
 		do
-			ec ?= a_cluster
-			if ec /= Void then
+			if attached {ES_CLUSTER} a_cluster as ec then
 				Result := create {BON_CLUSTER_FIGURE}.make_with_model (ec)
 				if not ec.is_needed_on_diagram then
 					Result.hide
@@ -50,28 +44,21 @@ feature -- Basic operations
 
 	new_link_figure (a_link: EG_LINK): EG_LINK_FIGURE
 			-- Create a link figure for `a_link'.
-		local
-			eih: ES_INHERITANCE_LINK
-			ecs: ES_CLIENT_SUPPLIER_LINK
 		do
-			eih ?= a_link
-			if eih /= Void then
+			if attached {ES_INHERITANCE_LINK} a_link as eih then
 				Result := new_inheritance_figure (eih)
 				if not eih.is_needed_on_diagram then
 					Result.hide
 					Result.disable_sensitive
 				end
-			else
-				ecs ?= a_link
-				if ecs /= Void then
-					Result := new_client_supplier_figure (ecs)
-					if not ecs.is_needed_on_diagram then
-						Result.hide
-						Result.disable_sensitive
-					end
-				else
-					Result := create {EG_SIMPLE_LINK}.make_with_model (a_link)
+			elseif attached {ES_CLIENT_SUPPLIER_LINK} a_link as ecs then
+				Result := new_client_supplier_figure (ecs)
+				if not ecs.is_needed_on_diagram then
+					Result.hide
+					Result.disable_sensitive
 				end
+			else
+				Result := create {EG_SIMPLE_LINK}.make_with_model (a_link)
 			end
 		end
 
@@ -112,7 +99,7 @@ feature {BON_FIGURE} -- Constants
 			-- Name of xml nodes describing inheritance links.
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
