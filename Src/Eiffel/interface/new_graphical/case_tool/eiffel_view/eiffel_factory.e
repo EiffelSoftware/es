@@ -114,7 +114,13 @@ feature -- Access
 					target_name := node.attribute_by_name (target_string).value
 					if target_name /= Void then
 						source := l_world.model.class_of_id (source_name)
+						if source = Void then
+							source := l_world.model.class_of_name (source_name)
+						end
 						target := l_world.model.class_of_id (target_name)
+						if target = Void then
+							target := l_world.model.class_of_name (target_name)
+						end
 						if source /= Void and target /= Void then
 							if node_name.same_string (xml_client_supplier_figure_node_name) then
 								if source.has_supplier (target) then
@@ -207,7 +213,7 @@ feature {NONE} -- Constants
 		-- Xml string constants
 
 note
-	copyright:	"Copyright (c) 1984-2020, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
