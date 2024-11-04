@@ -135,6 +135,18 @@ feature -- Directories
 			eifgens_path_not_void: Result /= Void
 		end
 
+	eifdata_path: like path
+			-- Path to `EIFDATA' directory.
+		do
+			Result := internal_eifdata_path
+			if Result = Void then
+				Result := path.extended (eiffeldata)
+				internal_eifdata_path := Result
+			end
+		ensure
+			eifdata_path_not_void: Result /= Void
+		end
+
 	final_assemblies_path: like path
 			-- Path to `F_code/Assemblies' directory with project directory.
 		do
@@ -193,6 +205,18 @@ feature -- Directories
 			end
 		ensure
 			target_path_not_void: Result /= Void
+		end
+
+	target_data_path: like path
+			-- Path to `target' data directory within project directory.
+		do
+			Result := internal_target_data_path
+			if Result = Void then
+				Result := eifdata_path.extended (target)
+				internal_target_data_path := Result
+			end
+		ensure
+			target_data_path_not_void: Result /= Void
 		end
 
 	workbench_assemblies_path: like path
@@ -537,11 +561,13 @@ feature {NONE} -- Implementation: Access
 	internal_compilation_path: like compilation_path
 	internal_documentation_path: like documentation_path
 	internal_eifgens_path: like eifgens_path
+	internal_eifdata_path: like eifdata_path
 	internal_final_assemblies_path: like final_assemblies_path
 	internal_final_path: like final_path
 	internal_partial_generation_path: like partial_generation_path
 	internal_profiler_path: like profiler_path
 	internal_target_path: like target_path
+	internal_target_data_path: like target_data_path
 	internal_workbench_assemblies_path: like workbench_assemblies_path
 	internal_workbench_path: like workbench_path
 	internal_data_path: like data_path
@@ -560,7 +586,7 @@ invariant
 	target_not_empty: not target.is_empty
 
 note
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

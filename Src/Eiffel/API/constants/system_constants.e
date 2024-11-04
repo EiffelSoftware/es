@@ -72,6 +72,8 @@ feature {NONE}
 
 	Eiffelgens: STRING = "EIFGENs"
 
+	EiffelData: STRING = "EIFDATA"
+
 	Einit: STRING = "einit"
 
 	Eoption: STRING = "eoption"

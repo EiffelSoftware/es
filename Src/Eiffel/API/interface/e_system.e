@@ -32,8 +32,8 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize the system.
 		do
-			create sub_clusters.make (3);
-		end;
+			create sub_clusters.make (3)
+		end
 
 feature -- Access
 
@@ -41,22 +41,33 @@ feature -- Access
 			-- System name specified in Lace file
 		do
 			Result := System.name
-		end;
+		end
 
 	document_path: PATH
 			-- Path specified for the documents directory for classes.
 			-- Void result implies no document generation
 		do
 			Result := System.document_path
-		end;
+		end
 
 	context_diagram_path: like {PROJECT_DIRECTORY}.path
 			-- Path where context diagrams should be stored.
 		local
-			u: GOBO_FILE_UTILITIES
+			fut: FILE_UTILITIES
+			retried_count: INTEGER_32
 		do
-			Result := project_location.target_path.extended ("Diagrams")
-			u.create_directory_path (Result)
+			if retried_count = 0 then
+				Result := Project_location.target_data_path.extended ("Diagrams")
+				fut.create_directory_path (Result)
+			end
+			if Result = Void then
+				Result := Project_location.target_path.appended ("Diagrams")
+				fut.create_directory_path (Result)
+			end
+		rescue
+			retried_count := retried_count + 1
+			Result := Void
+			retry
 		end
 
 	document_file_name: PATH
@@ -64,7 +75,7 @@ feature -- Access
 			-- Void result implies no document generation
 		do
 			Result := System.document_file_name (System.name)
-		end;
+		end
 
 	sub_clusters: ARRAYED_LIST [CLUSTER_I]
 			-- List of top level clusters for Eiffel System
@@ -75,66 +86,66 @@ feature -- Access
 			-- class ANY
 		once
 			Result := System.any_class
-		end;
+		end
 
 	Boolean_class: CLASS_I
 			-- Class BOOLEAN
 		once
 			Result := System.boolean_class
-		end;
+		end
 
 	Character_class: CLASS_I
 			-- Class CHARACTER
 		once
 			Result := System.character_8_class
-		end;
+		end
 
 	Integer_class: CLASS_I
 			-- Class INTEGER
 		once
 			Result := System.integer_32_class
-		end;
+		end
 
 	Real_class: CLASS_I
 			-- Class REAL
 		once
 			Result := System.real_32_class
-		end;
+		end
 
 	Double_class: CLASS_I
 			-- Class DOUBLE
 		once
 			Result := System.real_64_class
-		end;
+		end
 
 	Pointer_class: CLASS_I
 			-- Class POINTER
 		once
 			Result := System.pointer_class
-		end;
+		end
 
 	String_class: CLASS_I
 			-- Class STRING
 		once
 			Result := System.string_8_class
-		end;
+		end
 
 	Array_class: CLASS_I
 		once
 			Result := System.array_class
-		end;
+		end
 
 	Special_class: CLASS_I
 			-- Class SPECIAL
 		once
 			Result := System.special_class
-		end;
+		end
 
 	number_of_classes: INTEGER
 			-- Number of compiled classes in the system
 		do
 			Result := System.classes.count
-		end;
+		end
 
 	class_of_id (i: INTEGER): detachable CLASS_C
 			-- Eiffel Class of id `i'
@@ -148,7 +159,7 @@ feature -- Access
 			-- Is the class_type dynamic id `i' valid?
 		do
 			Result := System.has_class_of_id (i)
-		end;
+		end
 
 	application_name (workbench_mode: BOOLEAN): PATH
 			-- Get the full qualified name of the application
@@ -162,13 +173,13 @@ feature -- Access
 				Result := project_location.final_path
 			end
 			Result := Result.extended (name + eiffel_layout.executable_suffix)
-		end;
+		end
 
 	is_precompiled: BOOLEAN
 			-- Is the System precompiled?
 		do
 			Result := workbench.system /= Void and then workbench.System.is_precompiled
-		end;
+		end
 
 feature {COMPILER_EXPORTER}
 
@@ -176,7 +187,7 @@ feature {COMPILER_EXPORTER}
 			-- Is the class_type dynamic id `i' valid?
 		do
 			Result := System.class_types.valid_index (i)
-		end;
+		end
 
 	class_of_dynamic_id (i: INTEGER; a_is_final: BOOLEAN): CLASS_C
 			-- Eiffel Class of dynamic id `i'
@@ -190,7 +201,7 @@ feature {COMPILER_EXPORTER}
 			if ct /= Void then
 				Result := ct.associated_class
 			end
-		end;
+		end
 
 	type_of_dynamic_id (i: INTEGER; a_is_final: BOOLEAN): CLASS_TYPE
 			-- Class type of dynamic id `id'
@@ -219,7 +230,7 @@ feature {COMPILER_EXPORTER} -- Element change
 			not_added: sub_clusters /= Void
 		do
 			sub_clusters.extend (c)
-		end;
+		end
 
 feature {COMPILER_EXPORTER} -- Removal
 
@@ -229,14 +240,14 @@ feature {COMPILER_EXPORTER} -- Removal
 			sub_clusters.wipe_out
 		ensure
 			empty_sub_clusters: sub_clusters /= Void
-		end;
+		end
 
 invariant
 
 	sub_clusters_exists: sub_clusters /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2019, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
