@@ -138,7 +138,6 @@ feature -- Access
 	deep_elements: LIST [EV_MODEL]
 			-- All elements in `Current' and in its subgroups.
 		local
-			l_group: detachable EV_MODEL_GROUP
 			l_list: ARRAYED_LIST [EV_MODEL]
 		do
 			create l_list.make (0)
@@ -147,8 +146,7 @@ feature -- Access
 			until
 				after
 			loop
-				l_group ?= item
-				if l_group /= Void then
+				if attached {EV_MODEL_GROUP} item as l_group then
 					l_list.append (l_group.deep_elements)
 				end
 				l_list.extend (item)
@@ -244,21 +242,20 @@ feature -- Status report
 
 	has_deep (figure: EV_MODEL): BOOLEAN
 			-- Does any item contains `figure'?
-		local
-			grp: detachable EV_MODEL_GROUP
 		do
 			from
 				start
 			until
 				after or Result
 			loop
-				grp ?= item
-				if grp = Void then
-					Result := figure = item
-				elseif grp = figure then
-					Result := True
+				if attached {EV_MODEL_GROUP} item as grp then
+					if grp = figure then
+						Result := True
+					else
+						Result := grp.has_deep (figure)
+					end
 				else
-					Result := grp.has_deep (figure)
+					Result := figure = item
 				end
 				forth
 			end
@@ -991,7 +988,7 @@ invariant
 	not_is_grouped_implies_angel_equals_zero: not is_grouped implies (angle = 0)
 
 note
-	copyright: "Copyright (c) 1984-2021, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2024, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
