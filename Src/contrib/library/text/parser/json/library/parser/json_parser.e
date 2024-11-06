@@ -213,7 +213,7 @@ feature -- Commands
 			create true_value.make_true
 		end
 
-	parse_string (a_json_content: STRING_8)
+	parse_string (a_json_content: READABLE_STRING_8)
 			-- Parse string `a_json_content`.
 		do
 			set_representation (a_json_content)

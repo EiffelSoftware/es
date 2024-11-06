@@ -29,7 +29,11 @@ feature -- Commands
 	set_representation (a_json: READABLE_STRING_8)
 			-- Set `representation'.
 		do
-			representation := a_json.to_string_8
+			if attached {STRING_8} a_json as s8 then
+				representation := s8
+			else
+				create representation.make_from_string (a_json)
+			end
 			representation.left_adjust
 			representation.right_adjust
 			reset
