@@ -31,11 +31,11 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	callback: STRING
+	callback: READABLE_STRING_8
 	signature_type: OAUTH_SIGNATURE_TYPE
-	api_secret: STRING
-	api_key: STRING
-	scope: detachable STRING
+	api_secret: READABLE_STRING_8
+	api_key: READABLE_STRING_8
+	scope: detachable READABLE_STRING_8
 	api: OAUTH_API
 
 feature -- Fluent API
@@ -143,7 +143,7 @@ feature {NONE} -- Element Change
 		end
 
 note
-	copyright: "2013-2017, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
+	copyright: "2013-2024, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

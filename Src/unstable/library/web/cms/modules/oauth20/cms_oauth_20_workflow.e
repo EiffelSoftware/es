@@ -57,7 +57,7 @@ feature -- Access
 			request: OAUTH_REQUEST
 		do
 				-- Get the access token.
-			write_debug_log (generator + ".sign_request Fetching the access token with code [" + a_code + "]")
+			write_debug_log (generator + ".sign_request Fetching the access token with code [" + {UTF_CONVERTER}.utf_32_string_to_utf_8_string_8 (a_code) + "]")
 			access_token := api_service.access_token_post (empty_token, create {OAUTH_VERIFIER}.make (a_code))
 			if attached access_token as l_access_token then
 				write_debug_log (generator + ".sign_request Got the Access Token [" + l_access_token.debug_output + "]")
@@ -86,7 +86,7 @@ feature -- Access
 				create l_json.make_from_string (l_profile)
 				if
 					attached {JSON_ARRAY} l_json.item ("emails") as l_array and then
-					attached {JSON_OBJECT} l_array.i_th (1) as l_object and then
+					attached {JSON_OBJECT} l_array [1] as l_object and then
 					attached {JSON_STRING} l_object.item ("value") as l_email
 				then
 					Result := l_email.item
@@ -104,9 +104,13 @@ feature -- Access
 			if attached user_profile as l_profile then
 				create l_json.make_from_string (l_profile)
 				if attached {JSON_STRING} l_json.item ("id") as l_id then
-					Result := l_id.unescaped_string_32
-				elseif attached {JSON_NUMBER} l_json.item ("id") as l_id then
-					Result := l_id.item
+					Result := l_id.unescaped_string_8
+				elseif attached {JSON_NUMBER} l_json.item ("id") as j_num_id then
+					if j_num_id.is_integer then
+						Result := j_num_id.integer_64_item.out
+					else
+						Result := j_num_id.natural_64_item.out
+					end
 				end
 			end
 		end
@@ -143,16 +147,16 @@ feature {NONE} -- Implementation
 	api_service: OAUTH_SERVICE_I
 		-- Service.
 
-	api_key: STRING
+	api_key: READABLE_STRING_8
 		-- public key.
 
-	api_secret: STRING
+	api_secret: READABLE_STRING_8
 		-- secret key.
 
-	scope: STRING
+	scope: READABLE_STRING_8
 		-- api scope to access protected resources.
 
-	protected_resource_url: STRING
+	protected_resource_url: READABLE_STRING_8
 		-- Resource url.
 
 	empty_token: detachable OAUTH_TOKEN

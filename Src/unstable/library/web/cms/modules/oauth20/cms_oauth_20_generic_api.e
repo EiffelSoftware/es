@@ -65,7 +65,7 @@ feature -- Access
 	authorization_url (config: OAUTH_CONFIG): detachable STRING_8
 			-- Url where you should redirect your users to authneticate
 		local
-			l_api_key: STRING_8
+			l_api_key: READABLE_STRING_8
 		do
 			l_api_key := config.api_key
 			if attached config.scope as l_scope then
