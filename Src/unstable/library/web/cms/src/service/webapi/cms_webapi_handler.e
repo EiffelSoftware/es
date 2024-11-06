@@ -60,6 +60,16 @@ feature -- Factory
 			Result.add_self (req.request_uri)
 		end
 
+	new_not_implemented_error_response (m: detachable READABLE_STRING_GENERAL; req: WSF_REQUEST; res: WSF_RESPONSE): like new_response
+		do
+			if m = Void then
+				Result := new_error_response ("Not Imnplemented", req, res)
+			else
+				Result := new_error_response (m, req, res)
+			end
+			Result.set_status_code ({HTTP_STATUS_CODE}.not_implemented)
+		end
+
 	new_not_found_error_response (m: detachable READABLE_STRING_GENERAL; req: WSF_REQUEST; res: WSF_RESPONSE): like new_response
 		do
 			if m = Void then
