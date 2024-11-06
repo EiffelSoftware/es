@@ -35,14 +35,14 @@ feature {NONE} -- Initilization
 
 	make_empty
 		do
-			create token.make_empty
-			create secret.make_empty
+			create {IMMUTABLE_STRING_8} token.make_empty
+			create {IMMUTABLE_STRING_8} secret.make_empty
 		ensure
 			token_empty_set: token.is_empty
 			secret_empty_set: secret.is_empty
 		end
 
-	make_token_secret (a_token: STRING; a_secret: STRING)
+	make_token_secret (a_token: READABLE_STRING_8; a_secret: READABLE_STRING_8)
 		do
 			token := a_token
 			secret := a_secret
@@ -51,7 +51,7 @@ feature {NONE} -- Initilization
 			secret_set: secret.same_string (a_secret)
 		end
 
-	make_token_secret_response (a_token: STRING; a_secret: STRING; a_response: like raw_response)
+	make_token_secret_response (a_token: READABLE_STRING_8; a_secret: READABLE_STRING_8; a_response: like raw_response)
 		do
 			token := a_token
 			secret := a_secret
@@ -61,7 +61,7 @@ feature {NONE} -- Initilization
 			secret_set: secret.same_string (a_secret)
 		end
 
-	make_token_secret_response_refresh (a_token: STRING; a_secret: STRING; a_response: like raw_response; a_refresh: like refresh_token)
+	make_token_secret_response_refresh (a_token: READABLE_STRING_8; a_secret: READABLE_STRING_8; a_response: like raw_response; a_refresh: like refresh_token)
 		do
 			token := a_token
 			secret := a_secret
@@ -82,29 +82,29 @@ feature -- Comparison
 
 feature -- Access
 
-	token: STRING
+	token: READABLE_STRING_8
 		 	-- REQUIRED. The access token issued by the authorization server.
 
-	secret: STRING
+	secret: READABLE_STRING_8
 			-- REQUIRED The type of the token issued
 	        -- Value is case insensitive.
 	  	  --|OAuth 2.0 define a token_type
 
-	refresh_token: detachable STRING
+	refresh_token: detachable READABLE_STRING_8
 			-- RECOMMENDED The refresh token, which can be used to obtain new
 	        -- access tokens
 
     expires_in: INTEGER
    		 	--	 OPTIONAL The lifetime in seconds of the access token.
 
-    scope: detachable STRING
+    scope: detachable READABLE_STRING_8
 	    	-- OPTIONAL, if identical to the scope requested by the client,
 	        -- otherwise REQUIRED
 
-    raw_response: detachable STRING
+    raw_response: detachable READABLE_STRING_8
     		-- raw response.
 
-    token_type: detachable STRING
+    token_type: detachable READABLE_STRING_8
     		-- OAuth 2.0 token type.
 
 
@@ -113,9 +113,9 @@ feature -- Element Change
 	set_token (a_token: READABLE_STRING_GENERAL)
 			-- Set `token' with `a_token'.
 		do
-			token := a_token.as_string_8
+			token := a_token.to_string_8
 		ensure
-			token_set: token = a_token
+			token_set: a_token.same_string (token)
 		end
 
 	set_secret (a_secret: READABLE_STRING_8)
@@ -176,7 +176,7 @@ feature -- debug
 		end
 
 note
-	copyright: "2013-2017, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
+	copyright: "2013-2024, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

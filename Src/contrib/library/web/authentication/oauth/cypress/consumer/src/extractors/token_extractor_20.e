@@ -19,7 +19,7 @@ feature -- Access
 		local
 			l_token_index: INTEGER
 			l_param_index: INTEGER
-			l_extract: STRING_8
+			l_extract: READABLE_STRING_8
 		do
 			if response.has_substring (Token_definition) then
 				l_token_index := response.substring_index (Token_definition, 1)
@@ -29,7 +29,7 @@ feature -- Access
 					l_extract := l_extract.substring (1, l_param_index - 1)
 				end
 					-- FIXME: can token be unicode encoded?
-				create Result.make_token_secret_response (oauth_decoded_string (l_extract), empty_secret, response)
+				create Result.make_token_secret_response (oauth_decoded_string_8 (l_extract), empty_secret, response)
 				if response.has_substring (Token_expires) then
 					Result.set_expires_in (retrieve_token (Token_expires, response).to_integer)
 				end
@@ -45,12 +45,12 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	retrieve_token (a_token: READABLE_STRING_8; a_response: READABLE_STRING_8): STRING_32
+	retrieve_token (a_token: READABLE_STRING_8; a_response: READABLE_STRING_8): STRING_8
 			-- Retrieve token `a_token' from `a_response'.
 		local
 			l_token_index: INTEGER
 			l_param_index: INTEGER
-			l_extract: STRING_8
+			l_extract: READABLE_STRING_8
 		do
 			l_token_index := a_response.substring_index (a_token, 1)
 			l_extract := a_response.substring (l_token_index + a_token.count + 1, a_response.count)
@@ -58,7 +58,7 @@ feature {NONE} -- Implementation
 			if l_param_index /= 0 then
 				l_extract := l_extract.substring (1, l_param_index - 1)
 			end
-			Result := oauth_decoded_string (l_extract)
+			Result := oauth_decoded_string_8 (l_extract)
 		end
 
 	Token_definition: STRING = "access_token="
@@ -75,7 +75,7 @@ feature {NONE} -- Implementation
 			-- TODO add code to extract refresh_token
 
 note
-	copyright: "2013-2017, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
+	copyright: "2013-2024, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

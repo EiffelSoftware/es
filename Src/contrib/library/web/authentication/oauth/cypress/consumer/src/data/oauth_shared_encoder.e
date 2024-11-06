@@ -19,7 +19,20 @@ feature -- Decode
 		do
 			Result := oauth_encoder.decoded_string (s)
 		end
-	
+
+	oauth_decoded_string_8 (s: READABLE_STRING_GENERAL): STRING_8
+		local
+			s32: STRING_32
+			utf: UTF_CONVERTER
+		do
+			s32 := oauth_encoder.decoded_string (s)
+			if s32.is_valid_as_string_8 then
+				Result := s32.to_string_8
+			else
+				Result := utf.utf_32_string_to_utf_8_string_8 (s32)
+			end
+		end
+
 feature -- Access
 
 	oauth_encoder: OAUTH_ENCODER
@@ -28,7 +41,7 @@ feature -- Access
 		end
 
 note
-	copyright: "2013-2015, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
+	copyright: "2013-2024, Javier Velilla, Jocelyn Fiat, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
