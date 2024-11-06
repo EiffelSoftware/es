@@ -35,7 +35,9 @@ feature -- Execution
 	execute_reader (a_base_selection: DB_SELECTION): detachable LIST [DB_RESULT]
 			-- Execute the Current sql query.
 		do
-			to_implement ("Check test dynamic sequel. to redesign.")
+			debug ("refactor_fixme")
+				to_implement ("Check test dynamic sequel. to redesign.")
+			end
 			create {ARRAYED_LIST [DB_RESULT]} Result.make (100)
 			a_base_selection.set_container (Result)
 			set_map_name (a_base_selection)
@@ -56,7 +58,9 @@ feature -- Execution
 	execute_change (a_base_change: DB_CHANGE)
 			-- Execute the Current sql query to change/update data in the database.
 		do
-			to_implement ("Check test dynamic sequel. to redesign.")
+			debug ("refactor_fixme")
+				to_implement ("Check test dynamic sequel. to redesign.")
+			end
 			set_map_name (a_base_change)
 			a_base_change.set_query (query)
 			a_base_change.execute_query

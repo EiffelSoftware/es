@@ -41,13 +41,13 @@ feature -- Factory
 						l_connection_string.is_case_insensitive_equal_general (d.connection_string)
 					then
 							-- Keep `conn`
+						conn.check_connection
 					else
 						conn.disconnect
 						conn := Void
 						reuseable_connection.replace (Void)
 					end
 				end
-
 				if conn = Void or else not conn.is_connected then
 					create {DATABASE_CONNECTION_MYSQL} conn.login_with_connection_string (l_connection_string)
 				end

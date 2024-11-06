@@ -164,6 +164,22 @@ feature -- Conection
 			Result := db_control.is_connected
 		end
 
+	check_connection
+		require
+			is_connected
+		local
+			q: DATABASE_QUERY
+			sel: DB_SELECTION
+		do
+			create q.data_reader ("SELECT 1;", Void)
+			create sel.make
+			if attached q.execute_reader (sel) as resp and then not resp.is_empty then
+					-- Connection is ok.
+			else
+				disconnect
+			end
+		end
+
 feature -- Error Handling
 
 	database_error_handler: DATABASE_ERROR_HANDLER
