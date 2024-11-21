@@ -421,7 +421,9 @@ feature -- Block management
 			else
 					-- Clear all block caches.
 				create dir.make_with_path (p)
-				dir.recursive_delete
+				if dir.exists then
+					dir.recursive_delete
+				end
 			end
 			add_notice_message ("Blocks cache cleared.")
 		end
@@ -1274,6 +1276,6 @@ feature {NONE} -- Execution
 		end
 
 note
-	copyright: "2011-2022, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end
