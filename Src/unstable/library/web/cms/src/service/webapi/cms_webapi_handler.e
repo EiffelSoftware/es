@@ -57,7 +57,6 @@ feature -- Factory
 			else
 				Result.add_string_field ("error", "True")
 			end
-			Result.add_self (req.request_uri)
 		end
 
 	new_not_implemented_error_response (m: detachable READABLE_STRING_GENERAL; req: WSF_REQUEST; res: WSF_RESPONSE): like new_response
