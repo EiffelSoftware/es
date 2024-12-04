@@ -85,8 +85,17 @@ feature {CMS_API} -- Module management
 			a_api.user_api.save_user_role (l_authenticated_role)
 
 				--| Users
-			create u.make ("admin")
-			u.set_password ("istrator#")
+			if attached a_api.setup.environment_item ("ADMIN_NAME") as l_admin_name then
+				create u.make (l_admin_name)
+			else
+				create u.make ("admin")
+			end
+			if attached a_api.setup.environment_item ("ADMIN_PASSWORD") as l_admin_pwd then
+				u.set_password (l_admin_pwd)
+			else
+				u.set_password ("istrator#")
+			end
+
 			u.set_email (a_api.setup.site_email)
 			u.mark_active
 			a_api.user_api.new_user (u)
@@ -210,7 +219,7 @@ feature -- Hook
 		end
 
 note
-	copyright: "2011-2022, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
