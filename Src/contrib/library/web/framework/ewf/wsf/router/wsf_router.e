@@ -509,6 +509,18 @@ feature -- Request methods helper
 			methods_head_get_post_not_void: Result /= Void
 		end
 
+	methods_get_post_put_delete: WSF_REQUEST_METHODS
+		once ("THREAD")
+			create Result.make (3)
+			Result.enable_get
+			Result.enable_post
+			Result.enable_put
+			Result.enable_delete
+			Result.lock
+		ensure
+			methods_get_put_not_void: Result /= Void
+		end		
+
 	methods_get_put_delete: WSF_REQUEST_METHODS
 		once ("THREAD")
 			create Result.make (3)
