@@ -276,7 +276,7 @@ feature {NONE} -- Implementation
 			utf: expanded UTF_CONVERTER
 		do
 			if attached {READABLE_STRING_8} s as s8 then
-				Result := s8
+				Result := s8.to_string_8
 			else
 				Result := utf.utf_32_string_to_utf_8_string_8 (s)
 			end

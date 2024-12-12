@@ -704,7 +704,7 @@ feature -- Registration
 													-- Create new account !
 													-- Create a new user and oauth entry
 												create l_user.make (l_oauth_id)
-												l_user.set_email (l_email)
+												l_user.set_email (l_email.to_string_8)
 												l_user.set_password (new_token) -- generate a random password.
 												if attached fd.string_item ("profilename") as l_profilename then
 													l_user.set_profile_name (l_profilename)
@@ -718,7 +718,7 @@ feature -- Registration
 												i_oauth20_api.cms_api.set_user (l_user)
 												i_oauth20_api.cms_api.record_user_login (l_user)
 
-												create l_cookie.make (i_oauth20_api.session_token, l_access_token)
+												create l_cookie.make (i_oauth20_api.session_token, l_access_token.to_string_8)
 												l_cookie.set_path ("/")
 												l_max_age := l_expires_in.to_integer
 												if l_max_age <= 0 then
@@ -736,7 +736,7 @@ feature -- Registration
 
 													-- Send Email
 												create es.make (create {CMS_AUTHENTICATION_EMAIL_SERVICE_PARAMETERS}.make (i_oauth20_api.cms_api))
-												es.send_contact_welcome_email (l_email, l_user, i_oauth20_api.cms_api.absolute_url ("", Void))
+												es.send_contact_welcome_email (l_email.to_string_8, l_user, i_oauth20_api.cms_api.absolute_url ("", Void))
 											end
 										else
 											fd.report_invalid_field ("email", "Missing email information!")

@@ -43,6 +43,22 @@ feature -- Change
 			end
 		end
 
+feature -- Hook: new user hook
+
+	invoke_hook (proc: PROCEDURE [CMS_HOOK]; a_hook_type: TYPE [CMS_HOOK])
+			-- Invoke `a_hook_type` hook using `proc`.
+		do
+			if attached subscribers (a_hook_type) as lst then
+				across
+					lst as ic
+				loop
+					if attached ic.item as h then
+						proc (h)
+					end
+				end
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	all_subscribers: HASH_TABLE [LIST [CMS_HOOK], TYPE [CMS_HOOK]]
@@ -51,7 +67,7 @@ invariant
 	all_subscribers /= Void
 
 note
-	copyright: "2011-2017, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
+	copyright: "2011-2024, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 end
 
