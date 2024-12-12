@@ -124,7 +124,7 @@ feature --Access: Consumers
 				until
 					sql_after or has_error
 				loop
-					if attached sql_read_string (1) as l_name then
+					if attached sql_read_string_8 (1) as l_name then
 						Result.force (l_name)
 					end
 					sql_forth
@@ -298,7 +298,7 @@ feature {NONE} -- Implementation OAuth Consumer
 			if attached sql_read_integer_64 (1) as l_id then
 				create Result.make_with_id (l_id)
 
-				if attached sql_read_string (2) as l_name then
+				if attached sql_read_string_32 (2) as l_name then
 					Result.set_name (l_name)
 				end
 				if attached sql_read_string (3) as l_api_secret then
