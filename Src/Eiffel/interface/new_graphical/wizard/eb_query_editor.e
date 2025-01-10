@@ -32,7 +32,6 @@ feature -- Element change
 			else
 				type_selector.set_initial_types (client_type, supplier_type, False)
 				type_selector.set_selector_text (a_type)
-				type_selector.update_list_strings (True)
 			end
 		end
 

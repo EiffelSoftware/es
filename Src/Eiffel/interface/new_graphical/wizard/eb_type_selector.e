@@ -40,8 +40,6 @@ feature {NONE} -- Initialization
 			default_create
 		end
 
-	is_using_class_selector: BOOLEAN = True
-
 	initialize
 			-- Fill for test purposes.
 		local
@@ -53,54 +51,27 @@ feature {NONE} -- Initialization
 
 			create generic_type_selectors.make
 			create generic_box
-			if is_using_class_selector then
-
-				create class_selector.make (Current, agent (st: STONE)
-					do
-						if attached {CLASSC_STONE} st as cl_c_st then
-							on_class_name_change (cl_c_st.e_class.name)
-						elseif attached {CLASSI_STONE} st as cl_i_st then
-							on_class_name_change (cl_i_st.class_i.name)
-						else
-							debug
-								print (generator + ": class selector propagated stone: " + st.generating_type.out + "%N")
-							end
+			create class_selector.make (Current, agent (st: STONE)
+				do
+					if attached {CLASSC_STONE} st as cl_c_st then
+						on_class_name_change (cl_c_st.e_class.name)
+					elseif attached {CLASSI_STONE} st as cl_i_st then
+						on_class_name_change (cl_i_st.class_i.name)
+					else
+						debug
+							print (generator + ": class selector propagated stone: " + st.generating_type.out + "%N")
 						end
 					end
-				)
-
-				if attached class_selector.widget as w and then w.count > 0 then
-					l_vbox.extend (w); l_vbox.disable_item_expand (w)
-				elseif attached class_selector.header_info as w and then w.count > 0 then
-					l_vbox.extend (w); l_vbox.disable_item_expand (w)
-				else
---					l_vbox.extend (create {EV_LABEL}.make_with_text ("BAD"))
 				end
+			)
 
-				class_selector.change_actions.extend (agent on_selection_change)
-			else
-				create selector.make_with_strings (initial_strings)
-					-- Add Class Completion
-				if is_used_for_inheritance then
-					create text_completion.make (Void, Void)
-				else
-					create text_completion.make (system.root_creators.first.root_class.compiled_class, Void)
-				end
-				text_completion.set_code_completable (selector)
-				text_completion.set_use_all_classes_in_universe (True)
-
-				selector.set_completion_possibilities_provider (text_completion)
-				selector.set_completing_class
-
-				selector.set_text (system.root_creators.first.root_class.compiled_class.name)
-				selector.set_minimum_width (150)
-
-				l_vbox.extend (selector)
-				l_vbox.disable_item_expand (selector)
-
-				selector.change_actions.extend (agent on_selection_change)
+			if attached class_selector.widget as w and then w.count > 0 then
+				l_vbox.extend (w); l_vbox.disable_item_expand (w)
+			elseif attached class_selector.header_info as w and then w.count > 0 then
+				l_vbox.extend (w); l_vbox.disable_item_expand (w)
 			end
 
+			class_selector.change_actions.extend (agent on_selection_change)
 
 			create detachable_check_box
 			detachable_check_box.set_text ("Detachable?")
@@ -127,16 +98,12 @@ feature -- Context change
 		do
 			if attached class_selector as clsel then
 				clsel.set_context_group (g)
-			elseif attached text_completion as txt_compl then
-				txt_compl.set_group_context (g)
 			end
 		end
 
 	set_focus
 		do
-			if attached selector as sel then
-				sel.set_focus
-			elseif attached class_selector as clsel then
+			if attached class_selector as clsel then
 				clsel.set_focus
 			end
 		end
@@ -145,31 +112,21 @@ feature -- Selector helpers
 
 	selector_text: detachable STRING_32
 		do
-			if attached selector as sel then
-				Result := sel.text
-			elseif attached class_selector as clsel then
+			if attached class_selector as clsel then
 				Result := clsel.class_text
 			end
 		end
 
 	set_selector_text (s: detachable READABLE_STRING_GENERAL)
 		do
-			if attached selector as sel then
-				if s = Void then
-					sel.remove_text
-				else
-					sel.set_text (s)
-				end
-			elseif attached class_selector as clsel then
+			if attached class_selector as clsel then
 				clsel.set_class_text (s)
 			end
 		end
 
 	register_change_action (act: PROCEDURE)
 		do
-			if attached selector as sel then
-				sel.change_actions.extend (act)
-			elseif attached class_selector as sel then
+			if attached class_selector as sel then
 				-- FIXME: jfiat
 --				sel.change_actions.extend (act)
 			end
@@ -178,11 +135,6 @@ feature -- Selector helpers
 feature -- Access
 
 	class_selector: detachable ES_CLASS_SELECTOR
-
-	selector: detachable EB_CODE_COMPLETABLE_COMBO_BOX
-			-- Text box with list of possible types.
-
-	text_completion: detachable EB_NORMAL_COMPLETION_POSSIBILITIES_PROVIDER
 
 	generic_type_selectors: LINKED_LIST [EB_TYPE_SELECTOR]
 			-- All type selectors in `generic_box'.
@@ -361,7 +313,7 @@ feature {NONE} -- Implementation
 					create ts
 					if supplier_type /= Void then
 						ts.set_initial_types (client_type, supplier_type, False)
-						ts.update_list_strings (False)
+--						ts.update_list_strings (False)
 					end
 					generic_type_selectors.extend (ts)
 					generic_box.extend (ts)
@@ -436,66 +388,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	initial_strings: ARRAY [STRING_32]
-			-- Initial list items.
-			--| FIXME Get favorites, previously entered names, etc.
-		do
-			-- FIXME: use smarter type source ... [2024-12-30]
-			if is_used_for_inheritance then
-					-- List suitable ancestor types (ie: not expanded or TUPLE).
-				Result := {ARRAY [STRING_32]} <<
-					"ANY",
-					"ARRAYED_LIST [ ... ]",
-					"ARRAYED_STACK [ ... ]",
-					"LINKED_LIST [ ... ]",
-					"HASH_TABLE [ ... ]",
-					"CELL [ ... ]",
-					"ARRAY [ ... ]",
-					"LIST [ ... ]",
-					"SET [ ... ]",
-					"TRAVERSABLE [ ... ]",
-					"LINEAR [ ... ]",
-					"BILINEAR [ ... ]",
-					"BINARY_TREE [ ... ]",
-					"COMPARABLE [ ... ]",
-					"INDEXABLE [ ... ]",
-					"IDENTIFIED",
-					"DISPOSABLE",
-					"INTERNAL",
-					"MEMORY_STRUCTURE",
-					"DEBUG_OUTPUT"
-				>>
-			else
-					-- List types suitable for general use.
-				Result := {ARRAY [STRING_32]} <<
-					"ANY",
-					"like Current",
-					"BOOLEAN",
-					"CHARACTER_8",
-					"CHARACTER_32",
-					"NATURAL_32",
-					"INTEGER_32",
-					"REAL_32",
-					"REAL_64",
-					"STRING_8",
-					"STRING_32",
-					"LIST [ ... ]",
-					"SET [ ... ]",
-					"CELL [ ... ]",
-					"ARRAYED_LIST [ ... ]",
-					"LINKED_LIST [ ... ]",
-					"FIXED_LIST [ ... ]",
-					"HASH_TABLE [ ... ]",
-					"BINARY_SEARCH_TREE [ ... ]",
-					"FUNCTION [ ... ]",
-					"PROCEDURE [ ... ]",
-					"MANAGED_POINTER",
-					"POINTER",
-					"TUPLE [ ... ]"
-				>>
-			end
-		end
-
 feature {EB_FEATURE_EDITOR, EB_CREATE_CLASS_DIALOG, EB_TYPE_SELECTOR, EB_INHERITANCE_DIALOG} -- Access
 
 	client_type, supplier_type: ES_CLASS
@@ -510,9 +402,7 @@ feature {EB_FEATURE_EDITOR, EB_CREATE_CLASS_DIALOG, EB_TYPE_SELECTOR, EB_INHERIT
 				if a_supplier_type /= Void then
 						-- Used when selecting inheritance via the diagram tool.
 					set_selector_text (a_supplier_type.name_32)
-					if attached selector as sel then
-						sel.disable_sensitive
-					elseif attached class_selector as sel then
+					if attached class_selector as sel then
 						sel.disable_sensitive
 					end
 				end
@@ -523,64 +413,6 @@ feature {EB_FEATURE_EDITOR, EB_CREATE_CLASS_DIALOG, EB_TYPE_SELECTOR, EB_INHERIT
 
 	is_used_for_inheritance: BOOLEAN
 		-- Is `Current' used for inheritance type selection?
-
-	update_list_strings (a_initial_list: BOOLEAN)
-			-- Update types listed in selector.
-		local
-			l_list: ARRAY [STRING_32]
-			i: INTEGER
-		do
-			if attached selector as sel then
-				l_list := strings_from_type (client_type, supplier_type)
-				if a_initial_list then
-						-- Initial setting of list so we don't need to block the change actions.
-					sel.set_strings (l_list)
-				else
-					sel.change_actions.block
-					sel.set_strings (l_list)
-						-- Select the first non generic item in the list.
-					from
-						i := 1
-					until
-						i > l_list.count
-					loop
-						if l_list [i].index_of ('[', 1) = 0 then
-							sel.set_text (l_list [i])
-							i := l_list.count
-						end
-						i := i + 1
-					end
-					sel.change_actions.resume
-				end
-			end
-		end
-
-	strings_from_type (a_client_type, a_supplier_type: ES_CLASS): ARRAY [STRING_32]
-			-- Return default type selector strings for `a_client_type' and `a_supplier_type'.
-		local
-			l_list: ARRAYED_LIST [STRING_32]
-			l_str: STRING_32
-		do
-			create l_list.make (2 + initial_strings.count)
-
-			if a_client_type /= Void and then a_supplier_type /= Void then
-				l_str := a_supplier_type.name_32.string
-				if generics_count (l_str) > 0 then
-					l_str.append (" [..]")
-				end
-				l_list.extend (l_str)
-				if a_client_type /= a_supplier_type then
-					l_str := a_client_type.name_32.string
-					if generics_count (l_str) > 0 then
-						l_str.append (" [..]")
-					end
-					l_list.extend (l_str)
-				end
-			end
-
-			l_list.fill (initial_strings)
-			Result := l_list.to_array
-		end
 
 feature {EV_ANY} -- Contract support
 

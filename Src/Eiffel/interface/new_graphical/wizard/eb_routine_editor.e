@@ -364,7 +364,6 @@ feature {NONE} -- Implementation
 		do
 			create asc
 			asc.type_selector.set_initial_types (client_type, supplier_type, False)
-			asc.type_selector.update_list_strings (True)
 			asc.set_remove_procedure (agent on_argument_removed (asc))
 			argument_list.extend (asc)
 			asc.set_name ("arg" + argument_list.count.out)
@@ -406,7 +405,7 @@ feature {EB_FEATURE_EDITOR} -- Access
 	ensure_field: EV_TEXT_FIELD;
 
 note
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
