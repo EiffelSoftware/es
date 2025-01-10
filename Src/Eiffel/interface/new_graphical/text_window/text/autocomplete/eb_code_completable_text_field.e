@@ -58,7 +58,7 @@ feature {NONE} -- Initialization
 			Precursor
 			initialize_code_complete
 			key_completable := agent can_complete
-			set_discard_feature_signature (true)
+			set_discard_feature_signature (True)
 
 				-- Add handler to trap completion
 			set_default_key_processing_handler (agent on_default_key_processing)
@@ -630,7 +630,7 @@ invariant
 	invariant_clause: True -- Your invariant here
 
 note
-	copyright:	"Copyright (c) 1984-2019, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

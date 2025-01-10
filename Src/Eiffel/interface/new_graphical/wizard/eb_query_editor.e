@@ -28,10 +28,10 @@ feature -- Element change
 			-- Set content of `type_field' to `a_type'.
 		do
 			if a_type.is_empty then
-				type_selector.selector.remove_text
+				type_selector.set_selector_text (Void)
 			else
 				type_selector.set_initial_types (client_type, supplier_type, False)
-				type_selector.selector.set_text (a_type)
+				type_selector.set_selector_text (a_type)
 				type_selector.update_list_strings (True)
 			end
 		end
@@ -40,15 +40,12 @@ feature -- Adaptation
 
 	adapt (other: EB_FEATURE_EDITOR)
 			-- Set with `other'.
-		local
-			qe: EB_QUERY_EDITOR
 		do
 			Precursor (other)
-			qe ?= other
-			if qe /= Void then
+			if attached {EB_QUERY_EDITOR} other as qe  then
 				type_selector.set_from_other (qe.type_selector)
 			else
-				type_selector.selector.set_text (other.type)
+				type_selector.set_selector_text (other.type)
 			end
 		end
 
@@ -146,7 +143,7 @@ feature {EB_FEATURE_EDITOR} -- Implementation
 	type_selector: EB_TYPE_SELECTOR;
 
 note
-	copyright:	"Copyright (c) 1984-2019, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

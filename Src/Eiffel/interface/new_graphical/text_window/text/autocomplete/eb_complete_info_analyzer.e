@@ -343,7 +343,7 @@ feature -- Class names completion
 			class_list			: ARRAYED_LIST [EB_NAME_FOR_COMPLETION]
 			classes				: STRING_TABLE [CONF_CLASS]
 			token				: EDITOR_TOKEN
-			show_all	: BOOLEAN
+			show_all			: BOOLEAN
 			class_name			: EB_CLASS_FOR_COMPLETION
 			name_name			: EB_NAME_FOR_COMPLETION
 			cnt, i				: INTEGER
@@ -366,27 +366,49 @@ feature -- Class names completion
 				end
 			end
 			cname := ""
-			classes := accessible_classes_from_group (group)
-			create class_list.make (100)
-			from
-				classes.start
-			until
-				classes.after
-			loop
-				if attached {CLASS_I} classes.item_for_iteration as l_class_i then
-					if show_all then
-						create class_name.make (l_class_i, classes.key_for_iteration)
-						class_list.extend (class_name)
-					else
-						if matches (classes.key_for_iteration, cname) then
-							create class_name.make (l_class_i, classes.key_for_iteration)
+			if attached group as grp then
+				classes := accessible_classes_from_group (grp)
+				create class_list.make (classes.count)
+				across
+					classes as cl
+				loop
+					if attached {CLASS_I} cl.item as l_class_i then
+						if show_all then
+							create class_name.make (l_class_i, cl.key)
 							class_list.extend (class_name)
+						else
+							if matches (cl.key, cname) then
+								create class_name.make (l_class_i, cl.key)
+								class_list.extend (class_name)
+							end
+						end
+					else
+						check is_class_i: False end
+					end
+				end
+			else
+				if attached universe.all_classes as l_class_i_lst then
+					create class_list.make (l_class_i_lst.count)
+					across
+						l_class_i_lst as cl
+					loop
+						if attached {CLASS_I} cl.item as l_class_i then
+							if show_all then
+								create class_name.make (l_class_i, l_class_i.name)
+								class_list.extend (class_name)
+							else
+								if matches (l_class_i.name, cname) then
+									create class_name.make (l_class_i, l_class_i.name)
+									class_list.extend (class_name)
+								end
+							end
+						else
+							check is_class_i: False end
 						end
 					end
 				else
-					check is_class_i: False end
+					create class_list.make (0)
 				end
-				classes.forth
 			end
 
 			cnt := class_list.count
@@ -1570,7 +1592,7 @@ feature {NONE} -- Implementation
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 1984-2022, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

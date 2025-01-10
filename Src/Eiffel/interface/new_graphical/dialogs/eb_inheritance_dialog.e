@@ -29,7 +29,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_context_group: detachable CONF_GROUP)
 			-- Create wizard.
 		local
 			vb: EV_VERTICAL_BOX
@@ -47,6 +47,7 @@ feature {NONE} -- Initialization
 			vb.disable_item_expand (vb.last)
 
 			create type_selector.make_for_inheritance
+			type_selector.set_context_group (a_context_group)
 			vb.extend (type_selector)
 
 			create hb
@@ -146,7 +147,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

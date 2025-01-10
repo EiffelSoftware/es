@@ -14,7 +14,8 @@ inherit
 	EV_HORIZONTAL_BOX
 		redefine
 			initialize,
-			is_in_default_state
+			is_in_default_state,
+			set_focus
 		end
 
 	FEATURE_WIZARD_COMPONENT
@@ -39,6 +40,8 @@ feature {NONE} -- Initialization
 			default_create
 		end
 
+	is_using_class_selector: BOOLEAN = True
+
 	initialize
 			-- Fill for test purposes.
 		local
@@ -50,20 +53,54 @@ feature {NONE} -- Initialization
 
 			create generic_type_selectors.make
 			create generic_box
-			create selector.make_with_strings (initial_strings)
+			if is_using_class_selector then
 
-				-- Add Class Completion
-			create text_completion.make (system.root_creators.first.root_class.compiled_class, Void)
-			text_completion.set_code_completable (selector)
-			text_completion.set_use_all_classes_in_universe (True)
+				create class_selector.make (Current, agent (st: STONE)
+					do
+						if attached {CLASSC_STONE} st as cl_c_st then
+							on_class_name_change (cl_c_st.e_class.name)
+						elseif attached {CLASSI_STONE} st as cl_i_st then
+							on_class_name_change (cl_i_st.class_i.name)
+						else
+							debug
+								print (generator + ": class selector propagated stone: " + st.generating_type.out + "%N")
+							end
+						end
+					end
+				)
 
-			selector.set_completion_possibilities_provider (text_completion)
-			selector.set_completing_class
+				if attached class_selector.widget as w and then w.count > 0 then
+					l_vbox.extend (w); l_vbox.disable_item_expand (w)
+				elseif attached class_selector.header_info as w and then w.count > 0 then
+					l_vbox.extend (w); l_vbox.disable_item_expand (w)
+				else
+--					l_vbox.extend (create {EV_LABEL}.make_with_text ("BAD"))
+				end
 
-			selector.set_text (selector.first.text)
-			selector.set_minimum_width (150)
-			l_vbox.extend (selector)
-			l_vbox.disable_item_expand (selector)
+				class_selector.change_actions.extend (agent on_selection_change)
+			else
+				create selector.make_with_strings (initial_strings)
+					-- Add Class Completion
+				if is_used_for_inheritance then
+					create text_completion.make (Void, Void)
+				else
+					create text_completion.make (system.root_creators.first.root_class.compiled_class, Void)
+				end
+				text_completion.set_code_completable (selector)
+				text_completion.set_use_all_classes_in_universe (True)
+
+				selector.set_completion_possibilities_provider (text_completion)
+				selector.set_completing_class
+
+				selector.set_text (system.root_creators.first.root_class.compiled_class.name)
+				selector.set_minimum_width (150)
+
+				l_vbox.extend (selector)
+				l_vbox.disable_item_expand (selector)
+
+				selector.change_actions.extend (agent on_selection_change)
+			end
+
 
 			create detachable_check_box
 			detachable_check_box.set_text ("Detachable?")
@@ -72,7 +109,7 @@ feature {NONE} -- Initialization
 				l_vbox.disable_item_expand (detachable_check_box)
 			end
 
-			selector.change_actions.extend (agent on_selection_change)
+
 			extend (l_vbox)
 			disable_item_expand (last)
 
@@ -84,12 +121,68 @@ feature {NONE} -- Initialization
 			disable_item_expand (last)
 		end
 
+feature -- Context change
+
+	set_context_group (g: CONF_GROUP)
+		do
+			if attached class_selector as clsel then
+				clsel.set_context_group (g)
+			elseif attached text_completion as txt_compl then
+				txt_compl.set_group_context (g)
+			end
+		end
+
+	set_focus
+		do
+			if attached selector as sel then
+				sel.set_focus
+			elseif attached class_selector as clsel then
+				clsel.set_focus
+			end
+		end
+
+feature -- Selector helpers
+
+	selector_text: detachable STRING_32
+		do
+			if attached selector as sel then
+				Result := sel.text
+			elseif attached class_selector as clsel then
+				Result := clsel.class_text
+			end
+		end
+
+	set_selector_text (s: detachable READABLE_STRING_GENERAL)
+		do
+			if attached selector as sel then
+				if s = Void then
+					sel.remove_text
+				else
+					sel.set_text (s)
+				end
+			elseif attached class_selector as clsel then
+				clsel.set_class_text (s)
+			end
+		end
+
+	register_change_action (act: PROCEDURE)
+		do
+			if attached selector as sel then
+				sel.change_actions.extend (act)
+			elseif attached class_selector as sel then
+				-- FIXME: jfiat
+--				sel.change_actions.extend (act)
+			end
+		end
+
 feature -- Access
 
-	selector: EB_CODE_COMPLETABLE_COMBO_BOX
+	class_selector: detachable ES_CLASS_SELECTOR
+
+	selector: detachable EB_CODE_COMPLETABLE_COMBO_BOX
 			-- Text box with list of possible types.
 
-	text_completion: EB_NORMAL_COMPLETION_POSSIBILITIES_PROVIDER
+	text_completion: detachable EB_NORMAL_COMPLETION_POSSIBILITIES_PROVIDER
 
 	generic_type_selectors: LINKED_LIST [EB_TYPE_SELECTOR]
 			-- All type selectors in `generic_box'.
@@ -104,8 +197,11 @@ feature -- Access
 			gts: like generic_type_selectors
 			generic_type_name: STRING_32
 		do
-			Result := selector.text
-			if Result.is_empty or Result.index_of (' ', 1) > 0 then
+			Result := selector_text
+			if
+				Result = Void
+				or else Result.is_empty or Result.index_of (' ', 1) > 0
+			then
 					-- Nothing to do as it is empty, or either containing an invalid name
 					-- or simply an anchore type `like x'.
 			else
@@ -140,7 +236,7 @@ feature -- Status report
 		local
 			t: STRING_32
 		do
-			t := selector.text
+			t := selector_text
 			Result := t /= Void and then not t.is_empty
 		end
 
@@ -152,11 +248,11 @@ feature -- Element change
 			gts: LINKED_LIST [EB_TYPE_SELECTOR]
 			tmpstr: STRING_32
 		do
-			tmpstr := other.selector.text
+			tmpstr := other.selector_text
 			if not tmpstr.is_empty then
-				selector.set_text (tmpstr)
+				set_selector_text (tmpstr)
 			else
-				selector.remove_text
+				set_selector_text (Void)
 			end
 			gts := other.generic_type_selectors
 			from gts.start until gts.after loop
@@ -190,8 +286,24 @@ feature {NONE} -- Implementation
 	on_selection_change
 			-- User selected something in `selector'.
 		local
-			gen_count: INTEGER
 			s: STRING_32
+		do
+				-- Find what the user entered
+			s := selector_text
+			s.to_upper
+
+				-- Make sure that `s' is a valid class name in selector.
+			if s.has_substring (" [") then
+				s := s.substring (1, (s.index_of (' ', 1) - 1).max (1))
+				set_selector_text (s)
+			end
+
+			on_class_name_change (s)
+		end
+
+	on_class_name_change (cn: READABLE_STRING_GENERAL)
+		local
+			gen_count: INTEGER
 			l_was_tuple: BOOLEAN
 		do
 				-- Special treatment here because when we enter `tuple' in lower case,
@@ -199,19 +311,10 @@ feature {NONE} -- Implementation
 				-- causing the `on_selection_change' to be called twice. To avoid
 				-- useless wipeout and creation of the generics part, we check the previous
 				-- state for `is_tuple'.
+
 			l_was_tuple := is_tuple
 
-				-- Find what the user entered
-			s := selector.text
-			s.to_upper
-
-				-- Make sure that `s' is a valid class name in selector.
-			if s.has_substring (" [") then
-				s := s.substring (1, (s.index_of (' ', 1) - 1).max (1))
-				selector.set_text (s)
-			end
-
-			is_tuple := s.is_equal ("TUPLE")
+			is_tuple := cn.is_case_insensitive_equal ("TUPLE")
 
 			if is_tuple then
 				if not l_was_tuple then
@@ -225,20 +328,20 @@ feature {NONE} -- Implementation
 					generic_box.extend (new_label ("]"))
 					generic_box.disable_item_expand (generic_box.last)
 				end
-			elseif not s.is_empty then
-				gen_count := generics_count (s)
+			elseif not cn.is_empty then
+				gen_count := generics_count (cn)
 				if
 					generic_count /= gen_count or
 					(generic_count = 0 and not generic_box.is_empty)
 				then
-						generic_count := gen_count
-						generic_box.wipe_out
-						generic_type_selectors.wipe_out
-						fill_generic_box
+					generic_count := gen_count
+					generic_box.wipe_out
+					generic_type_selectors.wipe_out
+					fill_generic_box
 				end
 			end
 			if not is_used_for_inheritance then
-				update_detachable_status (s)
+				update_detachable_status (cn)
 			end
 		end
 
@@ -329,7 +432,7 @@ feature {NONE} -- Implementation
 				create ts
 				generic_type_selectors.extend (ts)
 				generic_box.put_left (ts)
-				ts.selector.set_focus
+				ts.set_focus
 			end
 		end
 
@@ -337,6 +440,7 @@ feature {NONE} -- Implementation
 			-- Initial list items.
 			--| FIXME Get favorites, previously entered names, etc.
 		do
+			-- FIXME: use smarter type source ... [2024-12-30]
 			if is_used_for_inheritance then
 					-- List suitable ancestor types (ie: not expanded or TUPLE).
 				Result := {ARRAY [STRING_32]} <<
@@ -405,9 +509,12 @@ feature {EB_FEATURE_EDITOR, EB_CREATE_CLASS_DIALOG, EB_TYPE_SELECTOR, EB_INHERIT
 				is_used_for_inheritance := True
 				if a_supplier_type /= Void then
 						-- Used when selecting inheritance via the diagram tool.
-					selector.wipe_out
-					selector.set_text (a_supplier_type.name_32)
-					selector.disable_sensitive
+					set_selector_text (a_supplier_type.name_32)
+					if attached selector as sel then
+						sel.disable_sensitive
+					elseif attached class_selector as sel then
+						sel.disable_sensitive
+					end
 				end
 					-- Detachable types not valid for inheritance.
 				detachable_check_box.disable_sensitive
@@ -423,26 +530,28 @@ feature {EB_FEATURE_EDITOR, EB_CREATE_CLASS_DIALOG, EB_TYPE_SELECTOR, EB_INHERIT
 			l_list: ARRAY [STRING_32]
 			i: INTEGER
 		do
-			l_list := strings_from_type (client_type, supplier_type)
-			if a_initial_list then
-					-- Initial setting of list so we don't need to block the change actions.
-				selector.set_strings (l_list)
-			else
-				selector.change_actions.block
-				selector.set_strings (l_list)
-					-- Select the first non generic item in the list.
-				from
-					i := 1
-				until
-					i > l_list.count
-				loop
-					if l_list [i].index_of ('[', 1) = 0 then
-						selector.set_text (l_list [i])
-						i := l_list.count
+			if attached selector as sel then
+				l_list := strings_from_type (client_type, supplier_type)
+				if a_initial_list then
+						-- Initial setting of list so we don't need to block the change actions.
+					sel.set_strings (l_list)
+				else
+					sel.change_actions.block
+					sel.set_strings (l_list)
+						-- Select the first non generic item in the list.
+					from
+						i := 1
+					until
+						i > l_list.count
+					loop
+						if l_list [i].index_of ('[', 1) = 0 then
+							sel.set_text (l_list [i])
+							i := l_list.count
+						end
+						i := i + 1
 					end
-					i := i + 1
+					sel.change_actions.resume
 				end
-				selector.change_actions.resume
 			end
 		end
 
@@ -486,7 +595,7 @@ feature {EV_ANY} -- Contract support
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

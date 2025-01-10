@@ -65,7 +65,7 @@ feature {NONE} -- Initialization
 			hb.extend (vb)
 
 			create type_selector
-			type_selector.selector.change_actions.extend (agent on_declaration_change)
+			type_selector.register_change_action (agent on_declaration_change)
 			hb.extend (type_selector)
 
 			extend (hb)
@@ -265,7 +265,7 @@ feature {NONE} -- Implementation
 			-- generated preconditions or type her own.
 
 note
-	copyright:	"Copyright (c) 1984-2018, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

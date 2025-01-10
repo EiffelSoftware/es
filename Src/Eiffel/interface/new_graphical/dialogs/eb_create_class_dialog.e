@@ -787,13 +787,16 @@ feature {NONE} -- Implementation
 		local
 			l_item: EV_LIST_ITEM
 			l_inh_dlg: EB_INHERITANCE_DIALOG
+			tgt: CONF_TARGET
 		do
 			if not is_destroyed then
 				l_item := parents_list.list.last
 				if l_item /= Void then
-					create l_inh_dlg.make
+					create l_inh_dlg.make (compute_group)
 					l_inh_dlg.set_child_type (Void)
 					l_inh_dlg.set_parent_type (Void)
+
+
 					l_inh_dlg.show_modal_to_window (Current)
 					if l_inh_dlg.ok_clicked and then l_inh_dlg.valid_content then
 						if l_inh_dlg.is_non_conforming then
@@ -908,7 +911,7 @@ invariant
 	cluster_implies_path: cluster /= Void implies path /= Void
 
 note
-	copyright: "Copyright (c) 1984-2019, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

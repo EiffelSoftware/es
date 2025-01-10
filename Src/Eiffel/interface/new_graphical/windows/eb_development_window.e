@@ -2327,7 +2327,7 @@ feature {EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Implementation / Menus
 	redo_accelerator: EV_ACCELERATOR
 			-- Accelerator for Ctrl+Y
 
-feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_ADDRESS_MANAGER} -- Builder issues
+feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_ADDRESS_MANAGER, ES_CLASS_SELECTOR} -- Builder issues
 
 	set_tools_initialized (a_bool: like tools_initialized)
 			-- Set `tools_initialized'
@@ -2480,7 +2480,7 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_PART} -- EB_DEVELO
 			set: show_dynamic_lib_tool = a_cmd
 		end
 
-feature {EB_DEVELOPMENT_WINDOW_DIRECTOR, EB_DEVELOPMENT_WINDOW_BUILDER, EB_ADDRESS_MANAGER} --EB_DEVELOPMENT_WINDOW_DIRECTOR issues.
+feature {EB_DEVELOPMENT_WINDOW_DIRECTOR, EB_DEVELOPMENT_WINDOW_BUILDER, EB_ADDRESS_MANAGER, ES_CLASS_SELECTOR} --EB_DEVELOPMENT_WINDOW_DIRECTOR issues.
 
 	set_is_unified_stone (a_bool: like is_unified_stone)
 			-- Set `is_unified_stone' with `a_bool'.

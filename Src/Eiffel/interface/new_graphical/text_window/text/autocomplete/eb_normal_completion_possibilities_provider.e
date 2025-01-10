@@ -55,6 +55,8 @@ feature -- Access
 			Result := insertion_cell.item
 		end
 
+	context_group: detachable CONF_GROUP
+
 	context_class_c: CLASS_C
 			-- The context related class.
 
@@ -82,6 +84,13 @@ feature -- Change
 				current_feature_as := Void
 			end
 			reset_completion_lists
+		end
+
+	set_group_context (g: CONF_GROUP)
+		do
+			context_group := g
+			context_class_c := Void
+			context_feature_as := Void
 		end
 
 feature -- Basic operation
@@ -116,6 +125,8 @@ feature -- Basic operation
 					current_line := watching_line
 					build_feature_completion_list (current_token, current_pos_in_token)
 				end
+			else
+				group := context_group
 			end
 			if provide_classes then
 				if not use_all_classes_in_universe and then group_callback /= Void then
@@ -390,7 +401,7 @@ feature {NONE} -- Build completion possibilities
 			-- Function to retrieve group
 
 ;note
-	copyright:	"Copyright (c) 1984-2021, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

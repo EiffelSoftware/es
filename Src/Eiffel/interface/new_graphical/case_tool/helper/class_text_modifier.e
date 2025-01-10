@@ -590,7 +590,7 @@ feature -- Modification (Add/Remove feature)
 			last_feature_as := Void
 			prepare_for_modification
 			if valid_syntax then
-				create l_inh_dlg.make
+				create l_inh_dlg.make (Void) -- TODO: provide a context group.
 
 				l_inh_dlg.set_child_type (child_type)
 				l_inh_dlg.set_parent_type (parent_type)
@@ -1206,7 +1206,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
