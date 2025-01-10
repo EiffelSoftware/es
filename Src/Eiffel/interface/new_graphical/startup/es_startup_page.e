@@ -300,7 +300,7 @@ feature -- Access: widgets
 
 feature -- Status report
 
-	is_useable: BOOLEAN
+	is_usable: BOOLEAN
 		do
 			Result := not dialog.is_destroyed
 		end

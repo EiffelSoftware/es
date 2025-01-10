@@ -15,7 +15,7 @@ feature -- Page
 			if
 				Result = Void
 				or else Result.eiffel_edition /= a_edition
-				or else not Result.is_useable
+				or else not Result.is_usable
 			then
 				create Result.make (a_edition)
 				last_startup_page.replace (Result)
