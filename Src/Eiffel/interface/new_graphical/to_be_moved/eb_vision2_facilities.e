@@ -68,10 +68,12 @@ feature -- Useful query
 			elseif attached w.parent as p then
 				Result := parent_window_from (p)
 			end
+		ensure
+			instance_free: class
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2018, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
