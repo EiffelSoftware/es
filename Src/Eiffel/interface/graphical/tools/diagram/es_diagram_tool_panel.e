@@ -207,6 +207,10 @@ feature {NONE} -- Initialization
 			auto_recycle (link_tool_cmd)
 			link_tool_cmd.enable_displayed
 
+			create reset_link_tool_cmd.make (Current)
+			auto_recycle (reset_link_tool_cmd)
+			reset_link_tool_cmd.enable_displayed
+
 			create fill_cluster_cmd.make (Current)
 			auto_recycle (fill_cluster_cmd)
 			fill_cluster_cmd.enable_displayed
@@ -698,6 +702,7 @@ feature -- Status settings.
 			change_color_cmd.disable_sensitive
 			trash_cmd.disable_sensitive
 			link_tool_cmd.disable_sensitive
+			reset_link_tool_cmd.disable_sensitive
 			toggle_inherit_cmd.disable_sensitive
 			toggle_supplier_cmd.disable_sensitive
 			toggle_labels_cmd.disable_sensitive
@@ -1328,6 +1333,7 @@ feature {NONE} -- Clean up
 			toggle_cluster_cmd := Void
 			select_depth_cmd := Void
 			link_tool_cmd := Void
+			reset_link_tool_cmd := Void
 			fill_cluster_cmd := Void
 			zoom_in_cmd := Void
 			zoom_out_cmd := Void
@@ -1364,6 +1370,7 @@ feature {NONE} -- Clean up
 			toggle_labels_cmd_detached: toggle_labels_cmd = Void
 			toggle_cluster_cmd_detached: toggle_cluster_cmd = Void
 			select_depth_cmd_detached: select_depth_cmd = Void
+			reset_link_tool_cmd_detached: reset_link_tool_cmd = Void
 			link_tool_cmd_detached: link_tool_cmd = Void
 			fill_cluster_cmd_detached: fill_cluster_cmd = Void
 			zoom_in_cmd_detached: zoom_in_cmd = Void
@@ -1659,6 +1666,9 @@ feature -- Commands
 
 	link_tool_cmd: EB_LINK_TOOL_COMMAND
 			-- Toggle right angles.
+
+	reset_link_tool_cmd: EB_RESET_LINK_TOOL_COMMAND
+			-- Reset link.
 
 	fill_cluster_cmd: EB_FILL_CLUSTER_COMMAND
 			-- Command to fill cluster with all classes.
@@ -2175,6 +2185,7 @@ feature {NONE} -- Implementation
 			reset_tool_bar_for_readonly_status
 
 			link_tool_cmd.enable_sensitive
+			reset_link_tool_cmd.enable_sensitive
 			toggle_inherit_cmd.enable_sensitive
 			toggle_supplier_cmd.enable_sensitive
 			toggle_labels_cmd.enable_sensitive
@@ -2476,7 +2487,7 @@ invariant
 	shortcut_table_not_void: shortcut_table /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

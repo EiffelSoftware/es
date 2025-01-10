@@ -614,21 +614,29 @@ feature {NONE} -- Implementation
 			create Result.make_with_pixmap (pix_map, pix_map.width // 2, pix_map.height // 2)
 		end
 
-	is_on_edge (ax, ay: INTEGER): BOOLEAN
+	edge_at (ax, ay: INTEGER): detachable EG_EDGE
 			-- is position `ax', `ay' on an edge?
 		local
 			l_edge_move_handlers: like edge_move_handlers
 		do
-			Result := False
 			from
 				l_edge_move_handlers := edge_move_handlers
 				l_edge_move_handlers.start
 			until
-				Result or l_edge_move_handlers.after
+				Result /= Void or l_edge_move_handlers.after
 			loop
-				Result := l_edge_move_handlers.item.first.position_on_figure (ax, ay)
+				Result := l_edge_move_handlers.item
+				if not Result.first.position_on_figure (ax, ay) then
+					Result := Void
+				end
 				l_edge_move_handlers.forth
 			end
+		end
+
+	is_on_edge (ax, ay: INTEGER): BOOLEAN
+			-- is position `ax', `ay' on an edge?
+		do
+			Result := edge_at (ax, ay) /= Void
 		end
 
 	on_is_directed_change
@@ -670,7 +678,7 @@ invariant
 	line_not_void: line /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2016, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

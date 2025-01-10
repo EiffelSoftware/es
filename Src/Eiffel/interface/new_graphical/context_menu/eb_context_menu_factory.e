@@ -1575,12 +1575,18 @@ feature {NONE} -- Diagram menu section, Granularity 1.
 			a_menu_not_void: a_menu /= Void
 		local
 			l_command: EB_LINK_TOOL_COMMAND
+			l_reset_command: EB_RESET_LINK_TOOL_COMMAND
 		do
 			if attached {LINK_STONE} a_pebble as l_link_stone then
 				l_command := dev_window.tools.diagram_tool.link_tool_cmd
 				a_menu.extend (l_command.new_menu_item_unmanaged)
 				a_menu.last.select_actions.wipe_out
 				a_menu.last.select_actions.extend (agent l_command.execute_with_link_stone (l_link_stone))
+
+				l_reset_command := dev_window.tools.diagram_tool.reset_link_tool_cmd
+				a_menu.extend (l_reset_command.new_menu_item_unmanaged)
+				a_menu.last.select_actions.wipe_out
+				a_menu.last.select_actions.extend (agent l_reset_command.execute_with_link_stone (l_link_stone))
 			end
 		end
 

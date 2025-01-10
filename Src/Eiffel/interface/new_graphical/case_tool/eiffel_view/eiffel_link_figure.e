@@ -353,32 +353,37 @@ feature {NONE} -- Implementation
 		do
 			if button = 1 and not ev_application.ctrl_pressed then
 				is_history_update_needed := True
-				if not is_on_edge (ax, ay) and then source /= target then
-					from
-						l_point_array := line.point_array
-						point_found := False
-						i := 0
-						nb := l_point_array.count - 2
-						lw := line_width.max (6)
-					until
-						point_found or else i > nb
-					loop
-						p := l_point_array.item (i)
-						q := l_point_array.item (i + 1)
-						point_found := point_on_segment (ax, ay, p.x_precise, p.y_precise, q.x_precise, q.y_precise, lw)
-						i := i + 1
-					end
-					if point_found then
-						point_added_i := i
-						point_added_j := i + 1
-						is_edge_added := True
-						add_point_between (i, i + 1)
-						new_handler := edge_move_handlers.i_th (i)
-						set_i_th_point_position (i + 1, ax, ay)
-						new_handler.show
-						new_handler.on_start_resizing (ax, ay, button, x_tilt, y_tilt, pressure, screen_x, screen_y)
-						check
-							new_handle_at_ax_ay: edge_move_handlers.i_th (i).point_x = ax and edge_move_handlers.i_th (i).point_y = ay
+				if source /= target then
+					if attached edge_at (ax, ay) as l_edge_handler then
+						l_edge_handler.show
+						l_edge_handler.on_start_resizing (ax, ay, button, x_tilt, y_tilt, pressure, screen_x, screen_y)
+					else
+						from
+							l_point_array := line.point_array
+							point_found := False
+							i := 0
+							nb := l_point_array.count - 2
+							lw := line_width.max (6)
+						until
+							point_found or else i > nb
+						loop
+							p := l_point_array.item (i)
+							q := l_point_array.item (i + 1)
+							point_found := point_on_segment (ax, ay, p.x_precise, p.y_precise, q.x_precise, q.y_precise, lw)
+							i := i + 1
+						end
+						if point_found then
+							point_added_i := i
+							point_added_j := i + 1
+							is_edge_added := True
+							add_point_between (i, i + 1)
+							new_handler := edge_move_handlers.i_th (i)
+							set_i_th_point_position (i + 1, ax, ay)
+							new_handler.show
+							new_handler.on_start_resizing (ax, ay, button, x_tilt, y_tilt, pressure, screen_x, screen_y)
+							check
+								new_handle_at_ax_ay: edge_move_handlers.i_th (i).point_x = ax and edge_move_handlers.i_th (i).point_y = ay
+							end
 						end
 					end
 				end
@@ -389,7 +394,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
