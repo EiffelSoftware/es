@@ -650,6 +650,38 @@ feature -- Access queries
 				options.void_safety_capability.root_index = {CONF_TARGET_OPTION}.void_safety_index_all and then Result = void_safety_all
 		end
 
+feature -- Query		
+
+	accessible_classes: detachable STRING_TABLE [CONF_CLASS]
+			-- Classes that are accessible within `Current'.
+		do
+			create Result.make_equal (0)
+			across groups as g loop
+				if attached g.accessible_classes as l_grp_classes then
+					Result.merge (l_grp_classes)
+				end
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	class_by_name (a_class: READABLE_STRING_GENERAL; a_dependencies: BOOLEAN): LINKED_SET [CONF_CLASS]
+			-- Get the class with the final (after renaming/prefix) name `a_class'
+			-- (if `a_dependencies' then we check dependencies)
+		require
+			a_class_ok: a_class /= Void and then not a_class.is_empty
+			a_class_upper: a_class.is_equal (a_class.as_upper)
+		do
+			create Result.make
+			across groups as g loop
+				if attached g.class_by_name (a_class, a_dependencies) as l_grp_classes then
+					Result.merge (l_grp_classes)
+				end
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
 feature {CONF_ACCESS} -- Update, stored in configuration file
 
 	set_name (a_name: like name)
@@ -1487,7 +1519,7 @@ invariant
 	environ_variables_not_void: environ_variables /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
