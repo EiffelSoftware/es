@@ -55,6 +55,9 @@ feature -- Properties
 	environment_variables: detachable HASH_TABLE [STRING_32, STRING_32]
 			-- Modified environment variables
 
+	environment_files: detachable LIST [PATH]
+			-- Environment files
+
 	parent: detachable like Current
 			-- Parent profile
 			--| if not Void, Current is based on `parent' parameters
@@ -123,6 +126,9 @@ feature -- Duplication
 			Result.set_working_directory (working_directory)
 			if attached environment_variables as envs and then not envs.is_empty then
 				Result.set_environment_variables (envs.deep_twin)
+			end
+			if attached environment_files as env_files and then not env_files.is_empty then
+				Result.set_environment_files (env_files.deep_twin)
 			end
 			if attached parent as p then
 				Result.set_parent (p)
@@ -203,10 +209,43 @@ feature -- Element change
 			environment_variables := v
 		end
 
+	set_environment_files (v: like environment_files)
+			-- Set `environment_files'
+		do
+			environment_files := v
+		end
+
 	set_parent (v: like parent)
 			-- Set `parent'
 		do
 			parent := v
+		end
+
+	add_environment_file (a_location: PATH)
+			-- Add an environment file `a_location`
+		local
+			lst: like environment_files
+		do
+			lst := environment_files
+			if lst = Void then
+				create {ARRAYED_LIST [PATH]} lst.make (1)
+				lst.compare_objects
+				environment_files := lst
+			end
+			if not lst.has (a_location) then
+				lst.force (a_location)
+			end
+		end
+
+	remove_environment_file (a_location: PATH)
+			-- Remove an environment file `a_location`
+		local
+			lst: like environment_files
+		do
+			lst := environment_files
+			if lst /= Void then
+				lst.prune_all (a_location)
+			end
 		end
 
 	set_environment_variable (a_value: READABLE_STRING_GENERAL; a_name: READABLE_STRING_GENERAL)

@@ -51,7 +51,16 @@ feature {NONE} -- Initialization
 				create working_directory.make_empty --| Fake value that will be updated by `resolve'
 			end
 
-				--| Environment_variables
+				--| Environment_files
+			if attached a_profile.environment_files as env_files and then not env_files.is_empty then
+				across
+					env_files as loc_ic
+				loop
+					import_environment_variables_from_file (loc_ic.item)
+				end
+			end
+
+				--| Environment_variables (it overwrites variables from files)
 			if attached a_profile.environment_variables as envs and then not envs.is_empty then
 				environment_variables := envs.deep_twin
 			end
@@ -88,6 +97,57 @@ feature {NONE} -- Initialization
 			end
 			d := d.twin; d.left_adjust; d.right_adjust
 			create working_directory.make_from_string (d)
+		end
+
+	import_environment_variables_from_file (a_file_location: PATH)
+		local
+			vars: like environment_variables
+			f: PLAIN_TEXT_FILE
+			line: STRING_32
+			p: INTEGER
+			n,v: STRING_32
+			loc: PATH
+			shared_eiffel: SHARED_EIFFEL_PROJECT
+		do
+			if vars = Void then
+				create vars.make (1)
+				environment_variables := vars
+			end
+			if a_file_location.is_absolute then
+				loc := a_file_location
+			else
+				create shared_eiffel
+				create loc.make_from_string (shared_eiffel.Eiffel_project.Lace.directory_name)
+				loc := loc.extended_path (a_file_location)
+			end
+			create f.make_with_path (loc)
+			if f.exists and then f.is_access_readable then
+				f.open_read
+				from
+					f.start
+				until
+					f.exhausted or f.end_of_file
+				loop
+					f.read_unicode_line
+					line := f.last_string_32
+					line.left_adjust
+					if line.is_empty or else line [1] = '#' then
+							-- Ignore (empty or commented line)
+					else
+						p := line.index_of ('=', 1)
+						if p > 0 then
+							n := line.head (p - 1)
+							n.right_adjust
+							v := line.substring (p + 1, line.count)
+							v.right_adjust
+							vars [n] := v
+						else
+							-- unexpected ...
+						end
+					end
+				end
+				f.close
+			end
 		end
 
 feature -- Properties
@@ -150,14 +210,6 @@ feature -- Element change
 			working_directory := v
 		end
 
-	set_environment_variables (v: like environment_variables)
-			-- Set `environment_variables'
-		require
-			v_attached: v /= Void
-		do
-			environment_variables := v
-		end
-
 invariant
 	uuid_set: uuid /= Void
 	arguments_attached: arguments /= Void
@@ -165,7 +217,7 @@ invariant
 	parent_set_if_not_void: parent_uuid /= Void implies parent_version > 0
 
 note
-	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

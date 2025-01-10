@@ -139,6 +139,19 @@ feature -- Access: profiles
 								end
 							end
 						end
+						if attached e.elements_by_name (xml_environment_file_id) as l_env_files then
+							across
+								l_env_files as fn_ic
+							loop
+								if
+									attached {XML_ELEMENT} fn_ic.item as e2 and then
+									attached e2.attribute_by_name (xml_location_id) as loc_attribute and then
+									attached loc_attribute.value as l_location
+								then
+									prof.add_environment_file (create {PATH}.make_from_string (l_location))
+								end
+							end
+						end
 					end
 				end
 				if attached l_root.attribute_by_name (xml_last_profile_id) as l_att_last_prof then
@@ -308,7 +321,7 @@ feature {NONE} -- Persistence
 
 	append_profile_to_xml_element (a_profile: DEBUGGER_EXECUTION_PROFILE; a_parent: XML_ELEMENT)
 		local
-			elt,vars_elt,var_elt: XML_ELEMENT
+			elt,vars_elt,var_elt, envfile_elt: XML_ELEMENT
 			k: STRING_32
 		do
 			create elt.make (a_parent, xml_profile_id, a_parent.namespace)
@@ -341,6 +354,15 @@ feature {NONE} -- Persistence
 						var_elt.add_unqualified_attribute (xml_value_id, ic.item)
 					end
 					vars_elt.force_last (var_elt)
+				end
+			end
+			if attached a_profile.environment_files as l_files then
+				across
+					l_files as loc_ic
+				loop
+					create envfile_elt.make (elt, xml_environment_file_id, elt.namespace)
+					envfile_elt.add_unqualified_attribute (xml_location_id, loc_ic.item.name)
+					elt.force_last (envfile_elt)
 				end
 			end
 --			elt.add_unqualified_attribute ("version", a_profile.version.out)
@@ -404,6 +426,8 @@ feature {NONE} -- Implementation: xml
 	xml_arguments_id: STRING = "arguments"
 	xml_working_directory_id: STRING = "working_directory"
 	xml_variables_id: STRING = "variables"
+	xml_environment_file_id: STRING = "environment_file"
+	xml_location_id: STRING = "location"
 	xml_set_id: STRING = "set"
 	xml_unset_id: STRING = "unset"
 	xml_name_id: STRING = "name"
@@ -473,7 +497,7 @@ feature {NONE} -- Implementation: xml
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

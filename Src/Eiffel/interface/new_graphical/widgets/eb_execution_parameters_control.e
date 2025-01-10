@@ -1083,6 +1083,19 @@ feature -- Data change
 			set_changed (p, True)
 		end
 
+	change_environment_file_on (v: LIST [PATH]; p: like profile_from_row)
+		require
+			p /= Void
+		do
+			if v = Void or else v.is_empty then
+				p.set_environment_files (Void)
+			else
+				p.set_environment_files (v)
+			end
+			update_title_row_of (p)
+			set_changed (p, True)
+		end
+
 	update_title_row_of (p: like profile_from_row)
 		local
 			l_row: EV_GRID_ROW
@@ -1230,7 +1243,7 @@ feature {NONE} -- Button Actions
 		local
 			sel, r: EV_GRID_ROW
 		do
-			if attached profiles_grid.selected_rows as l_rows then
+			if attached profiles_grid.selected_rows as l_rows and then not l_rows.is_empty then
 				sel := l_rows.first
 				if sel /= Void then
 					sel := parent_group_row_root (sel)
@@ -1469,6 +1482,7 @@ feature {NONE} -- Profile actions
 			l_args: STRING_32
 			l_wd: PATH
 			l_env: HASH_TABLE [STRING_32, STRING_32]
+			l_env_files: LIST [PATH]
 			gdi: EV_GRID_DIRECTORY_ITEM
 			gti: EV_GRID_TEXT_ITEM
 			gli: EV_GRID_LABEL_ITEM
@@ -1485,6 +1499,7 @@ feature {NONE} -- Profile actions
 				l_wd := p.working_directory
 				l_args := p.arguments
 				l_env := p.environment_variables
+				l_env_files := p.environment_files
 
 					-- Clean a_row
 				if a_row.subrow_count > 0 then
@@ -1547,7 +1562,7 @@ feature {NONE} -- Profile actions
 					fill_row_with_environment (srow, l_env)
 				end
 
-				create gli.make_with_text (interface_names.l_add_a_valuable)
+				create gli.make_with_text (interface_names.l_add_a_variable)
 				gi.pointer_double_press_actions.extend (agent safe_activate_editing (gli, ?,?,?,?,?,?,?,?))
 				gli.set_tooltip (interface_names.f_add_a_new_variable)
 
@@ -1573,6 +1588,38 @@ feature {NONE} -- Profile actions
 						)
 				srow.set_data (ctrler)
 				gli.pointer_double_press_actions.extend (agent on_new_environ_event (srow, ?,?,?,?,?,?,?,?))
+
+
+					--| Environment files
+				a_row.insert_subrow (a_row.subrow_count + 1)
+				srow := a_row.subrow (a_row.subrow_count)
+				create gi.make_with_text (interface_names.l_environment_files)
+				srow.set_item (1, gi)
+				if l_env_files /= Void then
+					fill_row_with_environment_files (srow, l_env_files)
+				end
+
+				create gli.make_with_text (interface_names.l_add_a_environment_file)
+				gi.pointer_double_press_actions.extend (agent safe_activate_editing (gli, ?,?,?,?,?,?,?,?))
+				gli.set_tooltip (interface_names.f_add_a_new_environment_file)
+
+				gli.set_font (Operation_font)
+				srow.set_item (2, gli)
+				create ctrler
+
+				ctrler.set_key_pressed_action (agent (r: EV_GRID_ROW; k: EV_KEY)
+							do
+								if k /= Void then
+									inspect k.code
+									when {EV_KEY_CONSTANTS}.key_enter then
+										on_new_environment_file_event (r, 0,0,0,0,0,0,0,0)
+									else
+									end
+								end
+							end(srow, ?)
+						)
+				srow.set_data (ctrler)
+				gli.pointer_double_press_actions.extend (agent on_new_environment_file_event (srow, ?,?,?,?,?,?,?,?))
 
 				if was_expanded and then a_row.is_expandable then
 					a_row.expand
@@ -1857,7 +1904,20 @@ feature {NONE} -- Profile actions
 
 feature {NONE} -- Environment queries
 
-	environment_from_row (a_row: EV_GRID_ROW): HASH_TABLE [STRING_32, STRING_32]
+	environment_file_from_row (a_row: EV_GRID_ROW): detachable LIST [PATH]
+			-- Environment files bloc related to `a_row'.
+		require
+			a_row /= Void
+		local
+			p: like profile_from_row
+		do
+			p := profile_from_row (a_row)
+			if p /= Void then
+				Result := p.environment_files
+			end
+		end
+
+	environment_from_row (a_row: EV_GRID_ROW): detachable HASH_TABLE [STRING_32, STRING_32]
 			-- Environment bloc related to `a_row'.
 		require
 			a_row /= Void
@@ -1870,7 +1930,7 @@ feature {NONE} -- Environment queries
 			end
 		end
 
-	environment_variable_name_from_row (a_row: EV_GRID_ROW): STRING_32
+	environment_variable_name_from_row (a_row: EV_GRID_ROW): detachable STRING_32
 			-- Environment variable name related to `a_row'.
 		require
 			a_row /= Void
@@ -1887,7 +1947,45 @@ feature {NONE} -- Environment queries
 			end
 		end
 
+	environment_file_location_from_row (a_row: EV_GRID_ROW): detachable STRING_32
+			-- Variables file location related to `a_row'.
+		require
+			a_row /= Void
+		local
+			d: detachable ANY
+		do
+			if attached {ES_GRID_ROW_CONTROLLER} a_row.data as ctrler then
+				d := ctrler.data
+			else
+				d := a_row.data
+			end
+			if attached {STRING_32} d as s32 then
+				Result := s32
+			end
+		end
+
 feature {NONE} -- Environment actions
+
+	fill_row_with_environment_files (a_row: EV_GRID_ROW; env_files: like environment_file_from_row)
+			-- Fill `a_row' with environment files `env_files'
+		require
+			a_row_not_void: a_row /= Void
+			env_files_not_void: env_files /= Void
+		do
+			if a_row.subrow_count > 0 then
+				a_row.parent.remove_rows (a_row.index + 1, a_row.index + a_row.subrow_count_recursive)
+			end
+			if env_files.count > 0 then
+				from
+					env_files.start
+				until
+					env_files.after
+				loop
+					add_environment_file_to_row (a_row, env_files.item_for_iteration, 0)
+					env_files.forth
+				end
+			end
+		end
 
 	fill_row_with_environment (a_row: EV_GRID_ROW; env: like environment_from_row)
 			-- Fill `a_row' with environment `env'
@@ -1908,6 +2006,189 @@ feature {NONE} -- Environment actions
 					env.forth
 				end
 			end
+		end
+
+	add_environment_file_to_row (a_row: EV_GRID_ROW; loc: PATH; editing_ith: INTEGER)
+			-- Add a new environment file location `loc` to `a_row`
+			-- if `editing_ith` is not 0, edit the `editing_ith'
+		require
+			a_row_not_void: a_row /= Void
+			valid_arguments: loc /= Void
+		local
+			srow: EV_GRID_ROW
+			glab: EV_GRID_LABEL_ITEM
+			gti: EV_GRID_FILE_ITEM
+			ctrler: ES_GRID_ROW_CONTROLLER
+		do
+			a_row.insert_subrow (a_row.subrow_count + 1)
+			srow := a_row.subrow (a_row.subrow_count)
+			create ctrler
+			ctrler.set_data (loc)
+			srow.set_data (ctrler)
+
+				-- VarName item
+			create glab.make_with_text ("Location")
+
+				-- VarValue item
+			create gti
+			if loc /= Void then
+				gti.set_text (loc.name)
+			end
+			gti.activate_actions.extend (agent add_edition_tab_action_to_item (gti, ?))
+
+			gti.change_actions.extend (agent change_environment_file_entry_from_row (srow, False))
+			gti.deactivate_actions.extend (agent change_environment_file_entry_from_row (srow, False))
+
+			gti.pointer_button_press_actions.extend (agent on_environment_file_clicked (srow, ?,?,?,?,?,?,?,?))
+
+			srow.set_item (1, glab)
+			srow.set_item (2, gti)
+
+			refresh_environment_file_row (srow)
+
+			ctrler.set_key_pressed_action (agent (a_glab: EV_GRID_LABEL_ITEM; a_gti: EV_GRID_LABEL_ITEM; a_key: EV_KEY)
+						do
+							check a_glab.row /= Void end
+							if a_key /= Void then
+								inspect a_key.code
+								when {EV_KEY_CONSTANTS}.key_delete then
+									a_gti.remove_text
+									change_environment_file_entry_from_row (a_gti.row, True)
+								when {EV_KEY_CONSTANTS}.key_enter then
+									a_gti.activate
+								else
+								end
+							end
+						end(glab, gti, ?)
+					)
+
+			if editing_ith > 0 then
+				if a_row.is_expandable and then not a_row.is_expanded then
+					a_row.expand
+				end
+				srow.ensure_visible
+				srow.parent.remove_selection
+				srow.enable_select
+				gti.activate
+			end
+			set_changed (profile_from_row (a_row), True)
+		end
+
+	refresh_environment_file_row (a_row: EV_GRID_ROW)
+			-- Refresh variables file row `a_row' items
+		require
+			a_row /= Void and then a_row.item(1) /= Void
+		local
+			old_loc, loc: STRING_32
+		do
+			if attached {EV_GRID_LABEL_ITEM} a_row.item (2) as gti then
+				loc := gti.text
+				loc.left_adjust
+				loc.right_adjust
+
+					--| Embedded data				
+				if attached {ES_GRID_ROW_CONTROLLER} a_row.data as ctrler then
+					if attached {STRING_32} ctrler.data as s32 then
+						old_loc := s32
+					end
+					ctrler.set_data (loc)
+				else
+					check data_is_controller: False end
+				end
+
+
+					--| Check if it is "inherited" variable
+					--| And update the graphical look
+				if old_loc = Void then
+						--| New variables file variable row
+					a_row.set_background_color (Void)
+					gti.remove_pixmap
+					gti.set_tooltip (Void)
+					a_row.set_foreground_color (Void)
+				elseif loc /= Void and then loc.is_empty then
+					a_row.set_background_color (stock_colors.red)
+					gti.set_pixmap (mini_stock_pixmaps.debugger_error_icon)
+					gti.set_tooltip (Void)
+					a_row.set_foreground_color (Void)
+				else
+					a_row.set_background_color (Void)
+					gti.set_tooltip (Void)
+					a_row.set_foreground_color (Void)
+				end
+			end
+		end
+
+	on_environment_file_clicked (a_row: EV_GRID_ROW; ax,ay, abut:INTEGER_32; x_tilt, y_tilt, pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER)
+			-- Variables file row is clicked
+		require
+			a_row /= Void
+			a_row.parent /= Void
+		do
+		end
+
+	change_environment_file_entry_from_row (a_row: EV_GRID_ROW; safe_grid_operation: BOOLEAN)
+			-- Change variables file related to `a_row'
+		require
+			a_row_parented: a_row /= Void and then a_row.parent /= Void
+			a_row.item(1) /= Void and a_row.item (2) /= Void
+		local
+			p: like profile_from_row
+			l_files: like environment_file_from_row
+			loc: detachable STRING_32
+			loc_path: PATH
+			old_loc: detachable STRING_32
+			old_loc_path: PATH
+			c: BOOLEAN
+		do
+			if safe_grid_operation or else not inside_row_operation then
+				old_loc := environment_file_location_from_row (a_row)
+				p := profile_from_row (a_row)
+				check p /= Void end
+				l_files := p.environment_files
+				if l_files = Void then
+					create {ARRAYED_LIST [PATH]} l_files.make (1)
+				end
+					--| Get Value
+				if attached {EV_GRID_LABEL_ITEM} a_row.item (2) as gti then
+					loc := gti.text
+					loc.left_adjust
+					loc.right_adjust
+				else
+					check item_2_is_label_item: False end
+				end
+
+				if loc /= Void and then not loc.is_empty then
+					create loc_path.make_from_string (loc)
+					if old_loc = Void then
+						c := True
+					else
+						create old_loc_path.make_from_string (old_loc)
+						if not loc.is_case_insensitive_equal (old_loc) then
+							l_files.prune_all (old_loc_path)
+							c := True
+						elseif
+							not l_files.has (old_loc_path)
+						then
+							c := True
+						else
+							c := False
+						end
+					end
+					if c then
+						l_files.force (loc_path)
+						refresh_environment_file_row	(a_row)
+						change_environment_file_on (l_files, p)
+					end
+				else
+					if old_loc /= Void then
+						create old_loc_path.make_from_string (old_loc)
+						l_files.prune_all (old_loc_path)
+					end
+					refresh_environment_file_row	(a_row)
+					change_environment_file_on (l_files, p)
+				end
+			end
+			validate_environment_file_row (a_row)
 		end
 
 	add_env_to_row (a_row: EV_GRID_ROW; k,v: STRING_32; editing_ith: INTEGER)
@@ -2325,6 +2606,39 @@ feature {NONE} -- Environment actions
 			end
 		end
 
+	validate_environment_file_row (a_row: EV_GRID_ROW)
+			-- Set `a_row' has error
+		require
+			a_row /= Void
+			a_row.parent /= Void
+		local
+			loc: like environment_file_location_from_row
+			loc_path: PATH
+			p: like profile_from_row
+		do
+			loc := environment_file_location_from_row (a_row)
+			p := profile_from_row (a_row)
+			if loc = Void or else loc.is_empty then
+				if
+					loc /= Void and
+					p /= Void and then
+					attached p.environment_files as l_files
+				then
+					create loc_path.make_from_string (loc)
+					l_files.prune_all (loc_path)
+					change_environment_file_on (l_files, p)
+				end
+			end
+		end
+
+	on_new_environment_file_event (a_row: EV_GRID_ROW; ax,ay, abut:INTEGER_32; x_tilt, y_tilt, pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER)
+			-- New variable files event on a_row
+		require
+			a_row /= Void
+		do
+			add_environment_file_to_row (a_row, Void, 1)
+		end
+
 feature {NONE} -- Environment implementation
 
 	internal_sorted_environment_variables: like sorted_environment_variables
@@ -2428,7 +2742,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

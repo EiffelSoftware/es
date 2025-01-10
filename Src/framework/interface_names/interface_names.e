@@ -402,6 +402,13 @@ feature -- Accelerator, focus label and menu name
 					Use an existing variable: right click or [Ctrl+enter]
 					]")
 		end
+	f_add_a_new_environment_file: STRING_32
+		do
+			Result := locale.translation ("[
+					Add a new environment file : double click or [enter]
+					The expected file content is a multiline `name=value`.
+					]")
+		end
 	f_advanced_search: STRING_32 				do Result := locale.translation ("Advanced search") end
 	f_display_all_breakpoints_together: STRING_32 		do Result := locale.translation ("Display all breakpoints together") end
 	m_Address_toolbar: STRING_32					do Result := locale.translation("&Address Bar")	end
@@ -540,7 +547,8 @@ feature -- Accelerator, focus label and menu name
 	f_diagram_zoom_out: STRING_32		do Result := locale.translation("Zoom out")	end
 	f_diagram_put_right_angles: STRING_32		do Result := locale.translation("Force right angles")	end
 	f_diagram_remove_right_angles: STRING_32	do Result := locale.translation("Remove right angles")	end
-	m_diagram_link_tool: STRING_32		do Result := locale.translation("&Put Right Angles")	end
+	m_diagram_link_tool: STRING_32		do Result := locale.translation("&Update Angles Layout")	end
+	m_diagram_reset_link_tool: STRING_32		do Result := locale.translation("Reset Angles")	end
 	f_diagram_to_png: STRING_32			do Result := locale.translation("Export diagram to PNG")	end
 	m_diagram_to_png: STRING_32			do Result := locale.translation("&Export Diagram to PNG")	end
 	f_diagram_context_depth: STRING_32 	do Result := locale.translation("Select depth of relations")	end
@@ -1194,7 +1202,8 @@ feature -- Label texts
 	l_Address_colon: STRING_32			do Result := locale.translation("Address:")	end
 	l_Address: STRING_32					do Result := locale.translation("Address")	end
 	l_scoop_pid: STRING_32				do Result := locale.translation("PID")	end
-	l_add_a_valuable: STRING_32			do Result := locale.translation("Add a variable (double click or Enter); Use an existing variable (right click or Ctrl+Enter)")	end
+	l_add_a_variable: STRING_32			do Result := locale.translation("Add a variable (double click or Enter); Use an existing variable (right click or Ctrl+Enter)")	end
+	l_add_a_environment_file: STRING_32			do Result := locale.translation("Add an environment file (double click or Enter)")	end
 	l_add_forzen_feature_stubs: STRING_32	do Result := locale.translation("Add frozen feature stubs")	end
 	l_add_project_config_file: STRING_32	do Result := locale.translation("Add Project...")	end
 	l_additional_details: STRING_32		do Result := locale.translation("Additional details")	end
@@ -1434,10 +1443,11 @@ feature -- Label texts
 	l_eiffel_class: STRING_32			do Result := locale.translation ("Eiffel Class") end
 	l_eiffel_cluster: STRING_32			do Result := locale.translation ("Eiffel Cluster") end
 	l_Elements: STRING_32				do Result := locale.translation("elements.")	end
-	l_enabled: STRING_32					do Result := locale.translation("Enabled")	end
+	l_enabled: STRING_32				do Result := locale.translation("Enabled")	end
 	l_Enter_folder_name: STRING_32		do Result := locale.translation("Enter the name of the new folder: ")	end
-	l_Entry_colon: STRING_32				do Result := locale.translation("Entry: ") end
-	l_environment: STRING_32				do Result := locale.translation("Environment")	end
+	l_Entry_colon: STRING_32			do Result := locale.translation("Entry: ") end
+	l_environment: STRING_32			do Result := locale.translation("Environment")	end
+	l_environment_files: STRING_32		do Result := locale.translation("Environment Files")	end
 	l_error: STRING_32					do Result := locale.translation("Error")	end
 	l_error_message:  STRING_32			do Result := locale.translation("Error message :")	end
 	l_error_on_expression (a_expression: READABLE_STRING_GENERAL): STRING_32
@@ -3087,7 +3097,7 @@ note
 	ca_ignore:
 		"CA033", "CA033: too large class",
 		"CA011", "CA011: too many arguments"
-	copyright: "Copyright (c) 1984-2024, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
