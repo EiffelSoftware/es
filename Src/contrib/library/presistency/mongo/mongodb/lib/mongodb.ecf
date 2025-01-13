@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-17-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-17-0 http://www.eiffel.com/developers/xml/configuration-1-17-0.xsd" name="mongodb" uuid="96AEEA6D-4C0F-4996-B61C-0321A5A2B381" library_target="mongodb">
+	<target name="mongodb">
+		<root all_classes="true"/>
+		<file_rule>
+			<exclude>/CVS$</exclude>
+			<exclude>/EIFGENs$</exclude>
+			<exclude>/\.git$</exclude>
+			<exclude>/\.svn$</exclude>
+		</file_rule>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="console_application" value="true"/>
+		<external_include location="$ECF_CONFIG_PATH\..\..\C\driver\include\libmongoc-1.0">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+		<external_include location="/usr/local/include/libmongoc-1.0">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_include>
+		<external_object location="$ECF_CONFIG_PATH\..\..\C\driver\lib\mongoc-1.0.lib">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_object>
+		<external_linker_flag value="-lmongoc-1.0">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_linker_flag>	
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="bson" location="..\..\bson\lib\bson.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<cluster name="src" location=".\src\" recursive="true"/>
+		<external_cflag value="-DWIN32 -D_WINDOWS -D_WIN32_WINNT=0x0600 -DWINVER=0x0600 -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_cflag>
+		<external_cflag value="-DWIN32_LEAN_AND_MEAN">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_cflag>
+	</target>
+</system>
