@@ -19,6 +19,7 @@ feature {EB_PREFERENCES} -- Initialization
 			preferences_not_void: a_preferences /= Void
 		do
 			preferences := a_preferences
+			create changed_actions
 			initialize_preferences
 		ensure
 			preferences_not_void: preferences /= Void
@@ -60,6 +61,9 @@ feature -- Value
 				Result.force (p, Result.upper + 1)
 			end
 		end
+
+	changed_actions: ACTION_SEQUENCE [TUPLE [like last_opened_projects]]
+			-- Actions for callback when last opened projects changed.
 
 feature -- Modification
 
@@ -105,10 +109,17 @@ feature {NONE} -- Implementation
 		do
 			create l_manager.make (preferences, "recent_projects")
 			last_opened_projects_preference := l_manager.new_array_preference_value (l_manager, last_opened_projects_string, <<>>)
+			last_opened_projects_preference.change_actions.extend (agent on_last_opened_projects_changed)
 		end
 
 	preferences: PREFERENCES
 			-- Preferences
+
+	on_last_opened_projects_changed
+			-- Action when last opened projects preference is updated.
+		do
+			changed_actions.call (last_opened_projects)
+		end
 
 invariant
 	preferences_not_void: preferences /= Void
@@ -116,7 +127,7 @@ invariant
 note
 	ca_ignore:
 		"CA093", "CA093: manifest array type mismatch"
-	copyright:	"Copyright (c) 1984-2018, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

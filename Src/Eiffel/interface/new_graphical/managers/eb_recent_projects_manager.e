@@ -21,8 +21,7 @@ feature {NONE} -- Initialization
 			-- Create a project manager.
 		local
 			l_projects: ARRAY [TUPLE [PATH, READABLE_STRING_32]]
-			i: INTEGER
-			l_project: TUPLE [PATH, READABLE_STRING_32]
+
 		do
 				-- Get values from preferences.
 			if attached preferences.preferences.get_preference_value_direct ("LIST_" + preferences.recent_projects_data.last_opened_projects_string) as l_value then
@@ -30,15 +29,32 @@ feature {NONE} -- Initialization
 			end
 			l_projects := preferences.recent_projects_data.last_opened_projects
 
-			if l_projects /= Void and then not l_projects.is_empty then
-				create recent_projects.make (l_projects.count)
+			preferences.recent_projects_data.changed_actions.extend (agent update_with)
+
+			set_recent_projects_with (l_projects)
+		end
+
+
+	update_with (a_last_projects: detachable ARRAY [TUPLE [PATH, READABLE_STRING_32]])
+		do
+			set_recent_projects_with (a_last_projects)
+			on_update
+		end
+
+	set_recent_projects_with (a_last_projects: detachable ARRAY [TUPLE [PATH, READABLE_STRING_32]])
+		local
+			i: INTEGER
+			l_project: TUPLE [PATH, READABLE_STRING_32]
+		do
+			if a_last_projects /= Void and then not a_last_projects.is_empty then
+				create recent_projects.make (a_last_projects.count)
 				recent_projects.compare_objects
 				from
-					i := l_projects.lower
+					i := a_last_projects.lower
 				until
-					i > l_projects.upper
+					i > a_last_projects.upper
 				loop
-					l_project := l_projects [i]
+					l_project := a_last_projects [i]
 					if not recent_projects.has (l_project) then
 						recent_projects.extend (l_project)
 					end
@@ -105,6 +121,7 @@ feature -- Basic operations
 				-- Update it.
 			a := recent_projects.to_array
 			a.compare_objects
+
 			preferences.recent_projects_data.set_last_opened_projects (a)
 				-- Save it to disk.
 			preferences.preferences.save_preference (preferences.recent_projects_data.last_opened_projects_preference)
@@ -158,7 +175,7 @@ invariant
 	recent_projects_compare_objects: recent_projects.object_comparison
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
