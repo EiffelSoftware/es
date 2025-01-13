@@ -2027,7 +2027,7 @@ feature {NONE} -- Environment actions
 			srow.set_data (ctrler)
 
 				-- VarName item
-			create glab.make_with_text ("Location")
+			create glab.make_with_text (interface_names.l_include)
 
 				-- VarValue item
 			create gti
