@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-17-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-17-0 http://www.eiffel.com/developers/xml/configuration-1-17-0.xsd" name="books_restapi" uuid="2534120E-7309-44BA-9358-69E03CA635B3">
+	<target name="common" abstract="true">
+		<file_rule>
+			<exclude>/.svn$</exclude>
+			<exclude>/CVS$</exclude>
+			<exclude>/EIFGENs$</exclude>
+		</file_rule>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		
+		<!-- Add Windows socket definitions before other includes -->
+		<external_cflag value="-D_WINSOCK_DEFINED -DWIN32_LEAN_AND_MEAN -DWIN32 -D_WINSOCK_DEPRECATED_NO_WARNINGS">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_cflag>
+
+		<capability>
+			<concurrency use="scoop"/>
+		</capability>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="http" location="$ISE_LIBRARY\contrib\library\network\protocol\http\http.ecf"/>
+		<library name="bson" location="..\..\bson\lib\bson.ecf"/>
+		<library name="mongodb" location="..\..\mongodb\lib\mongodb.ecf"/>
+		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf"/>
+		<library name="wsf_extension" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf_extension.ecf" readonly="false"/>
+		<library name="json" location="$ISE_LIBRARY\contrib\library\text\parser\json\library\json.ecf" readonly="false"/>
+	</target>
+	<target name="books_restapi_any" extends="common">
+		<root class="BOOKS_RESTAPI" feature="make_and_launch"/>
+		<library name="cgi" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\cgi.ecf"/>
+		<library name="libfcgi" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\libfcgi.ecf"/>
+		<library name="standalone" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone.ecf"/>
+		<cluster name="launcher" location=".\launcher\">
+			<cluster name="any_launcher" location="$|any\"/>
+		</cluster>
+		<cluster name="src" location=".\src\" recursive="true"/>
+	</target>
+	<target name="books_restapi_standalone" extends="common">
+		<root class="BOOKS_RESTAPI" feature="make_and_launch"/>
+		<variable name="httpd_ssl_disabled" value="true"/>
+		<library name="default_standalone" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\default\standalone.ecf"/>
+		<cluster name="launcher" location=".\launcher\">
+			<cluster name="default_launcher" location="$|default\"/>
+		</cluster>
+		<cluster name="src" location=".\src\" recursive="true"/>
+	</target>
+	<target name="books_restapi_cgi" extends="common">
+		<root class="BOOKS_RESTAPI" feature="make_and_launch"/>
+		<capability>
+			<concurrency use="none"/>
+		</capability>
+		<library name="default_cgi" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\default\cgi.ecf"/>
+		<cluster name="launcher" location=".\launcher\">
+			<cluster name="default_launcher" location="$|default\"/>
+		</cluster>
+		<cluster name="src" location=".\src\" recursive="true"/>
+	</target>
+	<target name="books_restapi_libfcgi" extends="common">
+		<root class="BOOKS_RESTAPI" feature="make_and_launch"/>
+		<capability>
+			<concurrency use="none"/>
+		</capability>
+		<library name="default_libfcgi" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\default\libfcgi.ecf"/>
+		<cluster name="launcher" location=".\launcher\">
+			<cluster name="default_launcher" location="$|default\"/>
+		</cluster>
+		<cluster name="src" location=".\src\" recursive="true"/>
+	</target>
+	<target name="books_restapi" extends="books_restapi_any">
+	</target>
+</system>

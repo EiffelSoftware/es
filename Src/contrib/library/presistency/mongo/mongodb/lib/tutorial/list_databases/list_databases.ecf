@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-18-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-18-0 http://www.eiffel.com/developers/xml/configuration-1-18-0.xsd" name="list_databases" uuid="F1F9D2D0-5CF1-4A5B-94AE-204AA4078AE0">
+	<target name="list_databases">
+		<root class="APPLICATION" feature="make"/>
+		<file_rule>
+			<exclude>/CVS$</exclude>
+			<exclude>/EIFGENs$</exclude>
+			<exclude>/\.git$</exclude>
+			<exclude>/\.svn$</exclude>
+		</file_rule>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="console_application" value="true"/>
+		<capability>
+			<catcall_detection support="none"/>
+			<concurrency support="scoop"/>
+			<void_safety support="all"/>
+		</capability>
+		<library name="bson" location="..\..\..\..\bson\lib\bson.ecf"/>
+		<library name="mongodb" location="..\..\mongodb.ecf" readonly="false"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<cluster name="list_databases" location=".\" recursive="true"/>
+	</target>
+</system>
