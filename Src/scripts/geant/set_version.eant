@@ -74,6 +74,7 @@ for /f %%x in ('wmic path win32_utctime get /format:list ^| findstr &quot;=&quot
 set CURRDATE=%Year%-%Month%-%Day%
 set CURRTIME=%hour%:%minute%:%second%
 
+cd %T_CWD%
 echo Set build number: BUILDNUMBER=%BUILDNUMBER%
 git checkout -- %EFILE%
 sed -e &quot;s/:= 0000/:= %BUILDNUMBER%/&quot; %EFILE% &gt; %EFILE_TMP%
@@ -83,7 +84,6 @@ rem update the version_info ...
 sed -e &quot;s/Version_info:\ STRING\ =\ \&quot;[0-9a-zA-Z_\,\ \/\:()\.\=\-]*\&quot;/Version_info:\ STRING\ =\ \&quot;Build:\ %BUILDNUMBER% , Compilation:\ %CURRDATE%\ %CURRTIME% , Builder:\ %USERNAME%\&quot;/g&quot; %EFILE% &gt; %EFILE_TMP%
 move %EFILE_TMP% %EFILE%
 
-cd %T_CWD%
 endlocal
 @echo on
 		</echo>
