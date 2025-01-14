@@ -36,9 +36,12 @@ feature -- Execute
             -- `a_reply`: Optional. An uninitialized bson_t populated with the operation result
         note
         	EIS: "name=mongoc_bulk_operation_execute", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_execute.html", "protocol=uri"
+        require
+        	is_usable: exists
         local
             l_error: BSON_ERROR
         do
+        	clean_up
             create l_error.make
             Result := {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_execute (item, a_reply.item, l_error.item)
             if not Result then
@@ -54,6 +57,8 @@ feature -- Access
             -- Returns 0 if no server id has been assigned.
         note
             EIS: "name=mongoc_bulk_operation_get_server_id", "src=http://mongoc.org/libmongoc/current/mongoc_bulk_operation_get_server_id.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
             Result := {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_get_server_id (item)
         end
@@ -62,18 +67,14 @@ feature -- Access
             -- Get the write concern associated with this bulk operation.
         note
             EIS: "name=mongoc_bulk_operation_get_write_concern ", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_get_write_concern.html", "protocol=uri"
+        require
+        	is_useful: exists
         local
             l_item: POINTER
         do
+        	clean_up
             l_item := {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_get_write_concern (item)
-            if l_item /= default_pointer then
-                create Result.make_by_pointer (l_item)
-            else
-            	 -- TODO double check if this is ok.
-                create Result.make
-            end
-        ensure
-            write_concern_not_void: Result /= Void
+            create Result.make_by_pointer (l_item)
         end
 
 feature -- Removal
@@ -93,7 +94,10 @@ feature -- Operations
             -- `a_document`: A bson_t containing the document to insert
         note
         	eis: "name=mongoc_bulk_operation_insert ", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_insert.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_insert (item, a_document.item)
         end
 
@@ -107,11 +111,14 @@ feature -- Operations
             -- Note: The insert is not performed until execute() is called
         note
         	eis: "name=mongoc_bulk_operation_insert ", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_insert_with_opts.html", "protocol=uri"
+        require
+        	is_useful: exists
         local
             l_error: BSON_ERROR
             l_opts: POINTER
             l_res: BOOLEAN
         do
+        	clean_up
             if attached a_opts then
                 l_opts := a_opts.item
             end
@@ -133,7 +140,10 @@ feature -- Operations
             -- `a_selector`: A BSON document containing the query to match documents for removal
         note
         	eis: "name=mongoc_bulk_operation_remove", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_remove.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_remove (
                 item,              -- bulk operation
                 a_selector.item    -- selector
@@ -150,11 +160,14 @@ feature -- Operations
             -- Note: This only queues the operation. To execute it, call `execute`.
         note
         	eis: "name=mongoc_bulk_operation_remove_many_with_opts ", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_remove_many_with_opts.html", "protocol=uri"
+        require
+        	is_useful: exists
         local
             l_error: BSON_ERROR
             l_opts: POINTER
         	l_res: BOOLEAN
         do
+        	clean_up
             if attached a_opts then
                 l_opts := a_opts.item
             end
@@ -176,7 +189,10 @@ feature -- Operations
             -- `a_selector`: A BSON document containing the query to match document for removal
         note
         	eis: "name=mongoc_bulk_operation_remove_one", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_remove_one.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_remove_one (
                 item,              -- bulk operation
                 a_selector.item    -- selector
@@ -193,11 +209,14 @@ feature -- Operations
             -- Note: This only queues the operation. To execute it, call `execute`.
         note
         	eis: "name=mongoc_bulk_operation_remove_one_with_opts", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_remove_one_with_opts.html", "protocol=uri"
+        require
+        	is_useful: exists
         local
             l_error: BSON_ERROR
             l_opts: POINTER
             l_res: BOOLEAN
         do
+        	clean_up
             if attached a_opts then
                 l_opts := a_opts.item
             end
@@ -221,7 +240,10 @@ feature -- Operations
             -- `a_upsert`: True if this should be an upsert (insert if not found)
         note
         	eis: "name=mongoc_bulk_operation_replace_one", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_replace_one.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_replace_one (
                 item,              -- bulk operation
                 a_selector.item,   -- selector
@@ -242,11 +264,14 @@ feature -- Operations
             -- Note: This only queues the operation. To execute it, call `execute`.
   	    note
         	eis: "name=mongoc_bulk_operation_replace_one_with_opts", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_replace_one_with_opts.html", "protocol=uri"
+        require
+        	is_useful: exists
         local
             l_error: BSON_ERROR
             l_opts: POINTER
             l_res: BOOLEAN
         do
+        	clean_up
             if attached a_opts then
                 l_opts := a_opts.item
             end
@@ -272,7 +297,10 @@ feature -- Operations
             -- `a_upsert`: True if this should be an upsert (insert if not found)
         note
         	eis: "name=mongoc_bulk_operation_update", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_update.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_update (
                 item,              -- bulk operation
                 a_selector.item,   -- selector
@@ -294,11 +322,14 @@ feature -- Operations
             -- Note: This only queues the operation. To execute it, call `execute`.
         note
         	eis: "name=mongoc_bulk_operation_update_many_with_opts", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_update_many_with_opts.html", "protocol=uri"
+        require
+        	is_useful: exists
         local
             l_error: BSON_ERROR
             l_opts: POINTER
             l_res: BOOLEAN
         do
+        	clean_up
             if attached a_opts then
                 l_opts := a_opts.item
             end
@@ -324,7 +355,10 @@ feature -- Operations
             -- `a_upsert`: True if this should be an upsert (insert if not found)
         note
         	eis: "name=mongoc_bulk_operation_update_one", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_update_one.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_update_one (
                 item,              -- bulk operation
                 a_selector.item,   -- selector
@@ -346,11 +380,14 @@ feature -- Operations
             -- Note: This only queues the operation. To execute it, call `execute`.
         note
         	eis: "name=mongoc_bulk_operation_update_one_with_opts", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_update_one_with_opts.html", "protocol=uri"
+        require
+        	is_useful: exists
         local
             l_error: BSON_ERROR
             l_opts: POINTER
             l_res: BOOLEAN
         do
+        	clean_up
             if attached a_opts then
                 l_opts := a_opts.item
             end
@@ -374,7 +411,10 @@ feature -- Settings
             -- `bypass`: True to bypass document validation, False to enforce it
         note
         	eis:"name=mongoc_bulk_operation_set_bypass_document_validation", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_set_bypass_document_validation.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_set_bypass_document_validation (
                 item,    -- bulk operation
                 bypass   -- bypass flag
@@ -387,7 +427,10 @@ feature -- Settings
             -- `a_session`: The client session to use for this bulk operation
         note
         	eis:"name=mongoc_bulk_operation_set_client_session", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_set_client_session.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_set_client_session (
                 item,           -- bulk operation
                 a_session.item  -- client session
@@ -400,7 +443,10 @@ feature -- Settings
             -- `a_comment`: The comment value to associate with this bulk operation
         note
         	eis:"name=mongoc_bulk_operation_set_comment", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_set_comment.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_set_comment (
                 item,           -- bulk operation
                 a_comment.item  -- comment value
@@ -416,7 +462,10 @@ feature -- Settings
             -- `a_server_id`: An opaque id identifying the server to use
         note
         	eis:"name=mongoc_bulk_operation_set_server_id", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_set_server_id.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_set_server_id (
                 item,        -- bulk operation
                 a_server_id  -- server id
@@ -430,7 +479,10 @@ feature -- Settings
             -- in the MQL Aggregate Expression language.
         note
         	eis:"name=mongoc_bulk_operation_set_let", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_set_let.html", "protocol=uri"
+        require
+        	is_useful: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_set_let (
                 item,       -- bulk operation
                 a_let.item  -- let definitions
