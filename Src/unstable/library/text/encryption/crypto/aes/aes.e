@@ -77,7 +77,6 @@ feature -- String ECB encoding
 		local
 			converter: BYTE_ARRAY_CONVERTER
 			buffer: ARRAY [NATURAL_8]
-			padding_length: INTEGER
 			key_array: ARRAY [NATURAL_8]
 		do
 				-- Convert key to NATURAL_8 array
@@ -105,9 +104,7 @@ feature -- String ECB encoding
 		local
 			converter: BYTE_ARRAY_CONVERTER
 			buffer: ARRAY [NATURAL_8]
-			padding_length: INTEGER
 			key_array: ARRAY [NATURAL_8]
-			i: INTEGER
 		do
 				-- Convert key to NATURAL_8 array
 			create converter.make_from_string (a_key)
@@ -137,7 +134,6 @@ feature -- String CBC encoding
 		local
 			converter: BYTE_ARRAY_CONVERTER
 			buffer: ARRAY [NATURAL_8]
-			padding_length: INTEGER
 			key_array, iv_array: ARRAY [NATURAL_8]
 		do
 				-- Convert key and IV to NATURAL_8 arrays
@@ -167,9 +163,7 @@ feature -- String CBC encoding
 		local
 			converter: BYTE_ARRAY_CONVERTER
 			buffer: ARRAY [NATURAL_8]
-			padding_length: INTEGER
 			key_array, iv_array: ARRAY [NATURAL_8]
-			i: INTEGER
 		do
 				-- Convert key and IV to NATURAL_8 arrays
 			create converter.make_from_string (a_key)

@@ -8,14 +8,14 @@ class
 
 feature -- Encoder
 
-	base64_encoder: BASE64
+	base64_encoder: BASE64_ENCODER
 			-- Shared BASE64 encoder.
 		once
 			create Result
 		end
 
 note
-	copyright: "2011-2012, Eiffel Software and others"
+	copyright: "Copyright (c) 2011-2025, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

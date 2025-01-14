@@ -72,9 +72,6 @@ feature -- Test routines
 			s1,s2: STRING
             h_s: STRING
             h_b: SPECIAL [NATURAL_8]
-            l_content: STRING
-            l_salt: STRING
-            l_encoder: UTF_CONVERTER
 		do
 			sha1.reset
             sha1.update_from_string ("salt")
@@ -111,7 +108,6 @@ feature {NONE} -- Implementation
 
 	sha1_util_update_from_bytes (content: STRING; salt: STRING): STRING_8
 		local
-			l_encoder: UTF_CONVERTER
 			hash: SPECIAL [NATURAL_8]
 		do
 			sha1.reset
@@ -129,9 +125,6 @@ feature {NONE} -- Implementation
 	 sha1_util_update_from_string (content: STRING; salt: STRING): STRING
         local
             hash: STRING
-            l_content: STRING
-            l_salt: STRING
-            l_encoder: UTF_CONVERTER
         do
             sha1.reset
             sha1.update_from_string (salt)
@@ -177,7 +170,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2019, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

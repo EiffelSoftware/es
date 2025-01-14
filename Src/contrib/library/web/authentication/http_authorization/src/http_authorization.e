@@ -14,6 +14,8 @@ class
 inherit
 	REFACTORING_HELPER
 
+	SHARED_BASE64
+
 	DEBUG_OUTPUT
 
 create
@@ -52,7 +54,7 @@ feature -- Initialization
 						t.right_adjust; t.left_adjust
 						if t.same_string (Basic_auth_type) then
 							type := Basic_auth_type
-							s := (create {BASE64}).decoded_string (a_http_authorization.substring (i + 1, a_http_authorization.count))
+							s := base64_encoder.decoded_string (a_http_authorization.substring (i + 1, a_http_authorization.count))
 							i := s.index_of (':', 1) --| Let's assume ':' is forbidden in login ...
 							if i > 0 then
 								u := utf.utf_8_string_8_to_string_32 (s.substring (1, i - 1)) -- UTF_8 decoding to support unicode password
@@ -102,7 +104,7 @@ feature -- Initialization
 				create s.make_from_string_general (u)
 				s.extend (':')
 				s.append_string_general (p)
-				create http_authorization.make_from_string ("Basic " + (create {BASE64}).encoded_string (utf.string_32_to_utf_8_string_8 (s)))
+				create http_authorization.make_from_string ("Basic " + base64_encoder.encoded_string (utf.string_32_to_utf_8_string_8 (s)))
 
 			elseif t.is_case_insensitive_equal (Digest_auth_type) then
 				type := Digest_auth_type

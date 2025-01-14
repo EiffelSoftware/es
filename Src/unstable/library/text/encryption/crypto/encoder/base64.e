@@ -116,7 +116,7 @@ feature -- Decoder
 			c: CHARACTER
 		do
 			has_error := False
-			has_incorrect_padding := False
+			has_incorrect_padding := (v.count \\ 4) /= 0
 
 			n := v.count
 			from
@@ -169,6 +169,81 @@ feature -- Decoder
 							a_buffer.extend ((tmp1 | tmp2).to_character_8)
 						end
 					end
+				end
+			end
+		end
+
+	decode_string_to_output_medium (v: READABLE_STRING_8; a_output: IO_MEDIUM)
+			-- Write base64 decoded value of `s' into `a_output' medium
+		require
+			a_output_writable: a_output.is_open_write
+		local
+			byte_count: INTEGER
+			pos, n, i, nb_bytes: INTEGER
+			bytes: ARRAY [INTEGER]
+			tmp1, tmp2: INTEGER
+			done: BOOLEAN
+			c: CHARACTER
+			buf: STRING
+		do
+			has_error := False
+			has_incorrect_padding := False
+
+			create buf.make (10)
+
+			n := v.count
+			from
+				nb_bytes := 4
+				create bytes.make_filled (0, 1, nb_bytes)
+				pos := 0
+			invariant
+				n = v.count
+			until
+				pos >= n or done
+			loop
+				byte_count := 0
+				from
+					i := byte_count + 1
+				until
+					i > nb_bytes or has_error or pos >= n
+				loop
+					if pos < n then
+						pos := next_encoded_character_position (v, pos)
+						if pos <= n then
+							c := v [pos]
+							if c /= '=' then
+								bytes[i] := character_to_value (c)
+								byte_count := byte_count + 1
+							end
+						else
+							has_error := True
+						end
+					else
+							-- Consider as missing padding '='
+						has_incorrect_padding := True
+						bytes[i] := character_to_value (c)
+						byte_count := byte_count + 1
+					end
+					i := i + 1
+				end
+				done := byte_count < nb_bytes
+
+				if byte_count > 1 then
+					tmp1 := bytes [1].bit_shift_left (2)  & 0b1111_1111
+					tmp2 := bytes [2].bit_shift_right (4) & 0b0000_0011
+					buf.extend ((tmp1 | tmp2).to_character_8)
+					if byte_count > 2 then
+						tmp1 := bytes [2].bit_shift_left (4)  & 0b1111_1111
+						tmp2 := bytes [3].bit_shift_right (2) & 0b0000_1111
+						buf.extend ((tmp1 | tmp2).to_character_8)
+						if byte_count > 3 then
+							tmp1 := bytes [4]
+							tmp2 := bytes [3].bit_shift_left(6) & 0b1111_1111
+							buf.extend ((tmp1 | tmp2).to_character_8)
+						end
+					end
+					a_output.put_string (buf)
+					buf.wipe_out
 				end
 			end
 		end
