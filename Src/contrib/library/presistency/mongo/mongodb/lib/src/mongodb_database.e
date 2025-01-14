@@ -7,7 +7,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 	EIS: "name=Mongo Database ", "src=http://mongoc.org/libmongoc/current/mongoc_database_t.html", "protocol=uri"
-	
+
 class
 	MONGODB_DATABASE
 
@@ -592,7 +592,7 @@ feature -- Operations
         require
             is_usable: exists
         local
-            l_pipeline, l_opts: POINTER
+            l_opts: POINTER
         do
             clean_up
             if attached a_opts then
