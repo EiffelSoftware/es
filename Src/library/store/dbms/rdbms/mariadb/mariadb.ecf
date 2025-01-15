@@ -11,9 +11,6 @@
 			On Unix, MariaDB client package is required:
 				either install the libmariadb-dev package:
 					for instance on debian based "sudo apt install libmariadb-dev"
-				or use custom directory:
-					$(MARIADBINC) set to the directory mysql.h is located
-					$(MARIADBLIB) set to the directory where libmariadb.a is located
 			.
 		</description>
 		<root all_classes="true"/>
