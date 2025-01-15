@@ -1,0 +1,19 @@
+The MARIADB class is the database specification file. 
+An instance of this class is used as generic parameter in EiffelStore.
+
+On Windows
+----------
+You need to have $(MARIADB) in your environment, set to the directory where the MySQL C Connector is installed.
+(i.e, directory containing the mysql "include" folder).
+
+On Linux
+--------
+The package "mariadb" is required (including the `mariadb_config` tool)
+You need to have in your environment:
+$(MARIADBINC) set to the directory where mysql.h is located.
+$(MARIADBLIB) set to the directory where libmysqlclient.a is location.
+
+For instance, on debian:
+- To install the needed MariaDB packages:
+	apt-get install libmariadb-dev
+
