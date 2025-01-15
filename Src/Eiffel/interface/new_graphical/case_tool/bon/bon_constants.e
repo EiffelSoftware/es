@@ -105,6 +105,51 @@ feature {NONE} -- Bon class
 			pixmap_factory.register_pixmap (Result)
 		end
 
+	bon_deferred_icon_buffer: EV_IDENTIFIED_PIXEL_BUFFER
+		local
+			pic: EV_PIXEL_BUFFER
+		once
+			pic := pixmaps.mini_pixmaps.bon_deferred_icon_buffer
+			Result := pixel_buffer_factory.registered_pixel_buffer (pic)
+			pixel_buffer_factory.register_pixel_buffer (Result)
+		end
+
+	bon_effective_icon_buffer: EV_IDENTIFIED_PIXEL_BUFFER
+		local
+			pic: EV_PIXEL_BUFFER
+		once
+			pic := pixmaps.mini_pixmaps.bon_effective_icon_buffer
+			Result := pixel_buffer_factory.registered_pixel_buffer (pic)
+			pixel_buffer_factory.register_pixel_buffer (Result)
+		end
+
+	bon_interfaced_icon_buffer: EV_IDENTIFIED_PIXEL_BUFFER
+		local
+			pic: EV_PIXEL_BUFFER
+		once
+			pic := pixmaps.mini_pixmaps.bon_interfaces_icon_buffer
+			Result := pixel_buffer_factory.registered_pixel_buffer (pic)
+			pixel_buffer_factory.register_pixel_buffer (Result)
+		end
+
+	bon_persistent_icon_buffer: EV_IDENTIFIED_PIXEL_BUFFER
+		local
+			pic: EV_PIXEL_BUFFER
+		once
+			pic := pixmaps.mini_pixmaps.bon_persistent_icon_buffer
+			Result := pixel_buffer_factory.registered_pixel_buffer (pic)
+			pixel_buffer_factory.register_pixel_buffer (Result)
+		end
+
+	bon_anchor_icon_buffer: EV_IDENTIFIED_PIXEL_BUFFER
+		local
+			pic: EV_PIXEL_BUFFER
+		once
+			pic := pixmaps.icon_pixmaps.diagram_anchor_icon_buffer
+			Result := pixel_buffer_factory.registered_pixel_buffer (pic)
+			pixel_buffer_factory.register_pixel_buffer (Result)
+		end
+
 feature {NONE} -- Cluster
 
 	bon_cluster_line_color: EV_COLOR
@@ -173,7 +218,7 @@ feature {NONE} -- Inheritance link
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
