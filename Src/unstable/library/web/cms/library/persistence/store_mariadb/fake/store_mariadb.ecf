@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-18-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-18-0 http://www.eiffel.com/developers/xml/configuration-1-18-0.xsd" name="store_mariadb_fake" uuid="0BA4B864-CF90-4181-82A0-5E102E67F43A" library_target="store_mariadb_fake">
+	<description>CMS Eiffel Store MariaDB persistence solution FAKE!!!</description>
+	<target name="store_mariadb_fake">
+		<root all_classes="true"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="cms" location="..\..\..\..\cms.ecf" readonly="false"/>
+		<library name="cms_app_env" location="..\..\..\app_env\app_env.ecf"/>
+		<library name="crypto" location="$ISE_LIBRARY\unstable\library\text\encryption\crypto\crypto.ecf"/>
+		<library name="encoder" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\text\encoder\encoder.ecf"/>
+		<library name="error" location="$ISE_LIBRARY\contrib\library\utility\general\error\error.ecf"/>
+		<library name="json" location="$ISE_LIBRARY\contrib\library\text\parser\json\library\json.ecf" readonly="false"/>
+		<library name="logging" location="$ISE_LIBRARY\library\runtime\logging\logging.ecf"/>
+		<library name="model" location="..\..\model\cms_model.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<cluster name="persistence_store_mariadb_fake" location=".\src\" recursive="true">
+			<file_rule>
+				<exclude>/CVS$</exclude>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/\.svn$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>
