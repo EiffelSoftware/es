@@ -1,44 +1,44 @@
 note
-	description: "Objects that is a pixmap with an id."
+	description: "Objects that is a pixel buffer with an id."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EV_IDENTIFIED_PIXMAP
+	EV_IDENTIFIED_PIXEL_BUFFER
 	
 create
 	make_with_id
 	
 feature {NONE} -- Initialisation
 
-	make_with_id (a_pixmap: like pixmap; an_id: like id)
-			-- Create an EV_IDENTIFIED_PIXMAP containing `a_pixmap' with `an_id'.
+	make_with_id (a_pixbuf: like pixel_buffer; an_id: like id)
+			-- Create an EV_IDENTIFIED_PIXEL_BUFFER containing `a_pixbuf' with `an_id'.
 		require
-			a_pixmap_not_void: a_pixmap /= Void
+			a_pixbuf_not_void: a_pixbuf /= Void
 			an_id_positive: an_id > 0
 		do
-			pixmap := a_pixmap
+			pixel_buffer := a_pixbuf
 			id := an_id
 		ensure
-			set: pixmap = a_pixmap and id = an_id
+			set: pixel_buffer = a_pixbuf and id = an_id
 		end
 
 feature -- Access
 
-	pixmap: EV_PIXMAP
+	pixel_buffer: EV_PIXEL_BUFFER
 		-- Font
 	
 	id: INTEGER
-		-- id for `pixmap'.
+		-- id for `pixel_buffer'.
 	
 invariant
-	pixmap_not_void: pixmap /= Void
+	pixel_buffer_not_void: pixel_buffer /= Void
 	id_positive: id >= 0
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software

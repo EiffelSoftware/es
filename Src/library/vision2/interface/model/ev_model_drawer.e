@@ -434,7 +434,13 @@ feature -- Figure drawing
 			c: EV_COORDINATE
 		do
 			c := picture.point_array.item (0)
-			drawable.draw_pixmap (c.x + offset_x, c.y + offset_y, picture.scaled_pixmap)
+			if attached picture.scaled_pixel_buffer as pix then
+				drawable.draw_pixel_buffer (c.x + offset_x, c.y + offset_y, pix)
+			elseif attached picture.scaled_pixmap as pix then
+				drawable.draw_pixmap (c.x + offset_x, c.y + offset_y, pix)
+			else
+				check has_pixmap_or_pixel_buffer: False end
+			end
 		end
 
 	draw_figure_pie_slice (slice: EV_MODEL_PIE_SLICE)
@@ -1727,7 +1733,7 @@ invariant
 	drawable_not_void: drawable /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2016, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
