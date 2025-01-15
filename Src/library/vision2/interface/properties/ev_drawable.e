@@ -351,6 +351,15 @@ feature -- Drawing operations
 			implementation.draw_pixmap (x, y, a_pixmap)
 		end
 
+	draw_pixel_buffer (x, y: INTEGER; a_pixel_buffer: EV_PIXEL_BUFFER)
+			-- Draw `a_pixel_buffer' with upper-left corner on (`x', `y').
+		require
+			not_destroyed: not is_destroyed
+			a_pixel_buffer_not_void: a_pixel_buffer /= Void
+		do
+			implementation.draw_pixel_buffer (x, y, a_pixel_buffer)
+		end
+
 	draw_sub_pixmap (x, y: INTEGER; a_pixmap: EV_PIXMAP; area: EV_RECTANGLE)
 			-- Draw `area' of `a_pixmap' with upper-left corner on (`x', `y').
 		require
@@ -578,7 +587,7 @@ invariant
 	drawing_mode_valid: is_usable implies valid_drawing_mode (drawing_mode)
 
 note
-	copyright:	"Copyright (c) 1984-2021, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

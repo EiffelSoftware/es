@@ -309,6 +309,14 @@ feature -- Drawing operations
 		deferred
 		end
 
+	draw_pixel_buffer (x, y: INTEGER; a_pixel_buffer: EV_PIXEL_BUFFER)
+			-- Draw `a_pixel_buffer' with upper-left corner on (`x', `y').
+		require
+			a_pixel_buffer_not_void: a_pixel_buffer /= Void
+		do
+			draw_sub_pixel_buffer (x, y, a_pixel_buffer, a_pixel_buffer.area)
+		end
+
 	draw_sub_pixmap (x, y: INTEGER; a_pixmap: EV_PIXMAP; area: EV_RECTANGLE)
 			-- Draw `area' of `a_pixmap' with upper-left corner on (`x', `y').
 		require
@@ -430,7 +438,7 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 	interface: detachable EV_DRAWABLE note option: stable attribute end;
 
 note
-	copyright: "Copyright (c) 1984-2021, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
