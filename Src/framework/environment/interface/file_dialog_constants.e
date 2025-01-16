@@ -27,6 +27,10 @@ feature -- Access
 
 	Png_files_description: STRING = "PNG Files (*.png)"
 
+	Svg_files_filter: STRING = "*.svg"
+
+	Svg_files_description: STRING = "SVG Files (*.svg)"
+
 	Xml_files_filter: STRING = "*.xml"
 
 	Xml_files_description: STRING = "XML Files (*.xml)"
@@ -102,6 +106,8 @@ feature -- Status report
 				Result := text_files_description
 			elseif a_filter.is_equal (png_files_filter) then
 				Result := png_files_description
+			elseif a_filter.is_equal (svg_files_filter) then
+				Result := svg_files_description
 			elseif a_filter.is_equal (xml_files_filter) then
 				Result := xml_files_description
 			elseif a_filter.is_equal (config_files_filter) then
@@ -132,7 +138,7 @@ feature -- Status report
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

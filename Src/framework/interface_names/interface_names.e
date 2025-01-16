@@ -549,8 +549,8 @@ feature -- Accelerator, focus label and menu name
 	f_diagram_remove_right_angles: STRING_32	do Result := locale.translation("Remove right angles")	end
 	m_diagram_link_tool: STRING_32		do Result := locale.translation("&Update Angles Layout")	end
 	m_diagram_reset_link_tool: STRING_32		do Result := locale.translation("Reset Angles")	end
-	f_diagram_to_png: STRING_32			do Result := locale.translation("Export diagram to PNG")	end
-	m_diagram_to_png: STRING_32			do Result := locale.translation("&Export Diagram to PNG")	end
+	f_diagram_to_file: STRING_32			do Result := locale.translation("Export diagram to PNG or SVG")	end
+	m_diagram_to_file: STRING_32			do Result := locale.translation("&Export Diagram to PNG or SVG")	end
 	f_diagram_context_depth: STRING_32 	do Result := locale.translation("Select depth of relations")	end
 	m_diagram_context_depth: STRING_32 	do Result := locale.translation("&Select Depth of Relations")	end
 	f_diagram_delete_view: STRING_32		do Result := locale.translation("Delete current view")	end

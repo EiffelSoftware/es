@@ -1682,7 +1682,7 @@ feature -- Commands
 	toggle_quality_cmd: EB_TOGGLE_QUALITY_COMMAND
 			-- Toggle quality command.
 
-	diagram_to_ps_cmd: EB_DIAGRAM_TO_PS_COMMAND
+	diagram_to_ps_cmd: EB_DIAGRAM_TO_FILE_COMMAND
 			-- Save diagram as ps or png.
 
 	toggle_force_cmd: EB_TOGGLE_FORCE_COMMAND

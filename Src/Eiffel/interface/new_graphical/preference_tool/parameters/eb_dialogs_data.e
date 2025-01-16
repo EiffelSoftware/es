@@ -447,6 +447,7 @@ feature {EB_SHARED_PREFERENCES, EB_TOOL} -- Preference
 	last_saved_call_stack_directory_preference: PATH_PREFERENCE
 	last_saved_debugger_exception_directory_preference: STRING_PREFERENCE
 	last_saved_diagram_postscript_directory_preference: PATH_PREFERENCE
+	last_saved_diagram_format_preference: STRING_PREFERENCE
 	last_saved_exception_directory_preference: PATH_PREFERENCE
 	last_saved_save_file_as_directory_preference: PATH_PREFERENCE
 	last_saved_profile_result_directory_preference: PATH_PREFERENCE
@@ -530,6 +531,7 @@ feature -- Preference strings
 	last_saved_call_stack_directory_preference_string: STRING = "interface.dialogs.last_saved_call_stack_directory"
 	last_saved_debugger_exception_directory_preference_string: STRING = "interface.dialogs.last_saved_debugger_exception_directory"
 	last_saved_diagram_postscript_directory_preference_string: STRING = "interface.dialogs.last_saved_diagram_postscript_directory"
+	last_saved_diagram_format_preference_string: STRING = "interface.dialogs.last_saved_diagram_format"
 	last_saved_exception_directory_preference_string: STRING = "interface.dialogs.last_saved_exception_directory"
 	last_saved_save_file_as_directory_preference_string: STRING = "interface.dialogs.last_saved_save_file_as_directory"
 	last_saved_profile_result_directory_preference_string: STRING = "interface.dialogs.last_saved_profile_result_directory"
@@ -616,6 +618,7 @@ feature {NONE} -- Implementation
 			last_saved_call_stack_directory_preference := l_manager.new_path_preference_value (l_manager, last_saved_call_stack_directory_preference_string, create {PATH}.make_empty)
 			last_saved_debugger_exception_directory_preference := l_manager.new_string_preference_value (l_manager, last_saved_debugger_exception_directory_preference_string, "")
 			last_saved_diagram_postscript_directory_preference := l_manager.new_path_preference_value (l_manager, last_saved_diagram_postscript_directory_preference_string, create {PATH}.make_empty)
+			last_saved_diagram_format_preference := l_manager.new_string_preference_value (l_manager, last_saved_diagram_format_preference_string, "png")
 			last_saved_exception_directory_preference := l_manager.new_path_preference_value (l_manager, last_saved_exception_directory_preference_string, create {PATH}.make_empty)
 			last_saved_save_file_as_directory_preference := l_manager.new_path_preference_value (l_manager, last_saved_save_file_as_directory_preference_string, create {PATH}.make_empty)
 			last_saved_profile_result_directory_preference := l_manager.new_path_preference_value (l_manager, last_saved_profile_result_directory_preference_string, create {PATH}.make_empty)
@@ -702,7 +705,7 @@ invariant
 	notification_text_foreground_color_preference_not_void: notification_text_foreground_color_preference /= Void
 
 note
-	copyright: "Copyright (c) 1984-2019, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
