@@ -135,7 +135,7 @@ feature -- Query
 			--	X position where dropdown button should be drawn
 		do
 			if attached tool_bar as l_tool_bar then
-				Result := l_tool_bar.item_x (Current) + width - dropdrown_width - 2
+				Result := l_tool_bar.item_x (Current) + width - dropdrown_width - 2 -- FIXME: update that code for HiDPI ... [2025-01-16]
 			end
 		end
 
@@ -227,7 +227,7 @@ feature {NONE} -- Implementation
 
 note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
-	copyright:	"Copyright (c) 1984-2017, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
