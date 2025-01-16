@@ -2,8 +2,8 @@ include(CMakeFindDependencyMacro)
 find_dependency(bson-1.0 1.29.0)
 
 # If we need to import a TLS package for our imported targets, do that now:
-set(MONGOC_TLS_BACKEND [[OFF]])
-set(_tls_package [[]])
+set(MONGOC_TLS_BACKEND [[SecureChannel]])
+set(_tls_package [[NO]])
 if(_tls_package)
   # We bring our own FindLibreSSL, since most systems do not have one yet. The system's version
   # will be preferred, if possible.
