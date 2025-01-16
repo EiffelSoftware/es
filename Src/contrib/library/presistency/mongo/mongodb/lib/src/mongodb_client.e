@@ -40,6 +40,9 @@ feature {NONE}-- Initialization
 			new_from_uri_with_error (a_uri)
 		end
 
+
+feature {NONE} -- Implementation
+
 	new_mongoc_client (a_uri: READABLE_STRING_GENERAL)
 			-- new mongodb client instance using the uri `a_uri'.
 		note
@@ -97,6 +100,7 @@ feature -- Removal
 			if shared then
 				c_mongoc_client_destroy (item)
 			end
+			{MONGODB_EXTERNALS}.c_mongo_cleanup
 		end
 
 feature -- Access
@@ -648,6 +652,38 @@ feature -- Change Element
 			{MONGODB_EXTERNALS}.c_mongoc_client_set_sockettimeoutms (item, a_timeout_ms)
 		end
 
+feature -- Encryption
+
+    enable_auto_encryption (a_opts: MONGODB_AUTO_ENCRYPTION)
+            -- Enable automatic client side encryption.
+            -- Note:
+            --   * Requires libmongoc to be built with support for In-Use Encryption
+            --   * Only applies to operations on a collection
+            --   * Not supported for operations on a database or view
+            --   * Requires the authenticated user to have the listCollections privilege
+            --   * May reduce maximum message size and impact performance
+            -- `a_opts': Required encryption options
+        note
+            EIS: "name=mongoc_client_enable_auto_encryption", "src=http://mongoc.org/libmongoc/current/mongoc_client_enable_auto_encryption.html", "protocol=uri"
+        require
+            is_usable: exists
+            opts_usable: a_opts.exists
+        local
+            l_error: BSON_ERROR
+            l_res: BOOLEAN
+        do
+            clean_up
+            create l_error.make
+            l_res := {MONGODB_EXTERNALS}.c_mongoc_client_enable_auto_encryption (
+                item,           -- client
+                a_opts.item,   -- opts
+                l_error.item   -- error
+            )
+            if not l_res then
+                create error.make_by_pointer (l_error.item)
+            end
+        end
+
 feature -- Command
 
     ping (a_db: READABLE_STRING_GENERAL): BOOLEAN
@@ -895,6 +931,5 @@ feature {NONE} -- Implementation
 		alias
 			"mongoc_client_destroy ((mongoc_client_t *)$a_client);"
 		end
-
 
 end

@@ -24,14 +24,16 @@ create
 
 feature {NONE}-- Initialization
 
-	make (a_uri: READABLE_STRING_GENERAL)
+	make (a_uri: READABLE_STRING_8)
 			-- Creates a new MongoClient using the URI string `a_uri' provided.
 		do
 			memory_make
 			uri_new (a_uri)
 		end
 
-	uri_new (a_uri: READABLE_STRING_GENERAL)
+feature {NONE} -- Implementation
+
+	uri_new (a_uri: READABLE_STRING_8)
 		local
 			c_string: C_STRING
 			l_bson_error: BSON_ERROR

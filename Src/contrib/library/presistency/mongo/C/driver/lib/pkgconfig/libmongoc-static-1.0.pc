@@ -8,5 +8,5 @@ Description: The MongoDB C Database Driver library
 Version: 1.29.0
 Requires: libbson-static-1.0
 
-Libs: -L${libdir} -lmongoc-static-1.0 -lDnsapi
+Libs: -L${libdir} -lmongoc-static-1.0 -lDnsapi secur32.lib crypt32.lib Bcrypt.lib
 Cflags:  -DMONGOC_STATIC -DBSON_STATIC -I${prefix}/include/libmongoc-1.0

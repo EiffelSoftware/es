@@ -62,9 +62,9 @@ if /i "%~dp0" NEQ "%TEMP%\" (
 )
 
 if "%DESTDIR%"=="" (
-  set __prefix=C:\home\C\mongo\mongo-c-driver-1.29.0\_install
+  set __prefix=C:\home\C\mongo\mongo-c-driver-1.29.2\mongo-c-driver-1.29.2\_install
 ) else (
-  set __prefix=!DESTDIR!\home\C\mongo\mongo-c-driver-1.29.0\_install
+  set __prefix=!DESTDIR!\home\C\mongo\mongo-c-driver-1.29.2\mongo-c-driver-1.29.2\_install
 )
 
 call :rmfile "bin\msvcp140.dll"
@@ -211,6 +211,7 @@ call :rmfile "include\libmongoc-1.0\mongoc\mongoc-stream-tls.h"
 call :rmfile "include\libmongoc-1.0\mongoc\mongoc-ssl.h"
 call :rmfile "include\libmongoc-1.0\mongoc\mongoc-bulkwrite.h"
 call :rmfile "include\libmongoc-1.0\mongoc.h"
+call :rmfile "lib\pkgconfig\libmongoc-ssl-1.0.pc"
 call :rmfile "lib\cmake\mongoc-1.0\mongoc-targets.cmake"
 call :rmfile "lib\cmake\mongoc-1.0\mongoc-targets-relwithdebinfo.cmake"
 call :rmfile "lib\cmake\mongoc-1.0\mongoc-1.0-config.cmake"

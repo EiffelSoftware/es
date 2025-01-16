@@ -19,7 +19,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_cmake_targets_defined "")
 set(_cmake_targets_not_defined "")
 set(_cmake_expected_targets "")
-foreach(_cmake_expected_target IN ITEMS mongo::detail::c_dependencies mongo::detail::c_resolve mongo::mongoc_static mongo::mongoc_shared)
+foreach(_cmake_expected_target IN ITEMS mongo::detail::c_dependencies mongo::detail::c_tls_backend mongo::detail::c_resolve mongo::mongoc_static mongo::mongoc_shared)
   list(APPEND _cmake_expected_targets "${_cmake_expected_target}")
   if(TARGET "${_cmake_expected_target}")
     list(APPEND _cmake_targets_defined "${_cmake_expected_target}")
@@ -59,7 +59,14 @@ endif()
 add_library(mongo::detail::c_dependencies INTERFACE IMPORTED)
 
 set_target_properties(mongo::detail::c_dependencies PROPERTIES
-  INTERFACE_LINK_LIBRARIES "mongo::detail::c_platform;mongo::detail::c_resolve"
+  INTERFACE_LINK_LIBRARIES "mongo::detail::c_platform;mongo::detail::c_platform;\$<\$<PLATFORM_ID:Windows>:advapi32.lib>;mongo::detail::c_tls_backend;mongo::detail::c_resolve"
+)
+
+# Create imported target mongo::detail::c_tls_backend
+add_library(mongo::detail::c_tls_backend INTERFACE IMPORTED)
+
+set_target_properties(mongo::detail::c_tls_backend PROPERTIES
+  INTERFACE_LINK_LIBRARIES "secur32.lib;crypt32.lib;Bcrypt.lib"
 )
 
 # Create imported target mongo::detail::c_resolve
