@@ -162,7 +162,7 @@ feature {NONE} -- Implementation
 		do
 			if ev_application.ctrl_pressed then
 				if tool /= Void then
-					if i <= -1 then
+					if i >= 1 then
 						l_world := tool.world
 						l_scale_factor := l_world.scale_factor
 						new_scale_factor := (0.1 + l_scale_factor) / l_scale_factor
@@ -228,7 +228,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

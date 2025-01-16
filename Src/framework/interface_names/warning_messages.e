@@ -926,6 +926,17 @@ feature -- Warning messages
 
 	w_cannot_generate_png: STRING_32 do Result := locale.translation ("Could not generate PNG file.%NInsufficient video memory.") end
 
+	w_cannot_save_svg_file (a_file_name: READABLE_STRING_GENERAL): STRING_32
+		do
+			if a_file_name /= Void then
+				Result := locale.formatted_string (locale.translation ("Could not save diagram to $1"), [a_file_name])
+			else
+				Result := locale.translation ("Could not save diagram to specified location.")
+			end
+		end
+
+	w_cannot_generate_svg: STRING_32 do Result := locale.translation ("Could not generate SVG file.%NInsufficient video memory.") end
+
 	w_does_not_have_enclosing_cluster: STRING_32 do Result := locale.translation ("This cluster does not have an enclosing cluster.") end
 
 	w_Freeze_warning: STRING_32

@@ -46,20 +46,20 @@ feature {NONE} -- Initialization
 	default_create
 			-- Create a EIFFEL_CLUSTER_LEGEND
 		local
-			id_pixmap: EV_IDENTIFIED_PIXMAP
+			id_pixel_buffer: EV_IDENTIFIED_PIXEL_BUFFER
 		do
 			Precursor {EV_MODEL_MOVE_HANDLE}
 			create border
 			border.set_background_color (default_colors.white)
 			border.set_line_width (2)
 
-			id_pixmap := pixmap_factory.registered_pixmap (pixmaps.icon_pixmaps.diagram_unpinned_icon)
+			id_pixel_buffer := pixel_buffer_factory.registered_pixel_buffer (pixmaps.icon_pixmaps.diagram_unpinned_icon_buffer)
 			create open_pin
-			open_pin.set_identified_pixmap (id_pixmap)
+			open_pin.set_identified_pixel_buffer (id_pixel_buffer)
 
-			id_pixmap := pixmap_factory.registered_pixmap (pixmaps.icon_pixmaps.diagram_pinned_icon)
+			id_pixel_buffer := pixel_buffer_factory.registered_pixel_buffer (pixmaps.icon_pixmaps.diagram_pinned_icon_buffer)
 			create closed_pin
-			closed_pin.set_identified_pixmap (id_pixmap)
+			closed_pin.set_identified_pixel_buffer (id_pixel_buffer)
 
 			create pin_button
 			open_pin.set_point_position (pin_button.point_x, pin_button.point_y)
@@ -527,7 +527,7 @@ feature {NONE} -- Implementation pin
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

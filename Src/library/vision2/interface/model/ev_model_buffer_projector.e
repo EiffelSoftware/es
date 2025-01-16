@@ -104,6 +104,19 @@ feature -- Access
 			a_border_positive: a_border >= 0
 		local
 			rectangle: EV_RECTANGLE
+		do
+			rectangle := world.bounding_box
+			create Result.make_with_size (rectangle.width + 2 * a_border, rectangle.height + 2 * a_border)
+			world_to_drawable (Result, a_border)
+		end
+
+	world_to_drawable (d: EV_DRAWABLE; a_border: INTEGER)
+			-- Image of the `world' with `a_border' onto drawable `d'.
+		require
+			not d.is_destroyed
+			a_border_positive: a_border >= 0
+		local
+			rectangle: EV_RECTANGLE
 			old_drawable: detachable like drawable
 			old_drawable_position: detachable EV_COORDINATE
 			u_x, u_y: INTEGER
@@ -114,8 +127,7 @@ feature -- Access
 			rectangle := world.bounding_box
 			create drawable_position.make (rectangle.left - a_border, rectangle.top - a_border)
 
-			create Result.make_with_size (rectangle.width + 2 * a_border, rectangle.height + 2 * a_border)
-			drawable := Result
+			drawable := d
 
 			u_x := rectangle.x
 			u_y := rectangle.y
@@ -129,9 +141,6 @@ feature -- Access
 
 			set_drawable_position (old_drawable_position)
 			drawable := old_drawable
-
-		ensure
-			Result_not_void: Result /= Void
 		rescue
 			is_world_too_large := True
 			if old_drawable_position /= Void then
@@ -201,9 +210,9 @@ feature -- Display updates
 
 			world.validate
 
-			if 
+			if
 				attached {EV_PIXMAP} drawable as pixmap and then
-				attached area as l_area 
+				attached area as l_area
 			then
 				l_rect.set_x (u_x - drawable_position.x)
 				l_rect.set_y (u_y - drawable_position.y)
@@ -325,7 +334,7 @@ invariant
 	right_drawable_in_the_cell: drawable = drawable_in_the_cell
 
 note
-	copyright: "Copyright (c) 1984-2021, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

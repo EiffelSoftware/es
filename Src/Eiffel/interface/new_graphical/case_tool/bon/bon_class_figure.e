@@ -504,11 +504,11 @@ feature {NONE} -- Implementation
 			icon_figures.wipe_out
 			icon_figures.set_point_position (0, 0)
 			if model.is_deferred then
-				create icon.make_with_identified_pixmap (bon_deferred_icon)
+				create icon.make_with_identified_pixel_buffer (bon_deferred_icon_buffer)
 				icon_figures.extend (icon)
 			end
 			if model.is_effective then
-				create icon.make_with_identified_pixmap (bon_effective_icon)
+				create icon.make_with_identified_pixel_buffer (bon_effective_icon_buffer)
 				if icon_figures.count > 0 then
 					icon_figures.update_rectangle_to_bounding_box (l_bbox)
 					icon.set_point_position (l_bbox.width + icon_spacing, 0)
@@ -516,7 +516,7 @@ feature {NONE} -- Implementation
 				icon_figures.extend (icon)
 			end
 			if model.is_persistent then
-				create icon.make_with_identified_pixmap (bon_persistent_icon)
+				create icon.make_with_identified_pixel_buffer (bon_persistent_icon_buffer)
 				if icon_figures.count > 0 then
 					icon_figures.update_rectangle_to_bounding_box (l_bbox)
 					icon.set_point_position (l_bbox.width + icon_spacing, 0)
@@ -524,7 +524,7 @@ feature {NONE} -- Implementation
 				icon_figures.extend (icon)
 			end
 			if model.is_interfaced then
-				create icon.make_with_identified_pixmap (bon_interfaced_icon)
+				create icon.make_with_identified_pixel_buffer (bon_interfaced_icon_buffer)
 				if icon_figures.count > 0 then
 					icon_figures.update_rectangle_to_bounding_box (l_bbox)
 					icon.set_point_position (l_bbox.width + icon_spacing, 0)
@@ -941,7 +941,7 @@ feature {NONE} -- Implementation
 		require
 			anchor_void: anchor = Void
 		local
-			anchor_pix: EV_MODEL_PICTURE
+			anchor_pixbuf: EV_MODEL_PICTURE
 			circl: EV_MODEL_ELLIPSE
 		do
 			create anchor
@@ -949,8 +949,10 @@ feature {NONE} -- Implementation
 			circl.set_foreground_color (default_colors.black)
 			circl.set_background_color (default_colors.white)
 			anchor.extend (circl)
-			create anchor_pix.make_with_identified_pixmap (bon_anchor)
-			anchor.extend (anchor_pix)
+
+			create anchor_pixbuf.make_with_identified_pixel_buffer (bon_anchor_icon_buffer)
+			anchor.extend (anchor_pixbuf)
+
 			anchor.hide
 			anchor.disable_sensitive
 			is_anchor_shown := False
@@ -978,7 +980,7 @@ invariant
 	generics_label_not_void: generics_label /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
