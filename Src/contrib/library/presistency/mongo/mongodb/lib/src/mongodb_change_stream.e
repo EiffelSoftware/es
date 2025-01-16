@@ -48,9 +48,10 @@ feature -- Access
             create Result.make_by_pointer (l_token)
         end
 
-    error_document: detachable BSON
-            -- Get the error document for the change stream.
-            -- Returns: The error document if there was an error, Void otherwise.
+    error_document (a_reply: BSON): BOOLEAN
+            -- Checks if an error has occurred when creating or iterating over a change stream.
+            -- 	reply: A location for a bson_t
+            -- Return true if there was an error
         note
             eis: "name=mongoc_change_stream_error_document", "src=http://mongoc.org/libmongoc/current/mongoc_change_stream_error_document.html", "protocol=uri"
         require
@@ -59,13 +60,18 @@ feature -- Access
             l_error: BSON_ERROR
             l_error_doc: POINTER
             l_has_error: BOOLEAN
+            l_reply: BSON
         do
             clean_up
             create l_error.make
+            l_error_doc := a_reply.item
             l_has_error := {MONGODB_EXTERNALS}.c_mongoc_change_stream_error_document (item, l_error.item, $l_error_doc)
-            if l_has_error and l_error_doc /= default_pointer then
-                create Result.make_by_pointer (l_error_doc)
+            if l_has_error then
+            	error := l_error
             end
+            	-- To be double checked.
+            create l_reply.make_by_pointer (l_error_doc)
+            l_reply.bson_copy_to (a_reply)
         end
 
 feature -- Removal

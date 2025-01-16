@@ -18,6 +18,17 @@ feature -- Init
 			"mongoc_init();"
 		end
 
+feature -- CleanUp
+
+	c_mongo_cleanup
+			-- Call exactly once at the end of the program to release all memory and
+			-- other resources allocated by the driver.
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"mongoc_cleanup();"
+		end
+
 feature -- Read Concern Levels		
 
 	MONGOC_READ_CONCERN_LEVEL_LOCAL: STRING = "local"
@@ -521,6 +532,25 @@ feature -- Client
                     (const bson_t *)$a_command,
                     (const bson_t *)$a_opts,
                     (bson_t *)$a_reply,
+                    (bson_error_t *)$a_error
+                );
+            ]"
+        end
+
+    c_mongoc_client_enable_auto_encryption (a_client: POINTER; a_opts: POINTER; a_error: POINTER): BOOLEAN
+            -- Enable automatic client side encryption.
+            -- Requires libmongoc to be built with support for In-Use Encryption.
+            -- Parameters:
+            --   a_client: mongoc_client_t* - The client instance
+            --   a_opts: mongoc_auto_encryption_opts_t* - Required encryption options
+            --   a_error: bson_error_t* - Error information
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "[
+                return mongoc_client_enable_auto_encryption(
+                    (mongoc_client_t *)$a_client,
+                    (mongoc_auto_encryption_opts_t *)$a_opts,
                     (bson_error_t *)$a_error
                 );
             ]"
@@ -1314,6 +1344,56 @@ feature -- Mongo Client Pool
 			]"
 		end
 
+
+    c_mongoc_client_pool_enable_auto_encryption (pool: POINTER; opts: POINTER; error: POINTER): BOOLEAN
+            -- Enable automatic client side encryption on a client pool
+            -- Parameters:
+            --   pool: mongoc_client_pool_t* - The client pool instance
+            --   opts: mongoc_auto_encryption_opts_t* - Required encryption options
+            --   error: bson_error_t* - Error information
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "[
+                return mongoc_client_pool_enable_auto_encryption(
+                    (mongoc_client_pool_t *)$pool,
+                    (mongoc_auto_encryption_opts_t *)$opts,
+                    (bson_error_t *)$error
+                );
+            ]"
+        end
+
+feature -- SSL Support
+
+    is_ssl_enabled: BOOLEAN
+            -- Is SSL support enabled in the MongoDB C driver?
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "[
+                #ifdef MONGOC_ENABLE_SSL
+                    return 1;
+                #else
+                    return 0;
+                #endif
+            ]"
+        end
+
+    c_mongoc_client_pool_set_ssl_opts (pool: POINTER; opts: POINTER)
+            -- Set SSL options for all clients in the pool
+            -- Parameters:
+            --   pool: mongoc_client_pool_t* - The client pool instance
+            --   opts: const mongoc_ssl_opt_t* - SSL options
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "[
+                #ifdef MONGOC_ENABLE_SSL
+                    mongoc_client_pool_set_ssl_opts((mongoc_client_pool_t *)$pool, (const mongoc_ssl_opt_t *)$opts);
+                #endif
+            ]"
+        end
+
 feature -- Cursor
 
 	c_mongo_cursor_next (a_cursor: POINTER; a_bson: POINTER): BOOLEAN
@@ -1584,6 +1664,41 @@ feature -- MongoDB Session Options
 			"[
 				return 	mongoc_session_opts_clone ((const mongoc_session_opt_t *)$a_opts);
 			]"
+		end
+
+	c_mongoc_session_opts_set_default_transaction_opts (a_opts: POINTER; a_txn_opts: POINTER)
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"mongoc_session_opts_set_default_transaction_opts ((mongoc_session_opt_t *)$a_opts, (const mongoc_transaction_opt_t *)$a_txn_opts);"
+		end
+
+	c_mongoc_session_opts_get_default_transaction_opts (a_opts: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return mongoc_session_opts_get_default_transaction_opts ((const mongoc_session_opt_t *)$a_opts);"
+		end
+
+	c_mongoc_session_opts_get_snapshot (a_opts: POINTER): BOOLEAN
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return mongoc_session_opts_get_snapshot ((const mongoc_session_opt_t *)$a_opts);"
+		end
+
+	c_mongoc_session_opts_get_transaction_opts (a_session: POINTER): POINTER
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return mongoc_session_opts_get_transaction_opts ((const mongoc_client_session_t *)$a_session);"
+        end
+
+	c_mongoc_session_opts_set_snapshot (a_opts: POINTER; a_snapshot: BOOLEAN)
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"mongoc_session_opts_set_snapshot ((mongoc_session_opt_t *)$a_opts, (bool)$a_snapshot);"
 		end
 
 feature -- Write Concern
@@ -2533,5 +2648,6 @@ feature -- Socket
         alias
             "return mongoc_change_stream_error_document ((mongoc_change_stream_t *)$a_stream, (bson_error_t *)$a_error, (const bson_t **)$a_error_doc);"
         end
+
 
 end

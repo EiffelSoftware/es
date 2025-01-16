@@ -47,7 +47,7 @@
  * MONGOC_ENABLE_SSL_SECURE_CHANNEL is set from configure to determine if we are
  * compiled with Native SSL support on Windows
  */
-#define MONGOC_ENABLE_SSL_SECURE_CHANNEL 0
+#define MONGOC_ENABLE_SSL_SECURE_CHANNEL 1
 
 #if MONGOC_ENABLE_SSL_SECURE_CHANNEL != 1
 #  undef MONGOC_ENABLE_SSL_SECURE_CHANNEL
@@ -58,7 +58,7 @@
  * MONGOC_ENABLE_CRYPTO_CNG is set from configure to determine if we are
  * compiled with Native Crypto support on Windows
  */
-#define MONGOC_ENABLE_CRYPTO_CNG 0
+#define MONGOC_ENABLE_CRYPTO_CNG 1
 
 #if MONGOC_ENABLE_CRYPTO_CNG != 1
 #  undef MONGOC_ENABLE_CRYPTO_CNG
@@ -68,7 +68,7 @@
  * MONGOC_HAVE_BCRYPT_PBKDF2 is set from configure to determine if 
  * our Bcrypt Windows library supports PBKDF2 
  */
-#define MONGOC_HAVE_BCRYPT_PBKDF2 0
+#define MONGOC_HAVE_BCRYPT_PBKDF2 1
 
 #if MONGOC_HAVE_BCRYPT_PBKDF2 != 1
 #  undef MONGOC_HAVE_BCRYPT_PBKDF2
@@ -133,7 +133,7 @@
  * MONGOC_ENABLE_SSL is set from configure to determine if we are
  * compiled with any SSL support.
  */
-#define MONGOC_ENABLE_SSL 0
+#define MONGOC_ENABLE_SSL 1
 
 #if MONGOC_ENABLE_SSL != 1
 #  undef MONGOC_ENABLE_SSL
@@ -144,7 +144,7 @@
  * MONGOC_ENABLE_CRYPTO is set from configure to determine if we are
  * compiled with any crypto support.
  */
-#define MONGOC_ENABLE_CRYPTO 0
+#define MONGOC_ENABLE_CRYPTO 1
 
 #if MONGOC_ENABLE_CRYPTO != 1
 #  undef MONGOC_ENABLE_CRYPTO
@@ -405,7 +405,7 @@
 /*
  * Set if building with AWS IAM support.
  */
-#define MONGOC_ENABLE_MONGODB_AWS_AUTH 0
+#define MONGOC_ENABLE_MONGODB_AWS_AUTH 1
 
 #if MONGOC_ENABLE_MONGODB_AWS_AUTH != 1
 #  undef MONGOC_ENABLE_MONGODB_AWS_AUTH
