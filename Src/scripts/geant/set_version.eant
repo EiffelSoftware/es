@@ -84,6 +84,8 @@ rem update the version_info ...
 sed -e &quot;s/Version_info:\ STRING\ =\ \&quot;[0-9a-zA-Z_\,\ \/\:()\.\=\-]*\&quot;/Version_info:\ STRING\ =\ \&quot;Build:\ %BUILDNUMBER% , Compilation:\ %CURRDATE%\ %CURRTIME% , Builder:\ %USERNAME%\&quot;/g&quot; %EFILE% &gt; %EFILE_TMP%
 move %EFILE_TMP% %EFILE%
 
+
+cd %T_CWD%
 endlocal
 @echo on
 		</echo>
