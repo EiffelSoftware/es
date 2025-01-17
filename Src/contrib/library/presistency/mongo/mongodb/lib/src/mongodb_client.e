@@ -145,7 +145,7 @@ feature -- Access
 				-- 		Databases are automatically created on the MongoDB server upon insertion of the first document into a collection.
 				--		There is no need to create a database manually.
 		note
-			EIS: "name=API get_database", "src=http://mongoc.org/libmongoc/current/mongoc_client_get_database.html", "protocol=uri"
+			EIS: "name=mongoc_client_get_database", "src=http://mongoc.org/libmongoc/current/mongoc_client_get_database.html", "protocol=uri"
 		require
 			is_usable: exists
 		local
@@ -192,7 +192,6 @@ feature -- Access
 	            error := l_error
 	            create {ARRAYED_LIST [STRING]} Result.make (0)
 	        else
-	            error := Void
 	            l_res := {MONGODB_EXTERNALS}.c_mongoc_client_get_database_names_count (item, l_opts, l_error.item)
 	            create l_mgr.make_from_pointer (l_ptr, l_res * c_sizeof (l_ptr))
 	            create {ARRAYED_LIST [STRING]} Result.make (l_res)
@@ -220,7 +219,7 @@ feature -- Access
 		do
 			clean_up
 			l_ptr := {MONGODB_EXTERNALS}.c_mongoc_client_get_default_database (item)
-			if l_ptr /= default_pointer then
+			if not l_ptr.is_default_pointer then
 				create Result.make_by_pointer (l_ptr)
 			end
 		end
@@ -247,9 +246,6 @@ feature -- Access
 			l_ptr := {MONGODB_EXTERNALS}.c_mongoc_client_find_databases_with_opts (item, l_opts)
 			check success: not l_ptr.is_default_pointer end
 			create Result.make (l_ptr)
-			if attached Result.cursor_error as l_error then
-				error := l_error
-			end
 		end
 
 	read_concern: MONGODB_READ_CONCERN
@@ -260,6 +256,7 @@ feature -- Access
 		require
 			is_usable: exists
 		do
+			clean_up
 			create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_client_get_read_concern (item))
 		end
 
@@ -284,6 +281,23 @@ feature -- Access
         do
         	clean_up
             create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_client_get_write_concern (item))
+        end
+
+    server_description (a_server_id: NATURAL_32): detachable MONGODB_SERVER_DESCRIPTION
+            -- Get information about the server specified by `a_server_id`.
+            -- Returns: Server description that must be freed, or Void if the server is no longer in the topology.
+        note
+            EIS: "name=mongoc_client_get_server_description", "src=http://mongoc.org/libmongoc/current/mongoc_client_get_server_description.html", "protocol=uri"
+        require
+            is_usable: exists
+        local
+            l_ptr: POINTER
+        do
+            clean_up
+            l_ptr := {MONGODB_EXTERNALS}.c_mongoc_client_get_server_description (item, a_server_id)
+            if not l_ptr.is_default_pointer then
+                create Result.make_by_pointer (l_ptr)
+            end
         end
 
 	server_descriptions: LIST [MONGODB_SERVER_DESCRIPTION]
@@ -325,7 +339,7 @@ feature -- Access
 		do
 			clean_up
 			l_ptr := {MONGODB_EXTERNALS}.c_mongoc_client_get_crypt_shared_version (item)
-			if l_ptr /= default_pointer then
+			if not l_ptr.is_default_pointer then
 				create l_c_string.make_by_pointer (l_ptr)
 				Result := l_c_string.string
 			end
@@ -406,6 +420,12 @@ feature -- Access
 
 feature -- Status
 
+	is_ssl_enabled: BOOLEAN
+            -- Is SSL support enabled in this build?
+        do
+            Result := {MONGODB_EXTERNALS}.is_ssl_enabled
+        end
+
 	read_command_with_opts (a_db_name: READABLE_STRING_GENERAL; a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE;
 							a_opts: detachable BSON; a_reply: BSON; )
 			-- Execute a command on the server, applying logic specific to read commands.
@@ -450,7 +470,7 @@ feature -- Status
 				l_error.item    -- error
 			)
 
-			if not l_Res then
+			if not l_res then
 				create error.make_by_pointer (l_error.item)
 			end
 		end
@@ -532,7 +552,7 @@ feature -- Error
 			end
 		end
 
-feature -- Change Element
+feature -- Settings
 
 	set_read_concern (a_read_concern: MONGODB_READ_CONCERN)
 			-- The default read concern is MONGOC_READ_CONCERN_LEVEL_LOCAL. This is the correct read concern for the great majority of applications.
@@ -652,6 +672,31 @@ feature -- Change Element
 			{MONGODB_EXTERNALS}.c_mongoc_client_set_sockettimeoutms (item, a_timeout_ms)
 		end
 
+    set_ssl_opts (a_opts: MONGODB_SSL_OPTS)
+            -- Sets the TLS (SSL) options to use when connecting to TLS enabled MongoDB servers.
+            -- Note: This overrides all TLS options set through the connection string.
+            -- Warning: It is a programming error to call this on a client from a client pool.
+        note
+            EIS: "name=mongoc_client_set_ssl_opts", "src=http://mongoc.org/libmongoc/current/mongoc_client_set_ssl_opts.html", "protocol=uri"
+        require
+            is_usable: exists
+        local
+            l_error: BSON_ERROR
+        do
+            clean_up
+            if is_ssl_enabled then
+                {MONGODB_EXTERNALS}.c_mongoc_client_set_ssl_opts (item, a_opts.item)
+            else
+                create l_error.make
+                l_error.set_error (
+                    {MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT,
+                    {MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT_AUTHENTICATE,
+                    "SSL support is not enabled in this build of the MongoDB C driver"
+                )
+                error := l_error
+            end
+        end
+
 feature -- Encryption
 
     enable_auto_encryption (a_opts: MONGODB_AUTO_ENCRYPTION)
@@ -766,9 +811,6 @@ feature -- Command
 				create error.make_by_pointer (l_error.item)
 			end
 		end
-
-
-feature -- Command
 
     write_command_with_opts (a_db_name: READABLE_STRING_GENERAL; a_command: BSON;
                            a_opts: detachable BSON; a_reply: BSON)
@@ -931,5 +973,6 @@ feature {NONE} -- Implementation
 		alias
 			"mongoc_client_destroy ((mongoc_client_t *)$a_client);"
 		end
+
 
 end
