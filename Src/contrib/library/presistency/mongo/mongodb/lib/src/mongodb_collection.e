@@ -47,11 +47,15 @@ feature -- Access: Query
 			-- Return a mongo cursor.
 		note
 			EIS: "name=mongoc_collection_find_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_collection_find_with_opts.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_pointer: POINTER
 			l_opts: POINTER
 			l_read_prefs: POINTER
 		do
+			clean_up
+
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -76,12 +80,15 @@ feature -- Access: Query
 			-- `reply`: A bson_t to contain the results
 		note
 			EIS: "name=mongoc_collection_find_and_modify", "src=http://mongoc.org/libmongoc/current/mongoc_collection_find_and_modify.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_sort: POINTER
 			l_fields: POINTER
 			l_error: BSON_ERROR
 			l_res: BOOLEAN
 		do
+			clean_up
 			if attached sort then
 				l_sort := sort.item
 			end
@@ -109,46 +116,55 @@ feature -- Access: Query
 		end
 
 
-	count (a_flags: INTEGER; a_query: BSON; a_skip: INTEGER_64; a_limit: INTEGER_64; a_read_prefs: detachable MONGODB_READ_PREFERENCE; ): INTEGER_64
-			-- This feature shall execute a count query `a_query' on the current collection.
-			-- 'a_flags': A mongoc_query_flags_t.
-			-- 'a_query': A bson_t containing the query.
-			-- 'a_skip': A int64_t, zero to ignore.
-			-- 'a_limit': A int64_t, zero to ignore.
-			-- 'a_read_prefs': An optional mongoc_read_prefs_t.
-		note
-			EIS: "name=mongoc_collection_count", "src=http://mongoc.org/libmongoc/current/mongoc_collection_count.html", "protocol=uri"
-		obsolete "[
-				Deprecated since version 1.11.0: Use mongoc_collection_count_documents() or mongoc_collection_estimated_document_count() instead.
-			]"
-		require
-			is_valid_falg: (create {MONGODB_QUERY_FLAG}).is_valid_flag (a_flags)
-		local
-			l_read_prefs: POINTER
-			l_error: POINTER
-		do
-			if attached a_read_prefs then
-				l_read_prefs := a_read_prefs.item
-			end
-			Result := {MONGODB_EXTERNALS}.c_mongoc_collection_count (item, a_flags, a_query.item, a_skip, a_limit, l_read_prefs, l_error)
-			if Result >= 0 then
-				-- do nothing
-			else
-				create error.make_by_pointer (l_error)
-			end
-		end
+    find_and_modify_with_opts (a_query: BSON;
+                              a_opts: MONGODB_FIND_AND_MODIFY_OPTS;
+                              a_reply: BSON)
+            -- Update and return an object.
+            -- Parameters:
+            --   `a_query`: A BSON containing the query to locate target document(s)
+            --   `a_opts`: Find and modify options
+            --   `a_reply`: Location for the resulting document
+            -- Note: If an unacknowledged write concern is set, the output reply
+            -- is always an empty document. The reply contains the full server
+            -- response to the findAndModify command on success.
+        note
+            EIS: "name=mongoc_collection_find_and_modify_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_collection_find_and_modify_with_opts.html", "protocol=uri"
+        require
+            exists: exists
+        local
+            l_error: BSON_ERROR
+            l_res: BOOLEAN
+        do
+            clean_up
+            create l_error.make
+
+            l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_find_and_modify_with_opts (
+                item,           -- collection
+                a_query.item,   -- query
+                a_opts.item,    -- opts
+                a_reply.item,   -- reply
+                l_error.item    -- error
+            )
+
+            if not l_res then
+                create error.make_by_pointer (l_error.item)
+            end
+        end
 
 	count_documents (a_filter: BSON; a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE; a_reply: BSON): INTEGER_64
 			-- Count documents matching `a_filter` with optional parameters `a_opts`.
 			-- This is the recommended way to count documents (over the deprecated count).
 		note
 			EIS: "name=mongoc_collection_count_documents", "src=http://mongoc.org/libmongoc/current/mongoc_collection_count_documents.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_prefs: POINTER
 
 			l_error: BSON_ERROR
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -167,11 +183,14 @@ feature -- Access: Query
 			-- This operation is faster than count_documents but less accurate.
 		note
 			EIS: "name=mongoc_collection_estimated_document_count", "src=http://mongoc.org/libmongoc/current/mongoc_collection_estimated_document_count.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_prefs: POINTER
 			l_error: BSON_ERROR
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -184,6 +203,41 @@ feature -- Access: Query
 				create error.make_by_pointer (l_error.item)
 			end
 		end
+
+feature -- Bulk Operations
+
+
+    create_bulk_operation_with_opts (a_opts: detachable BSON): MONGODB_BULK_OPERATION
+            -- Begin a new bulk operation.
+            -- Parameters:
+            --   `a_opts`: Optional BSON document that may contain:
+            --     * writeConcern: Write concern for the operation
+            --     * ordered: Set to false to attempt all inserts, continuing after errors
+            --     * sessionId: Client session ID for transactions
+            --     * let: Document with parameter definitions in MQL Aggregate Expression language
+            --     * comment: Comment to attach to this command (MongoDB 4.4+)
+            -- Returns: A new bulk operation that should be destroyed when no longer in use.
+            -- Note: After creating this you may call various functions such as
+            -- update, insert and others. The commands will be executed in batches
+            -- when execute is called.
+        note
+            EIS: "name=mongoc_collection_create_bulk_operation_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_collection_create_bulk_operation_with_opts.html", "protocol=uri"
+        require
+            is_useful: exists
+        local
+            l_opts: POINTER
+            l_ptr: POINTER
+        do
+            clean_up
+            if attached a_opts then
+                l_opts := a_opts.item
+            end
+
+            l_ptr := {MONGODB_EXTERNALS}.c_mongoc_collection_create_bulk_operation_with_opts (item, l_opts)
+            check l_ptr_attached: not l_ptr.is_default_pointer end
+
+            create Result.make_by_pointer (l_ptr)
+        end
 
 feature -- Command
 
@@ -317,12 +371,15 @@ feature -- Command
 			-- This feature removes at most one document in the given collection that matches selector `a_selector'.		
 		note
 			EIS: "name=mongoc_collection_delete_one","src=http://mongoc.org/libmongoc/current/mongoc_collection_delete_one.html","protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_reply: POINTER
 			l_error: BSON_ERROR
 			l_res: BOOLEAN
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -331,9 +388,7 @@ feature -- Command
 			end
 			create l_error.make
 			l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_delete_one (item, a_selector.item, l_opts, l_reply, l_error.item)
-			if l_res then
-				-- do nothing
-			else
+			if not l_res then
 				create error.make_by_pointer (l_error.item)
 			end
 		end
@@ -346,12 +401,15 @@ feature -- Command
 			--   a_reply: Optional. An uninitialized bson_t populated with the delete result
 		note
 			EIS: "name=mongoc_collection_delete_many", "src=http://mongoc.org/libmongoc/current/mongoc_collection_delete_many.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_reply: POINTER
 			l_error: BSON_ERROR
 			l_res: BOOLEAN
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -371,38 +429,105 @@ feature -- Command
 			end
 		end
 
-	command_simple (command: BSON; read_prefs: detachable MONGODB_READ_PREFERENCE; reply: BSON): BOOLEAN
+	command_simple (command: BSON; read_prefs: detachable MONGODB_READ_PREFERENCE; a_reply: BSON)
 			-- Execute a command on the collection.
 			-- `command`: A BSON containing the command to execute
 			-- `read_prefs`: Optional read preferences
 			-- `reply`: A BSON to contain the results (initialized even upon failure)
-			-- Returns: True if successful, False and sets error if there are invalid arguments or a server/network error
 		note
 			EIS: "name=mongoc_collection_command_simple", "src=http://mongoc.org/libmongoc/current/mongoc_collection_command_simple.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_error: BSON_ERROR
 			l_read_prefs: POINTER
+			l_res: BOOLEAN
 		do
+			clean_up
+
 			create l_error.make
 			if attached read_prefs then
 				l_read_prefs := read_prefs.item
 			end
 
-			Result := {MONGODB_EXTERNALS}.c_mongoc_collection_command_simple (
+			l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_command_simple (
 				item,           -- collection
 				command.item,   -- command
 				l_read_prefs,   -- read_prefs
-				reply.item,     -- reply
+				a_reply.item,     -- reply
 				l_error.item    -- error
 			)
 
-			if not Result then
+			if not l_res then
 				error := l_error
 			end
-		ensure
-			error_set: not Result implies error /= Void
-			reply_initialized: reply /= Void
 		end
+
+    command_with_opts (a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE;
+                      a_opts: detachable BSON; a_reply: BSON)
+            -- Execute a command on the server, interpreting opts according to the MongoDB server version.
+            -- Note: This is not considered a retryable read operation.
+            -- Parameters:
+            --   `a_command`: A BSON containing the command specification.
+            --   `a_read_prefs`: Optional read preferences.
+            --   `a_opts`: Optional BSON document that may contain:
+            --     * readConcern: Read concern for the command
+            --     * writeConcern: Write concern for the command
+            --     * sessionId: Client session ID for transactions
+            --     * collation: Text comparison options
+            --     * serverId: To target a specific server
+            --   `a_reply`: Location for the resulting document.
+        note
+            EIS: "name=mongoc_collection_command_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_collection_command_with_opts.html", "protocol=uri"
+        require
+            is_useful: exists
+        local
+            l_read_prefs: POINTER
+            l_opts: POINTER
+            l_error: BSON_ERROR
+            l_res: BOOLEAN
+        do
+            clean_up
+            if attached a_read_prefs then
+                l_read_prefs := a_read_prefs.item
+            end
+            if attached a_opts then
+                l_opts := a_opts.item
+            end
+
+            create l_error.make
+            l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_command_with_opts (
+                item,           -- collection
+                a_command.item, -- command
+                l_read_prefs,   -- read_prefs
+                l_opts,         -- opts
+                a_reply.item,   -- reply
+                l_error.item    -- error
+            )
+
+            if not l_res then
+                create error.make_by_pointer (l_error.item)
+            end
+        end
+
+    cl_copy: MONGODB_COLLECTION
+            -- Create a deep copy of the collection and its configuration.
+            -- Note: This copies the collection struct and its configuration,
+            -- not the contents of the collection on the MongoDB server.
+            -- Useful when you want to modify write concern, read preferences,
+            -- or read concern while preserving an unaltered copy.
+        note
+            EIS: "name=mongoc_collection_copy", "src=http://mongoc.org/libmongoc/current/mongoc_collection_copy.html", "protocol=uri"
+        require
+            is_useful: exists
+        local
+            l_ptr: POINTER
+        do
+            clean_up
+            l_ptr := {MONGODB_EXTERNALS}.c_mongoc_collection_copy (item)
+            check l_ptr_attached: not l_ptr.is_default_pointer end
+            create Result.make_by_pointer (l_ptr)
+        end
 
 feature -- Aggregation
 
@@ -411,11 +536,14 @@ feature -- Aggregation
 			-- Returns a cursor to the result set.
 		note
 			EIS: "name=mongoc_collection_aggregate","src=https://mongoc.org/libmongoc/current/mongoc_collection_aggregate.html","protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_flags: INTEGER
 			l_read_prefs: POINTER
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -444,6 +572,8 @@ feature -- Indexes
 			--   a_reply: Optional reply document
 		note
 			EIS: "name=mongoc_collection_create_indexes_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_collection_create_indexes_with_opts.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_reply: POINTER
@@ -545,16 +675,22 @@ feature -- Drop
 			-- If no write concern is provided in a_opts, the collection's write concern is used.
 		note
 			EIS: "name=mongoc_collection_drop_with_opts","src=http://mongoc.org/libmongoc/current/mongoc_collection_drop_with_opts.html","protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_error: BSON_ERROR
 			l_res: BOOLEAN
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := l_opts.item
 			end
 			create l_error.make
 			l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_drop_with_opts (item, l_opts, l_error.item)
+			if not l_res then
+				create error.make_by_pointer (l_error.item)
+			end
 		end
 
 feature {NONE} -- Measurement

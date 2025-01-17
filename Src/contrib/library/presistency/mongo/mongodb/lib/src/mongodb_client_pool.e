@@ -192,8 +192,6 @@ feature -- Settings
 			ssl_enabled: is_ssl_enabled
 			valid_opts: a_opts.exists
 			not_pop: not has_pop
-		local
-			l_error: BSON_ERROR
 		do
 			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_client_pool_set_ssl_opts (item, a_opts.item)
