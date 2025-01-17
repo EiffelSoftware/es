@@ -4,7 +4,7 @@ rem %1 : wc path
 rem %2 : 0000
 rem %3 : filename.e
 setlocal
-set WCT=%1
+set WCT=%~dpnx1
 set REVVAL=%2
 set EFILE=%3
 set EFILE_TMP=%EFILE%.tmp
@@ -32,7 +32,8 @@ for /f %%x in ('wmic path win32_utctime get /format:list ^| findstr "="') do set
 set CURRDATE=%Year%-%Month%-%Day%
 set CURRTIME=%hour%:%minute%:%second%
 
-echo Set build number: BUILDNUMBER=%BUILDNUMBER%
+cd %T_CWD%
+::echo Set build number: BUILDNUMBER=%BUILDNUMBER%
 git checkout -- %EFILE%
 sed -e "s/:= 0000/:= %BUILDNUMBER%/" %EFILE% > %EFILE_TMP%
 move %EFILE_TMP% %EFILE%
