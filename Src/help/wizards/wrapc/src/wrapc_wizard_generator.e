@@ -120,8 +120,8 @@ feature -- Templates
 
 	is_smarty_template_file (f: PATH): BOOLEAN
 		do
-			if attached f.extension as ext then
-				Result := across smarty_template_extensions as ext_ic some ext_ic.item.is_case_insensitive_equal_general (ext) end
+			if attached f.extension as f_ext then
+				Result := across smarty_template_extensions as ext some ext.is_case_insensitive_equal_general (f_ext) end
 			end
 		end
 
@@ -152,9 +152,9 @@ feature -- Templates
 					tpl.add_value (l_collection, "WIZ")
 				end
 				across
-					variables as ic
+					variables as it
 				loop
-					tpl.add_value (ic.item, ic.key)
+					tpl.add_value (it, @it.key)
 				end
 				if attached functions as l_functions then
 					tpl.add_value (l_functions.value, l_functions.key)
@@ -166,9 +166,9 @@ feature -- Templates
 				tpl.analyze
 				tpl.get_output
 				across
-					inspectors as ic
+					inspectors as it
 				loop
-					ic.item.unregister
+					it.unregister
 				end
 				if attached tpl.output as l_output then
 					create t.make_with_path (a_target)

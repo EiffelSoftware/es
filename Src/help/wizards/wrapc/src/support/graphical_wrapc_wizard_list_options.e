@@ -42,20 +42,20 @@ feature {NONE} -- Initialization
 			create view_file_button_box
 			create view_file_button.make_with_text ("View C Header")
 
-			across list_of_functions as ic loop
-				create list_item.make_with_text (ic.item)
+			across list_of_functions as it loop
+				create list_item.make_with_text (it)
 				checkeable_list.extend (list_item)
 			end
 
 			check_button.select_actions.extend (agent  (a_check_button: EV_CHECK_BUTTON; a_list: EV_CHECKABLE_LIST)
 				do
 					if a_check_button.is_selected then
-						across a_list as ic loop
-							a_list.check_item (ic.item)
+						across a_list as it loop
+							a_list.check_item (it)
 						end
 					else
-						across a_list as ic loop
-							a_list.uncheck_item (ic.item)
+						across a_list as it loop
+							a_list.uncheck_item (it)
 						end
 					end
 				end (check_button, checkeable_list)

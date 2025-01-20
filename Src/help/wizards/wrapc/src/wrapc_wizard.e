@@ -220,8 +220,8 @@ feature -- Pages
 					if attached a_page.previous_page as l_previous_page and then attached {GRAPHICAL_WRAPC_WIZARD_LIST_OPTIONS} l_previous_page.items.at (1) as l_collection then
 						a_ev_list.wipe_out
 
-						across l_collection.checkeable_list.checked_items as ic loop
-							a_ev_list.force (create {EV_LIST_ITEM}.make_with_text (ic.item.text))
+						across l_collection.checkeable_list.checked_items as it loop
+							a_ev_list.force (create {EV_LIST_ITEM}.make_with_text (it.text))
 						end
 
 					end
@@ -293,8 +293,8 @@ feature {NONE} -- Implementation
 			end
 				-- Copy all checked items
 			if attached ev then
-				across ev.checked_items as ic loop
-					str := ic.item.text.to_string_8
+				across ev.checked_items as it loop
+					str := it.text.to_string_8
 					i := str.index_of ('(', 1)
 					str := str.substring (1, i - 1)
 					str.adjust
