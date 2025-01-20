@@ -163,19 +163,19 @@ feature -- Basic Operation
 			list: LINKED_LIST [EV_MULTI_COLUMN_LIST_ROW]
 		do
 			across
-				to_precompile_libraries.linear_representation as l
+				to_precompile_libraries.linear_representation as it
 			from
 				create list.make
 			loop
-				list.extend (l.item)
+				list.extend (it)
 			end
 			wizard_information.set_l_to_precompile (list)
 			across
-				precompilable_libraries.linear_representation as l
+				precompilable_libraries.linear_representation as it
 			from
 				create list.make
 			loop
-				list.extend (l.item)
+				list.extend (it)
 			end
 			wizard_information.set_l_precompilable (list)
 			Precursor
@@ -191,7 +191,6 @@ feature {NONE} -- Tools
 			-- called
 		local
 			eiffel_directory: DIRECTORY
-			current_lib: PATH
 			current_lib_name: STRING_32
 		do
 				-- NOTE: for now `a_is_dotnet' is set to False, in future
@@ -200,9 +199,8 @@ feature {NONE} -- Tools
 			create eiffel_directory.make_with_path (eiffel_layout.precompilation_path (False, Void))
 			if eiffel_directory.exists then
 				across
-					eiffel_directory.entries as p
+					eiffel_directory.entries as current_lib
 				loop
-					current_lib:= p.item
 					if not (current_lib.is_current_symbol or current_lib.is_parent_symbol) then
 						current_lib_name := current_lib.name
 						if
@@ -274,13 +272,10 @@ feature {NONE} -- Tools
 			-- Fill `a_mc_list' with `a_list' when the user has previously
 			-- choose its library to precompile.
 			-- Can occur only if the user has pushed the Back button
-		local
-			curr_item: EV_MULTI_COLUMN_LIST_ROW
 		do
 			across
-				a_list as l
+				a_list as curr_item
 			loop
-				curr_item := l.item
 				curr_item.parent.prune_all (curr_item)
 				a_mc_list.extend (curr_item)
 			end
@@ -290,9 +285,9 @@ feature {NONE} -- Tools
 			-- Add all the item from precompilable_libraries to to_precompile_libraries
 		do
 			across
-				precompilable_libraries as p
+				precompilable_libraries as it
 			loop
-				p.item.enable_select
+				it.enable_select
 			end
 			add_b.disable_sensitive
 			add_items
@@ -301,13 +296,10 @@ feature {NONE} -- Tools
 		end
 
 	add_items
-		local
-			it: EV_MULTI_COLUMN_LIST_ROW
 		do
 			across
-				precompilable_libraries.selected_items as p
+				precompilable_libraries.selected_items as it
 			loop
-				it := p.item
 				precompilable_libraries.prune (it)
 				to_precompile_libraries.extend (it)
 			end
@@ -318,9 +310,9 @@ feature {NONE} -- Tools
 			-- Remove all the item from to_precompile_libraries to precompilable_libraries
 		do
 			across
-				to_precompile_libraries as p
+				to_precompile_libraries as it
 			loop
-				p.item.enable_select
+				it.enable_select
 			end
 			remove_b.disable_sensitive
 			remove_items
@@ -329,13 +321,10 @@ feature {NONE} -- Tools
 		end
 
 	remove_items
-		local
-			it: EV_MULTI_COLUMN_LIST_ROW
 		do
 			across
-				to_precompile_libraries.selected_items as p
+				to_precompile_libraries.selected_items as it
 			loop
-				it := p.item
 				to_precompile_libraries.prune (it)
 				precompilable_libraries.extend (it)
 			end
@@ -400,7 +389,6 @@ feature {NONE} -- Tools
 	is_row_already_present (a_mc_list: EV_MULTI_COLUMN_LIST; a_row: EV_MULTI_COLUMN_LIST_ROW): BOOLEAN
 			-- Is the row `a_row' represent the same row as a row found in `a_mc_list'?
 		local
-			cur_row: EV_MULTI_COLUMN_LIST_ROW
 			ref_ace: READABLE_STRING_GENERAL
 			cur_ace: READABLE_STRING_GENERAL
 			retried: BOOLEAN
@@ -411,11 +399,10 @@ feature {NONE} -- Tools
 			then
 				ref_ace := ref_info_lib.path
 				across
-					a_mc_list as i
+					a_mc_list as cur_row
 				until
 					Result
 				loop
-					cur_row := i.item
 					if attached {TUPLE [path: READABLE_STRING_GENERAL; path_exists: BOOLEAN]} cur_row.data as cur_info_lib then
 						cur_ace := cur_info_lib.path
 						check cur_ace_not_void: cur_ace /= Void end

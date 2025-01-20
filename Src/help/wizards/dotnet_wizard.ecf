@@ -2,6 +2,7 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="wizard" uuid="0A049049-FB91-4227-8782-5FA68C5B3750" readonly="false">
 	<target name="wizard">
 		<root class="WIZARD_MANAGER" feature="make_and_launch"/>
+		<option is_obsolete_iteration="true"/>
 		<setting name="exception_trace" value="true"/>
 		<setting name="inlining" value="true"/>
 		<setting name="inlining_size" value="0"/>

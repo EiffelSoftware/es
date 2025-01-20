@@ -22,11 +22,7 @@ feature -- Basic Operations
 			-- Generate the code for a new cocoa-application project.
 		local
 			map_list: HASH_TABLE [STRING_32, STRING_8]
-			project_name_lowercase: STRING
 			project_location: PATH
-			tuple2: TUPLE [STRING, STRING]
-			a_string: STRING
-			a_string2: STRING
 		do
 			Precursor
 				-- cached variables

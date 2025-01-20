@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="wizard">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="wizard" uuid="E54593EB-5AEA-463F-A412-22067AFF4552">
 	<target name="wizard">
 		<root class="LIBRARY_GRAPHICAL_WIZARD" feature="make_and_launch"/>
 		<file_rule>
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/\..*$</exclude>
 		</file_rule>
-		<option warning="warning"/>
+		<option warning="warning" is_obsolete_iteration="true"/>
 		<setting name="console_application" value="false"/>
 		<setting name="executable_name" value="wizard"/>
 		<setting name="dead_code_removal" value="feature"/>
 		<capability>
-			<concurrency support="none" use="none"/>
+			<concurrency support="none"/>
 		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>

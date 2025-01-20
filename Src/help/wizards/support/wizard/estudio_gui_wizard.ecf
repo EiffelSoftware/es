@@ -2,14 +2,15 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="estudio_gui_wizard" uuid="6E6AAD4F-8869-428A-B507-54EACE8613E9" library_target="estudio_gui_wizard">
 	<target name="estudio_gui_wizard">
 		<root all_classes="true"/>
+		<option is_obsolete_iteration="true"/>
 		<capability>
 			<concurrency support="none"/>
 		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding.ecf"/>
+		<library name="uri_launcher" location="$ISE_LIBRARY\library\runtime\process\uri_launcher\uri_launcher.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
-		<library name="uri_launcher" location="$ISE_LIBRARY\library\runtime\process\uri_launcher\uri_launcher.ecf"/>
 		<cluster name="console" location=".\console\" recursive="true"/>
 		<cluster name="core" location=".\core\" recursive="true"/>
 		<cluster name="graphical" location=".\gui\" recursive="true"/>

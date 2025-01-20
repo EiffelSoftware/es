@@ -6,11 +6,11 @@
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/\..*$</exclude>
 		</file_rule>
-		<option warning="warning"/>
+		<option warning="warning" is_obsolete_iteration="true"/>
 		<setting name="console_application" value="true"/>
 		<setting name="dead_code_removal" value="feature"/>
 		<capability>
-			<concurrency support="none" use="none"/>
+			<concurrency support="none"/>
 		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="console_wizard" location="..\..\estudio_console_wizard.ecf" readonly="false"/>

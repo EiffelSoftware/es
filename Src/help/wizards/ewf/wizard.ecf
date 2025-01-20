@@ -6,12 +6,12 @@
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/\..*$</exclude>
 		</file_rule>
-		<option warning="warning"/>
+		<option warning="warning" is_obsolete_iteration="true"/>
 		<setting name="console_application" value="false"/>
 		<setting name="executable_name" value="wizard"/>
 		<setting name="dead_code_removal" value="feature"/>
 		<capability>
-			<concurrency support="none" use="none"/>
+			<concurrency support="none"/>
 		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
