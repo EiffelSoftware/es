@@ -34,7 +34,8 @@ feature {NONE} -- Initialization
             create reply.make
 
                 -- Execute command
-            if collection.command_simple (cmd, Void, reply) then
+            collection.command_simple (cmd, Void, reply)
+            if not collection.has_error then
                 print ("Got reply: " + reply.bson_as_canonical_extended_json + "%N")
             else
                 print ("Got error: " + collection.error_string + "%N")

@@ -23,7 +23,6 @@ feature {NONE} -- Initialization
 			document_to_insert: BSON
 			write_concern: MONGODB_WRITE_CONCERN
 			options: BSON
-			error: BSON_ERROR
 			doc: BSON
 			json: STRING
 			mg_factory: MONGODB_FACTORY

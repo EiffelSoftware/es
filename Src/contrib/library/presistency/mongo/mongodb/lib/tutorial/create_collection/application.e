@@ -26,13 +26,13 @@ feature {NONE} -- Initialization
 			l_database := l_client.database ("newDB")
 
 				-- display the current collections
-			across l_database.collection_names (Void) as ic loop print (ic.item + "%N")  end
+			across l_database.collection_names (Void) as ic loop print (ic + "%N")  end
 
 				-- Create a new collection.
 			l_collection := l_database.create_collection ("newCollection", Void)
 
 				-- display the current collections
-			across l_database.collection_names (Void) as ic loop print (ic.item + "%N")  end
+			across l_database.collection_names (Void) as ic loop print (ic + "%N")  end
 		end
 
 end

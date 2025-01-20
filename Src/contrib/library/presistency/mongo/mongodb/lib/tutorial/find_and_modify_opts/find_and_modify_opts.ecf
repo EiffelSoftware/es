@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="drop_collection">
-	<target name="drop_collection">
-		<root feature="make" class="APPLICATION"/>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="find_and_modify_opts" uuid="2CD36B26-FCC2-4FF1-AEB0-5DF51DD42991">
+	<target name="find_and_modify_opts">
+		<root class="APPLICATION" feature="make"/>
 		<file_rule>
-			<exclude>/\.git$</exclude>
-			<exclude>/\.svn$</exclude>
 			<exclude>/CVS$</exclude>
 			<exclude>/EIFGENs$</exclude>
+			<exclude>/\.git$</exclude>
+			<exclude>/\.svn$</exclude>
 		</file_rule>
 		
 		<option warning="warning">
@@ -20,6 +20,6 @@
 		<library name="base" location="$ISE_LIBRARY/library/base/base.ecf"/>
 		<library name="bson" location="..\..\..\..\bson\lib\bson.ecf"/>
 		<library name="mongodb" location="..\..\mongodb.ecf" readonly="false"/>
-		<cluster name="drop_collection" location=".\" recursive="true"/>
+		<cluster name="find_and_modify_opts" location=".\" recursive="true"/>
 	</target>
 </system>

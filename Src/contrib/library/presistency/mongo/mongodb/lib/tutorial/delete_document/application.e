@@ -26,7 +26,6 @@ feature {NONE} -- Initialization
 			l_collection: MONGODB_COLLECTION
 			l_doc: BSON
 			l_oid: BSON_OID
-			l_error: BSON_ERROR
 		do
 			create l_client.make ("mongodb://localhost:27017/?appname=delete-example")
 			l_collection := l_client.collection ("test", "test")

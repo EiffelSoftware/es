@@ -670,6 +670,26 @@ feature -- Indexes
 
 feature -- Drop
 
+    drop
+            -- Drop the collection and all its indexes.
+            -- Note: This is a potentially dangerous operation as it will remove all data
+            -- from the collection.
+        note
+            EIS: "name=mongoc_collection_drop", "src=http://mongoc.org/libmongoc/current/mongoc_collection_drop.html", "protocol=uri"
+        require
+            is_useful: exists
+        local
+            l_error: BSON_ERROR
+            l_res: BOOLEAN
+        do
+            clean_up
+            create l_error.make
+            l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_drop (item, l_error.item)
+            if not l_res then
+				create error.make_by_pointer (l_error.item)
+            end
+        end
+
 	drop_with_opts	(a_opts: detachable BSON)
 			-- Drop the current collection, including all indexes associated with the collection.
 			-- If no write concern is provided in a_opts, the collection's write concern is used.

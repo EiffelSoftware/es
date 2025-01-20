@@ -24,15 +24,21 @@ feature {NONE} -- Initialization
 	count_documents
 		local
 			l_client: MONGODB_CLIENT
-			l_doc: BSON
+			l_filter: BSON
 			l_collection: MONGODB_COLLECTION
 			l_count: INTEGER_64
+			l_reply: BSON
 		do
 			create l_client.make ("mongodb://localhost:27017/?appname=count-example")
 			l_collection := l_client.collection ("mydb", "mycoll")
-			create l_doc.make
-			l_doc.bson_append_utf8 ("hello", "new eiffel")
-			l_count := l_collection.count ((create {MONGODB_QUERY_FLAG}).mongoc_query_none, l_doc, 0, 0, Void)
+
+				-- Create filter document
+			create l_filter.make
+			l_filter.bson_append_utf8 ("hello", "new eiffel")
+
+				-- Use count_documents instead of deprecated count
+			create l_reply.make
+			l_count := l_collection.count_documents (l_filter, Void, Void, l_reply)
 			if l_count < 0 then
 				print ("Error message: " + l_collection.error_string)
 			else

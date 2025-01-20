@@ -29,7 +29,6 @@ feature {NONE} -- Initialization
 			l_update: BSON
 			l_query: BSON
 			l_oid: BSON_OID
-			l_error: BSON_ERROR
 			l_subdoc: BSON
 		do
 			create l_client.make ("mongodb://localhost:27017/?appname=update-example")

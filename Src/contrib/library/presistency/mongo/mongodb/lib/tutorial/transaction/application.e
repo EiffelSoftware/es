@@ -24,9 +24,7 @@ feature {NONE} -- Initialization
             txn_opts: MONGODB_TRANSACTION_OPT
             read_concern: MONGODB_READ_CONCERN
             write_concern: MONGODB_WRITE_CONCERN
-            doc: BSON
             insert_opts: BSON
-            reply: BSON
             l_error: BSON_ERROR
         do
             	-- Initialize default URI
@@ -103,8 +101,7 @@ feature {NONE} -- Implementation
             i: INTEGER
             doc: BSON
             reply: BSON
-            start_time: INTEGER_64
-            l_stopwatch: DT_STOPWATCH
+             l_stopwatch: DT_STOPWATCH
         do
             	-- Start transaction
             session.start_transaction (txn_opts)
