@@ -421,10 +421,10 @@ feature -- Access
 feature -- Status
 
 	is_ssl_enabled: BOOLEAN
-            -- Is SSL support enabled in this build?
-        do
-            Result := {MONGODB_EXTERNALS}.is_ssl_enabled
-        end
+			-- Is SSL support enabled in this build?
+		do
+			Result := {MONGODB_EXTERNALS}.is_ssl_enabled
+		end
 
 	read_command_with_opts (a_db_name: READABLE_STRING_GENERAL; a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE;
 							a_opts: detachable BSON; a_reply: BSON; )

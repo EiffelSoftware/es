@@ -23,7 +23,6 @@ feature {NONE} -- Initialization
 			l_collection: MONGODB_COLLECTION
 			l_doc: BSON
 			l_oid: BSON_OID
-			l_error: BSON_ERROR
 			l_array: LIST [BSON]
 		do
 			create l_client.make ("mongodb://localhost:27017/?appname=insert-array")

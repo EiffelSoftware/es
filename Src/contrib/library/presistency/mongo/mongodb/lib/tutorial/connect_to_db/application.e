@@ -19,7 +19,6 @@ feature {NONE} -- Initialization
 			l_database: MONGODB_DATABASE
 			l_ping: BSON
 			l_reply: BSON
-			l_error: BSON_ERROR
 		do
 				-- Create client
 			create l_client.make ("mongodb://127.0.0.1:27017")

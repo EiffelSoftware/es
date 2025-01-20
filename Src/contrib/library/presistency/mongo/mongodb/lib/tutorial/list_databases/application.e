@@ -26,7 +26,7 @@ feature {NONE} -- Initialization
 			across
 				l_database_names as ic
 			loop
-				print (ic.item + "%N")
+				print (ic + "%N")
 			end
 		end
 end

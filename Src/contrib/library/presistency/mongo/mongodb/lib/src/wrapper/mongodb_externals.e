@@ -650,6 +650,13 @@ feature -- Mongo Collection
 			]"
 		end
 
+    c_mongoc_collection_drop (a_collection: POINTER; a_error: POINTER): BOOLEAN
+            -- Drop the collection and all its indexes.
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return mongoc_collection_drop((mongoc_collection_t *)$a_collection, (bson_error_t *)$a_error);"
+        end
 
 
 	c_mongoc_collection_aggregate (a_collection: POINTER; a_flags: INTEGER; a_pipeline: POINTER; a_opts: POINTER; a_read_prefs: POINTER): POINTER

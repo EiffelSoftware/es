@@ -35,8 +35,10 @@ feature {NONE} -- Initialization
 				print ("Collection newCollection does not exists%N")
 			end
 
-				-- Drop Collection
-			l_collection.drop_with_opts (Void)
+			if attached l_collection then
+					-- Drop Collection
+				l_collection.drop_with_opts (Void)
+			end
 
 				-- Exists collection "newCollection"?
 			if l_database.has_collection ("newCollection") then

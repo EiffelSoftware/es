@@ -2,6 +2,7 @@ note
     description: "Example: demonstrates how to use count_documents with skip option"
     date: "$Date$"
     revision: "$Revision$"
+    EIS: "name=count_documents", "src=https://mongoc.org/libmongoc/current/mongoc_collection_count_documents.html#example", "protocol=uri"
 
 class
     APPLICATION
