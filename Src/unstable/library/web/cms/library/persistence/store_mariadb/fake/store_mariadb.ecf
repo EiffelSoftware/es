@@ -11,7 +11,7 @@
 		<library name="error" location="$ISE_LIBRARY\contrib\library\utility\general\error\error.ecf"/>
 		<library name="json" location="$ISE_LIBRARY\contrib\library\text\parser\json\library\json.ecf" readonly="false"/>
 		<library name="logging" location="$ISE_LIBRARY\library\runtime\logging\logging.ecf"/>
-		<library name="model" location="..\..\model\cms_model.ecf"/>
+		<library name="model" location="..\..\..\model\cms_model.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<cluster name="persistence_store_mariadb_fake" location=".\src\" recursive="true">
 			<file_rule>
