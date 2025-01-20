@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="library_wizard" uuid="BD4055F3-065F-4E3A-8765-2E471E8EA3C8">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="library_wizard" uuid="BD4055F3-065F-4E3A-8765-2E471E8EA3C8">
 	<target name="library_wizard">
 		<root class="LIBRARY_CONSOLE_WIZARD_APPLICATION" feature="make"/>
 		<file_rule>
 			<exclude>/EIFGENs$</exclude>
-			<exclude>/\.git$</exclude>
-			<exclude>/\.svn$</exclude>
+			<exclude>/\..*$</exclude>
 		</file_rule>
-		<option warning="warning">
-		</option>
+		<option warning="warning"/>
 		<setting name="console_application" value="true"/>
-		<setting name="dead_code_removal" value="all"/>
+		<setting name="dead_code_removal" value="feature"/>
 		<capability>
 			<concurrency support="none" use="none"/>
 		</capability>

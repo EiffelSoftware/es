@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="{$WIZ.library.name/}" uuid="{$UUID/}" library_target="{$WIZ.library.name/}">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="{$WIZ.library.name/}" uuid="{$UUID/}" library_target="{$WIZ.library.name/}">
 	<target name="{$WIZ.library.name/}">
 		<root all_classes="true"/>
 		<option full_class_checking="false" is_attached_by_default="True" manifest_array_type="mismatch_warning">
@@ -83,11 +83,10 @@
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<cluster name="src" location="." recursive="true">
 			<file_rule>
-				<exclude>.git$</exclude>
-				<exclude>.svn$</exclude>
 				<exclude>/c$</exclude>
 				<exclude>/include$</exclude>
 				<exclude>/EIFGENs$</exclude>
+				<exclude>/\..*$</exclude>
 			</file_rule>
 		</cluster>
 	</target>
@@ -100,11 +99,10 @@
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<cluster name="test" location=".\testing\" recursive="true">
 			<file_rule>
-				<exclude>.git$</exclude>
-				<exclude>.svn$</exclude>
 				<exclude>/c$</exclude>
 				<exclude>/include$</exclude>
 				<exclude>/EIFGENs$</exclude>
+				<exclude>/\..*$</exclude>
 			</file_rule>
 		</cluster>	
 	</target>
