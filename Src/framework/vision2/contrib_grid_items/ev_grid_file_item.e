@@ -100,7 +100,7 @@ feature {NONE} -- Agents
 				l_dial.set_start_directory (l_dir.path.name)
 			end
 
-			l_dial.ok_actions.extend (agent dialog_ok (l_dial))
+			l_dial.open_actions.extend (agent dialog_ok (l_dial))
 			enter_outter_edition
 			if attached parent as g then
 				l_parent := parent_window (g)
@@ -128,7 +128,7 @@ feature {NONE} -- Agents
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2024, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
