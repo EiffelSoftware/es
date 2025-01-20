@@ -783,7 +783,11 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 		local
 			p: PATH
 		do
-			p := {EXECUTION_ENVIRONMENT}.temporary_directory_path.extended ("tmp-img-svg-")
+			p := {EXECUTION_ENVIRONMENT}.temporary_directory_path
+			if p = Void then
+				create p.make_current
+			end
+			p := p.extended (".tmp-img-svg-")
 			create {RAW_FILE} Result.make_open_temporary_with_prefix (p.name)
 		end
 
