@@ -1,86 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   height="100"
-   viewBox="0 0 100 100"
-   width="100"
-   version="1.1"
-   id="svg839"
-   sodipodi:docname="18.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
-  <metadata
-     id="metadata845">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs
-     id="defs843" />
-  <sodipodi:namedview
-     inkscape:document-rotation="0"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="3200"
-     inkscape:window-height="1734"
-     id="namedview841"
-     showgrid="false"
-     inkscape:zoom="8.4994235"
-     inkscape:cx="40.209462"
-     inkscape:cy="59.519612"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg839" />
-  <g
-     transform="translate(-12.985472)"
-     id="g857">
-    <rect
-       y="25.540764"
-       x="46.406876"
-       height="48.918468"
-       width="7.3211312"
-       id="rect864"
-       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:3.02362;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal" />
-    <circle
-       r="8.6522465"
-       cy="16.552412"
-       cx="50.06744"
-       id="path847"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal" />
-    <circle
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal"
-       id="circle858"
-       cx="50.06744"
-       cy="83.447586"
-       r="8.6522465" />
-    <circle
-       transform="scale(-1)"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:normal"
-       id="circle868"
-       cx="-75.903503"
-       cy="-37.228142"
-       r="8.6522465" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:6.3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 51.675895,64.519326 75.968741,58.19653 V 47.547612"
-       id="path870" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+ <g transform="translate(-12.985)">
+  <rect x="46.407" y="25.541" width="7.3211" height="48.918" style="paint-order:normal"/>
+  <g fill="#fff" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="5">
+   <circle cx="50.067" cy="16.552" r="8.6522" style="paint-order:normal"/>
+   <circle cx="50.067" cy="83.448" r="8.6522" style="paint-order:normal"/>
+   <circle transform="scale(-1)" cx="-75.904" cy="-37.228" r="8.6522" style="paint-order:normal"/>
   </g>
+  <path d="m51.676 64.519 24.293-6.3228v-10.649" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="6.3"/>
+ </g>
 </svg>
