@@ -5,7 +5,7 @@
   <g fill="#fff" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="5">
    <circle cx="50.067" cy="16.552" r="8.6522" style="paint-order:normal"/>
    <circle cx="50.067" cy="83.448" r="8.6522" style="paint-order:normal"/>
-   <circle transform="scale(-1)" cx="-75.904" cy="-37.228" r="8.6522" style="paint-order:normal"/>
+   <circle cx="-75.904" cy="-37.228" r="8.6522" style="paint-order:normal"/>
   </g>
   <path d="m51.676 64.519 24.293-6.3228v-10.649" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="6.3"/>
  </g>
