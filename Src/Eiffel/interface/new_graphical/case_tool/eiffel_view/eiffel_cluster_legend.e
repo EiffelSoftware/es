@@ -339,8 +339,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	change_color_all (classes: LIST [BON_CLASS_FIGURE]; color_table: STRING_TABLE [EV_COLOR])
-			-- Change color of `classes' according to `color_table'.
+	change_color_all (classes: LIST [BON_CLASS_FIGURE]; a_color_table: STRING_TABLE [EV_COLOR])
+			-- Change color of `classes' according to `a_color_table'.
 		require
 			classes_exist: classes /= Void
 			color_table_exist: color_table /= Void
@@ -354,7 +354,7 @@ feature {NONE} -- Implementation
 				classes.after
 			loop
 				cf := classes.item
-				c := color_table.item (classes.item.model.name_32)
+				c := a_color_table [classes.item.model.name_32]
 				if c /= Void then
 					change_font (classes.item, c)
 					cf.set_background_color (c)
@@ -398,41 +398,41 @@ feature {NONE} -- Implementation
 		require
 			a_nb_larger_zero: a_nb > 0
 		do
-			inspect a_nb
-			when 1 then
-				Result := default_colors.blue
-			when 2 then
-				Result := default_colors.red
-			when 3 then
-				Result := default_colors.green
-			when 4 then
-				Result := default_colors.magenta
-			when 5 then
-				Result := default_colors.yellow
-			when 6 then
-				Result := default_colors.cyan
-			when 7 then
-				Result := default_colors.grey
-			when 8 then
-				Result := default_colors.dark_blue
-			when 9 then
-				Result := default_colors.dark_red
-			when 10 then
-				Result := default_colors.dark_green
-			when 11 then
-				Result := default_colors.dark_magenta
-			when 12 then
-				Result := default_colors.dark_yellow
-			when 13 then
-				Result := default_colors.dark_cyan
-			when 14 then
-				Result := default_colors.dark_grey
-			else
-				Result := random_color_table.item (a_nb)
-				if Result = Void then
+			Result := color_table [a_nb]
+			if Result = Void then
+				inspect a_nb
+				when 1 then
+					create Result.make_with_8_bit_rgb (128, 176, 255) -- light blue
+				when 2 then
+					create Result.make_with_8_bit_rgb (255, 128, 128) -- light red
+				when 3 then
+					create Result.make_with_8_bit_rgb (128, 255, 128) -- light green
+				when 4 then
+					create Result.make_with_8_bit_rgb (255, 176, 255) -- light magenta
+				when 5 then
+					create Result.make_with_8_bit_rgb (255, 255, 128) -- light yellow
+				when 6 then
+					create Result.make_with_8_bit_rgb (128, 255, 255) -- cyan
+				when 7 then
+					create Result.make_with_8_bit_rgb (192, 192, 192) -- light grey
+				when 8 then
+					Result := default_colors.dark_blue
+				when 9 then
+					Result := default_colors.dark_red
+				when 10 then
+					Result := default_colors.dark_green
+				when 11 then
+					Result := default_colors.dark_magenta
+				when 12 then
+					Result := default_colors.dark_yellow
+				when 13 then
+					Result := default_colors.dark_cyan
+				when 14 then
+					Result := default_colors.dark_grey
+				else
 					create Result.make_with_8_bit_rgb (random.next_item_in_range (0, 255), random.next_item_in_range (0, 255), random.next_item_in_range (0, 255))
-					random_color_table.put (Result, a_nb)
 				end
+				color_table [a_nb] := Result
 			end
 		ensure
 			Result_not_void: Result /= Void
@@ -443,7 +443,7 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
-	random_color_table: HASH_TABLE [EV_COLOR, INTEGER]
+	color_table: HASH_TABLE [EV_COLOR, INTEGER]
 			-- Table of numbers and colors.
 		once
 			create Result.make (10)

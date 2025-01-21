@@ -162,18 +162,18 @@ feature {NONE} -- Initialization
 			toggle_selected_classes_suppliers_cmd.enable_displayed
 			toggle_selected_classes_suppliers_cmd.enable_sensitive
 
-			create center_diagram_cmd.make (Current)
-			auto_recycle (center_diagram_cmd)
-			center_diagram_cmd.enable_displayed
-			center_diagram_cmd.enable_sensitive
+			create target_cluster_or_class_diagram_cmd.make (Current)
+			auto_recycle (target_cluster_or_class_diagram_cmd)
+			target_cluster_or_class_diagram_cmd.enable_displayed
+			target_cluster_or_class_diagram_cmd.enable_sensitive
 
 			create create_class_cmd.make (Current)
 			auto_recycle (create_class_cmd)
 			create_class_cmd.enable_displayed
 
-			create delete_cmd.make (Current, develop_window)
-			auto_recycle (delete_cmd)
-			delete_cmd.enable_displayed
+			create delete_system_element_cmd.make (Current, develop_window)
+			auto_recycle (delete_system_element_cmd)
+			delete_system_element_cmd.enable_displayed
 
 			create create_new_links_cmd.make (Current)
 			auto_recycle (create_new_links_cmd)
@@ -183,9 +183,9 @@ feature {NONE} -- Initialization
 			auto_recycle (change_color_cmd)
 			change_color_cmd.enable_displayed
 
-			create trash_cmd.make (Current)
-			auto_recycle (trash_cmd)
-			trash_cmd.enable_displayed
+			create delete_figure_cmd.make (Current)
+			auto_recycle (delete_figure_cmd)
+			delete_figure_cmd.enable_displayed
 
 			create toggle_inherit_cmd.make (Current)
 			toggle_inherit_cmd.enable_displayed
@@ -243,9 +243,9 @@ feature {NONE} -- Initialization
 			auto_recycle (delete_view_cmd)
 			delete_view_cmd.enable_displayed
 
-			create diagram_to_ps_cmd.make (Current)
-			auto_recycle (diagram_to_ps_cmd)
-			diagram_to_ps_cmd.enable_displayed
+			create diagram_export_to_file_cmd.make (Current)
+			auto_recycle (diagram_export_to_file_cmd)
+			diagram_export_to_file_cmd.enable_displayed
 
 			create toggle_force_cmd.make (Current)
 			auto_recycle (toggle_force_cmd)
@@ -330,26 +330,71 @@ feature {NONE} -- Initialization
 -- TODO: Remove and make create class in standard toolbar pick and dropable
 			draw_commands.extend (create_class_cmd)
 			draw_commands.extend (create_new_links_cmd)
+			draw_commands.extend (delete_system_element_cmd)
 			draw_commands.extend (Void)
-			draw_commands.extend (delete_cmd)
-			draw_commands.extend (remove_anchor_cmd)
-			draw_commands.extend (trash_cmd)
-			draw_commands.extend (Void)
+
+
 			draw_commands.extend (change_color_cmd)
 			draw_commands.extend (link_tool_cmd)
 			draw_commands.extend (fill_cluster_cmd)
 
 			draw_commands.extend (toggle_quality_cmd)
-			draw_commands.extend (select_depth_cmd)
+
 			draw_commands.extend (Void)
 
+			draw_commands.extend (remove_anchor_cmd)
 			draw_commands.extend (toggle_force_cmd)
 			draw_commands.extend (force_settings_cmd)
+
 			draw_commands.extend (Void)
 
 			draw_commands.extend (zoom_out_cmd)
 			draw_commands.extend (fit_to_screen_cmd)
 			draw_commands.extend (zoom_in_cmd)
+
+
+			--| As we now have two levels we no longer need customizable toolbars.
+--			custom_toolbar := preferences.diagram_tool_data.retrieve_diagram_toolbar (draw_commands)
+
+				-- Extending `Void' to list will generate a toolbar separator in its place.
+			view_commands.extend (target_cluster_or_class_diagram_cmd)
+
+			view_commands.extend (Void)
+
+
+			view_commands.extend (toggle_uml_cmd)
+
+			view_commands.extend (Void)
+
+			view_commands.extend (toggle_cluster_legend_cmd)
+			view_commands.extend (toggle_cluster_cmd)
+			view_commands.extend (toggle_supplier_cmd)
+			view_commands.extend (toggle_inherit_cmd)
+			view_commands.extend (toggle_labels_cmd)
+
+			view_commands.extend (Void)
+
+			view_commands.extend (delete_figure_cmd)
+
+			view_commands.extend (Void)
+
+			view_commands.extend (select_depth_cmd)
+
+			view_commands.extend (toggle_selected_classes_ancestors_cmd)
+			view_commands.extend (toggle_selected_classes_descendents_cmd)
+			view_commands.extend (toggle_selected_classes_clients_cmd)
+			view_commands.extend (toggle_selected_classes_suppliers_cmd)
+
+
+			view_commands.extend (Void)
+			view_commands.extend (diagram_export_to_file_cmd)
+			view_commands.extend (Void)
+
+			view_commands.extend (undo_cmd)
+			view_commands.extend (history_cmd)
+			view_commands.extend (redo_cmd)
+
+
 
 			from
 				create drawing_toolbar.make
@@ -364,32 +409,6 @@ feature {NONE} -- Initialization
 				end
 				draw_commands.forth
 			end
-
-			--| As we now have two levels we no longer need customizable toolbars.
---			custom_toolbar := preferences.diagram_tool_data.retrieve_diagram_toolbar (draw_commands)
-
-			view_commands.extend (toggle_selected_classes_ancestors_cmd)
-			view_commands.extend (toggle_selected_classes_descendents_cmd)
-			view_commands.extend (toggle_selected_classes_clients_cmd)
-			view_commands.extend (toggle_selected_classes_suppliers_cmd)
-			view_commands.extend (Void)
-
-				-- Extending `Void' to list will generate a toolbar separator in its place.
-			view_commands.extend (diagram_to_ps_cmd)
-			view_commands.extend (center_diagram_cmd)
-			view_commands.extend (toggle_uml_cmd)
-			view_commands.extend (toggle_cluster_cmd)
-			view_commands.extend (toggle_cluster_legend_cmd)
-			view_commands.extend (Void)
-
-			view_commands.extend (toggle_supplier_cmd)
-			view_commands.extend (toggle_inherit_cmd)
-			view_commands.extend (toggle_labels_cmd)
-			view_commands.extend (Void)
-
-			view_commands.extend (undo_cmd)
-			view_commands.extend (history_cmd)
-			view_commands.extend (redo_cmd)
 
 			from
 				create view_toolbar.make
@@ -548,8 +567,8 @@ feature -- EB_TOOL features
 			mini_toolbar.extend (history_toolbar)
 			address_manager.label_changed_actions.extend (agent (develop_window.docking_manager).update_mini_tool_bar_size (content))
 
-			register_action (content.drop_actions, agent center_diagram_cmd.execute_with_class_stone)
-			register_action (content.drop_actions, agent center_diagram_cmd.execute_with_cluster_stone)
+			register_action (content.drop_actions, agent target_cluster_or_class_diagram_cmd.execute_with_class_stone)
+			register_action (content.drop_actions, agent target_cluster_or_class_diagram_cmd.execute_with_cluster_stone)
 		end
 
 feature -- Status report
@@ -697,10 +716,10 @@ feature -- Status settings.
 		do
 			zoom_selector.disable_sensitive
 			create_class_cmd.disable_sensitive
-			delete_cmd.disable_sensitive
+			delete_system_element_cmd.disable_sensitive
 			create_new_links_cmd.disable_sensitive
 			change_color_cmd.disable_sensitive
-			trash_cmd.disable_sensitive
+			delete_figure_cmd.disable_sensitive
 			link_tool_cmd.disable_sensitive
 			reset_link_tool_cmd.disable_sensitive
 			toggle_inherit_cmd.disable_sensitive
@@ -714,7 +733,7 @@ feature -- Status settings.
 			zoom_in_cmd.disable_sensitive
 			zoom_out_cmd.disable_sensitive
 			delete_view_cmd.disable_sensitive
-			diagram_to_ps_cmd.disable_sensitive
+			diagram_export_to_file_cmd.disable_sensitive
 			toggle_force_cmd.disable_sensitive
 			toggle_cluster_cmd.disable_sensitive
 			remove_anchor_cmd.disable_sensitive
@@ -1322,11 +1341,11 @@ feature {NONE} -- Clean up
 			world_cell := Void
 			history_cmd := Void
 			create_class_cmd := Void
-			delete_cmd := Void
+			delete_system_element_cmd := Void
 			create_new_links_cmd := Void
-			center_diagram_cmd := Void
+			target_cluster_or_class_diagram_cmd := Void
 			change_color_cmd := Void
-			trash_cmd := Void
+			delete_figure_cmd := Void
 			toggle_inherit_cmd := Void
 			toggle_supplier_cmd := Void
 			toggle_labels_cmd := Void
@@ -1338,7 +1357,7 @@ feature {NONE} -- Clean up
 			zoom_in_cmd := Void
 			zoom_out_cmd := Void
 			toggle_quality_cmd := Void
-			diagram_to_ps_cmd := Void
+			diagram_export_to_file_cmd := Void
 			toggle_force_cmd := Void
 			remove_anchor_cmd := Void
 			toggle_cluster_legend_cmd := Void
@@ -1360,11 +1379,11 @@ feature {NONE} -- Clean up
 			world_cell_detached: world_cell = Void
 			history_cmd_detached: history_cmd = Void
 			create_class_cmd_detached: create_class_cmd = Void
-			delete_cmd_detached: delete_cmd = Void
+			delete_cmd_detached: delete_system_element_cmd = Void
 			create_new_links_cmd_detached: create_new_links_cmd = Void
-			center_diagram_cmd_detached: center_diagram_cmd = Void
+			center_diagram_cmd_detached: target_cluster_or_class_diagram_cmd = Void
 			change_color_cmd_detached: change_color_cmd = Void
-			trash_cmd_detached: trash_cmd = Void
+			trash_cmd_detached: delete_figure_cmd = Void
 			toggle_inherit_cmd_detached: toggle_inherit_cmd = Void
 			toggle_supplier_cmd_detached: toggle_supplier_cmd = Void
 			toggle_labels_cmd_detached: toggle_labels_cmd = Void
@@ -1376,7 +1395,7 @@ feature {NONE} -- Clean up
 			zoom_in_cmd_detached: zoom_in_cmd = Void
 			zoom_out_cmd_detached: zoom_out_cmd = Void
 			toggle_quality_cmd_detached: toggle_quality_cmd = Void
-			diagram_to_ps_cmd_detached: diagram_to_ps_cmd = Void
+			diagram_to_ps_cmd_detached: diagram_export_to_file_cmd = Void
 			toggle_force_cmd_detached: toggle_force_cmd = Void
 			remove_anchor_cmd_detached: remove_anchor_cmd = Void
 			toggle_cluster_legend_cmd_detached: toggle_cluster_legend_cmd = Void
@@ -1634,19 +1653,19 @@ feature -- Commands
 	create_class_cmd: EB_CREATE_CLASS_DIAGRAM_COMMAND
 			-- Command to create new classes.
 
-	delete_cmd: EB_DELETE_DIAGRAM_ITEM_COMMAND
+	delete_system_element_cmd: EB_DELETE_DIAGRAM_ITEM_COMMAND
 			-- Command to remove an element from the system.
 
 	create_new_links_cmd: EB_CREATE_LINK_COMMAND
 			-- Command to select the type of new links.
 
-	center_diagram_cmd: EB_CENTER_DIAGRAM_COMMAND
+	target_cluster_or_class_diagram_cmd: EB_CENTER_DIAGRAM_COMMAND
 			-- Command to target the diagram to a class or a cluster.
 
 	change_color_cmd: EB_CHANGE_COLOR_COMMAND
 			-- Command to change the color of a class or all the classes.
 
-	trash_cmd: EB_DELETE_FIGURE_COMMAND
+	delete_figure_cmd: EB_DELETE_FIGURE_COMMAND
 			-- Command to hide an element.
 
 	toggle_inherit_cmd: EB_TOGGLE_INHERIT_COMMAND
@@ -1682,7 +1701,7 @@ feature -- Commands
 	toggle_quality_cmd: EB_TOGGLE_QUALITY_COMMAND
 			-- Toggle quality command.
 
-	diagram_to_ps_cmd: EB_DIAGRAM_TO_FILE_COMMAND
+	diagram_export_to_file_cmd: EB_DIAGRAM_TO_FILE_COMMAND
 			-- Save diagram as ps or png.
 
 	toggle_force_cmd: EB_TOGGLE_FORCE_COMMAND
@@ -2166,13 +2185,13 @@ feature {NONE} -- Implementation
 
 			if l_is_readonly then
 				create_class_cmd.disable_sensitive
-				trash_cmd.disable_sensitive
-				delete_cmd.disable_sensitive
+				delete_figure_cmd.disable_sensitive
+				delete_system_element_cmd.disable_sensitive
 				create_new_links_cmd.disable_sensitive
 			else
 				create_class_cmd.enable_sensitive
-				trash_cmd.enable_sensitive
-				delete_cmd.enable_sensitive
+				delete_figure_cmd.enable_sensitive
+				delete_system_element_cmd.enable_sensitive
 				create_new_links_cmd.enable_sensitive
 			end
 		end
@@ -2204,7 +2223,7 @@ feature {NONE} -- Implementation
 			zoom_in_cmd.enable_sensitive
 			zoom_out_cmd.enable_sensitive
 			delete_view_cmd.enable_sensitive
-			diagram_to_ps_cmd.enable_sensitive
+			diagram_export_to_file_cmd.enable_sensitive
 			toggle_uml_cmd.enable_sensitive
 			fit_to_screen_cmd.enable_sensitive
 			reset_view_cmd.enable_sensitive
@@ -2487,7 +2506,7 @@ invariant
 	shortcut_table_not_void: shortcut_table /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

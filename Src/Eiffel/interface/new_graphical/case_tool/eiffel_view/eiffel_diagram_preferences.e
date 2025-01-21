@@ -555,7 +555,7 @@ feature {NONE} -- Implementation
 
 				-- BON Client supplier link
 			bon_client_label_font_preference := l_manager.new_identified_font_preference_value (bon_client_label_font_string, font_factory.registered_font (l_default_font.twin))
-			bon_client_label_color_preference := l_manager.new_color_preference_value (l_manager, bon_client_label_color_string, create {EV_COLOR}.make_with_8_bit_rgb (0, 0, 0))
+			bon_client_label_color_preference := l_manager.new_color_preference_value (l_manager, bon_client_label_color_string, create {EV_COLOR}.make_with_8_bit_rgb (0, 128, 64))
 			bon_client_color_preference := l_manager.new_color_preference_value (l_manager, bon_client_color_string, create {EV_COLOR}.make_with_8_bit_rgb (0, 0, 255))
 			bon_client_line_width_preference := l_manager.new_integer_preference_value (l_manager, bon_client_line_width_string, (5).max (1))
 
@@ -722,7 +722,7 @@ invariant
 note
 	ca_ignore:
 		"CA093", "CA093: manifest array type mismatch"
-	copyright:	"Copyright (c) 1984-2018, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

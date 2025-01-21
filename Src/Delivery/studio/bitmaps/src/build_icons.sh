@@ -669,6 +669,7 @@ SVGadd $RES/window.svg $OVERLAY/new_nw.svg 9.svg
 SVGadd $RES/document.svg $OVERLAY/new_nw.svg 11.svg
 # metric
 # supplier link
+SVGadd ../18/10.svg $OVERLAY/new_w.svg 13.svg
 # aggregate supplier link
 # inheritance link
 # and

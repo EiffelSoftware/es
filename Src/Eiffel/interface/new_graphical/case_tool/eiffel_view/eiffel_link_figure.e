@@ -50,12 +50,9 @@ feature -- Element change
 
 	request_update
 			-- Request an update.
-		local
-			l_cluster: EG_CLUSTER_FIGURE
 		do
 			Precursor {EG_POLYLINE_LINK_FIGURE}
-			l_cluster ?= group
-			if l_cluster /= Void then
+			if attached {EG_CLUSTER_FIGURE} group as l_cluster then
 				l_cluster.request_update
 			end
 		end
@@ -394,7 +391,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

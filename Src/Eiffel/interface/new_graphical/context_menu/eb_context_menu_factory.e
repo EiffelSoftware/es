@@ -982,9 +982,9 @@ feature {NONE} -- Menu section, Granularity 1.
 			l_menu.last.select_actions.wipe_out
 			l_menu.last.select_actions.extend (agent (dev_window.commands.find_class_or_cluster_command).execute_with_stone (a_class_stone))
 
-			l_menu.extend (dev_window.tools.diagram_tool.center_diagram_cmd.new_menu_item_unmanaged)
+			l_menu.extend (dev_window.tools.diagram_tool.target_cluster_or_class_diagram_cmd.new_menu_item_unmanaged)
 			l_menu.last.select_actions.wipe_out
-			l_menu.last.select_actions.extend (agent (dev_window.tools.diagram_tool.center_diagram_cmd).execute_with_class_stone (a_class_stone))
+			l_menu.last.select_actions.extend (agent (dev_window.tools.diagram_tool.target_cluster_or_class_diagram_cmd).execute_with_class_stone (a_class_stone))
 		end
 
 	extend_feature_formatter_menus (a_menu: EV_MENU; a_feature_stone: FEATURE_STONE)
@@ -1620,7 +1620,7 @@ feature {NONE} -- Diagram menu section, Granularity 1.
 		local
 			l_command: EB_DELETE_DIAGRAM_ITEM_COMMAND
 		do
-			l_command := dev_window.tools.diagram_tool.delete_cmd
+			l_command := dev_window.tools.diagram_tool.delete_system_element_cmd
 			if l_command.veto_pebble_function (a_pebble) then
 				a_menu.extend (l_command.new_menu_item_unmanaged)
 				a_menu.last.select_actions.wipe_out
@@ -1643,7 +1643,7 @@ feature {NONE} -- Diagram menu section, Granularity 1.
 		local
 			l_command: EB_DELETE_FIGURE_COMMAND
 		do
-			l_command := dev_window.tools.diagram_tool.trash_cmd
+			l_command := dev_window.tools.diagram_tool.delete_figure_cmd
 			if attached {CLASSI_FIGURE_STONE} a_pebble as l_class_stone then
 				a_menu.extend (l_command.new_menu_item_unmanaged)
 				a_menu.last.select_actions.wipe_out

@@ -1,1 +1,10 @@
-<svg height="100" viewBox="0 0 100 100" width="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><linearGradient id="a" gradientUnits="userSpaceOnUse" x1="65" x2="50" y1="75" y2="35"><stop offset="0" stop-color="#005504"/><stop offset="1" stop-color="#00c608"/></linearGradient><g fill="url(#a)" stroke="#004b03" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.793"><path d="m3.8963571 32.621845h46.1036429v-28.963591l46.103738 46.341746-46.103738 46.341746v-28.963591h-46.1036429z"/><path d="m3.8963571 32.621845h46.1036429v-28.963591l46.103738 46.341746-46.103738 46.341746v-28.963591h-46.1036429z"/></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+ <linearGradient id="a" x1="65" x2="50" y1="75" y2="35" gradientUnits="userSpaceOnUse">
+  <stop stop-color="#005504" offset="0"/>
+  <stop stop-color="#00c608" offset="1"/>
+ </linearGradient>
+ <g fill="url(#a)" stroke="#004b03" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.793">
+  <path d="m3.8964 32.622h46.104v-28.964l46.104 46.342-46.104 46.342v-28.964h-46.104z"/>
+ </g>
+</svg>
