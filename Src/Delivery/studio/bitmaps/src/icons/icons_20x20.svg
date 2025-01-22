@@ -406,10 +406,8 @@
 <image x="211" y="274" width="20" height="20" xlink:href="./14/11.svg" fill="transparent" style="fill:none" />
 <rect x="232" y="274" width="20" height="20" fill="transparent" style="fill:none" />
 <image x="232" y="274" width="20" height="20" xlink:href="./14/12.png" fill="transparent" style="fill:none" />
-<rect x="253" y="274" width="20" height="20" fill="transparent" style="fill:none" />
-<image x="253" y="274" width="20" height="20" xlink:href="./14/13.png" fill="transparent" style="fill:none" />
-<rect x="274" y="274" width="20" height="20" fill="transparent" style="fill:none" />
-<image x="274" y="274" width="20" height="20" xlink:href="./14/14.png" fill="transparent" style="fill:none" />
+<image x="253" y="274" width="20" height="20" xlink:href="./14/13.svg" fill="transparent" style="fill:none" />
+<image x="274" y="274" width="20" height="20" xlink:href="./14/14.svg" fill="transparent" style="fill:none" />
 <rect x="295" y="274" width="20" height="20" fill="transparent" style="fill:none" />
 <image x="295" y="274" width="20" height="20" xlink:href="./14/15.png" fill="transparent" style="fill:none" />
 <rect x="316" y="274" width="20" height="20" fill="transparent" style="fill:none" />
@@ -564,16 +562,14 @@
 <image x="148" y="358" width="20" height="20" xlink:href="./18/8.png" fill="transparent" style="fill:none" />
 <rect x="169" y="358" width="20" height="20" fill="transparent" style="fill:none" />
 <image x="169" y="358" width="20" height="20" xlink:href="./18/9.png" fill="transparent" style="fill:none" />
-<rect x="190" y="358" width="20" height="20" fill="transparent" style="fill:none" />
-<image x="190" y="358" width="20" height="20" xlink:href="./18/10.png" fill="transparent" style="fill:none" />
+<image x="190" y="358" width="20" height="20" xlink:href="./18/10.svg" fill="transparent" style="fill:none" />
 <rect x="211" y="358" width="20" height="20" fill="transparent" style="fill:none" />
 <image x="211" y="358" width="20" height="20" xlink:href="./18/11.png" fill="transparent" style="fill:none" />
 <rect x="232" y="358" width="20" height="20" fill="transparent" style="fill:none" />
 <image x="232" y="358" width="20" height="20" xlink:href="./18/12.png" fill="transparent" style="fill:none" />
 <image x="253" y="358" width="20" height="20" xlink:href="./18/13.svg" fill="transparent" style="fill:none" />
 <image x="274" y="358" width="20" height="20" xlink:href="./18/14.svg" fill="transparent" style="fill:none" />
-<rect x="295" y="358" width="20" height="20" fill="transparent" style="fill:none" />
-<image x="295" y="358" width="20" height="20" xlink:href="./18/15.png" fill="transparent" style="fill:none" />
+<image x="295" y="358" width="20" height="20" xlink:href="./18/15.svg" fill="transparent" style="fill:none" />
 <rect x="316" y="358" width="20" height="20" fill="transparent" style="fill:none" />
 <image x="316" y="358" width="20" height="20" xlink:href="./18/16.png" fill="transparent" style="fill:none" />
 <rect x="337" y="358" width="20" height="20" fill="transparent" style="fill:none" />
@@ -588,6 +584,8 @@
 <image x="421" y="358" width="20" height="20" xlink:href="./18/21.png" fill="transparent" style="fill:none" />
 <rect x="442" y="358" width="20" height="20" fill="transparent" style="fill:none" />
 <image x="442" y="358" width="20" height="20" xlink:href="./18/22.png" fill="transparent" style="fill:none" />
+<image x="463" y="358" width="20" height="20" xlink:href="./18/23.svg" fill="transparent" style="fill:none" />
+<image x="484" y="358" width="20" height="20" xlink:href="./18/24.svg" fill="transparent" style="fill:none" />
 <rect x="1" y="379" width="20" height="20" fill="transparent" style="fill:none" />
 <image x="1" y="379" width="20" height="20" xlink:href="./19/1.png" fill="transparent" style="fill:none" />
 <rect x="22" y="379" width="20" height="20" fill="transparent" style="fill:none" />

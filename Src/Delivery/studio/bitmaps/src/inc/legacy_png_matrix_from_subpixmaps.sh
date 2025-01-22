@@ -72,16 +72,20 @@ echo cols=$cols
 echo icon size: ${w}x${h}
 
 function svg_to_png {
-	echo " - SVG to ${w}x${h} png"
+	echo " - SVG $1 to ${w}x${h} $2 png"
 	#Try with inkscape:
+	#case "NOT" in
 	case "$(inkscape -V | grep -i Inkscape | cut -d' ' -f 2 | cut -d' ' -f 1)" in
 		0.*)
-			inkscape --without-gui --export-background-opacity=0 -w $w -h $h  $1 --export-png=$2 > /dev/null 2>&1
+			echo using inkscape 0
+			inkscape --without-gui --export-background-opacity=0 -w $w -h $h  `pwd`/$1 --export-png=`pwd`/$2 > /dev/null 2>&1
 			;;
 		1.*)
-			inkscape --export-background-opacity=0 -w $w -h $h  $1 --export-filename=$2 > /dev/null 2>&1
+			echo using inkscape 1
+			inkscape --export-background-opacity=0 -w $w -h $h  `pwd`/$1 --export-filename=`pwd`/$2 > /dev/null 2>&1
 			;;
 		*)
+			echo using convert
 			convert -resize ${w}x${h} -background transparent $1 $2 
 			;;
 	esac
@@ -138,6 +142,7 @@ do
 			else
 				if [ -e $d/$c.svg ] 
 				then
+					echo "($r,$c) svg to png from $d/$c.svg"
 					svg_to_png $d/$c.svg $icon
 				else
 					cp $tmpdir/empty.png $icon
@@ -150,7 +155,7 @@ do
 				append_icon $icon $tmpdir/row$r.png
 				rm $icon
 			else
-				echo ERROR: missing icon!
+				echo "ERROR: missing icon \"$icon\" (legacy)!" 
 				exit
 			fi
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Usage:
 #	svg_cli.py add base.svg one.svg two.svg ... output.svg

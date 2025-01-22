@@ -84,6 +84,7 @@ echo icon size: ${w}x${h}
 function svg_to_png {
 	echo " - SVG to ${w}x${h} png"
 	#Try with inkscape:
+	#case "NOT" in
 	case "$(inkscape -V | grep -i Inkscape | cut -d' ' -f 2 | cut -d' ' -f 1)" in
 		0.*)
 			inkscape --without-gui --export-background-opacity=0 -w $w -h $h  $1 --export-png=$2 > /dev/null 2>&1
@@ -174,7 +175,7 @@ do
 				append_icon $icon $tmpdir/row$r.png
 				rm $icon
 			else
-				echo ERROR: missing icon!
+				echo ERROR: missing icon "$icon" !
 				exit
 			fi
 
