@@ -63,6 +63,16 @@ feature -- Error
 			"return MONGOC_HANDSHAKE_APPNAME_MAX"
 		end
 
+feature -- BSON
+
+	BSON_HOST_NAME_MAX: INTEGER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return BSON_HOST_NAME_MAX "
+		end
+
+
 feature -- Read Preference Modes
 
 	MONGOC_READ_PRIMARY: INTEGER
@@ -106,7 +116,6 @@ feature -- Read Preference Modes
 		alias
 			"return MONGOC_NO_MAX_STALENESS"
 		end
-
 
 Feature -- Mongo Query Flags
 
@@ -1517,6 +1526,111 @@ feature -- URI
 			]"
 		end
 
+    c_mongoc_uri_get_auth_mechanism (a_uri: POINTER): POINTER
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return (EIF_POINTER) mongoc_uri_get_auth_mechanism ((const mongoc_uri_t *)$a_uri);"
+        end
+
+    c_mongoc_uri_get_auth_source (a_uri: POINTER): POINTER
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return (EIF_POINTER) mongoc_uri_get_auth_source ((const mongoc_uri_t *)$a_uri);"
+        end
+
+     c_mongoc_uri_get_compressors (a_uri: POINTER): POINTER
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return (EIF_POINTER) mongoc_uri_get_compressors ((const mongoc_uri_t *)$a_uri);"
+        end
+
+    c_mongoc_uri_get_database (a_uri: POINTER): POINTER
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return (EIF_POINTER) mongoc_uri_get_database ((const mongoc_uri_t *)$a_uri);"
+        end
+
+    c_mongoc_uri_get_hosts (a_uri: POINTER): POINTER
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return (EIF_POINTER) mongoc_uri_get_hosts ((const mongoc_uri_t *)$a_uri);"
+        end
+
+	c_mongoc_uri_get_mechanism_properties (uri: POINTER; properties: POINTER): BOOLEAN
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return mongoc_uri_get_mechanism_properties ((const mongoc_uri_t *)$uri, (bson_t *)$properties);"
+        end
+
+    c_mongoc_uri_get_option_as_bool (uri: POINTER; option: POINTER; fallback: BOOLEAN): BOOLEAN
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return mongoc_uri_get_option_as_bool ((const mongoc_uri_t *)$uri, (const char *)$option, (bool)$fallback);"
+        end
+
+	c_mongoc_uri_get_option_as_int32 (uri: POINTER; option: POINTER; fallback: INTEGER): INTEGER
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return mongoc_uri_get_option_as_int32 ((const mongoc_uri_t *)$uri, (const char *)$option, (int32_t)$fallback);"
+        end
+
+   c_mongoc_uri_get_option_as_int64 (uri: POINTER; option: POINTER; fallback: INTEGER_64): INTEGER_64
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return mongoc_uri_get_option_as_int64 ((const mongoc_uri_t *)$uri, (const char *)$option, (int64_t)$fallback);"
+        end
+
+    c_mongoc_uri_get_option_as_utf8 (uri: POINTER; option: POINTER; fallback: POINTER): POINTER
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return (EIF_POINTER) mongoc_uri_get_option_as_utf8 ((const mongoc_uri_t *)$uri, (const char *)$option, (const char *)$fallback);"
+        end
+
+  c_mongoc_uri_get_options (uri: POINTER): POINTER
+        external
+            "C inline use <mongoc/mongoc.h>"
+        alias
+            "return (EIF_POINTER) mongoc_uri_get_options ((const mongoc_uri_t *)$uri);"
+        end
+
+	c_mongoc_uri_get_password (a_uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return mongoc_uri_get_password ((const mongoc_uri_t *)$a_uri);"
+		end
+
+	c_mongoc_uri_get_read_concern (a_uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_read_concern ((const mongoc_uri_t *)$a_uri);"
+		end
+
+	c_mongoc_uri_get_read_prefs_t (a_uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_read_prefs_t ((const mongoc_uri_t *)$a_uri);"
+		end
+
+	c_mongoc_uri_get_replica_set (a_uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_replica_set ((const mongoc_uri_t *)$a_uri);"
+		end
+		
 feature -- Mongo Read Preference
 
 	c_mongoc_read_prefs_new (a_read_mode: INTEGER): POINTER
