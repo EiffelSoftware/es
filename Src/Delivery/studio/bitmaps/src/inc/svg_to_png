@@ -1,0 +1,42 @@
+#!/bin/bash
+
+w=$1
+h=$2
+shift
+shift
+
+echo " - SVG $1 to ${w}x${h} $2 PWD=$(pwd)"
+#Try with inkscape:
+#case "NOT" in
+case "$(inkscape -V | grep -i Inkscape | cut -d' ' -f 2 | cut -d' ' -f 1)" in
+	0.*) convert_tool=inkscape0 ;;
+	1.*) convert_tool=inkscape1 ;;
+	*) convert_tool=convert ;;
+esac
+convert_tool=rsvg-convert
+#convert_tool=svgexport
+
+case "${convert_tool}" in
+	inkscape0)
+		echo use Inkscape 0
+		inkscape --without-gui --export-background-opacity=0 -w $w -h $h  `pwd`/$1 --export-png=`pwd`/$2 > /dev/null 2>&1
+		;;
+	inkscape1)
+		echo use Inkscape 1
+		inkscape --export-background-opacity=0 -w $w -h $h  `pwd`/$1 --export-filename=`pwd`/$2 > /dev/null 2>&1
+		;;
+	convert)
+		echo use convert from imagemagick
+		convert -resize ${w}x${h} -background transparent $1 $2 
+		;;
+	rsvg-convert)
+		echo use rsvg-convert
+		echo DBG.PWD=`pwd`
+		echo DBG.CMD=rsvg-convert -w $w -h ${h} --background-color transparent $1 --format png --output $2 
+		rsvg-convert -w $w -h ${h} --background-color transparent $1 --format png --output $2 
+		;;
+	svgexport)
+		echo use svgexport
+		svgexport $1 $2 "width:$w" "height:$h" "transparent:true"
+	;;
+esac

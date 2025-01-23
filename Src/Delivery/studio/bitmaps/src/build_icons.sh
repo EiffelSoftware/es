@@ -669,9 +669,9 @@ SVGadd $RES/window.svg $OVERLAY/new_nw.svg 9.svg
 SVGadd $RES/document.svg $OVERLAY/new_nw.svg 11.svg
 # metric
 # supplier link
-SVGadd ../18/23.svg $OVERLAY/new_nw.svg 13.svg
+SVGadd ../18/10.svg $OVERLAY/new_nw.svg 13.svg
 # aggregate supplier link
-SVGadd ../18/24.svg $OVERLAY/new_nw.svg 14.svg
+SVGadd ../18/23.svg $OVERLAY/new_nw.svg 14.svg
 # inheritance link
 # and
 # or
@@ -823,7 +823,7 @@ SVGadd $RES/unpinned.svg 14.svg
 # show labels
 # fill cluster
 # view uml
-# 
+# aggregate supplier link
 ExitRow
 #----------------------------------------------------------------------------------
 EnterRow 19

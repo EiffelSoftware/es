@@ -82,20 +82,7 @@ echo cols=$cols
 echo icon size: ${w}x${h}
 
 function svg_to_png {
-	echo " - SVG to ${w}x${h} png"
-	#Try with inkscape:
-	#case "NOT" in
-	case "$(inkscape -V | grep -i Inkscape | cut -d' ' -f 2 | cut -d' ' -f 1)" in
-		0.*)
-			inkscape --without-gui --export-background-opacity=0 -w $w -h $h  $1 --export-png=$2 > /dev/null 2>&1
-			;;
-		1.*)
-			inkscape --export-background-opacity=0 -w $w -h $h  $1 --export-filename=$2 > /dev/null 2>&1
-			;;
-		*)
-			convert -resize ${w}x${h} -background transparent $1 $2 
-			;;
-	esac
+	./inc/svg_to_png $w $h $1 $2
 }
 
 function append_icon {

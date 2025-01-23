@@ -9,11 +9,17 @@
    <stop stop-color="#0000af" offset="0"/>
    <stop stop-color="#00f" offset="1"/>
   </linearGradient>
+  <linearGradient id="c" x1=".99986" x2="44.896" y1="50" y2="50" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
  </defs>
- <g fill="url(#b)" stroke="#0000c0" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.793">
-  <path d="m3.8964 32.622h38.104v34.756h-38.104v-8.6892h38.104v-17.378h-38.104z" fill="url(#b)" stroke="#0000c0"/>
- </g>
- <g fill="url(#a)" stroke="#0000c0" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.793">
-  <path d="M 42,20.658 96.103738,50 42,79.342 Z" fill="url(#a)" stroke="#0000c0"/>
+ <g stroke="#0000c0" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.793">
+  <g fill="url(#b)">
+   <path d="m3.8964 32.622h38.104v34.756h-38.104v-8.6892h38.104v-17.378h-38.104z" fill="url(#b)" stroke="#0000c0"/>
+  </g>
+  <g fill="url(#a)">
+   <path d="M 42,20.658 96.103738,50 42,79.342 Z" fill="url(#a)" stroke="#0000c0"/>
+  </g>
+  <g transform="matrix(0 1.2622 -.94185 0 58.521 21.172)" fill="url(#c)">
+   <path d="m3.8964 32.622h38.104v8.6888h-38.104z" fill="url(#c)" stroke="#0000c0"/>
+  </g>
  </g>
 </svg>
