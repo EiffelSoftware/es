@@ -15,32 +15,42 @@ inherit
 
 feature -- Error
 
-	error: detachable BSON_ERROR
-			-- last error.
+	last_error: detachable MONGODB_ERROR
+			-- last error.		
 
-	has_error: BOOLEAN
-			-- last_error
-			-- Indicates that there was an error during the last operation
+
+	error_occurred: BOOLEAN
 		do
-			Result := attached error
+			Result := last_error /= Void
 		end
 
-	error_string: STRING
-			-- Output a related error message.
-		require
-			was_error: has_error
+	last_call_succeed: BOOLEAN
 		do
-			if attached {BSON_ERROR} error as l_error then
-				Result := "[Code:" + l_error.code.out + "]" + " [Domain:"+ l_error.domain.out + "]" + " [Message:" + l_error.message.out + "]"
-			else
-				Result := "Unknown Error"
-			end
+			Result := last_error = Void
+		end
+
+	set_last_error (a_message: STRING_32)
+			-- Set the last error message with `a_message'
+		local
+			l_error: MONGODB_ERROR
+		do
+			create l_error.make (a_message)
+			last_error := l_error
+		end
+
+	set_last_error_with_bson (a_error: BSON_ERROR)
+			-- Set the last error message with a_error
+		local
+			l_message: STRING_32
+		do
+			l_message := {STRING_32}"[Code:" + a_error.code.out + "]" + {STRING_32}" [Domain:"+ a_error.domain.out + "]" + {STRING_32}" [Message:" + a_error.message + "]"
+			set_last_error (l_message)
 		end
 
 	clean_up
 			-- Clean up the last error.
 		do
-			error := Void
+			last_error := Void
 		end
 
 end

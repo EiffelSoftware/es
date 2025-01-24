@@ -20,9 +20,10 @@ create
 feature {NONE} -- Initialization
 	make
 		do
-			memory_make
 			session_opts_new
 		end
+
+feature {NONE} -- Implementation
 
 	session_opts_new
 		note
@@ -30,7 +31,6 @@ feature {NONE} -- Initialization
 		do
 			make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_session_opts_new)
 		end
-
 
 feature -- Removal
 
@@ -134,8 +134,6 @@ feature -- Settings
 			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_session_opts_set_snapshot (item, a_snapshot)
 		end
-
-
 
 feature -- Status Report
 

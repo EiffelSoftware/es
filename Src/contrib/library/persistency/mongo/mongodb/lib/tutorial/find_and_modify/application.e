@@ -63,8 +63,8 @@ feature -- Initialization
             )
 
             	-- Check for errors
-            if collection.has_error then
-                print ("find_and_modify() failure: " + collection.error_string + "%N")
+            if collection.error_occurred then
+                print ({STRING_32}"find_and_modify() failure: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
             else
                 -- Print the result as JSON
                 print (reply.bson_as_canonical_extended_json + "%N")

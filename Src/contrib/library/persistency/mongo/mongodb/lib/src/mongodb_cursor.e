@@ -53,7 +53,7 @@ feature -- Iterator
 		local
 			l_pointer: POINTER
 		do
-
+			clean_up
 			if {MONGODB_EXTERNALS}.c_mongo_cursor_next (item, $l_pointer) then
 				create Result.make_by_pointer (l_pointer)
 			end

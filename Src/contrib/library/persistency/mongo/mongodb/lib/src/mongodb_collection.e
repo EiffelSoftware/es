@@ -111,7 +111,7 @@ feature -- Access: Query
 			)
 
 			if not l_res then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -130,7 +130,7 @@ feature -- Access: Query
         note
             EIS: "name=mongoc_collection_find_and_modify_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_collection_find_and_modify_with_opts.html", "protocol=uri"
         require
-            exists: exists
+            is_useful: exists
         local
             l_error: BSON_ERROR
             l_res: BOOLEAN
@@ -147,7 +147,7 @@ feature -- Access: Query
             )
 
             if not l_res then
-                create error.make_by_pointer (l_error.item)
+                set_last_error_with_bson (l_error)
             end
         end
 
@@ -174,7 +174,7 @@ feature -- Access: Query
 			create l_error.make
 			Result := {MONGODB_EXTERNALS}.c_mongoc_collection_count_documents (item, a_filter.item, l_opts, l_prefs, a_reply.item, l_error.item)
 			if Result < 0 then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -200,7 +200,7 @@ feature -- Access: Query
 			create l_error.make
 			Result := {MONGODB_EXTERNALS}.c_mongoc_collection_estimated_document_count (item, l_opts, l_prefs, a_reply.item, l_error.item)
 			if Result < 0 then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -248,12 +248,15 @@ feature -- Command
 			-- a_reply: Optional. An uninitialized bson_t populated with the insert result.
 		note
 			EIS: "name=mongoc_collection_insert_one", "src=http://mongoc.org/libmongoc/current/mongoc_collection_insert_one.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_reply: POINTER
 			l_error: BSON_ERROR
 			l_res: BOOLEAN
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -265,7 +268,7 @@ feature -- Command
 			if l_res then
 				-- do nothing
 			else
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -275,6 +278,8 @@ feature -- Command
 			--reply: Optional. An uninitialized bson_t populated with the insert result, or NULL.
 		note
 			EIS: "name=mongoc_collection_insert_one", "src=http://mongoc.org/libmongoc/current/mongoc_collection_insert_many.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_reply: POINTER
@@ -283,6 +288,7 @@ feature -- Command
 			l_item: MANAGED_POINTER
 			l_res: BOOLEAN
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -307,7 +313,7 @@ feature -- Command
 			if l_res then
 				-- do nothing
 			else
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -319,12 +325,15 @@ feature -- Command
 			-- This feature updates at most one document in collection that matches selector `a_selector'.
 		note
 			EIS: "name=mongoc_collection_update_one","src=http://mongoc.org/libmongoc/current/mongoc_collection_update_one.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_reply: POINTER
 			l_error: BSON_ERROR
 			l_res: BOOLEAN
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -336,7 +345,7 @@ feature -- Command
 			if l_res then
 				-- do nothing
 			else
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -345,12 +354,15 @@ feature -- Command
 			-- Update all documents matching `a_selector`
 		note
 			EIS: "name=mongoc_collection_update_many", "src=http://mongoc.org/libmongoc/current/mongoc_collection_update_many.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 			l_reply: POINTER
 			l_error: BSON_ERROR
 			l_res: BOOLEAN
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -360,7 +372,7 @@ feature -- Command
 			create l_error.make
 			l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_update_many (item, a_selector.item, a_update.item, l_opts, l_reply, l_error.item)
 			if not l_res then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -389,7 +401,7 @@ feature -- Command
 			create l_error.make
 			l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_delete_one (item, a_selector.item, l_opts, l_reply, l_error.item)
 			if not l_res then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -425,7 +437,7 @@ feature -- Command
 				l_error.item    	-- error
 			)
 			if not l_res then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -459,7 +471,7 @@ feature -- Command
 			)
 
 			if not l_res then
-				error := l_error
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -506,7 +518,7 @@ feature -- Command
             )
 
             if not l_res then
-                create error.make_by_pointer (l_error.item)
+                set_last_error_with_bson (l_error)
             end
         end
 
@@ -582,6 +594,7 @@ feature -- Indexes
 			l_pos: INTEGER
 			l_item: MANAGED_POINTER
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -615,7 +628,7 @@ feature -- Indexes
 			)
 
 			if not l_res then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -623,12 +636,14 @@ feature -- Indexes
 			-- Drop the index named `a_index_name` from the collection.
 			-- If the operation fails, sets the error which can be checked with `has_error`.
 		require
+			is_useful: exists
 			valid_index_name: not a_index_name.is_empty
 		local
 			l_error: BSON_ERROR
 			l_c_string: C_STRING
 			l_res: BOOLEAN
 		do
+			clean_up
 			create l_c_string.make (a_index_name)
 			create l_error.make
 			l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_drop_index (
@@ -637,7 +652,7 @@ feature -- Indexes
 				l_error.item        -- error
 			)
 			if not l_res then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -652,9 +667,12 @@ feature -- Indexes
 			--   a_opts: Optional additional options for the operation
 		note
 			EIS: "name=mongoc_collection_find_indexes_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_collection_find_indexes_with_opts.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_opts: POINTER
 		do
+			clean_up
 			if attached a_opts then
 				l_opts := a_opts.item
 			end
@@ -686,7 +704,7 @@ feature -- Drop
             create l_error.make
             l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_drop (item, l_error.item)
             if not l_res then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
             end
         end
 
@@ -709,7 +727,7 @@ feature -- Drop
 			create l_error.make
 			l_res := {MONGODB_EXTERNALS}.c_mongoc_collection_drop_with_opts (item, l_opts, l_error.item)
 			if not l_res then
-				create error.make_by_pointer (l_error.item)
+				set_last_error_with_bson (l_error)
 			end
 		end
 

@@ -17,7 +17,6 @@ feature {NONE} -- Initialization
 			client: MONGODB_CLIENT
 			collection: MONGODB_COLLECTION
 			query, update, subdoc: BSON
-			error: BSON_ERROR
 			oid: BSON_OID
 			l_reply: BSON
 		do
@@ -34,7 +33,7 @@ feature {NONE} -- Initialization
 				-- Insert the document
 			create l_reply.make
 			collection.insert_one (query, Void, l_reply)
-			if not collection.has_error then
+			if collection.last_call_succeed then
 				print ("Document inserted successfully%N" + l_reply.bson_as_canonical_extended_json)
 
 					-- Prepare update operation
@@ -47,13 +46,13 @@ feature {NONE} -- Initialization
 
 					-- Update document
 				collection.update_one (query, update, Void, l_reply)
-				if not collection.has_error then
+				if collection.last_call_succeed then
 					print ("%NDocument updated successfully%N" + l_reply.bson_as_canonical_extended_json)
 				else
-					print ("Update error: " + collection.error_string + "%N")
+					print ({STRING_32}"Update Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
 				end
 			else
-				print ("Insert error: " + collection.error_string + "%N")
+				print ({STRING_32}"Insert Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
 			end
 		end
 

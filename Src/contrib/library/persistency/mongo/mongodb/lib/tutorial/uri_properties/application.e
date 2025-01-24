@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
         	"authMechanismProperties=SERVICE_NAME:other,CANONICALIZE_HOST_NAME:true")
 
 		    	-- Get mechanism properties
-		    props := uri.get_mechanism_properties
+		    props := uri.auth_mechanism_properties
 
 		    if attached props as l_props then
 		       		-- Convert BSON to JSON and print it

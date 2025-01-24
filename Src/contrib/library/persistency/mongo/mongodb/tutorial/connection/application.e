@@ -31,11 +31,11 @@ feature {NONE} -- Initialization
             create reply.make
             client.command_simple ("admin", command, Void, reply)
 
-            if not client.has_error then
+            if client.last_call_succeed then
                 print ("Server pinged successfully!%N")
                 print ("Reply: " + reply.bson_as_canonical_extended_json_value.representation + "%N")
             else
-                print ("Error: " + client.error_string + "%N")
+                print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} client.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
             end
         end
 

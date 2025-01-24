@@ -28,7 +28,7 @@ feature -- Test routines
 			create l_bucket.make_from_database (l_database, Void, Void)
 
 				-- Assert bucket was created successfully
-			assert ("bucket_created", not l_bucket.has_error)
+			assert ("bucket_created", l_bucket.last_call_succeed)
 			assert ("bucket_valid", l_bucket.item /= default_pointer)
 
 				-- Cleanup
@@ -53,14 +53,11 @@ feature -- Test routines
 			create l_bucket.make_from_database (l_database, Void, Void)
 
 				-- Assert bucket creation failed
-			assert ("bucket_has_error", l_bucket.has_error)
-			if attached l_bucket.error as l_error then
-				assert ("correct_error_domain", l_error.domain = {MONGODB_ERROR_CODE}.MONGOC_ERROR_GRIDFS)
+			assert ("bucket_has_error", l_bucket.error_occurred)
+			if attached {MONGODB_ERROR}l_bucket.last_error as l_error then
+				assert ("correct_error_domain", l_erroR.message.has_substring ({MONGODB_ERROR_CODE}.MONGOC_ERROR_GRIDFS.out))
 			end
 
-				-- Cleanup
-			l_bucket.dispose
-			l_client.dispose
 		end
 
 end

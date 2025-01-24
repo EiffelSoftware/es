@@ -38,7 +38,7 @@ feature {NONE} -- Initialization
                     {MONGODB_ERROR_CODE}.MONGOC_ERROR_STREAM_SOCKET,
                     "Failed to create socket. Unable to initialize."
                 )
-                error := l_error
+                set_last_error_with_bson (l_error)
             end
         end
 
@@ -47,13 +47,14 @@ feature -- Operations
     accept (a_expire_at: INTEGER_64): detachable MONGODB_SOCKET
             -- Accept a new client connection
         require
-            valid_socket: item /= default_pointer
+            is_useful: exists
         local
             l_ptr: POINTER
         do
+        	clean_up
         		-- TODO double check
             l_ptr := {MONGODB_EXTERNALS}.c_mongoc_socket_accept (item, a_expire_at)
-            if l_ptr /= default_pointer then
+            if not l_ptr.is_default_pointer then
                 create Result.make_by_pointer (l_ptr)
             end
         end
@@ -62,9 +63,10 @@ feature -- Operations
             -- Bind the socket to an address
             -- `a_addr`: The address to bind to
         require
-            valid_socket: item /= default_pointer
+            valid_socket: exists
             valid_addlen: a_addrlen > 0
         do
+        	clean_up
         		-- TODO double check
         		-- See how to use SOCKET from EiffelNet.
             Result := {MONGODB_EXTERNALS}.c_mongoc_socket_bind (item, a_addr, a_addrlen)
@@ -75,21 +77,23 @@ feature -- Operations
             -- `a_addr`: The address to connect to
             -- `a_timeout_msec`: Timeout in milliseconds
         require
-            valid_socket: item /= default_pointer
+            valid_socket: exists
             valid_addr: a_addr /= default_pointer
             valid_addrlen: a_addrlen > 0
             valid_timeout: a_timeout_msec >= -1
         do
         		-- TODO double check.
         		-- See if we can use SOCKET from EiffelNet.
+            clean_up
             Result := {MONGODB_EXTERNALS}.c_mongoc_socket_connect (item, a_addr, a_addrlen, a_timeout_msec)
         end
 
     close
             -- Close the socket
         require
-            valid_socket: item /= default_pointer
+            valid_socket: exists
         do
+        	clean_up
             {MONGODB_EXTERNALS}.c_mongoc_socket_close (item)
         end
 
@@ -97,9 +101,10 @@ feature -- Operations
             -- Listen for incoming connections
             -- `a_backlog`: Maximum length of the queue of pending connections
         require
-            valid_socket: item /= default_pointer
+            valid_socket: exists
             valid_backlog: a_backlog >= 0
         do
+        	clean_up
             Result := {MONGODB_EXTERNALS}.c_mongoc_socket_listen (item, a_backlog)
         end
 
@@ -110,11 +115,12 @@ feature -- Operations
             -- `a_flag`: flags for recv
             -- `a_timeout_msec`: Timeout in milliseconds
         require
-            valid_socket: item /= default_pointer
+            valid_socket: exists
             valid_buffer: a_buffer /= default_pointer
             valid_size: a_size > 0
             valid_timeout: a_timeout_msec >= -1
         do
+        	clean_up
             Result := {MONGODB_EXTERNALS}.c_mongoc_socket_recv (item, a_buffer, a_size, a_flag, a_timeout_msec)
         end
 
@@ -124,21 +130,23 @@ feature -- Operations
             -- `a_size`: Size of the data to send
             -- `a_timeout_msec`: Timeout in milliseconds
         require
-            valid_socket: item /= default_pointer
+            valid_socket: exists
             valid_buffer: a_buffer /= default_pointer
             valid_size: a_size > 0
             valid_timeout: a_timeout_msec >= -1
         do
+        	clean_up
             Result := {MONGODB_EXTERNALS}.c_mongoc_socket_send (item, a_buffer, a_size, a_timeout_msec)
         end
 
     setsockopt (a_level: INTEGER; a_optname: INTEGER; a_optval: POINTER; a_optlen: INTEGER): BOOLEAN
             -- Set socket options
         require
-            valid_socket: item /= default_pointer
+            valid_socket: exists
             valid_optval: a_optval /= default_pointer
             valid_optlen: a_optlen > 0
         do
+        	clean_up
             Result := {MONGODB_EXTERNALS}.c_mongoc_socket_setsockopt (item, a_level, a_optname, a_optval, a_optlen)
         end
 
@@ -147,7 +155,7 @@ feature -- Access
     errno: INTEGER
             -- Get the last error code for this socket
         require
-            valid_socket: item /= default_pointer
+            valid_socket: exists
         do
             Result := {MONGODB_EXTERNALS}.c_mongoc_socket_errno (item)
         end

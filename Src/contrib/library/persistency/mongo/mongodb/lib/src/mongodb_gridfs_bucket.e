@@ -39,10 +39,10 @@ feature {NONE} -- Initialization
 										l_opts, 			-- opts
 										l_read_prefs, 		-- read_prefs
 										l_error.item) 		-- error
-			if l_ptr /= default_pointer then
-				make_by_pointer (l_ptr)
+			if l_ptr.is_default_pointer then
+				set_last_error_with_bson (l_error)
 			else
-				error := l_error
+				make_by_pointer (l_ptr)
 			end
 		end
 
@@ -52,14 +52,16 @@ feature -- Access
 			-- Upload contents from stream `a_source` to GridFS with filename `a_filename`.
 			-- Returns the file ID of the created file on success.
 		require
-			valid_filename: a_filename /= Void and then not a_filename.is_empty
-			valid_source: a_source /= Void
+			is_useful: exists
+			valid_filename: not a_filename.is_empty
+			valid_source: a_source.exists
 		local
 			l_error: BSON_ERROR
 			l_opts: POINTER
 			c_filename: C_STRING
 			l_file_id: BSON_VALUE
 		do
+			clean_up
 			create l_error.make
 			create c_filename.make (a_filename)
 			if attached a_opts as opts then
@@ -70,7 +72,7 @@ feature -- Access
 				item, c_filename.item, a_source.item, l_opts, l_file_id.item, l_error.item) then
 				Result := l_file_id
 			else
-				error := l_error
+				set_last_error_with_bson (l_error)
 				create Result.make -- Return empty value on error
 			end
 		end
@@ -78,16 +80,16 @@ feature -- Access
 	download_to_stream (a_file_id: BSON_VALUE; a_destination: MONGODB_STREAM): BOOLEAN
 			-- Download the file with ID `a_file_id` to stream `a_destination`.
 		require
-			valid_file_id: a_file_id /= Void
-			valid_destination: a_destination /= Void
+			is_useful: exists
 		local
 			l_error: BSON_ERROR
 		do
+			clean_up
 			create l_error.make
 			Result := {MONGODB_EXTERNALS}.c_mongoc_gridfs_bucket_download_to_stream (
 				item, a_file_id.item, a_destination.item, l_error.item)
 			if not Result then
-				error := l_error
+				set_last_error_with_bson (l_error)
 			end
 		end
 
