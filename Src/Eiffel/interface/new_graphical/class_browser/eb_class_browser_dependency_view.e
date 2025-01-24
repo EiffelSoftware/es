@@ -1464,8 +1464,8 @@ feature{NONE} -- Implementation
 							l_name_table.forth
 						end
 					end
+					l_supplier_features.forth
 				end
-				l_supplier_features.forth
 			end
 		ensure
 			result_attached: Result /= Void
@@ -1706,7 +1706,7 @@ feature{NONE} -- Implementation/Stone
 		end
 
 note
-	copyright: "Copyright (c) 1984-2023, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
