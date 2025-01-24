@@ -56,7 +56,7 @@ feature -- Status Error
 			end
 		end
 
-	error: detachable BSON_ERROR
+	error: detachable MONGODB_ERROR
 			-- last error.
 
 feature -- Access
@@ -95,7 +95,7 @@ feature -- Access
 			reset
 			create l_doc.make_from_json (a_book.to_json_string)
 			mongodb_collection.insert_one (l_doc, Void, Void)
-			if attached mongodb_collection.error as l_error then
+			if attached mongodb_collection.last_error as l_error then
 				post_execution (l_error)
 			end
 		end
@@ -132,7 +132,7 @@ feature -- Access
 			create l_doc.make
 			l_doc.bson_append_utf8 ("_id", a_id)
 			mongodb_collection.delete_one (l_doc, Void, Void)
-			if attached mongodb_collection.error as l_error then
+			if attached mongodb_collection.last_error as l_error then
 				post_execution (l_error)
 			end
 		end
@@ -151,7 +151,7 @@ feature -- Access
 			l_update.bson_append_document ("$set", l_subdoc)
 
 			mongodb_collection.update_one (l_query, l_update, Void, Void)
-			if attached mongodb_collection.error as l_error then
+			if attached mongodb_collection.last_error as l_error then
 				post_execution (l_error)
 			end
 
@@ -165,13 +165,11 @@ feature {NONE} -- Implementation
 			error := void
 		end
 
-	post_execution (a_error: BSON_ERROR)
+	post_execution (a_error: MONGODB_ERROR)
 			-- check if there was an error during the last execution
 			-- and set the error `a_error' to error.
 		do
-			if mongodb_collection.has_error then
-				create error.make_by_pointer (a_error.item)
-			end
+			error := a_error
 		end
 
 	to_json_value (s: STRING): JSON_VALUE

@@ -103,6 +103,7 @@ feature -- Access
 		require
 			is_useful: exists
 		do
+			clean_up
 			create Result.make -- Create an uninitialized BSON document
 			c_mongoc_find_and_modify_opts_get_update (item, Result.item)
 		ensure
@@ -126,8 +127,7 @@ feature -- Settings
 			clean_up
 			l_res := c_mongoc_find_and_modify_opts_set_bypass_document_validation (item, a_bypass)
 			if not l_res then
-					-- TODO add a error domain, code and description
-				create error.make
+				set_last_error ("Error setting bypass document validation with value: [" + a_bypass.out + "]")
 			end
 		end
 
@@ -149,8 +149,7 @@ feature -- Settings
 			clean_up
 			l_res := c_mongoc_find_and_modify_opts_set_fields (item, a_fields.item)
 			if not l_res then
-					-- TODO add domain, code and description
-				create error.make
+				set_last_error ("Error setting fields with value: [" + a_fields.bson_as_canonical_extended_json + "]")
 			end
 		end
 
@@ -172,8 +171,7 @@ feature -- Settings
 			clean_up
 			l_res := c_mongoc_find_and_modify_opts_set_flags (item, a_flags.value)
 			if not l_res then
-					-- TODO add domain, code and description
-				create error.make
+				set_last_error ("Error setting flags with value: [" + a_flags.value.out + "]")
 			end
 		end
 
@@ -194,8 +192,7 @@ feature -- Settings
 			clean_up
 			l_res := c_mongoc_find_and_modify_opts_set_max_time_ms (item, a_max_time_ms)
 			if not l_res then
-					-- TODO add domain, code and descriptio
-				create error.make
+				set_last_error ("Error setting max time ms with value: [" + a_max_time_ms.out + "]")
 			end
 		end
 
@@ -217,8 +214,7 @@ feature -- Settings
 			clean_up
 			l_res := c_mongoc_find_and_modify_opts_set_sort (item, a_sort.item)
 			if not l_res then
-					-- TODO add code, domain and description
-				create error.make
+				set_last_error ("Error setting sort with value: [" + a_sort.bson_as_canonical_extended_json + "]")
 			end
 		end
 
@@ -239,8 +235,7 @@ feature -- Settings
 			clean_up
 			l_res := c_mongoc_find_and_modify_opts_set_update (item, a_update.item)
 			if not l_res then
-					-- TODO add domain, code and description.
-				create error.make
+				set_last_error ("Error setting update with value: [" + a_update.bson_as_canonical_extended_json + "]")
 			end
 		end
 
@@ -268,8 +263,7 @@ feature -- Settings
 			end
 			l_res := c_mongoc_find_and_modify_opts_append (item, l_extra)
 			if not l_res then
-					-- TODO add a error domain, code and description
-				create error.make
+				set_last_error ("Error appending extra options to find and modify command")
 			end
 		end
 

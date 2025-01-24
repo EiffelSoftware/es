@@ -44,11 +44,12 @@ feature {NONE} -- Initialization
             create l_error.make
             collection := database.create_collection ("collection", Void)
             if collection = Void then
-                if attached database.error as err and then err.code = 48 then
-                    -- Collection already exists, get it
+                if attached database.last_error as err and then err.message.has_substring("48") then
+                    	-- Collection already exists, get it
                     collection := database.collection ("collection")
                 else
-                    print ("Failed to create collection: " + database.error_string)
+                    print ({STRING_32}"Failed to create collection: " + if attached {MONGODB_ERROR} database.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+
                     -- Exit with failure
                     {EXCEPTIONS}.die (1)
                 end
@@ -67,7 +68,8 @@ feature {NONE} -- Initialization
             	-- Start session
             session := client.start_session (session_opts)
             if session = Void then
-                print ("Failed to start session: " + client.error_string)
+                print ({STRING_32}"Failed to start session: " + if attached {MONGODB_ERROR} client.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+
                 {EXCEPTIONS}.die (1)
             end
 
@@ -105,8 +107,9 @@ feature {NONE} -- Implementation
         do
             	-- Start transaction
             session.start_transaction (txn_opts)
-            if session.has_error  then
-                print ("Failed to start transaction: " + session.error_string)
+            if session.error_occurred  then
+                print ({STRING_32}"Failed to start transaction: " + if attached {MONGODB_ERROR} session.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+
                 Result := True -- Don't retry
                 {EXCEPTIONS}.die (1)
             else
@@ -120,13 +123,15 @@ feature {NONE} -- Implementation
                     doc.bson_append_integer_32 ("_id", i)
                     create reply.make
 					collection.insert_one (doc, insert_opts, reply)
-                    if not collection.has_error  then
-                        print ("Insert failed: " + collection.error_string)
+                    if collection.error_occurred then
+                        print ({STRING_32}"Insert failed: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+
                         session.abort_transaction
 
  	                       -- Check for transient error
 
-                        if collection.error_string.has_substring ("TransientTransactionError") then
+                        if attached {MONGODB_ERROR} collection.last_error as le and then
+                        	le.message.has_substring ("TransientTransactionError") then
                            		-- Retry transaction
                             Result := False
                         else
@@ -151,13 +156,14 @@ feature {NONE} -- Implementation
                     loop
                         create reply.make
                         session.commit_transaction (reply)
-                        if not session.has_error then
+                        if session.last_call_succeed then
                             Result := True -- Success
                         else
-                            print ("Warning: commit failed: " + session.error_string + "%N")
-                            if session.error_string.has_substring ("TransientTransactionError") then
+                            print ({STRING_32}"Warning commit failed: " + if attached {MONGODB_ERROR} session.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+
+                            if attached {MONGODB_ERROR} session.last_error as le and then le.message.has_substring ("TransientTransactionError") then
                                 Result := False -- Retry entire transaction
-                            elseif session.error_string.has_substring ("UnknownTransactionCommitResult") then
+                            elseif attached {MONGODB_ERROR} session.last_error as le and then le.message.has_substring ("UnknownTransactionCommitResult") then
                                 	-- Try commit again
                                 Result := False
                             else

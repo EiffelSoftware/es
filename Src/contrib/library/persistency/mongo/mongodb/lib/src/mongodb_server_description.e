@@ -15,9 +15,9 @@ inherit
 		end
 
 create
-	 make_by_pointer
+	make_by_pointer
 
-feature {NONE}-- Initialization
+feature {NONE} -- Initialization
 
 feature -- Factory
 
@@ -25,7 +25,10 @@ feature -- Factory
 			-- A copy of the original server description.
 		note
 			EIS: "name=_mongoc_server_description_new_copy", "src=http://mongoc.org/libmongoc/current/mongoc_server_description_new_copy.html", "protocol=uri"
+		require
+			is_useful: exists
 		do
+			clean_up
 			create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_server_description_new_copy (item))
 		end
 
@@ -45,22 +48,30 @@ feature -- Access
 			-- Server's id.
 		note
 			EIS: "name=mongoc_server_description_id", "src=http://mongoc.org/libmongoc/current/mongoc_server_description_id.html", "protocol=uri"
+		require
+			is_useful: exists
 		do
+			clean_up
 			Result := {MONGODB_EXTERNALS}.c_mongoc_server_description_id (item)
 		end
-
 
 	is_master: BSON
 			-- A reference to a BSON document, owned by the server description. The document is empty if the driver is not connected to the server.
 		note
 			EIS: "name=mongoc_server_description_ismaster", "src= http://mongoc.org/libmongoc/current/mongoc_server_description_ismaster.html", "protocol=uri"
+		require
+			is_useful: exists
 		do
+			clean_up
 			create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_server_description_ismaster (item))
 		end
 
 	round_trip_time: INTEGER_64
 			-- Server's round trip time in milliseconds. This is the client's measurement of the duration of `ismaster` command.
+		require
+			is_useful: exists
 		do
+			clean_up
 			Result := {MONGODB_EXTERNALS}.c_mongoc_server_description_round_trip_time (item)
 		end
 
@@ -68,13 +79,15 @@ feature -- Access
 			-- Return a servier type
 		note
 			EIS: "name=mongoc_server_description_type", "src=http://mongoc.org/libmongoc/current/mongoc_server_description_type.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_cstring: C_STRING
 		do
+			clean_up
 			create l_cstring.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_server_description_type (item))
 			Result := l_cstring.string
 		end
-
 
 feature {NONE} -- Measurement
 

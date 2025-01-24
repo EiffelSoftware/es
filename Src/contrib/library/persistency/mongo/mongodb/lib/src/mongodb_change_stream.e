@@ -67,7 +67,7 @@ feature -- Access
             l_error_doc := a_reply.item
             l_has_error := {MONGODB_EXTERNALS}.c_mongoc_change_stream_error_document (item, l_error.item, $l_error_doc)
             if l_has_error then
-            	error := l_error
+            	set_last_error_with_bson (l_error)
             end
             	-- To be double checked.
             create l_reply.make_by_pointer (l_error_doc)

@@ -32,15 +32,15 @@ feature {NONE} -- Initialization
 				-- Setup connection URI
 			uri_string := "mongodb://localhost:27017,localhost:27018,localhost:27019/db?replicaSet=rs0"
 			create uri.make (uri_string)
-			if uri.has_error then
+			if uri.error_occurred then
 				print ("Failed to parse URI: " + uri_string + "%N")
-				print ("Error message: " + uri.error_string + "%N")
+				print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} uri.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
 				{EXCEPTIONS}.die (1)
 			end
 
 				-- Create client and get collection
 			create client.make_from_uri (uri)
-			if client.has_error then
+			if client.error_occurred then
 				{EXCEPTIONS}.die (1)
 			end
 
@@ -64,8 +64,8 @@ feature {NONE} -- Initialization
 			document_to_insert.bson_append_integer_32 ("x", 1)
 			collection.insert_one (document_to_insert, options, Void)
 
-			if collection.has_error then
-				print ("Error: " + collection.error_string + "%N")
+			if collection.error_occurred then
+				print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
 				{EXCEPTIONS}.die (1)
 			end
 

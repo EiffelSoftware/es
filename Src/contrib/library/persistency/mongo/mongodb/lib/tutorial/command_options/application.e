@@ -30,12 +30,13 @@ feature {NONE} -- Initialization
             l_json: STRING
             l_read_mode: MONGODB_READ_MODE_ENUM
         do
+        		-- TODO review this code
             	-- Initialize default URI if none provided
             l_uri_string := "mongodb://127.0.0.1/?appname=client-example"
 
             	-- Create URI and client
             create l_uri.make (l_uri_string)
-            if not l_uri.has_error then
+            if l_uri.last_call_succeed then
                 create l_client.make_from_uri (l_uri)
 
                 	-- Set error API version
@@ -56,8 +57,8 @@ feature {NONE} -- Initialization
                 	-- Execute write command
                 create l_reply.make
                 l_client.write_command_with_opts ("test", l_cmd, l_opts, l_reply)
-                if l_client.has_error then
-                    print ("cloneCollectionAsCapped error: " + l_client.error_string + "%N")
+                if l_client.error_occurred then
+                    print ({STRING_32}"Error cloneCollectionAsCapped: " + if attached {MONGODB_ERROR} l_client.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
                 else
                 	l_json := l_reply.bson_as_canonical_extended_json
                     print ("cloneCollectionAsCapped: " + l_json + "%N")
@@ -86,15 +87,15 @@ feature {NONE} -- Initialization
                 	-- Execute read command
                 create l_reply.make
                 l_client.read_command_with_opts ("test", l_cmd, l_read_prefs, l_opts, l_reply)
-                if l_client.has_error then
-                	print ("distinct error: " + l_client.error_string + "%N")
+                if l_client.error_occurred then
+                	print ({STRING_32}"distinct error: " + if attached {MONGODB_ERROR} l_client.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
                 else
                     l_json := l_reply.bson_as_canonical_extended_json
                     print ("distinct: " + l_json + "%N")
                 end
 
             else
-                print ("Failed to parse URI: " + l_uri.error_string + "%N")
+                print ({STRING_32}"Failed to parse URI: " + if attached {MONGODB_ERROR} l_uri.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
             end
         end
 

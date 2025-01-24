@@ -35,10 +35,10 @@ feature {NONE} -- Initialization
 
                 -- Execute command
             collection.command_simple (cmd, Void, reply)
-            if not collection.has_error then
+            if collection.last_call_succeed then
                 print ("Got reply: " + reply.bson_as_canonical_extended_json + "%N")
             else
-                print ("Got error: " + collection.error_string + "%N")
+                print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
             end
         end
 

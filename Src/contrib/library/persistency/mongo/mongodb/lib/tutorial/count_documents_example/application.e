@@ -45,7 +45,8 @@ feature {NONE} -- Initialization
             count := collection.count_documents (filter, opts, Void, reply)
 
             if count < 0 then
-                print ("Count failed: " + collection.error_string + "%N")
+                print ({STRING_32}"Count Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+
             else
                 print (count.out + " documents counted.%N")
                 print ("Full reply: " + reply.bson_as_canonical_extended_json + "%N")

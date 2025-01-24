@@ -194,7 +194,7 @@ feature -- Change Element
                                                 l_custom_data_ptr,
                                                 l_error.item)
            if not l_res then
-           		error := l_error
+           		set_last_error_with_bson (l_error)
            end
        end
 
@@ -215,7 +215,7 @@ feature -- Change Element
             l_success := {MONGODB_EXTERNALS}.c_mongoc_database_remove_all_users (item, l_error.item)
 
             if not l_success then
-                error := l_error
+                set_last_error_with_bson (l_error)
             end
         end
 
@@ -241,7 +241,7 @@ feature -- Change Element
                 item, l_c_username.item, l_error.item)
 
             if not l_success then
-                error := l_error
+                set_last_error_with_bson (l_error)
             end
         end
 
@@ -266,7 +266,7 @@ feature -- Drop
 			end
 			l_res := {MONGODB_EXTERNALS}.c_mongoc_database_drop_with_opts (item, l_opts, l_error.item)
 			if not l_res then
-				error := l_error
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -288,7 +288,7 @@ feature -- Status Report
 			create l_name.make (a_name)
 			Result := {MONGODB_EXTERNALS}.c_mongoc_database_has_collection (item, l_name.item, l_error.item)
 			if not Result then
-				error := l_error
+				set_last_error_with_bson (l_error)
 			end
 		end
 
@@ -326,7 +326,6 @@ feature -- Settings
 
 feature -- Collection
 
-
     create_collection (a_name: READABLE_STRING_GENERAL; a_opts: detachable BSON): detachable MONGODB_COLLECTION
             -- Create a new collection in the database.
             -- Parameters:
@@ -362,7 +361,7 @@ feature -- Collection
             )
 
             if l_collection.is_default_pointer then
-                error := l_error
+                set_last_error_with_bson (l_error)
             else
                 create Result.make_by_pointer (l_collection)
             end
@@ -437,7 +436,7 @@ feature -- Operations
                                                     a_reply.item,
                                                     l_error.item)
             if not l_res then
-                error := l_error
+                set_last_error_with_bson (l_error)
             end
         end
 
@@ -479,7 +478,7 @@ feature -- Operations
                                                     a_reply.item,
                                                     l_error.item)
             if not l_res then
-                error := l_error
+                set_last_error_with_bson (l_error)
             end
         end
 
@@ -522,7 +521,7 @@ feature -- Operations
                 item, a_command.item, l_read_prefs_ptr, l_opts_ptr, a_reply.item, l_error.item)
 
             if not l_success then
-                error := l_error
+                set_last_error_with_bson (l_error)
             end
         end
 
@@ -569,7 +568,7 @@ feature -- Operations
                 		               	l_error.item)		-- error
 
             if not l_success then
-                error := l_error
+                set_last_error_with_bson (l_error)
             end
         end
 
@@ -644,7 +643,7 @@ feature -- Operations
                                     l_error.item)       -- error
 
             if not l_success then
-                error := l_error
+                set_last_error_with_bson (l_error)
             end
         end
 

@@ -40,7 +40,7 @@ feature {NONE} -- Initialization
 			create l_reply.make
 			l_count := l_collection.count_documents (l_filter, Void, Void, l_reply)
 			if l_count < 0 then
-				print ("Error message: " + l_collection.error_string)
+				print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} l_collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
 			else
 				print ("Number of documents:" + l_count.out)
 			end

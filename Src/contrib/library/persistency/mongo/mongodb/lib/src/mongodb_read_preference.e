@@ -23,10 +23,10 @@ feature {NONE} -- Initialization
 
 	make (a_read_mode: MONGODB_READ_MODE_ENUM)
 		do
-			memory_make
 			read_prefs_new (a_read_mode)
 		end
 
+feature {NONE} -- Implementation
 
 	read_prefs_new (a_read_mode:MONGODB_READ_MODE_ENUM)
 			-- Creates a new mongoc_read_prefs_t using the mode specified.
@@ -55,9 +55,12 @@ feature -- Access
 			-- Fetches the MONGODB_READ_MODE_ENUM for the read preference.
 		note
 			EIS: "name=mongoc_read_prefs_get_mode", "src=http://mongoc.org/libmongoc/current/mongoc_read_prefs_get_mode.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_value: INTEGER
 		do
+			clean_up
 			create Result.make
 			l_value := {MONGODB_EXTERNALS}.c_mongoc_read_prefs_get_mode (item)
 			Result.set_value (l_value)
@@ -67,9 +70,12 @@ feature -- Access
 			-- Fetches any read preference tags that have been registered.
 		note
 			EIS: "name=mongoc_read_prefs_get_tags", "src=http://mongoc.org/libmongoc/current/mongoc_read_prefs_get_tags.html", "protocol=uri"
+		require
+			is_useful: exists
 		local
 			l_ptr: POINTER
 		do
+			clean_up
 			l_ptr := {MONGODB_EXTERNALS}.c_mongoc_read_prefs_get_tags (item)
 			create Result.make_by_pointer (l_ptr)
 		end
@@ -80,7 +86,10 @@ feature -- Change Element
 			-- Sets the read preference mode with `a_mode'.
 		note
 			EIS: "name=mongoc_read_prefs_set_mode", "src=http://mongoc.org/libmongoc/current/mongoc_read_prefs_set_mode.html", "protocol=uri"
+		require
+			is_useful: exists
 		do
+			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_read_prefs_set_mode (item, a_mode.value)
 		end
 
@@ -88,7 +97,10 @@ feature -- Change Element
 			-- Sets the tags to be used for the read preference with `a_tags'.
 		note
 			EIS: "name=mongoc_read_prefs_set_tags", "src=http://mongoc.org/libmongoc/current/mongoc_read_prefs_set_tags.html", "protocol=uri"
+		require
+			is_useful: exists
 		do
+			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_read_prefs_set_tags (item, a_tags.item)
 		end
 
@@ -96,8 +108,10 @@ feature -- Change Element
 			-- Sets the maxStalenessSeconds to be used for the read preference.
 			-- Clients estimate the staleness of each secondary, and select for reads only those secondaries whose estimated staleness is less than or equal to maxStalenessSeconds.
 		require
+			is_useful: exists
 			valid_max_staleness_seconds: a_seconds <= {MONGODB_EXTERNALS}.MONGOC_NO_MAX_STALENESS
 		do
+			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_read_prefs_set_max_staleness_seconds (item, a_seconds)
 		end
 
@@ -107,7 +121,10 @@ feature -- Status Report
 			-- Performs a consistency check of read_prefs to ensure it makes sense and can be satisfied.
 		note
 			EIS: "name=mongoc_read_prefs_is_valid", "src=http://mongoc.org/libmongoc/current/mongoc_read_prefs_is_valid.html", "protocol=uri"
+		require
+			is_useful: exists
 		do
+			clean_up
 			Result := {MONGODB_EXTERNALS}.c_mongoc_read_prefs_is_valid (item)
 		end
 
