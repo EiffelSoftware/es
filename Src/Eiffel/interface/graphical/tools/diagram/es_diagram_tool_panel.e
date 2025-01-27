@@ -892,13 +892,13 @@ feature -- Element change
 
 				world.drop_actions.wipe_out
 				create a_class_graph.make (Current)
-				if class_graph /= Void then
-					default_ancestor_depth := class_graph.ancestor_depth
-					default_descendant_depth := class_graph.descendant_depth
-					default_client_depth := class_graph.client_depth
-					default_supplier_depth := class_graph.supplier_depth
-					a_class_graph.set_include_all_classes_of_cluster (class_graph.include_all_classes_of_cluster)
-					a_class_graph.set_include_only_classes_of_cluster (class_graph.include_only_classes_of_cluster)
+				if attached class_graph as g then
+					default_ancestor_depth := g.ancestor_depth
+					default_descendant_depth := g.descendant_depth
+					default_client_depth := g.client_depth
+					default_supplier_depth := g.supplier_depth
+					a_class_graph.set_include_all_classes_of_cluster (g.include_all_classes_of_cluster)
+					a_class_graph.set_include_only_classes_of_cluster (g.include_only_classes_of_cluster)
 				end
 				a_class_graph.set_ancestor_depth (default_ancestor_depth)
 				a_class_graph.set_descendant_depth (default_descendant_depth)
@@ -2162,6 +2162,8 @@ feature {NONE} -- Implementation
 
 			fill_cluster_cmd.disable_sensitive
 			toggle_cluster_cmd.disable_sensitive
+
+			delete_figure_cmd.enable_sensitive
 		end
 
 	reset_tool_bar_for_cluster_view
@@ -2185,12 +2187,10 @@ feature {NONE} -- Implementation
 
 			if l_is_readonly then
 				create_class_cmd.disable_sensitive
-				delete_figure_cmd.disable_sensitive
 				delete_system_element_cmd.disable_sensitive
 				create_new_links_cmd.disable_sensitive
 			else
 				create_class_cmd.enable_sensitive
-				delete_figure_cmd.enable_sensitive
 				delete_system_element_cmd.enable_sensitive
 				create_new_links_cmd.enable_sensitive
 			end

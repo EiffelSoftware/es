@@ -237,34 +237,19 @@ feature -- Status report
 
 	veto_pebble_function (a_pebble: ANY): BOOLEAN
 			-- Veto pebble function
-		local
-			l_client: CLIENT_STONE
-			l_inherit: INHERIT_STONE
-			l_classi: CLASSI_STONE
-			l_cluster: CLUSTER_STONE
-			l_feature_stone: FEATURE_STONE
 		do
-			l_classi ?= a_pebble
-			if l_classi /= Void then
-				l_feature_stone ?= a_pebble
-				if l_feature_stone = Void then
-					Result := True
-				end
-			else
-				l_cluster ?= a_pebble
-				if l_cluster /= Void then
-					Result := True
+			if attached {CLASSI_STONE} a_pebble as l_classi then
+				if l_classi.class_i.is_read_only then
+					Result := False
 				else
-					l_inherit ?= a_pebble
-					if l_inherit /= Void then
-						Result := True
-					else
-						l_client ?= a_pebble
-						if l_client /= Void then
-							Result := True
-						end
-					end
+					Result := not attached {FEATURE_STONE} a_pebble
 				end
+			elseif attached {CLUSTER_STONE} a_pebble as l_cluster then
+				Result := True
+			elseif attached {INHERIT_STONE} a_pebble as l_inherit then
+				Result := True
+			elseif attached {CLIENT_STONE} a_pebble as l_client then
+				Result := True
 			end
 		end
 
@@ -463,7 +448,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2020, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
