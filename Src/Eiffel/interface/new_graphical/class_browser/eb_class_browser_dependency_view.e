@@ -1474,23 +1474,23 @@ feature{NONE} -- Implementation
 	recycle_agents
 			-- Recycle agents
 		do
-			if categorize_folder_button_internal /= Void then
-				categorize_folder_button.recycle
+			if attached categorize_folder_button_internal as categorize_btn then
+				categorize_btn.recycle
 			end
-			if show_self_dependency_button_internal /= Void then
-				show_self_dependency_button.recycle
+			if attached show_self_dependency_button_internal as dependency_btn then
+				dependency_btn.recycle
 			end
-			if inheritance_button_internal /= Void then
-				inheritance_button.recycle
+			if attached inheritance_button_internal as inherit_btn then
+				inherit_btn.recycle
 			end
-			if normal_referenced_button_internal /= Void then
-				normal_referenced_button.recycle
+			if attached normal_referenced_button_internal as reference_btn then
+				reference_btn.recycle
 			end
-			if syntactical_button_internal /= Void then
-				syntactical_button.recycle
+			if attached syntactical_button_internal as syntax_btn then
+				syntax_btn.recycle
 			end
-			if recursive_button_internal /= Void then
-				recursive_button.recycle
+			if attached recursive_button_internal as recursive_btn then
+				recursive_btn.recycle
 			end
 			Precursor
 		end

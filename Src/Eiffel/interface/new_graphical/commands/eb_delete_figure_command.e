@@ -33,14 +33,12 @@ feature -- Basic operations
 		local
 			l_world: EIFFEL_WORLD
 			es_class: ES_CLASS
-			class_fig: EIFFEL_CLASS_FIGURE
 			old_x, old_y: INTEGER
 			l_projector: EIFFEL_PROJECTOR
 			remove_links: LIST [ES_ITEM]
 		do
 			l_world := tool.world
-			class_fig ?= a_stone.source
-			if class_fig /= Void then
+			if attached {EIFFEL_CLASS_FIGURE} a_stone.source as class_fig then
 				old_x := class_fig.port_x
 				old_y := class_fig.port_y
 				l_projector := tool.projector
@@ -120,12 +118,10 @@ feature -- Basic operations
 	execute_with_link_midpoint (a_stone: EG_EDGE)
 			-- Remove `a_stone' from diagram.
 		local
-			line: EIFFEL_LINK_FIGURE
 			old_edges, new_edges: LIST [EG_EDGE]
 			l_projector: EIFFEL_PROJECTOR
 		do
-			line ?= a_stone.corresponding_line
-			if line /= Void then
+			if attached {EIFFEL_LINK_FIGURE} a_stone.corresponding_line as line then
 				old_edges := line.edges
 				new_edges := old_edges.twin
 				if new_edges.has (a_stone) then
@@ -143,14 +139,12 @@ feature -- Basic operations
 	execute_with_inheritance_stone (a_stone: INHERIT_STONE)
 			-- Remove `a_stone' from diagram.
 		local
-			l_item: ES_ITEM
 			fig: EIFFEL_INHERITANCE_FIGURE
 			l_projector: EIFFEL_PROJECTOR
 			l_is_non_conforming: BOOLEAN
 		do
 			fig := a_stone.source
-			l_item ?= fig.model
-			if l_item /= Void then
+			if attached {ES_ITEM} fig.model as l_item then
 				l_projector := tool.projector
 				l_is_non_conforming := a_stone.source.model.is_non_conforming
 				history.do_named_undoable (
@@ -163,13 +157,11 @@ feature -- Basic operations
 	execute_with_client_stone (a_stone: CLIENT_STONE)
 			-- Remove `a_stone' from diagram.
 		local
-			l_item: ES_ITEM
 			fig: EIFFEL_CLIENT_SUPPLIER_FIGURE
 			l_projector: EIFFEL_PROJECTOR
 		do
 			fig := a_stone.source
-			l_item ?= fig.model
-			if l_item /= Void then
+			if attached {ES_ITEM} fig.model as l_item then
 				l_projector := tool.projector
 				history.do_named_undoable (
 					interface_names.t_diagram_delete_client_link_cmd (fig.model.name_32),
@@ -184,12 +176,14 @@ feature -- Access
 			-- Create a new toolbar button for this command.
 		do
 			Result := Precursor (display_text)
-			Result.drop_actions.extend (agent execute_with_class_stone)
-			Result.drop_actions.extend (agent execute_with_cluster_stone)
-			Result.drop_actions.extend (agent execute_with_link_midpoint)
-			Result.drop_actions.extend (agent execute_with_inheritance_stone)
-			Result.drop_actions.extend (agent execute_with_client_stone)
-			Result.drop_actions.extend (agent execute_with_class_list)
+			if attached Result.drop_actions as l_drop_actions then
+				l_drop_actions.extend (agent execute_with_class_stone)
+				l_drop_actions.extend (agent execute_with_cluster_stone)
+				l_drop_actions.extend (agent execute_with_link_midpoint)
+				l_drop_actions.extend (agent execute_with_inheritance_stone)
+				l_drop_actions.extend (agent execute_with_client_stone)
+				l_drop_actions.extend (agent execute_with_class_list)
+			end
 		end
 
 	pixmap: EV_PIXMAP
@@ -290,8 +284,6 @@ feature {NONE} -- Implementation
 			-- All class figures in `a_cluster' that are needed on diagram plus ther positions.
 		local
 			l_linkables: LIST [EG_LINKABLE]
-			es_class: ES_CLASS
-			class_fig: EIFFEL_CLASS_FIGURE
 		do
 			from
 				create {ARRAYED_LIST [TUPLE [EIFFEL_CLASS_FIGURE, INTEGER, INTEGER]]} Result.make (5)
@@ -300,10 +292,11 @@ feature {NONE} -- Implementation
 			until
 				l_linkables.after
 			loop
-				es_class ?= l_linkables.item
-				if es_class /= Void and then es_class.is_needed_on_diagram then
-					class_fig ?= tool.world.figure_from_model (es_class)
-					if class_fig /= Void then
+				if
+					attached {ES_CLASS} l_linkables.item as es_class and then
+					es_class.is_needed_on_diagram
+				then
+				if attached {EIFFEL_CLASS_FIGURE} tool.world.figure_from_model (es_class) as class_fig then
 						Result.extend ([class_fig, class_fig.port_x, class_fig.port_y])
 					end
 				end
@@ -312,7 +305,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2020, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
