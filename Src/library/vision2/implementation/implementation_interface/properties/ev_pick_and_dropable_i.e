@@ -385,22 +385,17 @@ feature {EV_ANY_I} -- Implementation
 			-- state of pick and drop and dropable targets.
 			-- If `starting' then the pick and drop is starting,
 			-- else it is ending.
-		local
-			window_imp: detachable EV_WINDOW_IMP
-			windows: LINEAR [EV_WINDOW]
 		do
-			windows := application_implementation.windows
-			from
-				windows.start
-			until
-				windows.off
+			across
+				application_implementation.windows as win
 			loop
-				window_imp ?= windows.item.implementation
-				check
-					window_implementation_not_void: window_imp /= Void then
+				if attached {EV_WINDOW_IMP} win.implementation as window_imp then
+					window_imp.update_for_pick_and_drop (starting)
+				else
+					check
+						has_window_implementation: False then
+					end
 				end
-				window_imp.update_for_pick_and_drop (starting)
-				windows.forth
 			end
 		end
 
@@ -455,7 +450,7 @@ invariant
 		attached pebble_function as l_pebble_function implies l_pebble_function.valid_operands ([1,1])
 
 note
-	copyright:	"Copyright (c) 1984-2021, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
