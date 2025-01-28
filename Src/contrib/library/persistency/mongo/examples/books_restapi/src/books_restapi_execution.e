@@ -31,7 +31,6 @@ feature {NONE} -- Initialization
 		do
 			Precursor
 			initialize_router
-			create mongodb_connection
 		end
 
  	setup_router
@@ -49,7 +48,6 @@ feature {NONE} -- Initialization
  			router.handle ("/", fhdl, router.methods_GET)
  		end
 
-	mongodb_connection: detachable MONGODB_CONNECTION
 
  feature  -- Handle HTML pages
 
@@ -266,7 +264,10 @@ feature -- MongoDB
 	mongodb_client: MONGODB_CLIENT
 		local
 			uri: MONGODB_URI
+			context: MONGODB_CONTEXT
 		do
+			create context
+			context.start
 			create uri.make ("mongodb://127.0.0.1:27017")
 			create Result.make_from_uri (uri)
 

@@ -37,7 +37,7 @@ feature -- Removal
 
 feature -- Transaction Operations
 
-	start_transaction (a_opts: detachable MONGODB_TRANSACTION_OPT)
+	start_transaction (a_opts: detachable MONGODB_TRANSACTION_OPTIONS)
 			-- Start a multi-document transaction for all following operations in this session.
 			-- Any options provided in `opts` override options passed to session options default transaction opts,
 			-- and options inherited from the MongoDB client.
@@ -260,7 +260,7 @@ feature -- Access
 			Result.put (l_increment, 2)
 		end
 
-	options: MONGODB_SESSION_OPT
+	options: MONGODB_SESSION_OPTIONS
 			-- Get a reference to the session options with which this session was configured.
 			-- Note: The returned options are valid only for the lifetime of the session.
 		note

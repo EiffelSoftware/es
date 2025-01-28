@@ -18,6 +18,9 @@ feature {NONE} -- Initialization
 	make
 			-- Run application.
 		do
+				-- TODO review
+				-- Most of this code already implemented in the
+				-- lib/tutorial folders
 			example_client
 --			tutorial
 		end

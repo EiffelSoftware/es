@@ -5,7 +5,7 @@ note
 	EIS: "name=mongoc_session_opt_t", "src=http://mongoc.org/libmongoc/current/mongoc_session_opt_t.html", "protocol=uri	"
 
 class
-	MONGODB_SESSION_OPT
+	MONGODB_SESSION_OPTIONS
 
 inherit
 
@@ -43,7 +43,7 @@ feature -- Removal
 		end
 feature -- Access
 
-	default_transaction_opts: MONGODB_TRANSACTION_OPT
+	default_transaction_opts: MONGODB_TRANSACTION_OPTIONS
 			-- Get the default options for transactions started with this session.
 			-- Note: The returned transaction options are valid only for the lifetime of the session options.
 		note
@@ -55,7 +55,7 @@ feature -- Access
 			create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_session_opts_get_default_transaction_opts (item))
 		end
 
-	transaction_opts: detachable MONGODB_TRANSACTION_OPT
+	transaction_opts: detachable MONGODB_TRANSACTION_OPTIONS
 			-- Get the options for the current transaction started with this session.
 			-- Returns Void if this session is not in a transaction.
 			-- Note: The returned options must be destroyed when no longer needed.
@@ -89,7 +89,7 @@ feature -- Settings
 			{MONGODB_EXTERNALS}.c_mongoc_session_opts_set_causal_consistency (item, a_val)
 		end
 
-	options_clone: MONGODB_SESSION_OPT
+	options_clone: MONGODB_SESSION_OPTIONS
 			-- Create a copy of a session options.
 		note
 			EIS: "name=mongoc_session_opts_clone", "src=http://mongoc.org/libmongoc/current/mongoc_session_opts_clone.html", "protocol=uri"
@@ -100,7 +100,7 @@ feature -- Settings
 			create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_session_opts_clone (item))
 		end
 
-	set_default_transaction_opts (txn_opts: MONGODB_TRANSACTION_OPT)
+	set_default_transaction_opts (txn_opts: MONGODB_TRANSACTION_OPTIONS)
 			-- Set the default options for transactions started with this session.
 			-- The transaction options are copied and can be freed after calling this function.
 			-- Each field set in the transaction options overrides the inherited client configuration.

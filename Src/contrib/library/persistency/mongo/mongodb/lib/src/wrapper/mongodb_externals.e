@@ -15,18 +15,18 @@ feature -- Init
 		external
 			"C inline use <mongoc/mongoc.h>"
 		alias
-			"mongoc_init();"
+			"mongoc_init()"
 		end
 
 feature -- CleanUp
 
-	c_mongo_cleanup
+	c_mongoc_cleanup
 			-- Call exactly once at the end of the program to release all memory and
 			-- other resources allocated by the driver.
 		external
 			"C inline use <mongoc/mongoc.h>"
 		alias
-			"mongoc_cleanup();"
+			"mongoc_cleanup()"
 		end
 
 feature -- Read Concern Levels		

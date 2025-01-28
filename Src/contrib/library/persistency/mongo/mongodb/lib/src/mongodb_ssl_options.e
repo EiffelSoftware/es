@@ -8,7 +8,7 @@ note
 	EIS: "name=mongoc_ssl_opt_t", "src=http://mongoc.org/libmongoc/current/mongoc_ssl_opt_t.html", "protocol=uri"
 
 class
-	MONGODB_SSL_OPTS
+	MONGODB_SSL_OPTIONS
 
 inherit
 	MONGODB_WRAPPER_BASE
@@ -45,7 +45,7 @@ feature -- Status Report
 
 feature -- Access
 
-	get_default: MONGODB_SSL_OPTS
+	get_default: MONGODB_SSL_OPTIONS
 			-- default SSL options for the process.
 			-- This should not be modified or freed.
 		note

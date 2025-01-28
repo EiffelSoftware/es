@@ -1,30 +1,61 @@
 version: '3.9'
 services:
-  mongo-server:
+  mongo-server1:
     image: mongo:latest
-    container_name: mongo-server
+    container_name: mongo-server1
     restart: always
     ports:
       - "27017:27017"
     volumes:
-      - mongodb_data:/data/db
+      - mongodb_data1:/data/db
     networks:
       - mongodb_network
-  mongo-client:
+
+  mongo-server2:
+    image: mongo:latest
+    container_name: mongo-server2
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb_data2:/data/db
+    networks:
+      - mongodb_network
+
+  mongo-client1:
     image: mongo-express:latest
-    container_name: mongo-client
+    container_name: mongo-client1
     restart: always
     depends_on:
-      - mongo-server
+      - mongo-server1
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongo-server
+      - ME_CONFIG_MONGODB_SERVER=mongo-server1
       - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
     ports:
       - "8081:8081"
     networks:
       - mongodb_network
+
+  mongo-client2:
+    image: mongo-express:latest
+    container_name: mongo-client2
+    restart: always
+    depends_on:
+      - mongo-server2
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo-server2
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+    ports:
+      - "8082:8081"
+    networks:
+      - mongodb_network
+
 volumes:
-  mongodb_data:
+  mongodb_data1:
+  mongodb_data2:
+
 networks:
   mongodb_network:
 

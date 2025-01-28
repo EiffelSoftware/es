@@ -7,7 +7,7 @@ note
 	EIS: "name=mongoc_read_prefs_t", "src=http://mongoc.org/libmongoc/current/mongoc_read_prefs_t.html", "protocol=uri"
 
 class
-	MONGODB_READ_PREFERENCE
+	MONGODB_READ_PREFERENCES
 
 inherit
 

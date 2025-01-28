@@ -30,9 +30,8 @@ feature {NONE} -- Initialization
 
 feature -- Execute
 
-	execute (a_reply: BSON): BOOLEAN
+	execute (a_reply: BSON)
 			-- Execute the bulk operation
-			-- Returns True on success, False on error
 			-- `a_reply`: Optional. An uninitialized bson_t populated with the operation result
 		note
 			EIS: "name=mongoc_bulk_operation_execute", "src=https://mongoc.org/libmongoc/current/mongoc_bulk_operation_execute.html", "protocol=uri"
@@ -40,11 +39,12 @@ feature -- Execute
 			is_usable: exists
 		local
 			l_error: BSON_ERROR
+			l_res: BOOLEAN
 		do
 			clean_up
 			create l_error.make
-			Result := {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_execute (item, a_reply.item, l_error.item)
-			if not Result then
+			l_res := {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_execute (item, a_reply.item, l_error.item)
+			if not l_res then
 				set_last_error_with_bson (l_error)
 			end
 		end
@@ -222,10 +222,10 @@ feature -- Operations
 			end
 			create l_error.make
 			l_res := {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_remove_one_with_opts (
-						item, -- bulk operation
+						item, 			 -- bulk operation
 						a_selector.item, -- selector
-						l_opts, -- options
-						l_error.item -- error info
+						l_opts, 		 -- options
+						l_error.item 	 -- error info
 					)
 			if not l_res then
 				set_last_error_with_bson (l_error)
@@ -245,10 +245,10 @@ feature -- Operations
 		do
 			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_bulk_operation_replace_one (
-					item, -- bulk operation
-					a_selector.item, -- selector
-					a_document.item, -- replacement document
-					a_upsert -- upsert flag
+					item, 				-- bulk operation
+					a_selector.item, 	-- selector
+					a_document.item, 	-- replacement document
+					a_upsert 			-- upsert flag
 				)
 		end
 
@@ -277,11 +277,11 @@ feature -- Operations
 			end
 			create l_error.make
 			l_res := {MONGODB_EXTERNALS}.c_mongoc_bulk_operation_replace_one_with_opts (
-						item, -- bulk operation
-						a_selector.item, -- selector
-						a_document.item, -- replacement document
-						l_opts, -- options
-						l_error.item -- error info
+						item, 			  -- bulk operation
+						a_selector.item,  -- selector
+						a_document.item,  -- replacement document
+						l_opts, 		  -- options
+						l_error.item 	  -- error info
 					)
 			if not l_res then
 				set_last_error_with_bson (l_error)
@@ -302,10 +302,10 @@ feature -- Operations
 		do
 			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_bulk_operation_update (
-					item, -- bulk operation
-					a_selector.item, -- selector
-					a_document.item, -- update document
-					a_upsert -- upsert flag
+					item, 				-- bulk operation
+					a_selector.item, 	-- selector
+					a_document.item, 	-- update document
+					a_upsert 			-- upsert flag
 				)
 		end
 
@@ -432,8 +432,8 @@ feature -- Settings
 		do
 			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_bulk_operation_set_client_session (
-					item, -- bulk operation
-					a_session.item -- client session
+					item, 			-- bulk operation
+					a_session.item  -- client session
 				)
 		end
 
@@ -448,8 +448,8 @@ feature -- Settings
 		do
 			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_bulk_operation_set_comment (
-					item, -- bulk operation
-					a_comment.item -- comment value
+					item, 			-- bulk operation
+					a_comment.item 	-- comment value
 				)
 		end
 
@@ -467,7 +467,7 @@ feature -- Settings
 		do
 			clean_up
 			{MONGODB_EXTERNALS}.c_mongoc_bulk_operation_set_server_id (
-					item, -- bulk operation
+					item, 		-- bulk operation
 					a_server_id -- server id
 				)
 		end

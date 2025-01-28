@@ -40,7 +40,7 @@ feature -- Removal
 
 feature -- Access: Query
 
-	find_with_opts (a_filter: BSON; a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE): MONGODB_CURSOR
+	find_with_opts (a_filter: BSON; a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES): MONGODB_CURSOR
 			-- 'a_filter': A bson_t containing the query to execute.
 			-- 'a_opts:' An optional bson_t query options, including sort order and which fields to return
 			-- 'a_read_prefs': An optional reading preferences.
@@ -117,7 +117,7 @@ feature -- Access: Query
 
 
     find_and_modify_with_opts (a_query: BSON;
-                              a_opts: MONGODB_FIND_AND_MODIFY_OPTS;
+                              a_opts: MONGODB_FIND_AND_MODIFY_OPTIONS;
                               a_reply: BSON)
             -- Update and return an object.
             -- Parameters:
@@ -151,7 +151,7 @@ feature -- Access: Query
             end
         end
 
-	count_documents (a_filter: BSON; a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE; a_reply: BSON): INTEGER_64
+	count_documents (a_filter: BSON; a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES; a_reply: BSON): INTEGER_64
 			-- Count documents matching `a_filter` with optional parameters `a_opts`.
 			-- This is the recommended way to count documents (over the deprecated count).
 		note
@@ -178,7 +178,7 @@ feature -- Access: Query
 			end
 		end
 
-	estimated_document_count (a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE; a_reply: BSON): INTEGER_64
+	estimated_document_count (a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES; a_reply: BSON): INTEGER_64
 			-- Get an estimate of the count of documents in the collection.
 			-- This operation is faster than count_documents but less accurate.
 		note
@@ -441,7 +441,7 @@ feature -- Command
 			end
 		end
 
-	command_simple (command: BSON; read_prefs: detachable MONGODB_READ_PREFERENCE; a_reply: BSON)
+	command_simple (command: BSON; read_prefs: detachable MONGODB_READ_PREFERENCES; a_reply: BSON)
 			-- Execute a command on the collection.
 			-- `command`: A BSON containing the command to execute
 			-- `read_prefs`: Optional read preferences
@@ -475,7 +475,7 @@ feature -- Command
 			end
 		end
 
-    command_with_opts (a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE;
+    command_with_opts (a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES;
                       a_opts: detachable BSON; a_reply: BSON)
             -- Execute a command on the server, interpreting opts according to the MongoDB server version.
             -- Note: This is not considered a retryable read operation.
@@ -543,7 +543,7 @@ feature -- Command
 
 feature -- Aggregation
 
-	aggregate (a_pipeline: BSON; a_opts: detachable BSON; a_read_pref: detachable MONGODB_READ_PREFERENCE ): MONGODB_CURSOR
+	aggregate (a_pipeline: BSON; a_opts: detachable BSON; a_read_pref: detachable MONGODB_READ_PREFERENCES ): MONGODB_CURSOR
 			-- Execute an aggregation framework pipeline using `a_pipeline`.
 			-- Returns a cursor to the result set.
 		note

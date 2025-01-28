@@ -11,7 +11,7 @@ note
 	EIS: "name=MongoDB Transaction Options Documentation", "src=https://mongoc.org/libmongoc/current/mongoc_transaction_opt_t.html", "protocol=uri"
 
 class
-	MONGODB_TRANSACTION_OPT
+	MONGODB_TRANSACTION_OPTIONS
 
 inherit
 	MONGODB_WRAPPER_BASE
@@ -64,7 +64,7 @@ feature -- Access
 			create Result.make_by_pointer ({MONGOC_TRANSACTION_OPT}.c_mongoc_transaction_opts_get_write_concern (item))
 		end
 
-	read_prefs: MONGODB_READ_PREFERENCE
+	read_prefs: MONGODB_READ_PREFERENCES
 			-- Gets the read preferences set on this transaction options.
 		note
 			eis: "name=mongoc_transaction_opts_get_read_prefs", "src=https://mongoc.org/libmongoc/current/mongoc_transaction_opts_get_read_prefs.html", "protocol=uri"
@@ -110,7 +110,7 @@ feature -- Settings
 			{MONGOC_TRANSACTION_OPT}.c_mongoc_transaction_opts_set_write_concern (item, a_write_concern.item)
 		end
 
-	set_read_prefs (a_read_prefs: MONGODB_READ_PREFERENCE)
+	set_read_prefs (a_read_prefs: MONGODB_READ_PREFERENCES)
 			-- Set the read preferences for this transaction options.
 		note
 			eis: "name=mongoc_transaction_opts_set_read_prefs", "src=https://mongoc.org/libmongoc/current/mongoc_transaction_opts_set_read_prefs.html", "protocol=uri"
@@ -137,7 +137,7 @@ feature -- Settings
 
 feature -- Operations
 
-	db_clone: MONGODB_TRANSACTION_OPT
+	db_clone: MONGODB_TRANSACTION_OPTIONS
 			-- Creates a copy of the current transaction options.
 		note
 			eis: "name=mongoc_transaction_opts_clone", "src=https://mongoc.org/libmongoc/current/mongoc_transaction_opts_clone.html", "protocol=uri"

@@ -19,7 +19,11 @@ feature {NONE} -- Initialization
             collection: MONGODB_COLLECTION
             uri: MONGODB_URI
             validator: BSON
+        	context: MONGODB_CONTEXT
         do
+        	create context
+        	context.start
+
             -- Initialize MongoDB client with URI
             create uri.make ("mongodb://localhost:27017/admin?appname=find-and-modify-opts-example")
             create client.make_from_uri (uri)
@@ -58,6 +62,7 @@ feature {NONE} -- Initialization
                 	-- Cleanup
                 collection.drop
             end
+            context.finish
         end
 
 feature {NONE} -- Implementation
@@ -65,7 +70,7 @@ feature {NONE} -- Implementation
     fam_flags (collection: MONGODB_COLLECTION)
             -- Using flags with find_and_modify
         local
-            opts: MONGODB_FIND_AND_MODIFY_OPTS
+            opts: MONGODB_FIND_AND_MODIFY_OPTIONS
             flags: MONGODB_FIND_AND_MODIFY_FLAGS
             query, update: BSON
             reply: BSON
@@ -111,14 +116,14 @@ feature {NONE} -- Implementation
             if collection.last_call_succeed then
                 print ("Find and modify with flags result: " + reply.bson_as_canonical_extended_json + "%N")
             else
-            	print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+            	print ({STRING_32}"Error: " + collection.last_call_message + "%N")
             end
         end
 
     fam_bypass (collection: MONGODB_COLLECTION)
             -- Bypassing document validation
         local
-            opts: MONGODB_FIND_AND_MODIFY_OPTS
+            opts: MONGODB_FIND_AND_MODIFY_OPTIONS
             query, update: BSON
             reply: BSON
         do
@@ -155,7 +160,7 @@ feature {NONE} -- Implementation
             if collection.last_call_succeed then
                 print ("Find and modify with bypass validation result: " + reply.bson_as_canonical_extended_json + "%N")
             else
-                print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+                print ({STRING_32}"Error: " + collection.last_call_message + "%N")
             end
 
         end
@@ -163,7 +168,7 @@ feature {NONE} -- Implementation
     fam_update (collection: MONGODB_COLLECTION)
             -- Update operation
         local
-            opts: MONGODB_FIND_AND_MODIFY_OPTS
+            opts: MONGODB_FIND_AND_MODIFY_OPTIONS
             query, update: BSON
             reply: BSON
         do
@@ -199,14 +204,14 @@ feature {NONE} -- Implementation
             if collection.last_call_succeed then
                 print ("Find and modify update result: " + reply.bson_as_canonical_extended_json + "%N")
             else
-                print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+                print ({STRING_32}"Error: " + collection.last_call_message + "%N")
             end
         end
 
     fam_fields (collection: MONGODB_COLLECTION)
             -- Field selection
         local
-            opts: MONGODB_FIND_AND_MODIFY_OPTS
+            opts: MONGODB_FIND_AND_MODIFY_OPTIONS
             query, update, fields: BSON
             flags: MONGODB_FIND_AND_MODIFY_FLAGS
             reply: BSON
@@ -254,14 +259,14 @@ feature {NONE} -- Implementation
             if collection.last_call_succeed then
                 print ("Find and modify with field selection result: " + reply.bson_as_canonical_extended_json + "%N")
             else
-                print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+                print ({STRING_32}"Error: " + collection.last_call_message + "%N")
             end
         end
 
     fam_opts (collection: MONGODB_COLLECTION)
             -- Additional options
         local
-            opts: MONGODB_FIND_AND_MODIFY_OPTS
+            opts: MONGODB_FIND_AND_MODIFY_OPTIONS
             query, update, extra: BSON
             reply: BSON
         do
@@ -311,7 +316,7 @@ feature {NONE} -- Implementation
             if collection.last_call_succeed then
                 print ("Find and modify with extra options result: " + reply.bson_as_canonical_extended_json + "%N")
             else
-            	print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+            	print ({STRING_32}"Error: " + collection.last_call_message + "%N")
             end
 
         end
@@ -319,7 +324,7 @@ feature {NONE} -- Implementation
     fam_sort (collection: MONGODB_COLLECTION)
             -- Sorting with find_and_modify
         local
-            opts: MONGODB_FIND_AND_MODIFY_OPTS
+            opts: MONGODB_FIND_AND_MODIFY_OPTIONS
             query, update, sort: BSON
             reply: BSON
         do
@@ -356,7 +361,7 @@ feature {NONE} -- Implementation
             collection.find_and_modify_with_opts (query, opts, reply)
 
             if collection.error_occurred then
-				print ({STRING_32}"Error: " + if attached {MONGODB_ERROR} collection.last_error as le then le.message else {STRING_32}"Unknown" end + "%N")
+				print ({STRING_32}"Error: " + collection.last_call_message + "%N")
             else
                 print ("Find and modify with sort result: " + reply.bson_as_canonical_extended_json + "%N")
             end

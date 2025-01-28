@@ -25,8 +25,10 @@ feature {NONE} -- Initialization
 			max_pool_size: INTEGER
 			max_staleness: INTEGER_64
 			retry_writes: BOOLEAN
+			context: MONGODB_CONTEXT
 		do
-			{MONGODB_EXTERNALS}.c_mongoc_init
+			create context
+			context.start
 
 				-- Create a URI with various options
 			  -- Create a URI with various options
@@ -71,7 +73,7 @@ feature {NONE} -- Initialization
 			print ("Non-existent option (bool): " +
 				uri.option_as_bool ("nonexistent", True).out + "%N")
 
-			{MONGODB_EXTERNALS}.c_mongo_cleanup
+			context.finish
 		end
 
 end

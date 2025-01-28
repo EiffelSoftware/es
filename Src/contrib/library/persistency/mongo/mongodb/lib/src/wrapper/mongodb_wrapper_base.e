@@ -18,7 +18,6 @@ feature -- Error
 	last_error: detachable MONGODB_ERROR
 			-- last error.		
 
-
 	error_occurred: BOOLEAN
 		do
 			Result := last_error /= Void
@@ -31,11 +30,8 @@ feature -- Error
 
 	set_last_error (a_message: STRING_32)
 			-- Set the last error message with `a_message'
-		local
-			l_error: MONGODB_ERROR
 		do
-			create l_error.make (a_message)
-			last_error := l_error
+			create last_error.make (a_message)
 		end
 
 	set_last_error_with_bson (a_error: BSON_ERROR)
@@ -45,6 +41,24 @@ feature -- Error
 		do
 			l_message := {STRING_32}"[Code:" + a_error.code.out + "]" + {STRING_32}" [Domain:"+ a_error.domain.out + "]" + {STRING_32}" [Message:" + a_error.message + "]"
 			set_last_error (l_message)
+			if attached last_error as le then
+				le.set_code (a_error.code)
+				le.set_domain (a_error.domain)
+			end
+		end
+
+	last_call_message: STRING_32
+			-- Return the last call message, succeed or error message.
+		do
+			if last_call_succeed then
+				Result := {STRING_32}"Succeed"
+			else
+				if attached {MONGODB_ERROR} last_error as le then
+					Result := {STRING_32}"Error: " + le.message
+				else
+					Result := {STRING_32}"Error: Unknown"
+				end
+			end
 		end
 
 	clean_up
