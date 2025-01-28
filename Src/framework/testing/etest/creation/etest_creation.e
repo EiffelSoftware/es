@@ -68,7 +68,7 @@ feature {NONE} -- Access
 	class_name_counter: NATURAL
 			-- Counter used by `create_new_class' to generate class names
 
-	cluster_name: detachable STRING
+	cluster_name: detachable IMMUTABLE_STRING_32
 			-- Optional name of cluster and path where new tests should be created
 
 	internal_tags: TAG_SEARCH_TABLE
@@ -92,7 +92,7 @@ feature {TEST_SUITE_S} -- Status setting
 
 feature -- Status setting
 
-	set_cluster_name (a_name: READABLE_STRING_8)
+	set_cluster_name (a_name: READABLE_STRING_GENERAL)
 			-- Set `cluster_name' to given name.
 			--
 			-- `a_name': Name of cluster in which new tests should be created.
@@ -100,9 +100,9 @@ feature -- Status setting
 			a_name_attached: a_name /= Void
 			not_running: not has_next_step
 		do
-			create cluster_name.make_from_string (a_name)
+			create cluster_name.make_from_string_general (a_name)
 		ensure
-			cluster_name_set: attached cluster_name as l_name and then l_name.same_string (a_name)
+			cluster_name_set: attached cluster_name as l_name and then a_name.same_string (l_name)
 		end
 
 	set_path_name (a_name: READABLE_STRING_GENERAL)
@@ -130,16 +130,19 @@ feature -- Status setting
 			class_name_set: class_name.same_string (a_name)
 		end
 
-	add_tag (a_tag: READABLE_STRING_32)
+	add_tag (a_tag: READABLE_STRING_GENERAL)
 			-- Add given tag to `tags'.
 		require
 			a_tag_attached: a_tag /= Void
 			a_tag_not_empty: not a_tag.is_empty
 			not_running: not has_next_step
+		local
+			t: STRING_32
 		do
-			internal_tags.force (a_tag.twin)
+			create t.make_from_string_general (a_tag)
+			internal_tags.force (t)
 		ensure
-			added: tags.there_exists (agent {READABLE_STRING_32}.same_string (a_tag))
+			added: tags.there_exists (agent {READABLE_STRING_32}.same_string_general (a_tag))
 		end
 
 feature {NONE} -- Status setting
@@ -290,7 +293,7 @@ invariant
 	class_name_not_empty: not class_name.is_empty
 
 note
-	copyright: "Copyright (c) 1984-2019, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

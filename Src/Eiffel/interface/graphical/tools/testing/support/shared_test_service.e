@@ -325,18 +325,18 @@ feature {NONE} -- Basic operations
 			not_launched_yet: not a_creation.has_next_step
 		local
 			l_session: SESSION_I
-			l_list: LIST [STRING]
-			l_tag: STRING
+			l_list: LIST [READABLE_STRING_GENERAL]
+			l_tag: READABLE_STRING_GENERAL
 		do
 			l_session := a_manager.retrieve (True)
 
 			if
-				attached {STRING} l_session.value_or_default ({TEST_SESSION_CONSTANTS}.cluster_name,
+				attached {READABLE_STRING_GENERAL} l_session.value_or_default ({TEST_SESSION_CONSTANTS}.cluster_name,
 					{TEST_SESSION_CONSTANTS}.cluster_name_default) as l_cluster
 			then
 				a_creation.set_cluster_name (l_cluster)
 				if
-					attached {STRING} l_session.value_or_default ({TEST_SESSION_CONSTANTS}.path,
+					attached {READABLE_STRING_GENERAL} l_session.value_or_default ({TEST_SESSION_CONSTANTS}.path,
 						{TEST_SESSION_CONSTANTS}.path_default) as l_path
 				then
 					a_creation.set_path_name (l_path)
@@ -344,14 +344,15 @@ feature {NONE} -- Basic operations
 			end
 
 			if
-				attached {STRING} l_session.value_or_default ({TEST_SESSION_CONSTANTS}.class_name,
+				attached {READABLE_STRING_GENERAL} l_session.value_or_default ({TEST_SESSION_CONSTANTS}.class_name,
 					{TEST_SESSION_CONSTANTS}.class_name_default) as l_name and then not l_name.is_empty
 			then
-				a_creation.set_class_name (l_name)
+				check name_is_valid: l_name.is_valid_as_string_8 end
+				a_creation.set_class_name (l_name.to_string_8)
 			end
 
 			if
-				attached {STRING} l_session.value_or_default ({TEST_SESSION_CONSTANTS}.tags,
+				attached {READABLE_STRING_GENERAL} l_session.value_or_default ({TEST_SESSION_CONSTANTS}.tags,
 					{TEST_SESSION_CONSTANTS}.tags_default) as l_tags
 			then
 				l_list := l_tags.split (',')
@@ -482,7 +483,7 @@ feature {NONE} -- Internationalization
 	e_unkonwn_error: STRING = "Unable to launch processor"
 
 note
-	copyright: "Copyright (c) 1984-2020, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
