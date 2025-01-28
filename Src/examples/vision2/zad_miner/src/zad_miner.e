@@ -1,7 +1,5 @@
 note
 	description: "Launcher"
-	author: "Jocelyn FIAT"
-	version: "1.2"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -19,10 +17,13 @@ inherit
 			default_create, copy
 		end
 
+	EV_SHARED_APPLICATION
+		undefine
+			default_create, copy
+		end
 create
 
 	make_and_launch
-
 
 feature {NONE} -- Initialization
 
@@ -46,14 +47,13 @@ feature {NONE} -- Initialization
 			-- Perform one call to first window in order to
 			-- avoid to violate the invariant of class EV_APPLICATION.
 		local
-			nx,ny: INTEGER
+			nx, ny: INTEGER
 			t: INTEGER
 		do
 				--| initialize the first window.
 
 				--| End the application when the first window is closed.
 			first_window.close_request_actions.extend (agent end_application)
-
 
 				--| get extra setting for x cols and y rows
 			nx := get_opt_value ('x')
@@ -68,8 +68,7 @@ feature {NONE} -- Initialization
 			end
 
 				--| initialize the application
-			first_window.initialize_with (nx,ny, t /= 0)
-
+			first_window.initialize_with (nx, ny, t /= 0)
 
 				--| Show the first window.
 			first_window.show
@@ -83,7 +82,7 @@ feature {NONE} -- Implementation
 	end_application
 			-- End the current application.
 		do
-			if attached (create {EV_ENVIRONMENT}).application as app then
+			if attached ev_application as app then
 				app.destroy
 			end
 		end
@@ -95,9 +94,9 @@ feature {NONE} -- Implementation
 		do
 			s := separate_character_option_value (car)
 			if
-				s /= Void
-				and then not s.is_empty
-				and then s.is_integer
+				s /= Void and then
+				not s.is_empty and then
+				s.is_integer
 			then
 				Result := s.to_integer
 			end
@@ -107,16 +106,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
+note
+	copyright: "2001-2025, Jocelyn Fiat, and Eiffel Software"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Mine Sweeper
+			version 1.3 (2025)
 
-end -- class ZAD_MINER
+			freely distributable
+		]"
 
---|-------------------------------------------------------------------------
---| Eiffel Mine Sweeper -- ZaDoR (c) --
---| version 1.2 (July 2001)
---|
---| by Jocelyn FIAT
---| email: jocelyn.fiat@ifrance.com
---|
---| freely distributable
---|-------------------------------------------------------------------------
-
+end

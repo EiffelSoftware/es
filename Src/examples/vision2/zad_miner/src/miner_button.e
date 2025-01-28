@@ -1,7 +1,5 @@
 note
 	description: "Object which representing a square"
-	author: "Jocelyn FIAT"
-	version: "1.2"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -19,35 +17,31 @@ inherit
 create
 	default_create
 
-
 feature -- Initialization
 
 	init_mine
-		local
--- 			flag_it:EV_ROUTINE_COMMAND
 		do
 			reset
--- 			create flag_it.make(~put_a_flag)
--- 			add_button_press_command(3,flag_it,Void)
 			pointer_button_press_actions.extend (agent put_a_flag_action)
 		end
 
-	flagcode:INTEGER
+	flagcode: INTEGER
 		do
 			if is_flagged then
 				Result := 1
 			end
 		end
 
-	code:INTEGER
+	code: INTEGER
 		do
 			if is_trapped then
 				Result := 1
 			end
 		end
-	is_trapped:BOOLEAN
-	is_flagged:BOOLEAN
-	is_shown:BOOLEAN
+		
+	is_trapped: BOOLEAN
+	is_flagged: BOOLEAN
+	is_shown: BOOLEAN
 
 	reset
 		do
@@ -60,30 +54,29 @@ feature -- Initialization
 	discover_it
 		do
 			if is_flagged and not is_trapped then
- 				set_pixmap (pix_mark_nok)
+				set_pixmap (pix_mark_nok)
 			elseif is_trapped and is_trapped then
- 				set_pixmap (pix_mark)
+				set_pixmap (pix_mark)
 			else
- 				show_it
+				show_it
 			end
 		end
 
 	show_it
 		do
 			is_shown := True
- 			if is_trapped then
- 				set_pixmap(pix_boum)
- 			else
+			if is_trapped then
+				set_pixmap (pix_boum)
+			else
 -- 				set_pixmap()
- 			end
+			end
 		end
 
-
-	put_a_flag_action 	(
-							z_x, z_y: INTEGER; z_button: INTEGER;
-							z_x_tilt, z_y_tilt: DOUBLE; z_pressure: DOUBLE;
-							z_screen_x, z_screen_y: INTEGER
-						)
+	put_a_flag_action (
+				z_x, z_y: INTEGER; z_button: INTEGER;
+				z_x_tilt, z_y_tilt: DOUBLE; z_pressure: DOUBLE;
+				z_screen_x, z_screen_y: INTEGER
+			)
 		do
 			if z_button = 3 then
 				put_a_flag
@@ -97,7 +90,7 @@ feature -- Initialization
 			end
 		end
 
-	set_flag (val:BOOLEAN)
+	set_flag (val: BOOLEAN)
 		do
 			is_flagged := val
 			if val then
@@ -107,20 +100,20 @@ feature -- Initialization
 			end
 		end
 
-	set_trapped(val:BOOLEAN)
+	set_trapped (val: BOOLEAN)
 		do
 			is_trapped := val
 		end
 
-end -- class MINER_BUTTON
+note
+	copyright: "2001-2025, Jocelyn Fiat, and Eiffel Software"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Mine Sweeper
+			version 1.3 (2025)
 
---|-------------------------------------------------------------------------
---| Eiffel Mine Sweeper -- ZaDoR (c) -- 
---| version 1.2 (July 2001)
---|
---| by Jocelyn FIAT
---| email: jocelyn.fiat@ifrance.com
---| 
---| freely distributable
---|-------------------------------------------------------------------------
+			freely distributable
+		]"
+
+end
 

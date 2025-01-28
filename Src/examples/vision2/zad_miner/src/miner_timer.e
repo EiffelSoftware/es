@@ -1,7 +1,5 @@
 note
 	description: "Object representing the timer"
-	author: "Jocelyn FIAT"
-	version: "1.2"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -54,20 +52,20 @@ feature -- Implementation
 			if (change = True)
 			then
 				delai := arg
-				time := time + ( delai.item // 100 )
+				time := time + (delai.item // 100)
 				hour := (time // 10 // 3600)
 				min := (time // 10 // 60) \\ 60
-				sec := ( time // 10) \\ 60
+				sec := (time // 10) \\ 60
 
-				create t_text.make(0)
+				create t_text.make (0)
 				t_text.append (hour.out)
 				t_text.append (":")
-				if (min <10) then
+				if (min < 10) then
 					t_text.append ("0")
 				end
 				t_text.append (min.out)
 				t_text.append (":")
-				if (sec <10) then
+				if (sec < 10) then
 					t_text.append ("0")
 				end
 				t_text.append (sec.out)
@@ -76,15 +74,14 @@ feature -- Implementation
 			end
 		end
 
-end -- class MINER_TIMER
+note
+	copyright: "2001-2025, Jocelyn Fiat, and Eiffel Software"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Mine Sweeper
+			version 1.3 (2025)
 
---|-------------------------------------------------------------------------
---| Eiffel Mine Sweeper -- ZaDoR (c) --
---| version 1.2 (july 2001)
---|
---| by Jocelyn FIAT
---| email: jocelyn.fiat@ifrance.com
---|
---| freely distributable
---|-------------------------------------------------------------------------
+			freely distributable
+		]"
 
+end
