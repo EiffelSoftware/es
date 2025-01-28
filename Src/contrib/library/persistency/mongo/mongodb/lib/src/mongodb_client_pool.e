@@ -48,16 +48,27 @@ feature -- Access
 			-- was pop or try_pop called?	
 
 
-	pop: MONGODB_CLIENT
+	pop: detachable MONGODB_CLIENT
 			-- Retrieve a MONGODB_CLIENT from the client pool or create one, possibly blocking until one is available.
+			-- Note: the total number of clients that can be created form this pool is limited by the URI option `maxPoolSize`
+			-- default = 100
+			-- If this number of clients has been created and all are in use, `pop` blocks until another thread returns a client
+			-- with `push`.
+			-- If the `waitQueueTimeoutMS` URI option was specified with a positive value,
+			-- then `pop` will return NULL when the timeout expires.
 		note
 			EIS: "name=mongoc_client_pool_pop", "src=http://mongoc.org/libmongoc/current/mongoc_client_pool_pop.html", "protocol=uri"
 		require
 			is_usable: exists
+		local
+			l_ptr: POINTER
 		do
 			clean_up
 			has_pop := True
-			create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_client_pool_pop (item))
+			l_ptr := {MONGODB_EXTERNALS}.c_mongoc_client_pool_pop (item)
+			if not l_ptr.is_default_pointer then
+				create Result.make_by_pointer (l_ptr)
+			end
 		end
 
 	try_pop: detachable MONGODB_CLIENT
@@ -85,7 +96,6 @@ feature -- Access
 			is_usable: exists
 		do
 			clean_up
-			has_pop := False
 			{MONGODB_EXTERNALS}.c_mongoc_client_pool_push (item, a_client.item)
 		end
 
@@ -179,7 +189,7 @@ feature -- Settings
 			end
 		end
 
-	set_ssl_opts (a_opts: MONGODB_SSL_OPTS)
+	set_ssl_opts (a_opts: MONGODB_SSL_OPTIONS)
 			-- Set SSL options for all clients in the pool.
 			-- This function ensures that all clients retrieved from `pop` or `try_pop`
 			-- are configured with the same SSL settings.
@@ -213,7 +223,7 @@ feature -- Encryption
 			-- Note: Enabling automatic encryption reduces the maximum message size and may have a negative performance impact.
 			-- Parameters:
 			--   a_opts: Required encryption options
-			-- Returns: True if successful, False and sets error otherwise.
+			-- Write an error if there is something wrong.
 		note
 			eis: "name=enable_auto_encryption", "src=https://mongoc.org/libmongoc/current/mongoc_client_pool_enable_auto_encryption.html", "protocol=uri"
 		require

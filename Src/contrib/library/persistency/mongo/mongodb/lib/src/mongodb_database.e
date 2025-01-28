@@ -127,7 +127,7 @@ feature -- Access
 			create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_database_get_read_concern (item))
 		end
 
-	read_prefs: MONGODB_READ_PREFERENCE
+	read_prefs: MONGODB_READ_PREFERENCES
 			-- Get the default read preferences for this database
 			-- Note: The returned read preferences should not be modified or freed
 		note
@@ -369,7 +369,7 @@ feature -- Collection
 
 feature -- Operations
 
-    aggregate (a_pipeline: BSON; a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE): MONGODB_CURSOR
+    aggregate (a_pipeline: BSON; a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES): MONGODB_CURSOR
             -- Execute an aggregation pipeline on the database.
             -- Parameters:
             --   a_pipeline: A BSON array or document containing an array field named "pipeline"
@@ -406,7 +406,7 @@ feature -- Operations
             create Result.make (l_cursor)
         end
 
-    command_simple (a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE; a_reply: BSON)
+    command_simple (a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES; a_reply: BSON)
             -- Execute a command on the database with a simplified interface.
             -- Parameters:
             --   a_command: The command to execute
@@ -440,7 +440,7 @@ feature -- Operations
             end
         end
 
-    command_with_opts (a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE; a_opts: detachable BSON; a_reply: BSON)
+    command_with_opts (a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES; a_opts: detachable BSON; a_reply: BSON)
             -- Execute a command on the server, interpreting opts according to MongoDB server version.
             -- Parameters:
             --   a_command: The command to execute
@@ -482,7 +482,7 @@ feature -- Operations
             end
         end
 
-    read_command_with_opts (a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE;
+    read_command_with_opts (a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES;
                           a_opts: detachable BSON; a_reply: BSON)
             -- Execute a command on the server, applying logic specific to read commands.
             -- Parameters:

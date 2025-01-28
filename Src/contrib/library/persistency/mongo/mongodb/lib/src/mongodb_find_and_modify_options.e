@@ -9,7 +9,7 @@ note
 	EIS: "name=mongoc_find_and_modify_opts_t", "src=http://mongoc.org/libmongoc/current/mongoc_find_and_modify_opts_t.html", "protocol=uri"
 
 class
-	MONGODB_FIND_AND_MODIFY_OPTS
+	MONGODB_FIND_AND_MODIFY_OPTIONS
 
 inherit
 	MONGODB_WRAPPER_BASE

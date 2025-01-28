@@ -56,7 +56,7 @@ feature -- Tutorial
 	test_read_prefernces
 		local
 			l_client: MONGODB_CLIENT
-			l_read_preference: MONGODB_READ_PREFERENCE
+			l_read_preference: MONGODB_READ_PREFERENCES
 		do
 				-- Initialize and create a new mongobd client instance.
 			create l_client.make ("mongodb://127.0.0.1:27017")

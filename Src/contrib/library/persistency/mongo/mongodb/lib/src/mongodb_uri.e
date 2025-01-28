@@ -279,10 +279,10 @@ feature -- Access
             is_useful: exists
             option_not_empty: not a_option.is_empty
         local
-            c_string_option: C_STRING
+            c_string_option: NATIVE_STRING
             c_string_fallback: C_STRING
             l_ptr: POINTER
-            c_result: C_STRING
+            c_result: NATIVE_STRING
         do
             clean_up
             create c_string_option.make (a_option)
@@ -294,8 +294,8 @@ feature -- Access
             end
 
             if not l_ptr.is_default_pointer then
-                create c_result.make_by_pointer (l_ptr)
-                Result := c_result.string
+                create c_result.make_from_pointer (l_ptr)
+                Result := {UTF_CONVERTER}.utf_32_string_to_utf_8_string_8 (c_result.string)
             end
         end
 
@@ -353,7 +353,7 @@ feature -- Access
 			end
 		end
 
-	read_prefs: detachable MONGODB_READ_PREFERENCE
+	read_prefs: detachable MONGODB_READ_PREFERENCES
 			-- Fetches a read preference that is owned by the URI instance.
 			-- This read preference is configured based on URI parameters.
 			-- Returns Void if no read preferences are provided.
@@ -867,7 +867,7 @@ feature -- Element Change
 			c_mongoc_uri_set_read_concern (item, a_read_concern.item)
 		end
 
-	set_read_preferences (a_prefs: MONGODB_READ_PREFERENCE)
+	set_read_preferences (a_prefs: MONGODB_READ_PREFERENCES)
 			-- Sets a MongoDB URI's read preferences, after the URI has been parsed from a string.
 		note
 			EIS: "name=mongoc_uri_set_read_prefs_t", "src=http://mongoc.org/libmongoc/current/mongoc_uri_set_read_prefs_t.html", "protocol=uri"
@@ -957,7 +957,7 @@ feature {NONE} -- Measurement
 		end
 
 
-feature {NONE} -- C externals
+feature {MONGODB_EXTERNALS_ACCESS} -- C externals
 
 	c_mongoc_uri_new (a_uri: POINTER): POINTER
 		external

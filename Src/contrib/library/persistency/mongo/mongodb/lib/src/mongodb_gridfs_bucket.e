@@ -16,7 +16,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_from_database (a_database: MONGODB_DATABASE; a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCE)
+	make_from_database (a_database: MONGODB_DATABASE; a_opts: detachable BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES)
 			-- Create a new GridFS bucket instance using database `a_database` with optional settings `a_opts`
 			-- and optional read preferences `a_read_prefs`.
 			-- Note: If `a_read_prefs` is Void, inherits read preferences from database.
