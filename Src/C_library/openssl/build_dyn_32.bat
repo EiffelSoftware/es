@@ -48,6 +48,9 @@ rem Copy the generated .lib files to the specified directory
 xcopy /y /s %current_dir%builds\dynamic_32\bin\*.dll %current_dir%spec\win\lib\dynamic\
 
 
+rem Copy the include directory contents
+xcopy /y /s %current_dir%builds\dynamic_32\include %current_dir%spec\win\include\
+
 
 
 rem Get end time:

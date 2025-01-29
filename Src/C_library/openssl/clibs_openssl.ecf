@@ -7,7 +7,7 @@
 			note: set custom variable "openssl_static" to "true", in order to link with static C lib.
   		</description>
 		<root all_classes="true"/>
-		<external_include location="$(ISE_LIBRARY)\C_library\openssl\include">
+		<external_include location="$(ISE_LIBRARY)\C_library\openssl\spec\$(ISE_PLATFORM)\include">
 			<condition>
 				<platform value="windows"/>
 			</condition>
