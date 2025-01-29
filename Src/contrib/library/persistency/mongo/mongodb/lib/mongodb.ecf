@@ -40,7 +40,7 @@
 				<platform value="windows"/>
 			</condition>
 		</external_object>
-		<external_linker_flag value="-lmongoc-1.0">
+		<external_linker_flag value="`pkg-config --libs libmongoc-1.0`">
 			<condition>
 				<platform excluded_value="windows"/>
 			</condition>

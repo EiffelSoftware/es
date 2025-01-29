@@ -39,7 +39,7 @@
 				<platform value="windows"/>
 			</condition>
 		</external_object>
-		<external_linker_flag value="-lbson-1.0">
+		<external_linker_flag value="`pkg-config --libs libbson-1.0`">
 			<condition>
 				<platform excluded_value="windows"/>
 			</condition>
