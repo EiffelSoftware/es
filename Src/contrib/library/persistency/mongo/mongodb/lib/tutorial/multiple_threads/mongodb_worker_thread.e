@@ -18,14 +18,15 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_id: INTEGER; a_client: MONGODB_CLIENT; a_mutex: MUTEX)
+	make (a_id: INTEGER; a_client: STRING; a_mutex: MUTEX)
 			-- Initialize thread with ID, client and mutex
 		require
 			valid_id: a_id > 0
 		do
 			thread_make
 			id := a_id
-			client := a_client
+			connection_string := a_client
+			create client.make (a_client)
 			db_mutex := a_mutex
 		end
 
@@ -47,68 +48,76 @@ feature -- Execution
 			l_cursor: MONGODB_CURSOR
 			l_after: BOOLEAN
 			l_reply: BSON
+
 		do
-				-- Get database and collection
-			l_database := client.database ("concurrent_test")
-			l_collection := l_database.collection ("thread_data")
+			if client.exists then
+					-- Get database and collection
+				l_database := client.database ("concurrent_test")
+				l_collection := l_database.collection ("thread_data")
 
-				-- Lock mutex for write operations
-			db_mutex.lock
-			thread_print ("Starting write operations%N")
+					-- Lock mutex for write operations
+				db_mutex.lock
+				thread_print ("Starting write operations%N")
 
-				-- Insert some documents
-			create l_opts.make
-			l_bulk := l_collection.create_bulk_operation_with_opts (l_opts)
+					-- Insert some documents
+				create l_opts.make
+				l_bulk := l_collection.create_bulk_operation_with_opts (l_opts)
 
-				-- Insert multiple documents for this thread
-			from
-				i := 1
-			until
-				i > 5
-			loop
+					-- Insert multiple documents for this thread
+				from
+					i := 1
+				until
+					i > 5
+				loop
+					create l_document.make
+					l_document.bson_append_integer_32 ("thread_id", id)
+					l_document.bson_append_integer_32 ("document_number", i)
+					l_document.bson_append_utf8 ("message", "Hello from thread " + id.out)
+					l_document.bson_append_time ("timestamp", (create {DATE_TIME}.make_now_utc).time_duration.fine_seconds_count.truncated_to_integer_64)
+
+					l_bulk.insert_with_opts (l_document, Void)
+					i := i + 1
+				end
+
+					-- Execute bulk insert
+				create l_reply.make
+				l_bulk.execute (l_reply)
+				thread_print ("Inserted 5 documents%N")
+
+				db_mutex.unlock
+
+					-- Read operations (no mutex needed for reads as they're thread-safe)
+				thread_print ("Starting read operations%N")
 				create l_document.make
 				l_document.bson_append_integer_32 ("thread_id", id)
-				l_document.bson_append_integer_32 ("document_number", i)
-				l_document.bson_append_utf8 ("message", "Hello from thread " + id.out)
-				l_document.bson_append_time ("timestamp", (create {DATE_TIME}.make_now_utc).time_duration.fine_seconds_count.truncated_to_integer_64)
 
-				l_bulk.insert_with_opts (l_document, Void)
-				i := i + 1
-			end
+				l_cursor := l_collection.find_with_opts (l_document, Void, Void)
 
-				-- Execute bulk insert
-			create l_reply.make
-			l_bulk.execute (l_reply)
-			thread_print ("Inserted 5 documents%N")
-
-				-- Unlock mutex after write operations
-			db_mutex.unlock
-
-				-- Read operations (no mutex needed for reads as they're thread-safe)
-			thread_print ("Starting read operations%N")
-			create l_document.make
-			l_document.bson_append_integer_32 ("thread_id", id)
-
-			l_cursor := l_collection.find_with_opts (l_document, Void, Void)
-
-				-- Print documents found
-			from
-				l_after := False
-			until
-				l_after
-			loop
-				if attached l_cursor.next as l_doc then
-					thread_print ("Found document: " + l_doc.bson_as_canonical_extended_json + "%N")
-				else
-					l_after := True
+					-- Print documents found
+				from
+					l_after := False
+				until
+					l_after
+				loop
+					if attached l_cursor.next as l_doc then
+						thread_print ("Found document: " + l_doc.bson_as_canonical_extended_json + "%N")
+					else
+						l_after := True
+					end
 				end
+			else
+				thread_print ("Error: Could not create MongoDB client connection%N")
 			end
+		rescue
+			thread_print ("Error occurred during MongoDB operations%N")
 		end
 
 feature {NONE} -- Implementation
 
+	connection_string: STRING
+			-- MongoDB connection string
+
 	client: MONGODB_CLIENT
-			-- Shared MongoDB client
 
 	db_mutex: MUTEX
 			-- Mutex for synchronizing database operations
@@ -122,6 +131,14 @@ feature {NONE} -- Implementation
 			db_mutex.lock
 			print ("Thread " + id.out + ": " + message)
 			db_mutex.unlock
+		end
+
+	cleanup
+			-- Cleanup resources
+		do
+			if db_mutex /= Void and then db_mutex.is_set then
+				db_mutex.unlock
+			end
 		end
 
 invariant

@@ -19,13 +19,14 @@ feature {NONE} -- Initialization
 			l_context: MONGODB_CONTEXT
 			i: INTEGER
 			l_thread: MONGODB_WORKER_THREAD
+			l_connection_string: STRING
 		do
 				-- Initialize MongoDB context
 			create l_context
 			l_context.start
 
-				-- Create shared client and mutex
-			create client.make ("mongodb://localhost:27017")
+				-- Create connection string and mutex
+			l_connection_string := "mongodb://localhost:27017"
 			create db_mutex.make
 
 			print ("Starting concurrent MongoDB operations with " + Number_of_threads.out + " threads%N")
@@ -36,7 +37,7 @@ feature {NONE} -- Initialization
 			until
 				i > Number_of_threads
 			loop
-				create l_thread.make (i, client, db_mutex)
+				create l_thread.make (i, l_connection_string, db_mutex)
 				l_thread.launch
 				i := i + 1
 			end
@@ -47,13 +48,10 @@ feature {NONE} -- Initialization
 			print ("All threads completed%N")
 
 				-- Cleanup
-			l_context.finish
+			--l_context.finish
 		end
 
 feature {NONE} -- Implementation
-
-	client: MONGODB_CLIENT
-			-- Shared MongoDB client
 
 	db_mutex: MUTEX
 			-- Mutex for synchronizing database operations
