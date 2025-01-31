@@ -175,7 +175,7 @@ feature -- Removal
         do
 			if not shared then
 				if exists then
-					c_mongoc_socket_destroy (item)
+					{MONGODB_EXTERNALS}.c_mongoc_socket_destroy (item)
 				end
 			end
         end
