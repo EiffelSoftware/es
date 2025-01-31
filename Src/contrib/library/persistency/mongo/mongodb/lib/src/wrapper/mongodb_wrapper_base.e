@@ -7,13 +7,11 @@ deferred class
 	MONGODB_WRAPPER_BASE
 
 inherit
-
 	DISPOSABLE
 
 	MEMORY_STRUCTURE
 
-
-feature -- Error
+feature -- Status report
 
 	last_error: detachable MONGODB_ERROR
 			-- last error.		
@@ -27,6 +25,22 @@ feature -- Error
 		do
 			Result := last_error = Void
 		end
+
+	last_call_message: STRING_32
+			-- Return the last call message, succeed or error message.
+		do
+			if last_call_succeed then
+				Result := {STRING_32}"Succeed"
+			else
+				if attached {MONGODB_ERROR} last_error as le then
+					Result := {STRING_32}"Error: " + le.message
+				else
+					Result := {STRING_32}"Error: Unknown"
+				end
+			end
+		end
+
+feature -- Status change
 
 	set_last_error (a_message: STRING_32)
 			-- Set the last error message with `a_message'
@@ -47,19 +61,7 @@ feature -- Error
 			end
 		end
 
-	last_call_message: STRING_32
-			-- Return the last call message, succeed or error message.
-		do
-			if last_call_succeed then
-				Result := {STRING_32}"Succeed"
-			else
-				if attached {MONGODB_ERROR} last_error as le then
-					Result := {STRING_32}"Error: " + le.message
-				else
-					Result := {STRING_32}"Error: Unknown"
-				end
-			end
-		end
+feature -- Cleanup	
 
 	clean_up
 			-- Clean up the last error.

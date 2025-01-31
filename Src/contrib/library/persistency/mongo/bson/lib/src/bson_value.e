@@ -143,9 +143,13 @@ feature -- Removal
 
 	dispose
 		do
-			if shared then
-				c_bson_value_destroy (item)
-			end
+			if not shared then
+				if exists then
+					c_bson_value_destroy (item)
+				else
+					check exists: False end
+				end
+			end			
 		end
 
 feature {NONE} -- Implementation

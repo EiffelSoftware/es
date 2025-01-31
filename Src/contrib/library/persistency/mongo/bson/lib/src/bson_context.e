@@ -58,10 +58,14 @@ feature -- Removal
 			-- <Precursor>
 		do
 			if shared then
-				c_bson_context_destroy (item)
+				-- Memory managed by the C lib
 			else
-				-- Memory managed by Eiffel.
-			end
+				if exists then
+					c_bson_context_destroy (item)
+				else
+					check exists: False end
+				end
+			end		
 		end
 
 feature {NONE} -- Implementation

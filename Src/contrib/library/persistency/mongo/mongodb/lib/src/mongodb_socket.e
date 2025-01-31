@@ -173,9 +173,11 @@ feature -- Removal
     dispose
             -- <Precursor>
         do
-            if shared then
-                {MONGODB_EXTERNALS}.c_mongoc_socket_destroy (item)
-            end
+			if not shared then
+				if exists then
+					c_mongoc_socket_destroy (item)
+				end
+			end
         end
 
 feature -- Measurement

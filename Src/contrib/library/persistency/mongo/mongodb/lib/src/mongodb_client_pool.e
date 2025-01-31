@@ -37,8 +37,12 @@ feature -- Removal
 	dispose
 			-- <Precursor>
 		do
-			if shared then
-				c_mongoc_client_pool_destroy (item)
+			if not shared then
+				if exists then
+					c_mongoc_client_pool_destroy (item)
+				else
+					check exists: False end
+				end
 			end
 		end
 

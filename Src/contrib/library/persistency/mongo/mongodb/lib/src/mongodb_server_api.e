@@ -103,8 +103,12 @@ feature -- Removal
 	dispose
 			-- <Precursor>
 		do
-			if shared then
-				c_destroy_pointer (item)
+			if not shared then
+				if exists then
+					c_destroy_pointer (item)
+				else
+					check exists: False end
+				end
 			end
 		end
 

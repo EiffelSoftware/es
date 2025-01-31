@@ -191,8 +191,12 @@ feature -- Removal
 	dispose
 			-- <Precursor>
 		do
-			if exists then
-				c_mongoc_auto_encryption_opts_destroy (item)
+			if not shared then
+				if exists then
+					c_mongoc_auto_encryption_opts_destroy (item)
+				else
+					check exists: False end
+				end
 			end
 		end
 

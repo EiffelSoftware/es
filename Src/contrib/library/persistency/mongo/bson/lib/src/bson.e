@@ -610,12 +610,15 @@ feature -- Removal
 			-- <Precursor>
 		do
 			if shared then
-				c_bson_destroy (item)
+					-- Memory is handled by the C lib
 			else
-				-- memory is handled by Eiffel.
-			end
+				if exists then
+					c_bson_destroy (item)
+				else
+					check exists: False end
+				end
+			end        	
 		end
-
 
 feature -- Measurement
 

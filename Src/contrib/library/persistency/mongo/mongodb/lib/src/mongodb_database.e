@@ -11,14 +11,11 @@ note
 class
 	MONGODB_DATABASE
 
-
 inherit
-
 	MONGODB_WRAPPER_BASE
 
 create
 	make_by_pointer
-
 
 feature -- Access
 
@@ -666,8 +663,12 @@ feature -- Removal
 
 	dispose
 		do
-			if shared then
-				c_mongoc_database_destroy (item)
+			if not shared then
+				if exists then
+					c_mongoc_database_destroy (item)
+				else
+					check exists: False end
+				end
 			end
 		end
 
