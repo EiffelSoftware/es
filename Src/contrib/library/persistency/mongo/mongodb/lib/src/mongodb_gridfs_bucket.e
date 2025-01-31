@@ -99,11 +99,12 @@ feature -- Removal
 	dispose
 			-- <Precursor>
 		do
-			if shared then
-				c_mongoc_gridfs_bucket_destroy (item)
+			if not shared then
+				if exists then
+					c_mongoc_gridfs_bucket_destroy (item)
+				end
 			end
 		end
-
 
 feature -- Measurement
 

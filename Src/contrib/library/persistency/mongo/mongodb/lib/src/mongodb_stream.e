@@ -216,11 +216,13 @@ feature -- Removal
 
 	dispose
 			-- <Precursor>
-		do
-			if shared then
-				c_mongoc_stream_destroy (item)
+        do
+			if not shared then
+				if exists then
+					c_mongoc_stream_destroy (item)
+				end
 			end
-		end
+        end
 
 feature -- Measurement
 

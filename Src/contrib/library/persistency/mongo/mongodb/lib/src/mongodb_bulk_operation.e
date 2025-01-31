@@ -82,8 +82,12 @@ feature -- Removal
 	dispose
 			-- <Precursor>
 		do
-			if shared then
-				c_mongoc_bulk_operation_destroy (item)
+			if not shared then
+				if exists then
+					c_mongoc_bulk_operation_destroy (item)
+				else
+					check exists: False end
+				end
 			end
 		end
 

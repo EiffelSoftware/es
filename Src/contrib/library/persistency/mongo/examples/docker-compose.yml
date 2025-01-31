@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   mongo-server1:
     image: mongo:latest
@@ -45,7 +44,7 @@ services:
       - mongo-server2
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongo-server2
-      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_PORT=27018
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
     ports:
       - "8082:8081"
