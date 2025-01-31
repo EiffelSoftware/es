@@ -9,8 +9,8 @@ This project provides a MongoDB driver for Eiffel, consisting of:
 - **C Driver**: The C driver for MongoDB
 - **BSON Library**: A wrapper for the BSON (Binary JSON) implementation
 - **MongoDB Library**: The core MongoDB driver functionality
-- **Example REST API**: A demonstration of using the driver in a real application
-- **Tutorial**: A tutorial showing how to use the driver
+    - **Example REST API**: A demonstration of using the driver in a real application
+    - **Tutorial**: A tutorial showing how to use the driver
 
 ## Project Structure
 
@@ -23,11 +23,13 @@ The project is organized into several main components:
 - `/bson`: BSON implementation wrapper
  
 - `/mongodb`: Core MongoDB driver
+  - `src`: Source code of the Eiffel code 
+  - `test`: Test the driver
   - `/tutorial`: Tutorial showing how to use the driver
- 
-- `/examples`: Sample implementations
-  - REST API example showing real-world usage
-  - Demonstrates basic CRUD operations
+  - `/basic`:- Demonstrates basic CRUD operations
+  - `/examples`: Sample implementations
+      - REST API example showing real-world usage
+  
 
 
 ## Prerequisites
