@@ -146,11 +146,11 @@ feature -- Tutorial
 				-- Initialize and create a new mongobd client instance.
 			create l_client.make ("mongodb://127.0.0.1:27017")
 
-		     	-- Register the application name so we can track it in the profile logs
-		     	-- on the server. This can also be done from the URI (see other examples).
-		    l_client.set_appname ("connect_example")
+				-- Register the application name so we can track it in the profile logs
+				-- on the server. This can also be done from the URI (see other examples).
+			l_client.set_appname ("connect_example")
 
-		    	-- Get a handle on the database "db_name" and collection "coll_name"
+				-- Get a handle on the database "db_name" and collection "coll_name"
 			l_database := l_client.database ("db_name")
 			l_collection := l_client.collection ("db_name", "coll_name")
 
@@ -430,3 +430,4 @@ feature -- Crud
 			end
 		end
 end
+

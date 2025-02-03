@@ -17,11 +17,11 @@ feature {NONE} -- Initialization
 			l_client: MONGODB_CLIENT
 			l_database: MONGODB_DATABASE
 			l_collection: MONGODB_COLLECTION
-            driver: MONGODB_DRIVER
+			driver: MONGODB_DRIVER
 		do
 				-- Initialize driver
-            create driver
-            driver.use
+			create driver
+			driver.use
 				-- Initialize and create a new mongobd client instance.
 			create l_client.make ("mongodb://127.0.0.1:27017")
 			print ("Connected to the database successfully%N")
@@ -40,3 +40,4 @@ feature {NONE} -- Initialization
 		end
 
 end
+

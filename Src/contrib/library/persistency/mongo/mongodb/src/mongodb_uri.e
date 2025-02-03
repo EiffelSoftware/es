@@ -201,123 +201,123 @@ feature -- Access
 		end
 
 	auth_mechanism_properties: detachable BSON
-            -- Fetches the "authMechanismProperties" options.
-            -- Returns Void if no "authMechanismProperties" have been set.
-        note
-            EIS: "name=mongoc_uri_get_mechanism_properties", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_mechanism_properties.html", "protocol=uri"
-        require
-            is_useful: exists
-        local
-            l_bson: BSON
-            l_success: BOOLEAN
-        do
-            clean_up
-            create l_bson.make
-            l_success := c_mongoc_uri_get_mechanism_properties (item, l_bson.item)
-            if l_success then
-                Result := l_bson
-            end
-        end
+			-- Fetches the "authMechanismProperties" options.
+			-- Returns Void if no "authMechanismProperties" have been set.
+		note
+			EIS: "name=mongoc_uri_get_mechanism_properties", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_mechanism_properties.html", "protocol=uri"
+		require
+			is_useful: exists
+		local
+			l_bson: BSON
+			l_success: BOOLEAN
+		do
+			clean_up
+			create l_bson.make
+			l_success := c_mongoc_uri_get_mechanism_properties (item, l_bson.item)
+			if l_success then
+				Result := l_bson
+			end
+		end
 
 	option_as_bool (a_option: READABLE_STRING_8; a_fallback: BOOLEAN): BOOLEAN
-            -- Returns the value of the URI option if it is set and of the correct type (bool).
-            -- If not set, or set to an invalid type, returns `fallback`.
-            -- Note: option name is case insensitive.
-        note
-            EIS: "name=mongoc_uri_get_option_as_bool", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_option_as_bool.html", "protocol=uri"
-        require
-            is_useful: exists
-            is_valid_option: not a_option.is_empty
-        local
-            c_string: C_STRING
-        do
-            clean_up
-            create c_string.make (a_option)
-            Result := c_mongoc_uri_get_option_as_bool (item, c_string.item, a_fallback)
-        end
+			-- Returns the value of the URI option if it is set and of the correct type (bool).
+			-- If not set, or set to an invalid type, returns `fallback`.
+			-- Note: option name is case insensitive.
+		note
+			EIS: "name=mongoc_uri_get_option_as_bool", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_option_as_bool.html", "protocol=uri"
+		require
+			is_useful: exists
+			is_valid_option: not a_option.is_empty
+		local
+			c_string: C_STRING
+		do
+			clean_up
+			create c_string.make (a_option)
+			Result := c_mongoc_uri_get_option_as_bool (item, c_string.item, a_fallback)
+		end
 
 	option_as_int32 (a_option: READABLE_STRING_8; a_fallback: INTEGER): INTEGER
-            -- Returns the value of the URI option if it is set and of the correct type (int32).
-            -- If not set, or set to an invalid type, returns `fallback`.
-            -- Note: option name is case insensitive.
-        note
-            EIS: "name=mongoc_uri_get_option_as_int32", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_option_as_int32.html", "protocol=uri"
-        require
-            is_useful: exists
-            is_valid_option: not a_option.is_empty
-        local
-            c_string: C_STRING
-        do
-            clean_up
-            create c_string.make (a_option)
-            Result := c_mongoc_uri_get_option_as_int32 (item, c_string.item, a_fallback)
-        end
+			-- Returns the value of the URI option if it is set and of the correct type (int32).
+			-- If not set, or set to an invalid type, returns `fallback`.
+			-- Note: option name is case insensitive.
+		note
+			EIS: "name=mongoc_uri_get_option_as_int32", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_option_as_int32.html", "protocol=uri"
+		require
+			is_useful: exists
+			is_valid_option: not a_option.is_empty
+		local
+			c_string: C_STRING
+		do
+			clean_up
+			create c_string.make (a_option)
+			Result := c_mongoc_uri_get_option_as_int32 (item, c_string.item, a_fallback)
+		end
 
-    option_as_int64 (a_option: READABLE_STRING_8; a_fallback: INTEGER_64): INTEGER_64
-            -- Returns the value of the URI option if it is set and of the correct type (integer).
-            -- Returns `fallback` if the option is not set, set to an invalid type, or zero.
-            -- Note: Zero is considered "unset", so URIs can be constructed with zero values
-            -- and still accept default values.
-            -- Note: option name is case insensitive.
-        note
-            EIS: "name=mongoc_uri_get_option_as_int64", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_option_as_int64.html", "protocol=uri"
-        require
-            is_useful: exists
-            option_not_empty: not a_option.is_empty
-        local
-            c_string: C_STRING
-        do
-            clean_up
-            create c_string.make (a_option)
-            Result := c_mongoc_uri_get_option_as_int64 (item, c_string.item, a_fallback)
-        end
+	option_as_int64 (a_option: READABLE_STRING_8; a_fallback: INTEGER_64): INTEGER_64
+			-- Returns the value of the URI option if it is set and of the correct type (integer).
+			-- Returns `fallback` if the option is not set, set to an invalid type, or zero.
+			-- Note: Zero is considered "unset", so URIs can be constructed with zero values
+			-- and still accept default values.
+			-- Note: option name is case insensitive.
+		note
+			EIS: "name=mongoc_uri_get_option_as_int64", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_option_as_int64.html", "protocol=uri"
+		require
+			is_useful: exists
+			option_not_empty: not a_option.is_empty
+		local
+			c_string: C_STRING
+		do
+			clean_up
+			create c_string.make (a_option)
+			Result := c_mongoc_uri_get_option_as_int64 (item, c_string.item, a_fallback)
+		end
 
-    option_as_utf8 (a_option: READABLE_STRING_8; a_fallback: detachable READABLE_STRING_8): detachable READABLE_STRING_8
-            -- Returns the value of the URI option if it is set and of the correct type (string).
-            -- If not set, or set to an invalid type, returns `fallback`.
-            -- Note: option name is case insensitive.
-        note
-            EIS: "name=mongoc_uri_get_option_as_utf8", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_option_as_utf8.html", "protocol=uri"
-        require
-            is_useful: exists
-            option_not_empty: not a_option.is_empty
-        local
-            c_string_option: NATIVE_STRING
-            c_string_fallback: C_STRING
-            l_ptr: POINTER
-            c_result: NATIVE_STRING
-        do
-            clean_up
-            create c_string_option.make (a_option)
-            if attached a_fallback then
-                create c_string_fallback.make (a_fallback)
-                l_ptr := c_mongoc_uri_get_option_as_utf8 (item, c_string_option.item, c_string_fallback.item)
-            else
-                l_ptr := c_mongoc_uri_get_option_as_utf8 (item, c_string_option.item, default_pointer)
-            end
+	option_as_utf8 (a_option: READABLE_STRING_8; a_fallback: detachable READABLE_STRING_8): detachable READABLE_STRING_8
+			-- Returns the value of the URI option if it is set and of the correct type (string).
+			-- If not set, or set to an invalid type, returns `fallback`.
+			-- Note: option name is case insensitive.
+		note
+			EIS: "name=mongoc_uri_get_option_as_utf8", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_option_as_utf8.html", "protocol=uri"
+		require
+			is_useful: exists
+			option_not_empty: not a_option.is_empty
+		local
+			c_string_option: NATIVE_STRING
+			c_string_fallback: C_STRING
+			l_ptr: POINTER
+			c_result: NATIVE_STRING
+		do
+			clean_up
+			create c_string_option.make (a_option)
+			if attached a_fallback then
+				create c_string_fallback.make (a_fallback)
+				l_ptr := c_mongoc_uri_get_option_as_utf8 (item, c_string_option.item, c_string_fallback.item)
+			else
+				l_ptr := c_mongoc_uri_get_option_as_utf8 (item, c_string_option.item, default_pointer)
+			end
 
-            if not l_ptr.is_default_pointer then
-                create c_result.make_from_pointer (l_ptr)
-                Result := {UTF_CONVERTER}.utf_32_string_to_utf_8_string_8 (c_result.string)
-            end
-        end
+			if not l_ptr.is_default_pointer then
+				create c_result.make_from_pointer (l_ptr)
+				Result := {UTF_CONVERTER}.utf_32_string_to_utf_8_string_8 (c_result.string)
+			end
+		end
 
-	 options: detachable BSON
-            -- Fetches a BSON document containing all of the options provided after the ? of a URI.
-            -- Returns Void if no options were provided.
-        note
-            EIS: "name=mongoc_uri_get_options", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_options.html", "protocol=uri"
-        require
-            is_useful: exists
-        local
-            l_ptr: POINTER
-        do
-            clean_up
-            l_ptr := c_mongoc_uri_get_options (item)
-            if not l_ptr.is_default_pointer then
-                create Result.make_by_pointer (l_ptr)
-            end
-        end
+	options: detachable BSON
+			-- Fetches a BSON document containing all of the options provided after the ? of a URI.
+			-- Returns Void if no options were provided.
+		note
+			EIS: "name=mongoc_uri_get_options", "src=http://mongoc.org/libmongoc/current/mongoc_uri_get_options.html", "protocol=uri"
+		require
+			is_useful: exists
+		local
+			l_ptr: POINTER
+		do
+			clean_up
+			l_ptr := c_mongoc_uri_get_options (item)
+			if not l_ptr.is_default_pointer then
+				create Result.make_by_pointer (l_ptr)
+			end
+		end
 
 	password: detachable READABLE_STRING_GENERAL
 			-- Fetches the password portion of the URI if provided.
@@ -998,82 +998,82 @@ feature {MONGODB_EXTERNALS_ACCESS} -- C externals
 			]"
 		end
 
-    c_mongoc_uri_get_auth_mechanism (a_uri: POINTER): POINTER
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return (EIF_POINTER) mongoc_uri_get_auth_mechanism ((const mongoc_uri_t *)$a_uri);"
-        end
+	c_mongoc_uri_get_auth_mechanism (a_uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_auth_mechanism ((const mongoc_uri_t *)$a_uri);"
+		end
 
-    c_mongoc_uri_get_auth_source (a_uri: POINTER): POINTER
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return (EIF_POINTER) mongoc_uri_get_auth_source ((const mongoc_uri_t *)$a_uri);"
-        end
+	c_mongoc_uri_get_auth_source (a_uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_auth_source ((const mongoc_uri_t *)$a_uri);"
+		end
 
-     c_mongoc_uri_get_compressors (a_uri: POINTER): POINTER
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return (EIF_POINTER) mongoc_uri_get_compressors ((const mongoc_uri_t *)$a_uri);"
-        end
+	c_mongoc_uri_get_compressors (a_uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_compressors ((const mongoc_uri_t *)$a_uri);"
+		end
 
-    c_mongoc_uri_get_database (a_uri: POINTER): POINTER
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return (EIF_POINTER) mongoc_uri_get_database ((const mongoc_uri_t *)$a_uri);"
-        end
+	c_mongoc_uri_get_database (a_uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_database ((const mongoc_uri_t *)$a_uri);"
+		end
 
-    c_mongoc_uri_get_hosts (a_uri: POINTER): POINTER
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return (EIF_POINTER) mongoc_uri_get_hosts ((const mongoc_uri_t *)$a_uri);"
-        end
+	c_mongoc_uri_get_hosts (a_uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_hosts ((const mongoc_uri_t *)$a_uri);"
+		end
 
 	c_mongoc_uri_get_mechanism_properties (uri: POINTER; properties: POINTER): BOOLEAN
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return mongoc_uri_get_mechanism_properties ((const mongoc_uri_t *)$uri, (bson_t *)$properties);"
-        end
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return mongoc_uri_get_mechanism_properties ((const mongoc_uri_t *)$uri, (bson_t *)$properties);"
+		end
 
-    c_mongoc_uri_get_option_as_bool (uri: POINTER; option: POINTER; fallback: BOOLEAN): BOOLEAN
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return mongoc_uri_get_option_as_bool ((const mongoc_uri_t *)$uri, (const char *)$option, (bool)$fallback);"
-        end
+	c_mongoc_uri_get_option_as_bool (uri: POINTER; option: POINTER; fallback: BOOLEAN): BOOLEAN
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return mongoc_uri_get_option_as_bool ((const mongoc_uri_t *)$uri, (const char *)$option, (bool)$fallback);"
+		end
 
 	c_mongoc_uri_get_option_as_int32 (uri: POINTER; option: POINTER; fallback: INTEGER): INTEGER
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return mongoc_uri_get_option_as_int32 ((const mongoc_uri_t *)$uri, (const char *)$option, (int32_t)$fallback);"
-        end
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return mongoc_uri_get_option_as_int32 ((const mongoc_uri_t *)$uri, (const char *)$option, (int32_t)$fallback);"
+		end
 
-   c_mongoc_uri_get_option_as_int64 (uri: POINTER; option: POINTER; fallback: INTEGER_64): INTEGER_64
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return mongoc_uri_get_option_as_int64 ((const mongoc_uri_t *)$uri, (const char *)$option, (int64_t)$fallback);"
-        end
+c_mongoc_uri_get_option_as_int64 (uri: POINTER; option: POINTER; fallback: INTEGER_64): INTEGER_64
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return mongoc_uri_get_option_as_int64 ((const mongoc_uri_t *)$uri, (const char *)$option, (int64_t)$fallback);"
+		end
 
-    c_mongoc_uri_get_option_as_utf8 (uri: POINTER; option: POINTER; fallback: POINTER): POINTER
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return (EIF_POINTER) mongoc_uri_get_option_as_utf8 ((const mongoc_uri_t *)$uri, (const char *)$option, (const char *)$fallback);"
-        end
+	c_mongoc_uri_get_option_as_utf8 (uri: POINTER; option: POINTER; fallback: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_option_as_utf8 ((const mongoc_uri_t *)$uri, (const char *)$option, (const char *)$fallback);"
+		end
 
-  c_mongoc_uri_get_options (uri: POINTER): POINTER
-        external
-            "C inline use <mongoc/mongoc.h>"
-        alias
-            "return (EIF_POINTER) mongoc_uri_get_options ((const mongoc_uri_t *)$uri);"
-        end
+c_mongoc_uri_get_options (uri: POINTER): POINTER
+		external
+			"C inline use <mongoc/mongoc.h>"
+		alias
+			"return (EIF_POINTER) mongoc_uri_get_options ((const mongoc_uri_t *)$uri);"
+		end
 
 	c_mongoc_uri_get_password (a_uri: POINTER): POINTER
 		external
@@ -1301,3 +1301,4 @@ feature {MONGODB_EXTERNALS_ACCESS} -- C externals
 
 
 end
+

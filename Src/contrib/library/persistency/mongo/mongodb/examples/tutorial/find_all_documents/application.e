@@ -27,11 +27,11 @@ feature {NONE} -- Initialization
 			l_query: BSON
 			l_cursor: MONGODB_CURSOR
 			l_after: BOOLEAN
-            driver: MONGODB_DRIVER
+			driver: MONGODB_DRIVER
 		do
 				-- Initialize driver
-            create driver
-            driver.use
+			create driver
+			driver.use
 
 			create l_client.make ("mongodb://localhost:27017/?appname=find-all-example")
 			l_collection := l_client.collection ("mydb", "mycoll")
@@ -51,3 +51,4 @@ feature {NONE} -- Initialization
 			end
 		end
 end
+

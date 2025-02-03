@@ -22,8 +22,8 @@ feature {NONE} -- Initialization
 			driver: MONGODB_DRIVER
 		do
 				-- Initialize driver
-            create driver
-            driver.use
+			create driver
+			driver.use
 
 				-- Create client
 			create client.make ("mongodb://localhost:27017/?appname=index-single-field-example")
@@ -53,24 +53,25 @@ feature {NONE} -- Initialization
 
 	search (collection: MONGODB_COLLECTION)
 		local
-    		filter: BSON
-    		l_cursor: MONGODB_CURSOR
-    		l_after: BOOLEAN
+			filter: BSON
+			l_cursor: MONGODB_CURSOR
+			l_after: BOOLEAN
 		do
 			create filter.make
 			filter.bson_append_utf8 ("city", "CHICAGO")
 
-    		l_cursor := collection.find_with_opts (filter, Void, Void)
+			l_cursor := collection.find_with_opts (filter, Void, Void)
 
-		    from
-		    until
-		        l_after
-		    loop
-		        if attached l_cursor.next as l_bson then
-		            print (l_bson.bson_as_canonical_extended_json + "%N")
-		        else
-		        	l_after := True
-		        end
-		    end
+			from
+			until
+				l_after
+			loop
+				if attached l_cursor.next as l_bson then
+					print (l_bson.bson_as_canonical_extended_json + "%N")
+				else
+					l_after := True
+				end
+			end
 		end
 end
+

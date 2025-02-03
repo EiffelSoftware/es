@@ -26,11 +26,11 @@ feature {NONE} -- Initialization
 			l_collection: MONGODB_COLLECTION
 			l_doc: BSON
 			l_oid: BSON_OID
-            driver: MONGODB_DRIVER
+			driver: MONGODB_DRIVER
 		do
 				-- Initialize driver
 			create driver
-            driver.use
+			driver.use
 
 			create l_client.make ("mongodb://localhost:27017/?appname=delete-example")
 			l_collection := l_client.collection ("test", "test")
@@ -39,12 +39,13 @@ feature {NONE} -- Initialization
 			l_doc.bson_append_oid ("_id", l_oid)
 			l_doc.bson_append_utf8 ("hello", "world")
 
-                -- insert a document
+				-- insert a document
 			l_collection.insert_one (l_doc, Void, Void)
 
-                -- delete the document.
+				-- delete the document.
 			create l_doc.make
 			l_doc.bson_append_oid ("_id", l_oid)
 			l_collection.delete_one (l_doc, Void, Void)
 		end
 end
+

@@ -18,7 +18,7 @@ feature {NONE} -- Initialization
 		end
 
 	read_document
-    	local
+		local
 			l_client: MONGODB_CLIENT
 			l_collection: MONGODB_COLLECTION
 			l_query: BSON
@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 			driver: MONGODB_DRIVER
 		do
 			create driver
-            driver.use
+			driver.use
 			
 			create l_client.make ("mongodb://localhost:27017/?appname=find-example")
 			l_collection := l_client.collection ("mydb", "mycoll")
@@ -50,3 +50,4 @@ feature {NONE} -- Initialization
 
 
 end
+

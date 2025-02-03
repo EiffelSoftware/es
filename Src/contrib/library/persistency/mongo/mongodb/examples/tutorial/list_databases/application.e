@@ -20,8 +20,8 @@ feature {NONE} -- Initialization
 			driver: MONGODB_DRIVER
 		do
 				-- Initialize driver
-            create driver
-            driver.use
+			create driver
+			driver.use
 				-- Initialize and create a new mongobd client instance.
 			create l_client.make ("mongodb://127.0.0.1:27017")
 			l_database_names := l_client.database_names (Void)
@@ -34,3 +34,4 @@ feature {NONE} -- Initialization
 			end
 		end
 end
+

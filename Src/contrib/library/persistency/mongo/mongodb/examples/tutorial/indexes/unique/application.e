@@ -24,8 +24,8 @@ feature {NONE} -- Initialization
 			driver: MONGODB_DRIVER
 		do
 				-- Initialize driver
-            create driver
-            driver.use
+			create driver
+			driver.use
 
 				-- Create client
 			create client.make ("mongodb://localhost:27017/?appname=index-unique-example")
@@ -84,3 +84,4 @@ feature {NONE} -- Initialization
 		end
 
 end
+

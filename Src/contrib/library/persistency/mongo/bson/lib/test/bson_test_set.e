@@ -969,107 +969,108 @@ feature -- Test routines
 		end
 
 
-    test_bson_copy
-            -- Test BSON document copying
-        local
-            l_bson: BSON
-            l_copy: BSON
-        do
-                -- Create and populate original document
-            create l_bson.make
-            l_bson.bson_append_integer_32 ("foobar", 1234)
+	test_bson_copy
+			-- Test BSON document copying
+		local
+			l_bson: BSON
+			l_copy: BSON
+		do
+				-- Create and populate original document
+			create l_bson.make
+			l_bson.bson_append_integer_32 ("foobar", 1234)
 
-                -- Create copy and verify equality
-            l_copy := l_bson.bson_copy
-            assert ("Documents should be equal", l_bson.bson_equal (l_copy))
-        end
+				-- Create copy and verify equality
+			l_copy := l_bson.bson_copy
+			assert ("Documents should be equal", l_bson.bson_equal (l_copy))
+		end
 
-    test_bson_copy_to
-            -- Test BSON document copying to existing document
-        local
-            l_bson: BSON
-            l_copy: BSON
-            i: INTEGER
-        do
-                -- Test 1: Simple document copy
-            create l_bson.make
-            create l_copy.make
-            l_bson.bson_append_integer_32 ("foobar", 1234)
-            l_bson.bson_copy_to (l_copy)
-            assert ("Simple documents should be equal", l_bson.bson_equal (l_copy))
+	test_bson_copy_to
+			-- Test BSON document copying to existing document
+		local
+			l_bson: BSON
+			l_copy: BSON
+			i: INTEGER
+		do
+				-- Test 1: Simple document copy
+			create l_bson.make
+			create l_copy.make
+			l_bson.bson_append_integer_32 ("foobar", 1234)
+			l_bson.bson_copy_to (l_copy)
+			assert ("Simple documents should be equal", l_bson.bson_equal (l_copy))
 
-                -- Test 2: Large document copy
-            create l_bson.make
-            create l_copy.make
-            from
-                i := 1
-            until
-                i > 1000
-            loop
-                l_bson.bson_append_integer_32 ("foobar", 1234)
-                i := i + 1
-            end
-            l_bson.bson_copy_to (l_copy)
-            assert ("Large documents should be equal", l_bson.bson_equal (l_copy))
-        end
+				-- Test 2: Large document copy
+			create l_bson.make
+			create l_copy.make
+			from
+				i := 1
+			until
+				i > 1000
+			loop
+				l_bson.bson_append_integer_32 ("foobar", 1234)
+				i := i + 1
+			end
+			l_bson.bson_copy_to (l_copy)
+			assert ("Large documents should be equal", l_bson.bson_equal (l_copy))
+		end
 
-    test_bson_concat
-            -- Test concatenating BSON documents
-        local
-            l_a: BSON
-            l_b: BSON
-            l_expected: BSON
-        do
-                -- Create and populate first document
-            create l_a.make
-            l_a.bson_append_integer_32 ("abc", 1)
+	test_bson_concat
+			-- Test concatenating BSON documents
+		local
+			l_a: BSON
+			l_b: BSON
+			l_expected: BSON
+		do
+				-- Create and populate first document
+			create l_a.make
+			l_a.bson_append_integer_32 ("abc", 1)
 
-                -- Create and populate second document
-            create l_b.make
-            l_b.bson_append_integer_32 ("def", 1)
+				-- Create and populate second document
+			create l_b.make
+			l_b.bson_append_integer_32 ("def", 1)
 
-                -- Concatenate b into a
-            l_a.bson_concat (l_b)
+				-- Concatenate b into a
+			l_a.bson_concat (l_b)
 
-                -- Create expected result document
-            create l_expected.make
-            l_expected.bson_append_integer_32 ("abc", 1)
-            l_expected.bson_append_integer_32 ("def", 1)
+				-- Create expected result document
+			create l_expected.make
+			l_expected.bson_append_integer_32 ("abc", 1)
+			l_expected.bson_append_integer_32 ("def", 1)
 
-                -- Verify the documents are equal
-            assert ("Documents should be equal", l_a.bson_equal (l_expected))
-        end
+				-- Verify the documents are equal
+			assert ("Documents should be equal", l_a.bson_equal (l_expected))
+		end
 
-    test_bson_has_field
-            -- Test checking for field existence in BSON documents
-        local
-            l_bson: BSON
-        do
-                -- Create a BSON document with nested array and document
-            create l_bson.make_from_json ({STRING_8}
-                    "{ %"foo%" : [ { %"bar%" : 1 } ] }")
+	test_bson_has_field
+			-- Test checking for field existence in BSON documents
+		local
+			l_bson: BSON
+		do
+				-- Create a BSON document with nested array and document
+			create l_bson.make_from_json ({STRING_8}
+					"{ %"foo%" : [ { %"bar%" : 1 } ] }")
 
-                -- Test for top-level field
-            assert ("Should find top-level field 'foo'",
-                l_bson.bson_has_field ("foo"))
+				-- Test for top-level field
+			assert ("Should find top-level field 'foo'",
+				l_bson.bson_has_field ("foo"))
 
-                -- Test for array index
-            assert ("Should find array element 'foo.0'",
-                l_bson.bson_has_field ("foo.0"))
+				-- Test for array index
+			assert ("Should find array element 'foo.0'",
+				l_bson.bson_has_field ("foo.0"))
 
-                -- Test for nested document field
-            assert ("Should find nested field 'foo.0.bar'",
-                l_bson.bson_has_field ("foo.0.bar"))
+				-- Test for nested document field
+			assert ("Should find nested field 'foo.0.bar'",
+				l_bson.bson_has_field ("foo.0.bar"))
 
-                -- Test for non-existent fields
-            assert ("Should not find top-level field '0'",
-                not l_bson.bson_has_field ("0"))
+				-- Test for non-existent fields
+			assert ("Should not find top-level field '0'",
+				not l_bson.bson_has_field ("0"))
 
-            assert ("Should not find top-level field 'bar'",
-                not l_bson.bson_has_field ("bar"))
+			assert ("Should not find top-level field 'bar'",
+				not l_bson.bson_has_field ("bar"))
 
-            assert ("Should not find nested field '0.bar'",
-                not l_bson.bson_has_field ("0.bar"))
-        end
+			assert ("Should not find nested field '0.bar'",
+				not l_bson.bson_has_field ("0.bar"))
+		end
 end
+
 

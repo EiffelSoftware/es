@@ -19,11 +19,11 @@ feature {NONE} -- Initialization
 			query, update, subdoc: BSON
 			oid: BSON_OID
 			l_reply: BSON
-            driver: MONGODB_DRIVER
-        do
-        		-- Initialize the C driver
-        	create driver
-        	driver.use
+			driver: MONGODB_DRIVER
+		do
+				-- Initialize the C driver
+			create driver
+			driver.use
 				-- Initialize client and collection
 			create client.make ("mongodb://localhost:27017/?appname=update-example")
 			collection := client.collection ("test", "test")
@@ -61,3 +61,4 @@ feature {NONE} -- Initialization
 		end
 
 end
+

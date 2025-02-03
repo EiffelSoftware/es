@@ -20,11 +20,11 @@ feature {NONE} -- Initialization
 			pipeline: BSON
 			cursor: MONGODB_CURSOR
 			doc: BSON
-            driver: MONGODB_DRIVER
+			driver: MONGODB_DRIVER
 		do
 				-- Initialize driver
-            create driver
-            driver.use
+			create driver
+			driver.use
 
 				-- Create client
 			create uri.make ("mongodb://localhost:27017/?appname=database-aggregate-example")
@@ -44,12 +44,12 @@ feature {NONE} -- Initialization
 				-- features to build.
 			create pipeline.make_from_json ("[
 						{
-						    "pipeline": [
-						        {
-						            "$currentOp": {
-						            }
-						        }
-						    ]
+							"pipeline": [
+								{
+									"$currentOp": {
+									}
+								}
+							]
 						}
 					]")
 
@@ -69,3 +69,4 @@ feature {NONE} -- Initialization
 		end
 
 end
+

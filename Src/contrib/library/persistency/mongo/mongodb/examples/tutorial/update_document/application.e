@@ -32,9 +32,9 @@ feature {NONE} -- Initialization
 			l_subdoc: BSON
 			driver: MONGODB_DRIVER
 		do
-			   -- Initialize driver
+			-- Initialize driver
 			create driver
-            driver.use
+			driver.use
 			
 			create l_client.make ("mongodb://localhost:27017/?appname=update-example")
 			l_collection := l_client.collection ("mydb", "mycoll")
@@ -57,3 +57,4 @@ feature {NONE} -- Initialization
 		end
 
 end
+

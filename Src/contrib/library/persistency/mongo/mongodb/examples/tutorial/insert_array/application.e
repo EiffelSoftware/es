@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 			driver: MONGODB_DRIVER
 		do
 			create driver
-            driver.use
+			driver.use
 			create l_client.make ("mongodb://localhost:27017/?appname=insert-array")
 			l_collection := l_client.collection ("employess", "array")
 
@@ -91,3 +91,4 @@ feature {NONE} -- Initialization
 
 
 end
+

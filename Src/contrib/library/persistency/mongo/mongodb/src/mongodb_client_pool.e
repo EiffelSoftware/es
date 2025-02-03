@@ -12,7 +12,7 @@ inherit
 	MONGODB_WRAPPER_BASE
 
 create
-	 make_by_pointer, make_from_uri
+	make_by_pointer, make_from_uri
 
 feature {NONE} -- Initialization
 
@@ -272,3 +272,4 @@ feature {NONE} -- Implementation
 		end
 
 end
+

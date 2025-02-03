@@ -22,7 +22,7 @@ feature -- Access
 	mongodb_database: MONGODB_DATABASE
 			-- Get a handle on the database.
 		do
-			 Result := mongodb_client.database (database_name)
+			Result := mongodb_client.database (database_name)
 		end
 
 	mongodb_collection: MONGODB_COLLECTION
@@ -186,3 +186,4 @@ feature {NONE} -- Implementation
 			end
 		end
 end
+

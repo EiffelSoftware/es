@@ -17,7 +17,7 @@ inherit
 		end
 
 create
-	 make, make_by_pointer
+	make, make_by_pointer
 
 feature {NONE} -- Initialization
 
@@ -155,3 +155,4 @@ feature {NONE} -- Measurement
 		end
 
 end
+

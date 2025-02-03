@@ -183,52 +183,52 @@ feature -- Access
 		end
 
 	database_names (a_opts: detachable BSON): LIST [STRING]
-	        -- Queries the MongoDB server for a list of known databases.
-	        -- This is a retryable read operation that will be retried once upon transient errors.
-	        -- `a_opts': Optional BSON document that may contain:
-	        --   * sessionId: Client session ID for transactions
-	        --   * serverId: To target a specific server
-	        --   * Other options as specified in the listDatabases command
-	    note
-	        EIS: "name=mongoc_client_get_database_names_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_client_get_database_names_with_opts.html", "protocol=uri"
-	    require
-	    	is_usable: is_usable
-	    local
-	        l_error: BSON_ERROR
-	        l_ptr: POINTER
-	        i: INTEGER
-	        l_mgr: MANAGED_POINTER
-	        l_opts: POINTER
-	        l_res: INTEGER
-	        l_cstring: C_STRING
-	    do
-	    		-- Clean last error.
-	    	clean_up
-	        if attached a_opts then
-	            l_opts := a_opts.item
-	        end
-	        create l_error.make
-	        create l_res.default_create
-	        l_ptr := {MONGODB_EXTERNALS}.c_mongoc_client_get_database_names_with_opts (item, l_opts, l_error.item)
+			-- Queries the MongoDB server for a list of known databases.
+			-- This is a retryable read operation that will be retried once upon transient errors.
+			-- `a_opts': Optional BSON document that may contain:
+			--   * sessionId: Client session ID for transactions
+			--   * serverId: To target a specific server
+			--   * Other options as specified in the listDatabases command
+		note
+			EIS: "name=mongoc_client_get_database_names_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_client_get_database_names_with_opts.html", "protocol=uri"
+		require
+			is_usable: is_usable
+		local
+			l_error: BSON_ERROR
+			l_ptr: POINTER
+			i: INTEGER
+			l_mgr: MANAGED_POINTER
+			l_opts: POINTER
+			l_res: INTEGER
+			l_cstring: C_STRING
+		do
+				-- Clean last error.
+			clean_up
+			if attached a_opts then
+				l_opts := a_opts.item
+			end
+			create l_error.make
+			create l_res.default_create
+			l_ptr := {MONGODB_EXTERNALS}.c_mongoc_client_get_database_names_with_opts (item, l_opts, l_error.item)
 
-	        if l_ptr.is_default_pointer then
-	            set_last_error_with_bson (l_error)
-	            create {ARRAYED_LIST [STRING]} Result.make (0)
-	        else
-	            l_res := {MONGODB_EXTERNALS}.c_mongoc_client_get_database_names_count (item, l_opts, l_error.item)
-	            create l_mgr.make_from_pointer (l_ptr, l_res * c_sizeof (l_ptr))
-	            create {ARRAYED_LIST [STRING]} Result.make (l_res)
-	            from
-	                i := 0
-	            until
-	                i = l_mgr.count
-	            loop
-	                create l_cstring.make_by_pointer (l_mgr.read_pointer (i))
-	                Result.force (l_cstring.string)
-	                i := i + c_sizeof (l_ptr)
-	            end
-	        end
-	    end
+			if l_ptr.is_default_pointer then
+				set_last_error_with_bson (l_error)
+				create {ARRAYED_LIST [STRING]} Result.make (0)
+			else
+				l_res := {MONGODB_EXTERNALS}.c_mongoc_client_get_database_names_count (item, l_opts, l_error.item)
+				create l_mgr.make_from_pointer (l_ptr, l_res * c_sizeof (l_ptr))
+				create {ARRAYED_LIST [STRING]} Result.make (l_res)
+				from
+					i := 0
+				until
+					i = l_mgr.count
+				loop
+					create l_cstring.make_by_pointer (l_mgr.read_pointer (i))
+					Result.force (l_cstring.string)
+					i := i + c_sizeof (l_ptr)
+				end
+			end
+		end
 
 	default_database: detachable MONGODB_DATABASE
 			-- Get the database named in the MongoDB connection URI, or VOID if the URI specifies none.
@@ -295,33 +295,33 @@ feature -- Access
 			create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_client_get_read_prefs (item))
 		end
 
-    write_concern: MONGODB_WRITE_CONCERN
-            -- Get the write concern for this client
-        note
-        	eis: "name=mongoc_client_get_write_concern", "src=https://mongoc.org/libmongoc/current/mongoc_client_get_write_concern.html", "protocol=uri"
-        require
-        	is_usable: is_usable
-        do
-        	clean_up
-            create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_client_get_write_concern (item))
-        end
+	write_concern: MONGODB_WRITE_CONCERN
+			-- Get the write concern for this client
+		note
+			eis: "name=mongoc_client_get_write_concern", "src=https://mongoc.org/libmongoc/current/mongoc_client_get_write_concern.html", "protocol=uri"
+		require
+			is_usable: is_usable
+		do
+			clean_up
+			create Result.make_by_pointer ({MONGODB_EXTERNALS}.c_mongoc_client_get_write_concern (item))
+		end
 
-    server_description (a_server_id: NATURAL_32): detachable MONGODB_SERVER_DESCRIPTION
-            -- Get information about the server specified by `a_server_id`.
-            -- Returns: Server description that must be freed, or Void if the server is no longer in the topology.
-        note
-            EIS: "name=mongoc_client_get_server_description", "src=http://mongoc.org/libmongoc/current/mongoc_client_get_server_description.html", "protocol=uri"
-        require
-            is_usable: is_usable
-        local
-            l_ptr: POINTER
-        do
-            clean_up
-            l_ptr := {MONGODB_EXTERNALS}.c_mongoc_client_get_server_description (item, a_server_id)
-            if not l_ptr.is_default_pointer then
-                create Result.make_by_pointer (l_ptr)
-            end
-        end
+	server_description (a_server_id: NATURAL_32): detachable MONGODB_SERVER_DESCRIPTION
+			-- Get information about the server specified by `a_server_id`.
+			-- Returns: Server description that must be freed, or Void if the server is no longer in the topology.
+		note
+			EIS: "name=mongoc_client_get_server_description", "src=http://mongoc.org/libmongoc/current/mongoc_client_get_server_description.html", "protocol=uri"
+		require
+			is_usable: is_usable
+		local
+			l_ptr: POINTER
+		do
+			clean_up
+			l_ptr := {MONGODB_EXTERNALS}.c_mongoc_client_get_server_description (item, a_server_id)
+			if not l_ptr.is_default_pointer then
+				create Result.make_by_pointer (l_ptr)
+			end
+		end
 
 	server_descriptions: LIST [MONGODB_SERVER_DESCRIPTION]
 			-- Return an array of server descriptions or empty until the clients connects.
@@ -405,14 +405,14 @@ feature -- Access
 			end
 		end
 
- 	select_server (for_writes: BOOLEAN; prefs: detachable MONGODB_READ_PREFERENCES): detachable MONGODB_SERVER_DESCRIPTION
+	select_server (for_writes: BOOLEAN; prefs: detachable MONGODB_READ_PREFERENCES): detachable MONGODB_SERVER_DESCRIPTION
 			-- Choose a server for an operation, according to the Server Selection Spec.
 			-- `for_writes': Whether to choose a server suitable for writes or reads.
 			-- `prefs': Optional read preferences. If for_writes is True, prefs must be Void.
 			--         Otherwise, use prefs to customize server selection, or pass Void to use read preference PRIMARY.
 			-- Returns: A server description that must be freed, or Void if no suitable server is found.
 		note
-			 EIS: "name=mongoc_client_select_server", "src=https://mongoc.org/libmongoc/current/mongoc_client_select_server.html", "protocol=uri"
+			EIS: "name=mongoc_client_select_server", "src=https://mongoc.org/libmongoc/current/mongoc_client_select_server.html", "protocol=uri"
 		require
 			is_usable: is_usable
 		local
@@ -649,7 +649,7 @@ feature -- Settings
 			-- * Prevents cursors from previous generations from issuing killCursors commands
 			-- * Invalidates client sessions from previous generations
 		note
-			 EIS: "name=mongoc_client_reset", "src=http://mongoc.org/libmongoc/current/mongoc_client_reset.html", "protocol=uri"
+			EIS: "name=mongoc_client_reset", "src=http://mongoc.org/libmongoc/current/mongoc_client_reset.html", "protocol=uri"
 		require
 			is_usable: is_usable
 		do
@@ -695,79 +695,79 @@ feature -- Settings
 			{MONGODB_EXTERNALS}.c_mongoc_client_set_sockettimeoutms (item, a_timeout_ms)
 		end
 
-    set_ssl_opts (a_opts: MONGODB_SSL_OPTIONS)
-            -- Sets the TLS (SSL) options to use when connecting to TLS enabled MongoDB servers.
-            -- Note: This overrides all TLS options set through the connection string.
-            -- Warning: It is a programming error to call this on a client from a client pool.
-        note
-            EIS: "name=mongoc_client_set_ssl_opts", "src=http://mongoc.org/libmongoc/current/mongoc_client_set_ssl_opts.html", "protocol=uri"
-        require
-            is_usable: is_usable
-        local
-            l_error: BSON_ERROR
-        do
-            clean_up
-            if is_ssl_enabled then
-                {MONGODB_EXTERNALS}.c_mongoc_client_set_ssl_opts (item, a_opts.item)
-            else
-                create l_error.make
-                l_error.set_error (
-                    {MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT,
-                    {MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT_AUTHENTICATE,
-                    "SSL support is not enabled in this build of the MongoDB C driver"
-                )
-                set_last_error_with_bson (l_error)
-            end
-        end
+	set_ssl_opts (a_opts: MONGODB_SSL_OPTIONS)
+			-- Sets the TLS (SSL) options to use when connecting to TLS enabled MongoDB servers.
+			-- Note: This overrides all TLS options set through the connection string.
+			-- Warning: It is a programming error to call this on a client from a client pool.
+		note
+			EIS: "name=mongoc_client_set_ssl_opts", "src=http://mongoc.org/libmongoc/current/mongoc_client_set_ssl_opts.html", "protocol=uri"
+		require
+			is_usable: is_usable
+		local
+			l_error: BSON_ERROR
+		do
+			clean_up
+			if is_ssl_enabled then
+				{MONGODB_EXTERNALS}.c_mongoc_client_set_ssl_opts (item, a_opts.item)
+			else
+				create l_error.make
+				l_error.set_error (
+					{MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT,
+					{MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT_AUTHENTICATE,
+					"SSL support is not enabled in this build of the MongoDB C driver"
+				)
+				set_last_error_with_bson (l_error)
+			end
+		end
 
 feature -- Encryption
 
-    enable_auto_encryption (a_opts: MONGODB_AUTO_ENCRYPTION)
-            -- Enable automatic client side encryption.
-            -- Note:
-            --   * Requires libmongoc to be built with support for In-Use Encryption
-            --   * Only applies to operations on a collection
-            --   * Not supported for operations on a database or view
-            --   * Requires the authenticated user to have the listCollections privilege
-            --   * May reduce maximum message size and impact performance
-            -- `a_opts': Required encryption options
-        note
-            EIS: "name=mongoc_client_enable_auto_encryption", "src=http://mongoc.org/libmongoc/current/mongoc_client_enable_auto_encryption.html", "protocol=uri"
-        require
-            is_usable: is_usable
-            opts_usable: a_opts.exists
-        local
-            l_error: BSON_ERROR
-            l_res: BOOLEAN
-        do
-            clean_up
-            create l_error.make
-            l_res := {MONGODB_EXTERNALS}.c_mongoc_client_enable_auto_encryption (
-                item,           -- client
-                a_opts.item,   -- opts
-                l_error.item   -- error
-            )
-            if not l_res then
-            	set_last_error_with_bson (l_error)
-            end
-        end
+	enable_auto_encryption (a_opts: MONGODB_AUTO_ENCRYPTION)
+			-- Enable automatic client side encryption.
+			-- Note:
+			--   * Requires libmongoc to be built with support for In-Use Encryption
+			--   * Only applies to operations on a collection
+			--   * Not supported for operations on a database or view
+			--   * Requires the authenticated user to have the listCollections privilege
+			--   * May reduce maximum message size and impact performance
+			-- `a_opts': Required encryption options
+		note
+			EIS: "name=mongoc_client_enable_auto_encryption", "src=http://mongoc.org/libmongoc/current/mongoc_client_enable_auto_encryption.html", "protocol=uri"
+		require
+			is_usable: is_usable
+			opts_usable: a_opts.exists
+		local
+			l_error: BSON_ERROR
+			l_res: BOOLEAN
+		do
+			clean_up
+			create l_error.make
+			l_res := {MONGODB_EXTERNALS}.c_mongoc_client_enable_auto_encryption (
+				item,           -- client
+				a_opts.item,   -- opts
+				l_error.item   -- error
+			)
+			if not l_res then
+				set_last_error_with_bson (l_error)
+			end
+		end
 
 feature -- Command
 
-    ping (a_db: READABLE_STRING_GENERAL): BOOLEAN
-            -- Test if server is responsive
-        require
-        	is_usable: is_usable
-        local
-            l_command: BSON
-            l_reply: BSON
-        do
-        	clean_up
-            create l_command.make_from_json ("{ping: 1}")
-            create l_reply.make
-            command_simple (a_db, l_command, Void, l_reply)
-            Result := last_call_succeed
-        end
+	ping (a_db: READABLE_STRING_GENERAL): BOOLEAN
+			-- Test if server is responsive
+		require
+			is_usable: is_usable
+		local
+			l_command: BSON
+			l_reply: BSON
+		do
+			clean_up
+			create l_command.make_from_json ("{ping: 1}")
+			create l_reply.make
+			command_simple (a_db, l_command, Void, l_reply)
+			Result := last_call_succeed
+		end
 
 	command_simple (a_db:READABLE_STRING_GENERAL; a_command: BSON; a_read_prefs: detachable MONGODB_READ_PREFERENCES; a_reply: BSON)
 			-- This is a simplified interface to mongoc_client_command(). It returns the first document from the result cursor into reply.
@@ -835,49 +835,49 @@ feature -- Command
 			end
 		end
 
-    write_command_with_opts (a_db_name: READABLE_STRING_GENERAL; a_command: BSON;
-                           a_opts: detachable BSON; a_reply: BSON)
-            -- Execute a command on the server, applying logic specific to write commands.
-            -- Note: Do not use this for basic write operations (insert, update, delete).
-            -- Use the CRUD operations or Bulk API instead.
-            -- `a_db_name': The name of the database to run the command on.
-            -- `a_command': A BSON containing the command specification.
-            -- `a_opts': Optional BSON document that may contain:
-            --   * writeConcern: Write concern for the command
-            --   * sessionId: Client session ID for transactions
-            --   * collation: Text comparison options
-            --   * serverId: To target a specific server
-            -- `a_reply': Location for the resulting document.
-        note
-            EIS: "name=mongoc_client_write_command_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_client_write_command_with_opts.html", "protocol=uri"
-        require
-            is_usable: is_usable
-        local
-            c_db: C_STRING
-            l_opts: POINTER
-            l_error: BSON_ERROR
-            l_res: BOOLEAN
-        do
-            clean_up
-            create c_db.make (a_db_name)
-            if attached a_opts then
-                l_opts := a_opts.item
-            end
-            create l_error.make
+	write_command_with_opts (a_db_name: READABLE_STRING_GENERAL; a_command: BSON;
+						a_opts: detachable BSON; a_reply: BSON)
+			-- Execute a command on the server, applying logic specific to write commands.
+			-- Note: Do not use this for basic write operations (insert, update, delete).
+			-- Use the CRUD operations or Bulk API instead.
+			-- `a_db_name': The name of the database to run the command on.
+			-- `a_command': A BSON containing the command specification.
+			-- `a_opts': Optional BSON document that may contain:
+			--   * writeConcern: Write concern for the command
+			--   * sessionId: Client session ID for transactions
+			--   * collation: Text comparison options
+			--   * serverId: To target a specific server
+			-- `a_reply': Location for the resulting document.
+		note
+			EIS: "name=mongoc_client_write_command_with_opts", "src=http://mongoc.org/libmongoc/current/mongoc_client_write_command_with_opts.html", "protocol=uri"
+		require
+			is_usable: is_usable
+		local
+			c_db: C_STRING
+			l_opts: POINTER
+			l_error: BSON_ERROR
+			l_res: BOOLEAN
+		do
+			clean_up
+			create c_db.make (a_db_name)
+			if attached a_opts then
+				l_opts := a_opts.item
+			end
+			create l_error.make
 
-            l_res := {MONGODB_EXTERNALS}.c_mongoc_client_write_command_with_opts (
-                item,           -- client
-                c_db.item,     -- db_name
-                a_command.item, -- command
-                l_opts,        -- opts
-                a_reply.item,  -- reply
-                l_error.item   -- error
-            )
+			l_res := {MONGODB_EXTERNALS}.c_mongoc_client_write_command_with_opts (
+				item,           -- client
+				c_db.item,     -- db_name
+				a_command.item, -- command
+				l_opts,        -- opts
+				a_reply.item,  -- reply
+				l_error.item   -- error
+			)
 
-            if not l_res then
-                set_last_error_with_bson (l_error)
-            end
-        end
+			if not l_res then
+				set_last_error_with_bson (l_error)
+			end
+		end
 
 feature -- Session
 
@@ -916,52 +916,52 @@ feature -- Session
 
 feature -- Handshake
 
-    handshake_data_append (a_driver_name: detachable READABLE_STRING_GENERAL;
-                          a_driver_version: detachable READABLE_STRING_GENERAL;
-                          a_platform: detachable READABLE_STRING_GENERAL)
-            -- Appends the given strings to the handshake data for the underlying C Driver.
-            -- Must be called before any server operations begin and can only be called once.
-            -- `a_driver_name': Optional name of the wrapping driver
-            -- `a_driver_version': Optional version of the wrapping driver
-            -- `a_platform': Optional information about the current platform
-            -- Returns: True if the handshake data was successfully appended
-        note
-            eis: "name=mongoc_handshake_data_append", "src=http://mongoc.org/libmongoc/current/mongoc_handshake_data_append.html", "protocol=uri"
-        require
-        	is_usable: is_usable
-        local
-            l_driver_name, l_driver_version, l_platform: C_STRING
-            l_driver_name_ptr, l_driver_version_ptr, l_platform_ptr: POINTER
-            l_res: BOOLEAN
-            l_error: BSON_ERROR
-        do
-        	clean_up
-            if attached a_driver_name then
-                create l_driver_name.make (a_driver_name)
-                l_driver_name_ptr := l_driver_name.item
-            end
-            if attached a_driver_version then
-                create l_driver_version.make (a_driver_version)
-                l_driver_version_ptr := l_driver_version.item
-            end
-            if attached a_platform then
-                create l_platform.make (a_platform)
-                l_platform_ptr := l_platform.item
-            end
+	handshake_data_append (a_driver_name: detachable READABLE_STRING_GENERAL;
+						a_driver_version: detachable READABLE_STRING_GENERAL;
+						a_platform: detachable READABLE_STRING_GENERAL)
+			-- Appends the given strings to the handshake data for the underlying C Driver.
+			-- Must be called before any server operations begin and can only be called once.
+			-- `a_driver_name': Optional name of the wrapping driver
+			-- `a_driver_version': Optional version of the wrapping driver
+			-- `a_platform': Optional information about the current platform
+			-- Returns: True if the handshake data was successfully appended
+		note
+			eis: "name=mongoc_handshake_data_append", "src=http://mongoc.org/libmongoc/current/mongoc_handshake_data_append.html", "protocol=uri"
+		require
+			is_usable: is_usable
+		local
+			l_driver_name, l_driver_version, l_platform: C_STRING
+			l_driver_name_ptr, l_driver_version_ptr, l_platform_ptr: POINTER
+			l_res: BOOLEAN
+			l_error: BSON_ERROR
+		do
+			clean_up
+			if attached a_driver_name then
+				create l_driver_name.make (a_driver_name)
+				l_driver_name_ptr := l_driver_name.item
+			end
+			if attached a_driver_version then
+				create l_driver_version.make (a_driver_version)
+				l_driver_version_ptr := l_driver_version.item
+			end
+			if attached a_platform then
+				create l_platform.make (a_platform)
+				l_platform_ptr := l_platform.item
+			end
 
-            l_res := {MONGODB_EXTERNALS}.c_mongoc_handshake_data_append (
-                l_driver_name_ptr,     -- driver_name
-                l_driver_version_ptr,  -- driver_version
-                l_platform_ptr         -- platform
-            )
-            if not l_res then
-            	create l_error.make
-                l_error.set_error ({MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT,
-                                   {MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT_HANDSHAKE_FAILED,
-                                   "Failed to append handshake data. This operation must be called before any server operations begin and can only be called once.")
-            	set_last_error_with_bson (l_error)
-            end
-        end
+			l_res := {MONGODB_EXTERNALS}.c_mongoc_handshake_data_append (
+				l_driver_name_ptr,     -- driver_name
+				l_driver_version_ptr,  -- driver_version
+				l_platform_ptr         -- platform
+			)
+			if not l_res then
+				create l_error.make
+				l_error.set_error ({MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT,
+								{MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT_HANDSHAKE_FAILED,
+								"Failed to append handshake data. This operation must be called before any server operations begin and can only be called once.")
+				set_last_error_with_bson (l_error)
+			end
+		end
 
 
 feature -- Measurement
@@ -999,3 +999,4 @@ feature {NONE} -- Implementation
 
 
 end
+

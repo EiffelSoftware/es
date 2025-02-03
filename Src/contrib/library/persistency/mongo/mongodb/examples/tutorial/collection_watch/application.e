@@ -28,10 +28,10 @@ feature {NONE} -- Initialization
 			mg_factory: MONGODB_FACTORY
 			reply: BSON
 			driver: MONGODB_DRIVER
-        do
-               -- Initialize driver
-            create driver
-            driver.use
+		do
+			-- Initialize driver
+			create driver
+			driver.use
 
 				-- Setup connection URI
 			uri_string := "mongodb://localhost:27017,localhost:27018,localhost:27019/db?replicaSet=rs0"
@@ -91,3 +91,4 @@ feature {NONE} -- Initialization
 		end
 
 end
+

@@ -65,12 +65,12 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
- 	len: INTEGER_32
- 		do
- 			Result := c_bson_len (item)
- 		end
+	len: INTEGER_32
+		do
+			Result := c_bson_len (item)
+		end
 
- 	valid_option_characters: STRING_32 = "imxlsu"
+	valid_option_characters: STRING_32 = "imxlsu"
 		-- Valid characters for regex options	
 
 feature -- Operations
@@ -313,27 +313,26 @@ feature -- Operations
 
 		end
 
-    bson_append_timeval (a_key: STRING_32; a_seconds: INTEGER_64; a_microseconds: INTEGER)
-            -- Append a time value with microsecond precision using the specified key `a_key`.
-            -- `a_seconds`: Number of seconds since Unix epoch
-            -- `a_microseconds`: Additional microseconds (0-999999)
-        note
-            EIS: "name=bson_append_timeval", "src=https://mongoc.org/libbson/current/bson_append_timeval.html", "protocol=url"
-        require
-            valid_microseconds: a_microseconds >= 0 and a_microseconds < 1_000_000
-        local
-            c_key: C_STRING
-            l_res: BOOLEAN
-            l_milliseconds: INTEGER_64
-        do
-            create c_key.make (a_key)
-                -- Convert to milliseconds for BSON date format
-            l_milliseconds := (a_seconds * 1000) + (a_microseconds // 1000)
-            l_res := c_bson_append_date_time (item, c_key.item, c_key.count, l_milliseconds)
-        ensure
-            length_increased: old len <= len
-        end
-
+	bson_append_timeval (a_key: STRING_32; a_seconds: INTEGER_64; a_microseconds: INTEGER)
+			-- Append a time value with microsecond precision using the specified key `a_key`.
+			-- `a_seconds`: Number of seconds since Unix epoch
+			-- `a_microseconds`: Additional microseconds (0-999999)
+		note
+			EIS: "name=bson_append_timeval", "src=https://mongoc.org/libbson/current/bson_append_timeval.html", "protocol=url"
+		require
+			valid_microseconds: a_microseconds >= 0 and a_microseconds < 1_000_000
+		local
+			c_key: C_STRING
+			l_res: BOOLEAN
+			l_milliseconds: INTEGER_64
+		do
+			create c_key.make (a_key)
+				-- Convert to milliseconds for BSON date format
+			l_milliseconds := (a_seconds * 1000) + (a_microseconds // 1000)
+			l_res := c_bson_append_date_time (item, c_key.item, c_key.count, l_milliseconds)
+		ensure
+			length_increased: old len <= len
+		end
 
 	bson_append_value (a_key: STRING_32; a_value: BSON_VALUE)
 			-- Append a BSON value to the current BSON document with the specified key.
@@ -347,7 +346,6 @@ feature -- Operations
 			create l_key.make (a_key)
 			l_res:= c_bson_append_value (item, l_key.item, l_key.count, a_value.item)
 		end
-
 
 feature -- Append Document
 
@@ -384,7 +382,6 @@ feature -- Append Document
 		do
 			l_res := c_bson_append_document_end (item, a_bson.item)
 		end
-
 
 feature -- Operations
 
@@ -486,7 +483,6 @@ feature -- Min Key , Max Key
 			l_res := c_bson_append_maxkey (item, c_key.item, c_key.count)
 		end
 
-
 feature -- Status Report
 
 	bson_count_keys: INTEGER
@@ -506,31 +502,31 @@ feature -- Status Report
 			Result := c_bson_has_field (item, l_str.item)
 		end
 
-    bson_validate (flags: INTEGER): BOOLEAN
-            -- Validates a BSON document by walking through the document and inspecting
-            -- the keys and values for valid content.
-            -- `flags`: A bitwise-or of all desired bson_validate_flags_t.
-            -- Returns: True if document passes the requested validations, False otherwise.
-        note
-            EIS: "name=bson_validate", "src=https://mongoc.org/libbson/current/bson_validate.html", "protocol=uri"
-        local
-            l_offset: POINTER
-        do
-            Result := c_bson_validate (item, flags, l_offset)
-        end
+	bson_validate (flags: INTEGER): BOOLEAN
+			-- Validates a BSON document by walking through the document and inspecting
+			-- the keys and values for valid content.
+			-- `flags`: A bitwise-or of all desired bson_validate_flags_t.
+			-- Returns: True if document passes the requested validations, False otherwise.
+		note
+			EIS: "name=bson_validate", "src=https://mongoc.org/libbson/current/bson_validate.html", "protocol=uri"
+		local
+			l_offset: POINTER
+		do
+			Result := c_bson_validate (item, flags, l_offset)
+		end
 
-    bson_validate_with_error (flags: INTEGER): BOOLEAN
-            -- Validates a BSON document with detailed error reporting.
-            -- `flags`: A bitwise-or of all desired bson_validate_flags_t.
-            -- Returns: True if document passes the requested validations, False otherwise.
-        note
-            EIS: "name=bson_validate_with_error", "src=https://mongoc.org/libbson/current/bson_validate_with_error.html", "protocol=uri"
-        local
-            l_error: BSON_ERROR
-        do
-            create l_error.make
-            Result := c_bson_validate_with_error (item, flags, l_error.item)
-        end
+	bson_validate_with_error (flags: INTEGER): BOOLEAN
+			-- Validates a BSON document with detailed error reporting.
+			-- `flags`: A bitwise-or of all desired bson_validate_flags_t.
+			-- Returns: True if document passes the requested validations, False otherwise.
+		note
+			EIS: "name=bson_validate_with_error", "src=https://mongoc.org/libbson/current/bson_validate_with_error.html", "protocol=uri"
+		local
+			l_error: BSON_ERROR
+		do
+			create l_error.make
+			Result := c_bson_validate_with_error (item, flags, l_error.item)
+		end
 
 feature -- BSON to JSON string
 
@@ -622,14 +618,14 @@ feature -- Removal
 
 feature -- Measurement
 
-	 bson_max_size: INTEGER_32
-            -- The maximum size in bytes of a BSON document.
-            -- This limit exists because BSON uses a 32-bit integer for document lengths.
-        do
-            Result := {INTEGER_32}.max_value  -- This is (2^31 - 1)
-        ensure
-        	instance_free: class
-        end
+	bson_max_size: INTEGER_32
+			-- The maximum size in bytes of a BSON document.
+			-- This limit exists because BSON uses a 32-bit integer for document lengths.
+		do
+			Result := {INTEGER_32}.max_value  -- This is (2^31 - 1)
+		ensure
+			instance_free: class
+		end
 
 	structure_size: INTEGER
 		external
@@ -637,7 +633,6 @@ feature -- Measurement
 		alias
 			"return sizeof(bson_t);"
 		end
-
 
 feature {NONE} -- JSON helper
 
@@ -977,19 +972,19 @@ feature {NONE} -- C externals
 			]"
 		end
 
-    c_bson_validate (a_bson: POINTER; a_flags: INTEGER; a_offset: POINTER): BOOLEAN
-        external
-            "C inline use <bson/bson.h>"
-        alias
-            "return bson_validate ((const bson_t *)$a_bson, (bson_validate_flags_t)$a_flags, (size_t *)$a_offset);"
-        end
+	c_bson_validate (a_bson: POINTER; a_flags: INTEGER; a_offset: POINTER): BOOLEAN
+		external
+			"C inline use <bson/bson.h>"
+		alias
+			"return bson_validate ((const bson_t *)$a_bson, (bson_validate_flags_t)$a_flags, (size_t *)$a_offset);"
+		end
 
-    c_bson_validate_with_error (a_bson: POINTER; a_flags: INTEGER; a_error: POINTER): BOOLEAN
-        external
-            "C inline use <bson/bson.h>"
-        alias
-            "return bson_validate_with_error ((const bson_t *)$a_bson, (bson_validate_flags_t)$a_flags, (bson_error_t *)$a_error);"
-        end
+	c_bson_validate_with_error (a_bson: POINTER; a_flags: INTEGER; a_error: POINTER): BOOLEAN
+		external
+			"C inline use <bson/bson.h>"
+		alias
+			"return bson_validate_with_error ((const bson_t *)$a_bson, (bson_validate_flags_t)$a_flags, (bson_error_t *)$a_error);"
+		end
 
 	c_bson_append_value (a_bson: POINTER; a_key: POINTER; a_key_length: INTEGER; a_value: POINTER): BOOLEAN
 		external "C inline use <bson.h>"
@@ -998,6 +993,6 @@ feature {NONE} -- C externals
 		end
 
 invariant
-    max_size_positive: True -- current bson size is > 0
-    max_size_within_int32: True -- current bson size is <= max_bson_sise = {INTEGER_32}.max_value
+	max_size_positive: True -- current bson size is > 0
+	max_size_within_int32: True -- current bson size is <= max_bson_sise = {INTEGER_32}.max_value
 end

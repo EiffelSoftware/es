@@ -1,14 +1,14 @@
 note
 	description: "[
-			        Object Representing a Write Concern abstraction
-			        The MONGODB_WRITE_CONCERN tells the driver what level of acknowledgement to await from the server.
-			        The default, MONGOC_WRITE_CONCERN_W_DEFAULT (1), is right for the great majority of applications.
+					Object Representing a Write Concern abstraction
+					The MONGODB_WRITE_CONCERN tells the driver what level of acknowledgement to await from the server.
+					The default, MONGOC_WRITE_CONCERN_W_DEFAULT (1), is right for the great majority of applications.
 			
-			        Write Concern Levels:
-			        * MONGOC_WRITE_CONCERN_W_DEFAULT (1) - Block for acknowledgement from MongoDB (default)
-			        * MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED (0) - Don't block for acknowledgement
-			        * MONGOC_WRITE_CONCERN_W_MAJORITY ("majority") - Block for majority of nodes
-			        * n - Block for at least n nodes
+					Write Concern Levels:
+					* MONGOC_WRITE_CONCERN_W_DEFAULT (1) - Block for acknowledgement from MongoDB (default)
+					* MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED (0) - Don't block for acknowledgement
+					* MONGOC_WRITE_CONCERN_W_MAJORITY ("majority") - Block for majority of nodes
+					* n - Block for at least n nodes
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -232,3 +232,4 @@ feature {NONE} -- Measurement
 		end
 
 end
+

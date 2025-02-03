@@ -311,59 +311,60 @@ feature {NONE} -- Initialization
 			l_bson: BSON
 		do
 			--  BSON array is a normal BSON document with integer values for the keys,
-    		-- starting with 0 and continuing sequentially
+			-- starting with 0 and continuing sequentially
 			create l_bson.make
 			l_bson.bson_append_utf8 ("0", "foo")
 			l_bson.bson_append_utf8 ("1", "bar")
 			print (l_bson.bson_array_as_json)
-   		end
+		end
 
-   	test_json_bson_reader
-   		local
-   			l_bson_reader: BSON_JSON_READER
-   			l_file: PATH
-   			l_bson: BSON
-   		do
-   			create l_file.make_from_string ("test.json")
-   			create l_bson_reader.make (l_file)
-   			create l_bson.make
-   			l_bson_reader.bson_json_reader_read (l_bson)
-   			print (l_bson.bson_as_json)
-   		end
+	test_json_bson_reader
+		local
+			l_bson_reader: BSON_JSON_READER
+			l_file: PATH
+			l_bson: BSON
+		do
+			create l_file.make_from_string ("test.json")
+			create l_bson_reader.make (l_file)
+			create l_bson.make
+			l_bson_reader.bson_json_reader_read (l_bson)
+			print (l_bson.bson_as_json)
+		end
 
 
-	  test_iterator
-   		local
-   			l_bson_reader: BSON_JSON_READER
-   			l_file: PATH
-   			l_bson: BSON
-   			l_iter: BSON_ITERATOR
-   			l_bool: BOOLEAN
-   		do
-   			create l_file.make_from_string ("test.json")
-   			create l_bson_reader.make (l_file)
-   			create l_bson.make
-   			l_bson_reader.bson_json_reader_read (l_bson)
+	test_iterator
+		local
+			l_bson_reader: BSON_JSON_READER
+			l_file: PATH
+			l_bson: BSON
+			l_iter: BSON_ITERATOR
+			l_bool: BOOLEAN
+		do
+			create l_file.make_from_string ("test.json")
+			create l_bson_reader.make (l_file)
+			create l_bson.make
+			l_bson_reader.bson_json_reader_read (l_bson)
 
-   				-- Iterator
-   			create l_iter.make
-   			l_iter.bson_iter_init (l_bson)
-   			from
-   				l_bool := l_iter.bson_iter_next
-   				if l_bool then
-   					print ("%NKey :"+l_iter.bson_iter_key)
-   				end
+				-- Iterator
+			create l_iter.make
+			l_iter.bson_iter_init (l_bson)
+			from
+				l_bool := l_iter.bson_iter_next
+				if l_bool then
+					print ("%NKey :"+l_iter.bson_iter_key)
+				end
 
-   			until
-   				not l_bool
-   			loop
-   				l_bool := l_iter.bson_iter_next
-   				if l_bool then
-   					print ("%NKey :"+l_iter.bson_iter_key)
-   				end
-   			end
+			until
+				not l_bool
+			loop
+				l_bool := l_iter.bson_iter_next
+				if l_bool then
+					print ("%NKey :"+l_iter.bson_iter_key)
+				end
+			end
 
-   		end
+		end
 
 
 end
+

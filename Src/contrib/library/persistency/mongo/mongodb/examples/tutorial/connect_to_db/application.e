@@ -19,11 +19,11 @@ feature {NONE} -- Initialization
 			l_database: MONGODB_DATABASE
 			l_ping: BSON
 			l_reply: BSON
-            driver: MONGODB_DRIVER
+			driver: MONGODB_DRIVER
 		do
-               -- Initialize driver
-            create driver
-            driver.use
+			-- Initialize driver
+			create driver
+			driver.use
 				-- Create client
 			create l_client.make ("mongodb://127.0.0.1:27017")
 			l_client.set_appname ("connect-example")
@@ -53,3 +53,4 @@ feature {NONE} -- Initialization
 		end
 
 end
+

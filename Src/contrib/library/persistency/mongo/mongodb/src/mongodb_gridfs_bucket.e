@@ -108,11 +108,11 @@ feature -- Removal
 
 feature -- Measurement
 
-    structure_size: INTEGER
-            -- Size to allocate (in bytes)
-        do
-            Result := struct_size
-        end
+	structure_size: INTEGER
+			-- Size to allocate (in bytes)
+		do
+			Result := struct_size
+		end
 
 
 feature {NONE} -- Implementation
@@ -132,3 +132,4 @@ feature {NONE} -- Implementation
 		end
 
 end
+

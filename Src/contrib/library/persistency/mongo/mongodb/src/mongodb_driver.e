@@ -4,7 +4,7 @@ note
 			Call at initialize feature before any feature call to MongoDB API.
 			
 			(At the end of the process, only if required in specific cases call force_cleanup, 
-			 otherwise leave the Garbage Collector handles the cleanup).
+			otherwise leave the Garbage Collector handles the cleanup).
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -62,3 +62,4 @@ feature {NONE} -- Implementation
 		end
 
 end
+

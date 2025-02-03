@@ -27,13 +27,13 @@ feature {NONE} -- Initialization
 			retry_writes: BOOLEAN
 			driver: MONGODB_DRIVER
 		do
-			    -- Initialize driver
+				-- Initialize driver
 			create driver
-            driver.use
+			driver.use
 
 				-- Create a URI with various options
-			    -- Create a URI with various options
-            create uri.make ("mongodb://localhost:27017")
+				-- Create a URI with various options
+			create uri.make ("mongodb://localhost:27017")
 
 				-- Get all options as BSON document
 			options := uri.options
@@ -77,3 +77,4 @@ feature {NONE} -- Initialization
 		end
 
 end
+

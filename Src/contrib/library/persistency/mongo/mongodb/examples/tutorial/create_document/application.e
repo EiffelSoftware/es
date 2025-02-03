@@ -26,10 +26,10 @@ feature {NONE} -- Initialization
 			l_doc: BSON
 			l_oid: BSON_OID
 			l_error: BSON_ERROR
-            driver: MONGODB_DRIVER
+			driver: MONGODB_DRIVER
 		do
 			create driver
-            driver.use
+			driver.use
 			create l_client.make ("mongodb://localhost:27017/?appname=insert-example")
 			l_collection := l_client.collection ("mydb", "mycoll")
 			create l_doc.make
@@ -42,3 +42,4 @@ feature {NONE} -- Initialization
 		end
 
 end
+

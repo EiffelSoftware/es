@@ -19,31 +19,32 @@ feature {NONE} -- Initialization
 
 	uri_mechanism_properties
 		local
-		    uri: MONGODB_URI
-		    props: detachable BSON
-		    json: STRING_8
+			uri: MONGODB_URI
+			props: detachable BSON
+			json: STRING_8
 			driver: MONGODB_DRIVER
 		do
 				-- Initialize driver
 			create driver
-            driver.use
+			driver.use
 
-		    	-- Create a new URI with GSSAPI authentication mechanism and properties
-		 create uri.make (
-        	"mongodb://user%%40DOMAIN.COM:password@localhost/?" +
-        	"authMechanism=GSSAPI&" +
-        	"authMechanismProperties=SERVICE_NAME:other,CANONICALIZE_HOST_NAME:true")
+				-- Create a new URI with GSSAPI authentication mechanism and properties
+		create uri.make (
+			"mongodb://user%%40DOMAIN.COM:password@localhost/?" +
+			"authMechanism=GSSAPI&" +
+			"authMechanismProperties=SERVICE_NAME:other,CANONICALIZE_HOST_NAME:true")
 
-		    	-- Get mechanism properties
-		    props := uri.auth_mechanism_properties
+				-- Get mechanism properties
+			props := uri.auth_mechanism_properties
 
-		    if attached props as l_props then
-		       		-- Convert BSON to JSON and print it
-		        json := l_props.bson_as_canonical_extended_json
-		        print (json + "%N")
-		    else
-		        print ("No authMechanismProperties.%N")
-		    end
+			if attached props as l_props then
+					-- Convert BSON to JSON and print it
+				json := l_props.bson_as_canonical_extended_json
+				print (json + "%N")
+			else
+				print ("No authMechanismProperties.%N")
+			end
 		end
 
 end
+

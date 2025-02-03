@@ -36,9 +36,9 @@ feature -- Status Report
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return 1;
+					return 1;
 				#else
-				    return 0;
+					return 0;
 				#endif
 			]"
 		end
@@ -278,9 +278,9 @@ feature {NONE} -- Implementation
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return sizeof(mongoc_ssl_opt_t);
+					return sizeof(mongoc_ssl_opt_t);
 				#else
-				    return 0;
+					return 0;
 				#endif
 			]"
 		end
@@ -294,9 +294,9 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return (void *)mongoc_ssl_opt_get_default();
+					return (void *)mongoc_ssl_opt_get_default();
 				#else
-				    return NULL;
+					return NULL;
 				#endif
 			]"
 		end
@@ -308,9 +308,9 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return ((mongoc_ssl_opt_t *)$opts)->pem_file;
+					return ((mongoc_ssl_opt_t *)$opts)->pem_file;
 				#else
-				    return NULL;
+					return NULL;
 				#endif
 			]"
 		end
@@ -321,7 +321,7 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    ((mongoc_ssl_opt_t *)$opts)->pem_file = (const char *)$value;
+					((mongoc_ssl_opt_t *)$opts)->pem_file = (const char *)$value;
 				#endif
 			]"
 		end
@@ -332,9 +332,9 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return ((mongoc_ssl_opt_t *)$opts)->weak_cert_validation;
+					return ((mongoc_ssl_opt_t *)$opts)->weak_cert_validation;
 				#else
-				    return 0;
+					return 0;
 				#endif
 			]"
 		end
@@ -345,7 +345,7 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    ((mongoc_ssl_opt_t *)$opts)->weak_cert_validation = (bool)$value;
+					((mongoc_ssl_opt_t *)$opts)->weak_cert_validation = (bool)$value;
 				#endif
 			]"
 		end
@@ -356,9 +356,9 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return ((mongoc_ssl_opt_t *)$opts)->allow_invalid_hostname;
+					return ((mongoc_ssl_opt_t *)$opts)->allow_invalid_hostname;
 				#else
-				    return 0;
+					return 0;
 				#endif
 			]"
 		end
@@ -369,7 +369,7 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    ((mongoc_ssl_opt_t *)$opts)->allow_invalid_hostname = (bool)$value;
+					((mongoc_ssl_opt_t *)$opts)->allow_invalid_hostname = (bool)$value;
 				#endif
 			]"
 		end
@@ -381,9 +381,9 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return ((mongoc_ssl_opt_t *)$opts)->pem_pwd;
+					return ((mongoc_ssl_opt_t *)$opts)->pem_pwd;
 				#else
-				    return NULL;
+					return NULL;
 				#endif
 			]"
 		end
@@ -395,7 +395,7 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    ((mongoc_ssl_opt_t *)$opts)->pem_pwd = (const char *)$value;
+					((mongoc_ssl_opt_t *)$opts)->pem_pwd = (const char *)$value;
 				#endif
 			]"
 		end
@@ -407,9 +407,9 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return ((mongoc_ssl_opt_t *)$opts)->ca_file;
+					return ((mongoc_ssl_opt_t *)$opts)->ca_file;
 				#else
-				    return NULL;
+					return NULL;
 				#endif
 			]"
 		end
@@ -421,7 +421,7 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    ((mongoc_ssl_opt_t *)$opts)->ca_file = (const char *)$value;
+					((mongoc_ssl_opt_t *)$opts)->ca_file = (const char *)$value;
 				#endif
 			]"
 		end
@@ -433,9 +433,9 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return ((mongoc_ssl_opt_t *)$opts)->ca_dir;
+					return ((mongoc_ssl_opt_t *)$opts)->ca_dir;
 				#else
-				    return NULL;
+					return NULL;
 				#endif
 			]"
 		end
@@ -447,7 +447,7 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    ((mongoc_ssl_opt_t *)$opts)->ca_dir = (const char *)$value;
+					((mongoc_ssl_opt_t *)$opts)->ca_dir = (const char *)$value;
 				#endif
 			]"
 		end
@@ -459,9 +459,9 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    return ((mongoc_ssl_opt_t *)$opts)->crl_file;
+					return ((mongoc_ssl_opt_t *)$opts)->crl_file;
 				#else
-				    return NULL;
+					return NULL;
 				#endif
 			]"
 		end
@@ -473,9 +473,10 @@ feature -- SSL Options
 		alias
 			"[
 				#ifdef MONGOC_ENABLE_SSL
-				    ((mongoc_ssl_opt_t *)$opts)->crl_file = (const char *)$value;
+					((mongoc_ssl_opt_t *)$opts)->crl_file = (const char *)$value;
 				#endif
 			]"
 		end
 
 end
+
