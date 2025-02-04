@@ -790,6 +790,7 @@ feature {NONE} -- Generate externals
 		local
 			l_added_items: SEARCH_TABLE [STRING_32]
 			l_path: STRING_32
+			p: READABLE_STRING_32
 			l_state: CONF_STATE
 			u: UTF_CONVERTER
 		do
@@ -801,7 +802,35 @@ feature {NONE} -- Generate externals
 			l_state := universe.conf_state
 			across a_data as c loop
 				if c.item.is_enabled (l_state) then
-					l_path := c.item.location
+					create l_path.make_from_string_general (c.item.location)
+
+						-- Update builtin variables such as "ECF_CONFIG_PATH" and "path_separator"
+					p := c.item.target.library_root.name
+					l_path.replace_substring_all ({STRING_32} "$ECF_CONFIG_PATH", p)
+					l_path.replace_substring_all ({STRING_32} "$(ECF_CONFIG_PATH)", p)
+						-- Replace $(path_separator) by '\' or '/' according to
+						-- 	* eventual environment variable `path_separator`
+						--	* platform setting if it is set
+						--	* current platform
+					p := "/"
+					if attached {EXECUTION_ENVIRONMENT}.item ("path_separator") as l_path_separator then
+						p := l_path_separator
+					elseif attached c.item.target.setting_platform as pf and then not pf.is_whitespace then
+						if pf.is_case_insensitive_equal_general ({CONF_CONSTANTS}.pf_windows_name) then
+							p := "\"
+						end
+					else
+						create {STRING_32} p.make_filled ({PATH}.directory_separator, 1)
+					end
+					l_path.replace_substring_all ({STRING_32} "$path_separator", p)
+					l_path.replace_substring_all ({STRING_32} "$(path_separator)", p)
+						-- There is no reason to have a location ending by backslash.
+						-- Remove it to avoid confusion with escaped double quote `\"`.
+					if l_path.count > 0 and then l_path [l_path.count] = {CHARACTER_32} '\' then
+						l_path.remove_tail (1)
+					end
+
+
 					if a_is_path then
 							-- Protect paths.
 						safe_external_path (l_path)
@@ -1382,7 +1411,7 @@ feature {NONE} -- Constants
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
