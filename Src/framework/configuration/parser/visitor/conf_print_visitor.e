@@ -978,7 +978,7 @@ feature {NONE} -- Implementation
 				loop
 					l_ext := e
 					append_tag_open (a_name)
-					append_text_attribute (a_value, l_ext.internal_location)
+					append_text_attribute (a_value, l_ext.location)
 					append_tag_close
 					last_count := text.count
 
@@ -1553,7 +1553,7 @@ feature {NONE} -- Match attribute
 
 note
 	ca_ignore: "CA033", "CA033 — very long class"
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

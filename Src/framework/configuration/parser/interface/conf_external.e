@@ -20,16 +20,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_location: like internal_location; a_target: like target)
+	make (a_location: like location; a_target: like target)
 			-- Create with `a_location'.
 		require
 			a_location_not_void: a_location /= Void
 			target_not_void: a_target /= Void
 		do
-			internal_location := a_location
+			location := a_location
 			target := a_target
 		ensure
-			location_set: internal_location = a_location
+			location_set: location = a_location
 			target_set: target = a_target
 		end
 
@@ -72,25 +72,8 @@ feature -- Status
 
 feature -- Access, stored in configuration file
 
-	location: like internal_location
+	location: READABLE_STRING_32
 			-- The file location.
-		local
-			s: STRING_32
-			p: READABLE_STRING_32
-		do
-			create s.make_from_string (internal_location)
-			p := target.library_root.name
-			s.replace_substring_all ({STRING_32} "$ECF_CONFIG_PATH", p)
-			s.replace_substring_all ({STRING_32} "$(ECF_CONFIG_PATH)", p)
-				-- There is no reason to have a location ending by backslash.
-				-- Remove it to avoid confusion with escaped double quote `\"`.
-			if s.count > 0 and then s [s.count] = {CHARACTER_32} '\' then
-				s.remove_tail (1)
-			end
-			Result := s
-		ensure
-			Result_not_void: Result /= Void
-		end
 
 	description: detachable READABLE_STRING_32
 			-- A description about the external.
@@ -100,14 +83,14 @@ feature -- Access, stored in configuration file
 
 feature {CONF_ACCESS} -- Update, stored in configuration file
 
-	set_location (a_location: like internal_location)
+	set_location (a_location: like location)
 			-- Set `location' to `a_location'.
 		require
 			a_location_not_void: a_location /= Void
 		do
-			internal_location := a_location
+			location := a_location
 		ensure
-			location_set: internal_location = a_location
+			location_set: location = a_location
 		end
 
 	set_description (a_description: like description)
@@ -145,17 +128,13 @@ feature {CONF_ACCESS} -- Status update
 			end
 		end
 
-feature {CONF_ACCESS} -- Implementation
-
-	internal_location: READABLE_STRING_32
-			-- The file location.
 
 invariant
-	internal_location_not_void: internal_location /= Void
+	location_not_void: location /= Void
 	target_not_void: target /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2021, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

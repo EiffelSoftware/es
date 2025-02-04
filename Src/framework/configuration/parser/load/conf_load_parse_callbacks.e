@@ -550,7 +550,7 @@ feature {NONE} -- Conversion from earlier version
 			if
 				attached current_external as e and then
 				includes_this_or_before (namespace_1_9_0) and then
-				attached e.internal_location as l_internal_location and then
+				attached e.location as l_internal_location and then
 				not l_internal_location.has ('%"') and then
 				(l_internal_location.has (' ') or else l_internal_location.has ('%T'))
 			then
@@ -3302,7 +3302,7 @@ invariant
 	factory_not_void: factory /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2023, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
