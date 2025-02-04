@@ -142,6 +142,10 @@ feature -- Dialogs
 			Use the [Project] button to (de)select the groups of the project.
 		]", "scm") end
 
+	text_select_groups_to_monitor: STRING_32 do Result := locale.translation_in_context ("[
+			Select the groups to monitor.
+		]", "scm") end
+
 	text_no_output: STRING_32 do Result := locale.translation_in_context ("No output ...", "scm") end
 	text_no_difference: STRING_32 do Result := locale.translation_in_context ("No difference", "scm") end
 
@@ -212,6 +216,8 @@ feature -- General
 
 	button_checking: STRING_32 do Result := locale.translation_in_context ("Checking...", "scm") end
 
+	button_switch_back: STRING_32 do Result := locale.translation_in_context ("Switch Back", "scm") end
+
 	checkbutton_use_external_terminal: STRING_32 do Result := locale.translation_in_context ("Use external terminal?", "scm") end
 
 feature -- Messages
@@ -230,7 +236,7 @@ feature -- Messages
 
 
 ;note
-	copyright: "Copyright (c) 1984-2022, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

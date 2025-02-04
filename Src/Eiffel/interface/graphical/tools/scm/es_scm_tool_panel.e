@@ -93,7 +93,7 @@ feature {NONE} -- Factory
 			togb.set_pixmap (pixmaps.icon_pixmaps.folder_preference_icon)
 			togb.set_pixel_buffer (pixmaps.icon_pixmaps.folder_preference_icon_buffer)
 			togb.set_tooltip (scm_names.tooltip_button_project)
-			togb.select_actions.extend (agent on_setup_selected)
+			togb.select_actions.extend (agent on_setup_toggled)
 			Result.extend (togb)
 			toggle_button_setup := togb
 
@@ -238,7 +238,19 @@ feature {NONE} -- Action handlers
 			end
 		end
 
-	on_setup_selected
+	toggle_project_setup
+		do
+			if attached toggle_button_setup as tb then
+				if tb.is_selected then
+					tb.disable_select
+				else
+					tb.enable_select
+				end
+				on_setup_toggled
+			end
+		end
+
+	on_setup_toggled
 		local
 			b: like main_box
 			l_setup: SCM_SETUP_BOX
@@ -255,6 +267,7 @@ feature {NONE} -- Action handlers
 					create l_setup
 					setup_box := l_setup
 					l_setup.set_workspace (ws)
+					l_setup.set_back_action (agent toggle_project_setup)
 					b.extend (l_setup)
 					record_status_box_settings
 					status_box := Void
@@ -338,6 +351,7 @@ feature {NONE} -- Action handlers
 							setup_box := l_setup
 						end
 						l_setup.set_workspace (ws)
+						l_setup.set_back_action (agent toggle_project_setup)
 						b.extend (l_setup)
 					end
 				else
@@ -361,7 +375,7 @@ feature {NONE} -- Action handlers
 					b.extend (but)
 					b.disable_item_expand (but)
 
-					create but.make_with_text_and_action (scm_names.button_project, agent on_setup_selected)
+					create but.make_with_text_and_action (scm_names.button_project, agent on_setup_toggled)
 					but.set_tooltip (scm_names.tooltip_button_project)
 					b.extend (but)
 					b.disable_item_expand (but)
@@ -407,7 +421,7 @@ feature -- Access: Help
 		end
 
 note
-	copyright: "Copyright (c) 1984-2022, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

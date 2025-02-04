@@ -8,7 +8,7 @@ class
 	SCM_SETUP_BOX
 
 inherit
-	ANY
+	SHARED_SCM_NAMES
 		redefine
 			default_create
 		end
@@ -30,9 +30,36 @@ feature {NONE} -- Initialization
 
 	build_interface (b: EV_VERTICAL_BOX)
 		local
+			txt: EVS_LABEL
+			but: EV_BUTTON
+			hb: EV_HORIZONTAL_BOX
+			cl: EV_CELL
 		do
+			create txt.make_with_text (scm_names.text_select_groups_to_monitor)
+			txt.set_is_text_wrapped (True); txt.align_text_left; txt.align_text_top
+			b.extend (txt)
+			b.disable_item_expand (txt)
+
 			create grid
 			b.extend (grid)
+
+			create but.make_with_text (scm_names.button_switch_back)
+			but.select_actions.extend (agent on_switch_back_clicked)
+			create hb
+			hb.extend (create {EV_CELL})
+			hb.extend (but)
+			hb.disable_item_expand (but)
+
+			switch_back_box := hb
+			b.extend (hb)
+			b.disable_item_expand (hb)
+
+
+			b.resize_actions.extend (agent (alab: EV_WIDGET; ax,ay,aw,ah: INTEGER_32)
+				do
+					alab.refresh_now
+				end(txt,?,?,?,?)
+			)
 		end
 
 feature -- Basic operation
@@ -42,7 +69,19 @@ feature -- Basic operation
 			workspace := ws
 			grid.set_workspace (ws)
 		end
-		
+
+	set_back_action (ag: detachable PROCEDURE)
+		do
+			switch_back_action := ag
+			if attached switch_back_box as w then
+				if ag = Void then
+					w.hide
+				else
+					w.show
+				end
+			end
+		end
+
 	reset
 		do
 			if attached grid as g then
@@ -50,7 +89,20 @@ feature -- Basic operation
 			end
 		end
 
+feature -- Event
+
+	on_switch_back_clicked
+		do
+			if attached switch_back_action as act then
+				act.call
+			end
+		end
+
 feature -- Access
+
+	switch_back_action: detachable PROCEDURE
+
+	switch_back_box: EV_WIDGET
 
 	workspace: detachable SCM_WORKSPACE
 
@@ -60,7 +112,7 @@ feature -- Access
 
 invariant
 note
-	copyright: "Copyright (c) 1984-2021, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SCM_PREFERENCES_DIALOG}."
+	description: "Summary description for {SCM_CONFIG_DIALOG}."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -498,7 +498,7 @@ feature -- Access
 			-- Indicates if the size and position information is remembered for the dialog	
 
 ;note
-	copyright: "Copyright (c) 1984-2022, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
