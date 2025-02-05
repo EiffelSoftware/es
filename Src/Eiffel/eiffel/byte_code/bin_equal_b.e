@@ -234,10 +234,10 @@ feature
 						-- Expanded type can never be Void.
 					generate_boolean_constant
 				elseif
-					left_type.is_true_expanded or
-					right_type.is_true_expanded or
-					attached left_register and then left_type.is_basic or
-					attached right_register and then right_type.is_basic
+					left_type.is_true_expanded
+					or right_type.is_true_expanded
+					or (attached left_register and then left_type.is_basic)
+					or (attached right_register and then right_type.is_basic)
 				then
 					generate_negation
 					generate_equal_macro ("RTEQ")
@@ -305,7 +305,7 @@ feature -- Inlining
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2022, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

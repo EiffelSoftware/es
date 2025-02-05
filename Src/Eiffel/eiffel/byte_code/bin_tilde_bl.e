@@ -166,7 +166,11 @@ feature -- C code generation
 				right_type := context.real_type (right.type)
 
 					-- For values of the same basic type the equality test is generated.
-				if left_type.is_basic and right_type.is_basic and then left_type.same_as (right_type) then
+				if
+					left_type.is_basic and
+					right_type.is_basic and then
+					left_type.same_as (right_type)
+				then
 					buf := buffer
 					buf.put_character ('(')
 					left.print_register
@@ -174,37 +178,69 @@ feature -- C code generation
 					right.print_register
 					buf.put_character (')')
 				elseif
-					(left_type.is_none and right_type.is_expanded) or else
-					(left_type.is_expanded and right_type.is_none) or else
-					(left_type.is_expanded and then right_type.is_expanded and then
-					left_type.has_associated_class and then right_type.has_associated_class and then
-					left_type.base_class.class_id /= right_type.base_class.class_id)
+					(left_type.is_none and right_type.is_expanded)
+					or else	(left_type.is_expanded and right_type.is_none)
+					or else	(
+						left_type.is_expanded and then
+						right_type.is_expanded and then
+						left_type.has_associated_class and then
+						right_type.has_associated_class and then
+						left_type.base_class.class_id /= right_type.base_class.class_id
+					)
 				then
 						-- A value of an expanded type is not Void.
 						-- Two values of different expanded types are not equal.
 						-- In both cases result is known at compile time.
 					generate_boolean_constant
-				else
+				elseif
+					left_type.is_basic and
+					right_type.is_basic
+				then
 					buf := buffer
-					generate_negation
-						-- FIXME: This call assumes that `is_equal' from ANY always takes
-						-- `like Current' as argument, but actually it could be different.
-					buf.put_string ("RTEQ")
-					buf.put_character ('(')
+					buf.put_string ("(EIF_BOOLEAN)(")
 					if left_register = Void then
 						left.print_register
 					else
 						left_register.print_register
 					end
-					buf.put_string ({C_CONST}.comma_space)
+					generate_operator (buf)
 					if right_register = Void then
 						right.print_register
 					else
 						right_register.print_register
 					end
 					buf.put_character (')')
+				else
+					generate_negation
+						-- FIXME: This call assumes that `is_equal' from ANY always takes
+						-- `like Current' as argument, but actually it could be different.
+					generate_equal_macro ("RTEQ")
 				end
 			end
+		end
+
+	generate_equal_macro (name: STRING_8)
+			-- Generate a macro that performs an equality test.
+		require
+			name_attached: name /= Void
+		local
+			buf: like buffer
+		do
+			buf := buffer
+			buf.put_string (name);
+			buf.put_character ('(')
+			if left_register = Void then
+				left.print_register
+			else
+				left_register.print_register
+			end;
+			buf.put_string ({C_CONST}.comma_space)
+			if right_register = Void then
+				right.print_register
+			else
+				right_register.print_register
+			end;
+			buf.put_character (')')
 		end
 
 feature -- Settings
@@ -226,7 +262,7 @@ feature -- Settings
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2022, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
