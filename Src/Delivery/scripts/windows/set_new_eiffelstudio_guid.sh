@@ -1,8 +1,8 @@
 #!/bin/bash
 
 function check_requirements() {
-	if ! [ -x "$(command -v svn)" ]; then
-		echo "error: svn is not installed! (on debian use > sudo apt install subversion)" >&2
+	if ! [ -x "$(command -v git)" ]; then
+		echo "error: git is not installed! (on debian use > sudo apt install git)" >&2
 	fi
 	if ! [ -x "$(command -v uuidgen)" ]; then
 		echo "error: uuidgen is not installed! (on debian use > sudo apt install uuid-runtime)" >&2
@@ -45,7 +45,7 @@ else
 fi
 
 # $EIF_DELIV_SCRIPTS_DIR_WINDOWS/install/includes/Preprocessors.wxi
-svn revert "$EIF_DELIV_SCRIPTS_DIR_WINDOWS/install/includes/Preprocessors.wxi"
+git restore "$EIF_DELIV_SCRIPTS_DIR_WINDOWS/install/includes/Preprocessors.wxi"
 
 line=37
 do_sed "$((line+1))s/\(ProductGuid\s*=\s*\)\"[0-9A-Fa-f-]*\"/\1\"$(new_uuid)\"/g" $EIF_DELIV_SCRIPTS_DIR_WINDOWS/install/includes/Preprocessors.wxi
@@ -59,5 +59,5 @@ do_sed "$((line+7))s/\(ShortcutsGuid\s*=\s*\)\"[0-9A-Fa-f-]*\"/\1\"$(new_uuid)\"
 
 do_sed "$((line+9))s/\(UpgradeGuid\s*=\s*\)\"[0-9A-Fa-f-]*\"/\1\"$(new_uuid)\"/g" $EIF_DELIV_SCRIPTS_DIR_WINDOWS/install/includes/Preprocessors.wxi
 
-#svn diff "$EIF_DELIV_SCRIPTS_DIR_WINDOWS/install/includes/Preprocessors.wxi"
+#git diff "$EIF_DELIV_SCRIPTS_DIR_WINDOWS/install/includes/Preprocessors.wxi"
 #echo Check the lines are still the same
