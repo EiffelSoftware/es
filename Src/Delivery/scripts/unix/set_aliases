@@ -37,7 +37,7 @@ SCM_DIR=$WORKINGDIR/Sources
 
 # What repo and branch to use to export everything (ISE svn repo, and Git repo)
 if [ ! "$DEFAULT_ISE_SVN" ]; then
-	DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/trunk
+	DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/branches/Eiffel_25.02
 fi
 if [ ! "$ISE_SVN_REVISION" ]; then
 	ISE_SVN_REVISION=HEAD
@@ -49,7 +49,7 @@ if [ ! "$DEFAULT_ES_ROOT" ]; then
 	DEFAULT_ES_ROOT=https://gitlab.com/eiffelsoftware/es.git
 fi
 if [ ! "$DEFAULT_ES_BRANCH" ]; then
-	DEFAULT_ES_BRANCH=master
+	DEFAULT_ES_BRANCH=Eiffel_25.02
 fi
 
 # This section is commented out be cause it won't work on non-bash shell

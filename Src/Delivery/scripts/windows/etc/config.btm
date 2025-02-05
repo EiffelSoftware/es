@@ -21,7 +21,7 @@ iff not defined DEFAULT_ES_ROOT then
 	set DEFAULT_ES_ROOT=https://gitlab.com/eiffelsoftware/es.git
 endiff
 iff not defined DEFAULT_ES_BRANCH then
-	set DEFAULT_ES_BRANCH=master
+	set DEFAULT_ES_BRANCH=Eiffel_25.02
 endiff
 iff not defined ES_BUILD_ID then
 	set ES_BUILD_ID=HEAD
@@ -29,7 +29,7 @@ endiff
 
 REM Tag to export files in SVN at ISE
 iff not defined DEFAULT_ISE_SVN then
-	set DEFAULT_ISE_SVN=svn://%USERNAME%@svn.ise/ise_svn/trunk
+	set DEFAULT_ISE_SVN=svn://%USERNAME%@svn.ise/ise_svn/branches/Eiffel_25.02
 endiff
 iff not defined ISE_SVN_REVISION then
 	set ISE_SVN_REVISION=HEAD
