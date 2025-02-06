@@ -94,6 +94,13 @@ remtrace  - ISE_C_COMPILER=%ISE_C_COMPILER%
 remtrace  - ISE_C_COMPILER_VER=%ISE_C_COMPILER_VER%
 remtrace  - INSTALL_DIR=%INSTALL_DIR%
 remtrace  - STUDIO_DIR=%STUDIO_DIR%
+
+remtrace  - ISE_SVN_REVISION=%ISE_SVN_REVISION%
+remtrace --------------------------------
+remtrace  - DEFAULT_ES_ROOT=%DEFAULT_ES_ROOT%
+remtrace  - DEFAULT_ES_BRANCH=%DEFAULT_ES_BRANCH%
+remtrace  - DEFAULT_ISE_SVN=%DEFAULT_ISE_SVN%
+remtrace  - ISE_SVN_REVISION=%ISE_SVN_REVISION%
 remtrace --------------------------------
 
 cdd %INIT_DIR
@@ -340,16 +347,15 @@ REM Clean up the files
 		else
 			ise_co Src/library/keygen library/keygen
 		endiff
-		cd tools
 		iff EXIST %INIT_DIR%\isesvn\tools\activation then
-			xcopy %INIT_DIR%\isesvn\tools\activation activation /E /I /Y
+			xcopy %INIT_DIR%\isesvn\tools\activation tools\activation /E /I /Y
 		else
-			ise_co Src/tools/activation activation
+			ise_co Src/tools/activation tools/activation
 		endiff
 		iff EXIST %INIT_DIR%\isesvn\tools\estudio_enterprise then
-			xcopy %INIT_DIR%\isesvn\tools\estudio_enterprise estudio_enterprise /E /I /Y
+			xcopy %INIT_DIR%\isesvn\tools\estudio_enterprise tools/estudio_enterprise /E /I /Y
 		else
-			ise_co Src/tools/estudio_enterprise estudio_enterprise
+			ise_co Src/tools/estudio_enterprise tools/estudio_enterprise
 		endiff
 	endiff
 
