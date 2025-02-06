@@ -31,8 +31,11 @@ WXS = \
 	studio_tools.wxs \
 	studio_gdiplus.wxs \
 	studio_ent_ec.wxs \
+	studio_ent_lic.wxs \
 	studio_std_ec.wxs \
-	studio_branded_ec.wxs
+	studio_std_lic.wxs \
+	studio_branded_ec.wxs \
+	studio_branded_lic.wxs \
 
 WXS_STD = \
 	studio_gcc.wxs \
@@ -45,7 +48,8 @@ WXS_STD = \
 	studio_unstable.wxs \
 	studio_tools.wxs \
 	studio_gdiplus.wxs \
-	studio_std_ec.wxs
+	studio_std_ec.wxs \
+	studio_std_lic.wxs 
 
 WXS_ENT = \
 	studio_gcc.wxs \
@@ -58,7 +62,8 @@ WXS_ENT = \
 	studio_unstable.wxs \
 	studio_tools.wxs \
 	studio_gdiplus.wxs \
-	studio_ent_ec.wxs
+	studio_ent_ec.wxs \
+	studio_ent_lic.wxs 
 
 WXS_BRANDED = \
 	studio_gcc.wxs \
@@ -71,7 +76,8 @@ WXS_BRANDED = \
 	studio_unstable.wxs \
 	studio_tools.wxs \
 	studio_gdiplus.wxs \
-	studio_branded_ec.wxs
+	studio_branded_ec.wxs \
+	studio_branded_lic.wxs
 
 build: $(WXS)
 
@@ -147,14 +153,32 @@ studio_ent_ec.wxs:
 		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"enterprise_ec" -n:"Core." > $@.tmp
 	move $@.tmp $@
 
+studio_ent_lic.wxs:
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\enterprise_version" \
+		-dr:"Dir.Core" -g:"enterprise_lic" -n:"Core." \
+		-fi:LICENSE -de:"\*" > $@.tmp
+	move $@.tmp $@
+
 studio_branded_ec.wxs:
 	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\branded_version" \
 		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"branded_ec" -n:"Core." > $@.tmp
 	move $@.tmp $@
 
+studio_branded_lic.wxs:
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\branded_version" \
+		-dr:"Dir.Core" -g:"branded_lic" -n:"Core." \
+		-fi:LICENSE -de:"\*" > $@.tmp
+	move $@.tmp $@
+
 studio_std_ec.wxs:
 	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\standard_version" \
 		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"standard_ec" -n:"Core." > $@.tmp
+	move $@.tmp $@
+
+studio_std_lic.wxs:
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\standard_version" \
+		-dr:"Dir.Core" -g:"standard_lic" -n:"Core." \
+		-fi:LICENSE -de:"\*" > $@.tmp
 	move $@.tmp $@
 
 ###################################################################
