@@ -1,5 +1,8 @@
 image: gcc
 
+stages:
+  - test
+
 before_script:
   - apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates curl bzip2 gcc make dist libxtst-dev libgtk2.0-dev libgtk-3-dev libgdk-pixbuf2.0-dev libssl-dev dos2unix
   - cd $CI_PROJECT_DIR
@@ -29,7 +32,7 @@ testing_job:
     - ec -config $ISE_LIBRARY/library/base/testing/testing.ecf -clean -tests
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"  && $CI_ENABLED == "true"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_ENABLED == "true"
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE == "push"
@@ -50,11 +53,10 @@ linux_compile_all_library_job:
     - echo Check projects compilation status...
     - export COMPILEALL_DIR=library
     - export COMPILEALL_IGNORE=scripts/CI/compile_all/stable_others.ini
-    - export COMPILEALL_IGNORE=
     - sh $EIFFEL_SRC/scripts/CI/travis-ci-compile_all.sh $EIFFEL_SRC/$COMPILEALL_DIR $EIFFEL_SRC/$COMPILEALL_IGNORE
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"  && $CI_ENABLED == "true"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_ENABLED == "true"
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE == "push"
@@ -78,7 +80,7 @@ linux_compile_all_tools_job:
     - sh $EIFFEL_SRC/scripts/CI/travis-ci-compile_all.sh $EIFFEL_SRC/$COMPILEALL_DIR $EIFFEL_SRC/$COMPILEALL_IGNORE
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"  && $CI_ENABLED == "true"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_ENABLED == "true"
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE == "push"
@@ -98,12 +100,9 @@ linux_eweasel_job:
     - sh $EIFFEL_SRC/scripts/CI/ci-eweasel.sh $dir $dir/test_dir
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"  && $CI_ENABLED == "true"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_ENABLED == "true"
       when: manual
       allow_failure: true
     - if: $CI_PIPELINE_SOURCE == "push"
       when: manual      
-
-stages:
-  - test
 
