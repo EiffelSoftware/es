@@ -4,6 +4,7 @@ windows/
 eiffel_win64/
 eiffel_windows/
 install/wix/v*/
+install/wix/bin*/
 nightly/*
 headers/
 install/bin/studio_*/
