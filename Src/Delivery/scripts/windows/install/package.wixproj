@@ -229,11 +229,14 @@
     <Compile Include="content\eiffelstudio\studio_core.wxs" />
     <Compile Include="content\eiffelstudio\EiffelStudioPackage.wxs" />
     <Compile Include="content\eiffelstudio\studio_branded_ec.wxs" />
+    <Compile Include="content\eiffelstudio\studio_branded_lic.wxs" />
     <Compile Include="content\eiffelstudio\studio_ent_ec.wxs" />
+    <Compile Include="content\eiffelstudio\studio_ent_lic.wxs" />
     <Compile Include="content\eiffelstudio\studio_examples.wxs" />
     <Compile Include="content\eiffelstudio\studio_gdiplus.wxs" />
     <Compile Include="content\eiffelstudio\studio_std_ec.wxs" />
-	<Compile Include="content\eiffelstudio\studio_libraries.wxs" />
+    <Compile Include="content\eiffelstudio\studio_std_lic.wxs" />
+    <Compile Include="content\eiffelstudio\studio_libraries.wxs" />
     <Compile Include="content\eiffelstudio\studio_contrib.wxs" />
     <Compile Include="content\eiffelstudio\studio_contrib_library.wxs" />
     <Compile Include="content\eiffelstudio\studio_contrib_library_gobo.wxs" />

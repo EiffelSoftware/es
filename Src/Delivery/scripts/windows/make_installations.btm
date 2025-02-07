@@ -132,7 +132,9 @@ remtrace Remove LICENSE from %INSTALL_DIR%\EiffelStudio\LICENSE
 fullrf %INSTALL_DIR%\EiffelStudio\LICENSE
 fullrf %INSTALL_DIR%\EiffelStudio\studio\spec\%ISE_PLATFORM%\bin\ec.exe
 fullrf %INSTALL_DIR%\EiffelStudio\studio\spec\%ISE_PLATFORM%\bin\ecb.exe
-git checkout -- %INIT_DIR%\install\content\eiffelstudio\studio_*
+cdd %INIT_DIR%\install\content\eiffelstudio
+remtrace git restore studio_*
+git restore studio_*
 
 remtrace Creating WIX files
 espawn -u:%ISE_C_COMPILER_VER% "nmake /nologo clean"
@@ -173,10 +175,10 @@ iff not defined NO_STANDARD_BUILD then
 		    ren EiffelStudio %STUDIO_NAME%
 		endiff
 		remtrace Standard archive
-		safe_copy %INSTALL_DIR%\releases\standard_version\ec.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
-		safe_copy %INSTALL_DIR%\releases\standard_version\ecb.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
-		iff exist %INSTALL_DIR%\releases\standard_version\LICENSE then
-			safe_copy %INSTALL_DIR%\releases\standard_version\LICENSE %INSTALL_DIR%\%STUDIO_NAME%\LICENSE
+		safe_copy %INSTALL_DIR%\releases\standard_version\bin\ec.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+		safe_copy %INSTALL_DIR%\releases\standard_version\bin\ecb.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+		iff exist %INSTALL_DIR%\releases\standard_version\root\LICENSE then
+			safe_copy %INSTALL_DIR%\releases\standard_version\root\LICENSE %INSTALL_DIR%\%STUDIO_NAME%\LICENSE
 		else
 			remtrace Missing Standard license text
 		endiff
@@ -204,10 +206,10 @@ iff not defined NO_ENTERPRISE_BUILD then
 		iff EXIST EiffelStudio then
 		    ren EiffelStudio %STUDIO_NAME%
 		endiff
-		safe_copy %INSTALL_DIR%\releases\enterprise_version\ec.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
-		safe_copy %INSTALL_DIR%\releases\enterprise_version\ecb.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
-		iff exist %INSTALL_DIR%\releases\enterprise_version\LICENSE then
-			safe_copy %INSTALL_DIR%\releases\enterprise_version\LICENSE %INSTALL_DIR%\%STUDIO_NAME%\LICENSE
+		safe_copy %INSTALL_DIR%\releases\enterprise_version\bin\ec.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+		safe_copy %INSTALL_DIR%\releases\enterprise_version\bin\ecb.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+		iff exist %INSTALL_DIR%\releases\enterprise_version\root\LICENSE then
+			safe_copy %INSTALL_DIR%\releases\enterprise_version\root\LICENSE %INSTALL_DIR%\%STUDIO_NAME%\LICENSE
 		else
 			remtrace Missing Enterprise license text
 		endiff
@@ -230,10 +232,10 @@ iff not defined NO_ENTERPRISE_BUILD then
 		iff EXIST EiffelStudio then
 		    ren EiffelStudio %STUDIO_NAME%
 		endiff
-		safe_copy %INSTALL_DIR%\releases\branded_version\ec.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
-		safe_copy %INSTALL_DIR%\releases\branded_version\ecb.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
-		iff exist %INSTALL_DIR%\releases\branded_version\LICENSE then
-			safe_copy %INSTALL_DIR%\releases\branded_version\LICENSE %INSTALL_DIR%\%STUDIO_NAME%\LICENSE
+		safe_copy %INSTALL_DIR%\releases\branded_version\bin\ec.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+		safe_copy %INSTALL_DIR%\releases\branded_version\bin\ecb.exe %INSTALL_DIR%\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+		iff exist %INSTALL_DIR%\releases\branded_version\root\LICENSE then
+			safe_copy %INSTALL_DIR%\releases\branded_version\root\LICENSE %INSTALL_DIR%\%STUDIO_NAME%\LICENSE
 		else
 			remtrace Missing Branded license text
 		endiff

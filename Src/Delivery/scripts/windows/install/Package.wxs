@@ -41,8 +41,8 @@
     <!-- ADD REMOVE PROGRAM -->
     <Property Id='ARPCOMMENTS'>$(var.ProductDescription)</Property>
     <Property Id='ARPCONTACT'>info@eiffel.com</Property>
-    <Property Id='ARPHELPLINK'>http://support.eiffel.com</Property>
-    <Property Id='ARPURLINFOABOUT'>http://www.eiffel.com</Property>
+    <Property Id='ARPHELPLINK'>https://support.eiffel.com</Property>
+    <Property Id='ARPURLINFOABOUT'>https://www.eiffel.com</Property>
     <Property Id='ARPPRODUCTICON'>app.ico</Property>
     <Property Id='ARPNOMODIFY'>1</Property>
     <!-- END ADD REMOVE PROGRAM -->
@@ -68,7 +68,7 @@
     <!-- Indicates if a C config choice is present -->
     <Property Id="C_CONFIG_CHOOSE">0</Property>
     <!-- URL for How-To-Install a C/C++ compiler -->
-    <Property Id="C_CONFIG_INSTALL_URL">http://dev.eiffel.com/Installing_Microsoft_C_compiler</Property>
+    <Property Id="C_CONFIG_INSTALL_URL">https://www.eiffel.org/doc/eiffelstudio/Installating_Microsoft_C_compiler</Property>
     <!-- Eiffel C configuration name -->
     <Property Id="C_CONFIG_NAME"><?ifdef EiffelStudio?>mingw<?else?>msc<?endif?></Property>
 	<!-- The name of a MS compiler environment. Filled by `evaluate_c_compiler' custom actions in `setup.dll' for debugging purposes. -->
