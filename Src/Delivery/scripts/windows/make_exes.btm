@@ -7,12 +7,18 @@ iff not exist %INSTALL_DIR%\releases then
 endiff
 iff not exist %INSTALL_DIR%\releases\enterprise_version then
 	md %INSTALL_DIR%\releases\enterprise_version
+	md %INSTALL_DIR%\releases\enterprise_version\bin
+	md %INSTALL_DIR%\releases\enterprise_version\root
 endiff
 iff not exist %INSTALL_DIR%\releases\branded_version then
 	md %INSTALL_DIR%\releases\branded_version
+	md %INSTALL_DIR%\releases\branded_version\bin
+	md %INSTALL_DIR%\releases\branded_version\root
 endiff
 iff not exist %INSTALL_DIR%\releases\standard_version then
 	md %INSTALL_DIR%\releases\standard_version
+	md %INSTALL_DIR%\releases\standard_version\bin
+	md %INSTALL_DIR%\releases\standard_version\root
 endiff
 
 remtrace Compile the run-times
@@ -135,7 +141,7 @@ iff defined NO_STANDARD_BUILD then
 	cdd %FINALIZATION_DIR
 
 	set T_EDITION=enterprise
-	set T_EC_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\ec.exe
+	set T_EC_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\bin\ec.exe
 	iff defined NO_REUSE then
 		fullrf %T_EC_INSTALL_FILE%
 	endiff
@@ -154,7 +160,7 @@ iff defined NO_STANDARD_BUILD then
 	endiff
 	set T_EC_INSTALL_FILE=
 
-	set T_ECB_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\ecb.exe
+	set T_ECB_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\bin\ecb.exe
 	iff defined NO_REUSE then
 		fullrf %T_ECB_INSTALL_FILE%
 	endiff
@@ -172,7 +178,7 @@ iff defined NO_STANDARD_BUILD then
 	endiff
 	set T_ECB_INSTALL_FILE=
 
-	es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
+	es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/enterprise.txt %INSTALL_DIR%\releases\%T_EDITION%_version\root\LICENSE
 	set T_EDITION=
 else
 	iff not defined NO_NEW_EC then
@@ -185,7 +191,7 @@ else
 			safe_copy %EIFFEL_SRC%\Eiffel\Ace\*.* .
 
 			set T_EDITION=standard
-			set T_ECB_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\ecb.exe
+			set T_ECB_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\bin\ecb.exe
 			iff defined NO_REUSE then
 				fullrf %T_ECB_INSTALL_FILE%
 			endiff
@@ -205,7 +211,7 @@ else
 			endiff
 			set T_ECB_INSTALL_FILE=
 
-			set T_EC_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\ec.exe
+			set T_EC_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\bin\ec.exe
 			iff defined NO_REUSE then
 				fullrf %T_EC_INSTALL_FILE%
 			endiff
@@ -225,7 +231,8 @@ else
 			endiff
 			set T_EC_INSTALL_FILE=
 
-			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
+
+			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\root\LICENSE
 			set T_EDITION=
 		endiff
 		iff not defined NO_ENTERPRISE_BUILD then
@@ -237,7 +244,7 @@ else
 			cdd %FINALIZATION_DIR
 
 			set T_EDITION=branded
-			set T_ECB_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\ecb.exe
+			set T_ECB_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\bin\ecb.exe
 			iff defined NO_REUSE then
 				fullrf %T_ECB_INSTALL_FILE%
 			endiff
@@ -256,7 +263,7 @@ else
 			endiff
 			set T_ECB_INSTALL_FILE=
 
-			set T_EC_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\ec.exe
+			set T_EC_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\bin\ec.exe
 			iff defined NO_REUSE then
 				fullrf %T_EC_INSTALL_FILE%
 			endiff
@@ -277,7 +284,7 @@ else
 			endiff
 			set T_EC_INSTALL_FILE=
 
-			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
+			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\root\LICENSE
 			set T_EDITION=
 
 			remtrace Restore non enterprise/branded edition files
@@ -294,7 +301,7 @@ else
 			cdd %FINALIZATION_DIR
 
 			set T_EDITION=enterprise
-			set T_ECB_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\ecb.exe
+			set T_ECB_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\bin\ecb.exe
 			iff defined NO_REUSE then
 				fullrf %T_ECB_INSTALL_FILE%
 			endiff
@@ -313,7 +320,7 @@ else
 			endiff
 			set T_ECB_INSTALL_FILE=
 
-			set T_EC_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\ec.exe
+			set T_EC_INSTALL_FILE=%INSTALL_DIR%\releases\%T_EDITION%_version\bin\ec.exe
 			iff defined NO_REUSE then
 				fullrf %T_EC_INSTALL_FILE%
 			endiff
@@ -334,7 +341,7 @@ else
 			endiff
 			set T_EC_INSTALL_FILE=
 
-			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/license.txt %INSTALL_DIR%\releases\%T_EDITION%_version\LICENSE
+			es_exprtfile Src/Delivery/scripts/licensing/eiffelstudio/enterprise.txt %INSTALL_DIR%\releases\%T_EDITION%_version\root\LICENSE
 			set T_EDITION=
 
 			remtrace Restore non enterprise edition files

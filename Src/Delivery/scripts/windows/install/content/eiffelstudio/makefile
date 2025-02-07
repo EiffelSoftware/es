@@ -149,36 +149,33 @@ studio_gdiplus.wxs:
 	move $@.tmp $@
 
 studio_ent_ec.wxs:
-	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\enterprise_version" \
-		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"enterprise_ec" -n:"Core." > $@.tmp
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\enterprise_version\bin" \
+		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"enterprise_ec" -n:"Core.enterprise_version." > $@.tmp
 	move $@.tmp $@
 
 studio_ent_lic.wxs:
-	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\enterprise_version" \
-		-dr:"Dir.Core" -g:"enterprise_lic" -n:"Core." \
-		-fi:LICENSE -de:"\*" > $@.tmp
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\enterprise_version\root" \
+		-dr:"INSTALLDIR" -g:"enterprise_lic" -n:"Core.enterprise_version." > $@.tmp
 	move $@.tmp $@
 
 studio_branded_ec.wxs:
-	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\branded_version" \
-		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"branded_ec" -n:"Core." > $@.tmp
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\branded_version\bin" \
+		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"branded_ec" -n:"Core.branded_version." > $@.tmp
 	move $@.tmp $@
 
 studio_branded_lic.wxs:
-	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\branded_version" \
-		-dr:"Dir.Core" -g:"branded_lic" -n:"Core." \
-		-fi:LICENSE -de:"\*" > $@.tmp
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\branded_version\root" \
+		-dr:"INSTALLDIR" -g:"branded_lic" -n:"Core.branded_version." > $@.tmp
 	move $@.tmp $@
 
 studio_std_ec.wxs:
-	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\standard_version" \
-		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"standard_ec" -n:"Core." > $@.tmp
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\standard_version\bin" \
+		-dr:"Dir.Core.studio.spec.$$(var.IsePlatform).bin" -g:"standard_ec" -n:"Core.standard_version." > $@.tmp
 	move $@.tmp $@
 
 studio_std_lic.wxs:
-	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\standard_version" \
-		-dr:"Dir.Core" -g:"standard_lic" -n:"Core." \
-		-fi:LICENSE -de:"\*" > $@.tmp
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\releases\standard_version\root" \
+		-dr:"INSTALLDIR" -g:"standard_lic" -n:"Core.standard_version." > $@.tmp
 	move $@.tmp $@
 
 ###################################################################
