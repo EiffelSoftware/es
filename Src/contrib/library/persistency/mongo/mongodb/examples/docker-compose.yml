@@ -2,7 +2,7 @@ services:
   mongo-server1:
     image: mongo:latest
     container_name: mongo-server1
-    restart: always
+    restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
@@ -13,7 +13,7 @@ services:
   mongo-server2:
     image: mongo:latest
     container_name: mongo-server2
-    restart: always
+    restart: unless-stopped
     ports:
       - "27018:27017"
     volumes:
@@ -24,7 +24,7 @@ services:
   mongo-client1:
     image: mongo-express:latest
     container_name: mongo-client1
-    restart: always
+    restart: unless-stopped
     depends_on:
       - mongo-server1
     environment:
@@ -39,7 +39,7 @@ services:
   mongo-client2:
     image: mongo-express:latest
     container_name: mongo-client2
-    restart: always
+    restart: unless-stopped
     depends_on:
       - mongo-server2
     environment:
