@@ -8,50 +8,57 @@ from upload_version import upload_version, iron_config;
 def safe_rmtree(dn):
 	if os.path.exists (dn):
 		shutil.rmtree (dn)
+	#else:
+		#print("rmtree: Folder not found: %s" % (dn))
+
+def safe_copytree(src,tgt):
+	if os.path.exists (src):
+		print ("Copy tree from %s to %s" % (src, tgt))
+		if os.path.exists (tgt):
+			safe_rmtree(tgt)
+		shutil.copytree(src, tgt)
 	else:
-		print("Folder not found: %s" % (dn))
+		print("copytree: Folder not found: %s" % (src))
 
 def safe_rmfile(fn):
 	if os.path.exists (fn):
 		os.remove (fn)
-	else:
-		print("File not found: %s" % (fn))
+	#else:
+		#print("rmfile: File not found: %s" % (fn))
 
-def get_ise_libraries(basedir, br, v, rev):
+def get_ise_libraries(basedir, git_repo_location, br, v):
 	if br == 'trunk':
-		branch_dir="https://svn.eiffel.com/eiffelstudio/trunk"
-#		branch_dir="svn+ssh://svn.eiffel.com/home/svn/repo/eiffelstudio/trunk"
+		branch="master"
 	else:
-		branch_dir="https://svn.eiffel.com/eiffelstudio/branches/Eiffel_%s" % (v)
-#		branch_dir="svn+ssh://svn.eiffel.com/home/svn/repo/eiffelstudio/branches/Eiffel_%s" % (v)
-	if rev:
-		l_revision=rev
-	else:
-		l_revision="HEAD"
+		branch="Eiffel_%s" % (v)
 
-	print("Getting source code from %s  (revision:%s)..." % (branch_dir, l_revision))
-	d = os.path.join (basedir, "library")
-	if os.path.exists (d):
-		call(["svn", "update", "-r", l_revision, d ])
+	print("Getting source code from %s  ..." % (branch))
+	repo_dir = os.path.join (basedir, ".repo")
+	if os.path.exists (repo_dir):
+		print ("Reuse repo %s" % (repo_dir))
+		#call(["echo", "git", "pull", repo_dir ])
 	else:
-		call(["svn", "checkout", "-r", l_revision, "%s/Src/library" % (branch_dir), d ])
+		call(["git", "clone", "--quiet", "--single-branch", "--no-depth", "--branch", branch, git_repo_location, repo_dir ])
+
+	print ("Get library")
+	d = os.path.join (basedir, "library")
+	if not os.path.exists (d):
+		safe_copytree(os.path.join(repo_dir, "Src", "library"), d)
 	safe_rmtree (os.path.join (d, "obsolete"))
 	safe_rmtree (os.path.join (d, "wizard"))
 	safe_rmtree (os.path.join (d, "base", "test"))
 	safe_rmtree (os.path.join (d, "base", "testing"))
+
 	d = os.path.join (basedir, "C_library")
-	if os.path.exists (d):
-		call(["svn", "update", "-r", l_revision, d ])
-	else:
-		call(["svn", "checkout", "-r", l_revision, "%s/Src/C_library" % (branch_dir), d ])
+	if not os.path.exists (d):
+		safe_copytree(os.path.join(repo_dir, "Src", "C_library"), d)
 	safe_rmtree (os.path.join (d, "openssl"))
 	safe_rmtree (os.path.join (d, "curl"))
 	safe_rmfile (os.path.join (d, "build.eant"))
+
 	d = os.path.join (basedir, "contrib")
-	if os.path.exists (d):
-		call(["svn", "update", "-r", l_revision, d ])
-	else:
-		call(["svn", "checkout", "-r", l_revision, "%s/Src/contrib" % (branch_dir), d ])
+	if not os.path.exists (d):
+		safe_copytree(os.path.join(repo_dir, "Src", "contrib"), d)
 	safe_rmtree (os.path.join (d, "examples"))
 	safe_rmtree (os.path.join (d, "library", "network", "authentication"))
 	safe_rmtree (os.path.join (d, "library", "web", "framework", "ewf", "obsolete"))
@@ -64,10 +71,8 @@ def get_ise_libraries(basedir, br, v, rev):
 	safe_rmfile (os.path.join (d, "library", "web", "framework", "ewf", "wsf", "package.iron"))
 
 	d = os.path.join (basedir, "unstable")
-	if os.path.exists (d):
-		call(["svn", "update", "-r", l_revision, d ])
-	else:
-		call(["svn", "checkout", "-r", l_revision, "%s/Src/unstable" % (branch_dir), d ])
+	if not os.path.exists (d):
+		safe_copytree(os.path.join(repo_dir, "Src", "unstable"), d)
 	alter_folder_with (basedir, os.path.join (basedir, "..", "..", "alter"))
 	alter_folder_with (basedir, os.path.join (basedir, "..", "alter"))
 
@@ -88,24 +93,25 @@ def alter_folder_with (a_source, a_alter):
 					shutil.copy2(srcname, dstname)
 		else:
 			shutil.copytree (a_alter, a_source)
-
 				
 def main():
+	git_repo_location="git@gitlab.com:eiffelsoftware/es.git"
 	if len(sys.argv) > 1:
 		cfg_location = sys.argv[1]
+		if len(sys.argv) > 2:
+			git_repo_location=sys.argv[2]
 	else:
 		cfg_location = "iron.cfg"
 
 	config = iron_config (cfg_location)
 	l_version = config['version']
 	l_branch = config['branch']
-	l_revision = config['revision']
 	l_base_dir = os.path.normpath(os.path.abspath (os.path.join ("VERSIONS", l_version)))
 	l_sources_dir = os.path.join (l_base_dir, "sources")
 	#l_packages_dir = os.path.join (l_base_dir, "packages")
 	if not os.path.exists (l_sources_dir):
 		os.makedirs(l_sources_dir)
-	get_ise_libraries(l_sources_dir, l_branch, l_version, l_revision)
+	get_ise_libraries(l_sources_dir, git_repo_location, l_branch, l_version)
 
 	print("Upload ISE packages ...")
 	upload_version(l_sources_dir, cfg_location)

@@ -7,9 +7,11 @@ INIT_DIR=`pwd`
 
 remtrace Getting netcore related source code
 safe_md netcore
+safe_md netcore/Eiffel/eiffel/com_il_generation
 remtrace Getting EiffelSoftware.Runtime.dll netcore source code
 es_exprt /Src/Eiffel/eiffel/com_il_generation/Core netcore/Eiffel/eiffel/com_il_generation/Core
 remtrace Getting md consumer netcore source code
+safe_md netcore/dotnet
 es_exprt /Src/dotnet/consumer_netcore netcore/dotnet/consumer_netcore
 tgz netcore
 move netcore.tar.bz2 $EXPORT_DIR/.

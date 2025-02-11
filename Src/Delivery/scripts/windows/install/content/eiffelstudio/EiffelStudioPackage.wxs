@@ -211,11 +211,14 @@
 				<ComponentGroupRef Id="Core"/>
 				<?ifdef Enterprise ?>
 					<ComponentGroupRef Id="enterprise_ec"/>
+					<ComponentGroupRef Id="enterprise_lic"/>
 				<?else?>
 					<?ifdef Branded ?>
 						<ComponentGroupRef Id="branded_ec"/>
+						<ComponentGroupRef Id="branded_lic"/>
 					<?else?>
 						<ComponentGroupRef Id="standard_ec"/>
+						<ComponentGroupRef Id="standard_lic"/>
 					<?endif?>
 				<?endif?>						
 			</Feature>
