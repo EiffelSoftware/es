@@ -1,5 +1,9 @@
 remtrace Compiling .NET components
 
+iff .%ISE_PLATFORM%.==.windows. then
+   goto NO_WIN32_DOTNET
+endiff
+
 REM Should be called by `make_exes.btm'
 cdd %EIFFEL_SRC
 
@@ -129,5 +133,13 @@ else
 		endiff
 	endiff
 endiff
+
+GOTO EOF
+
+:NO_WIN32_DOTNET
+echo Do not try to compile dotnet for Windows x86 (32bit)
+GOTO EOF
+
+:EOF
 
 cdd %EIFFEL_SRC
