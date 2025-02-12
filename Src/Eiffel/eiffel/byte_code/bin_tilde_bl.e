@@ -196,6 +196,7 @@ feature -- C code generation
 					left_type.is_basic and
 					right_type.is_basic
 				then
+						-- Check if non Void (right|left)_register should be handled differently [2025-02-06]
 					buf := buffer
 					buf.put_string ("(EIF_BOOLEAN)(")
 					if left_register = Void then
