@@ -4,7 +4,7 @@
 		<root all_classes="true"/>
 		<file_rule>
 			<exclude>/EIFGENs$</exclude>
-			<exclude>/\.*$</exclude>
+			<exclude>/\..*$</exclude>
 		</file_rule>
 		<option warning="warning">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
