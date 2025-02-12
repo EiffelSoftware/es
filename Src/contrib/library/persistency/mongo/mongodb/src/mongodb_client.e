@@ -22,8 +22,9 @@ create
 
 feature {NONE}-- Initialization
 
-	make (a_uri: READABLE_STRING_GENERAL)
+	make (a_uri: READABLE_STRING_8)
 			-- Creates a new MongoClient using the URI string `a_uri' provided.
+			--| a_uri must be an UTF-8 encoded string.
 		do
 			new_mongoc_client (a_uri)
 		end
@@ -48,28 +49,15 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	new_mongoc_client (a_uri: READABLE_STRING_GENERAL)
+	new_mongoc_client (a_uri: READABLE_STRING_8)
 			-- new mongodb client instance using the uri `a_uri'.
 		note
 			eis: "name=mongoc_client_new", "src=https://mongoc.org/libmongoc/current/mongoc_client_new.html", "protocol=uri"
 		local
-			c_string: C_STRING
-			l_ptr: POINTER
-			l_error: BSON_ERROR
+			l_uri: MONGODB_URI
 		do
-			create c_string.make (a_uri)
-			l_ptr :={MONGODB_EXTERNALS}.c_mongoc_client_new (c_string.item)
-			if l_ptr.is_default_pointer then
-				create l_error.make
-				l_error.set_error (
-					{MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT,
-					{MONGODB_ERROR_CODE}.MONGOC_ERROR_CLIENT_AUTHENTICATE,
-					"Failed to create new MongoDB client with URI: " + a_uri.to_string_8
-				)
-				set_last_error_with_bson (l_error)
-			else
-				make_by_pointer (l_ptr)
-			end
+			create l_uri.make (a_uri)
+			new_from_uri_with_error (l_uri)
 		end
 
 	new_from_uri_with_error (a_uri: MONGODB_URI)
