@@ -3,52 +3,64 @@
         "products": [
                 {
                         "id": "eiffelstudio-rev", "name": "EiffelStudio",
-                        "version": "24.05 REV",
-                        "number": "24.05",
-                        "build": "107822",
+                        "version": "25.02 REV",
+                        "number": "25.02",
+                        "build": "98723",
                         "download_link_pattern": "${mirror}${name}/${number}/${build}/${filename}",
                         "download": [
                                 {
-                                        "filename": "Eiffel_24.05_rev_107822-win64.msi",
+                                        "filename": "Eiffel_25.02_rev_98723-win64.msi",
                                         "platform": "win64",
-                                        "size": "196452716",
-                                        "hash": "a29e50d6beeb871c667c5ae9d2cc04279b0aa452e978ee66521aeb97e221a29b"
+                                        "size": "199148732",
+                                        "hash": "7641f6fba39e5843af15d9d46785a2a1eb9cc8d72f187340adb3990c2aa38cd0"
                                 }
                                 ,{
-                                        "filename": "Eiffel_24.05_rev_107822-win64.7z",
+                                        "filename": "Eiffel_25.02_rev_98723-win64.7z",
                                         "platform": "win64",
-                                        "size": "122139472",
-                                        "hash": "37263c6fc299fd9bd20a18202fc8f5b4d5661f9f404bf95970959c5da6f6ce40"
+                                        "size": "124465576",
+                                        "hash": "0aa69f481fa0fe19fd4a5deda53e5ea92ee4e37aad06569dcdff05ecac64439d"
                                 }
                                 ,{
-                                        "filename": "Eiffel_24.05_rev_107822-linux-x86-64.tar.bz2",
+                                        "filename": "Eiffel_25.02_rev_98723-windows.msi",
+                                        "platform": "windows",
+                                        "size": "147826024",
+                                        "hash": "21d445b96e223c31834fdbe67f4a51ff776f590f4717cac480ab2c6c6c5cadb0"
+                                }
+                                ,{
+                                        "filename": "Eiffel_25.02_rev_98723-windows.7z",
+                                        "platform": "windows",
+                                        "size": "86441618",
+                                        "hash": "58b3752253b41a1cc793427289d95ff71e36d6c930bbb90d3416634a7276ceac"
+                                }
+                                ,{
+                                        "filename": "Eiffel_25.02_rev_98723-linux-x86-64.tar.bz2",
                                         "platform": "linux-x86-64",
-                                        "size": "153994524",
-                                        "hash": "3fce8a2ad4ad00afb828fdb48f2db9b35651b5eb47447932647fcc2155ac49b2"
+                                        "size": "158967953",
+                                        "hash": "8f57c79c94fd20f8565e23d90889e678aab7557ebc7397a6d496a438a2ee3f43"
                                 }
                                 ,{
-                                        "filename": "Eiffel_24.05_rev_107822-macosx-armv6.tar.bz2",
+                                        "filename": "Eiffel_25.02_rev_98723-macosx-armv6.tar.bz2",
                                         "platform": "macosx-armv6",
-                                        "size": "101647175",
-                                        "hash": "4220419a05eae1cd47fda6e0881606171ed5f9f3faea8123dc78496fffe66f40"
+                                        "size": "106564688",
+                                        "hash": "7326775c92fefc0ff752dd627f1bdcb419ebe82346e1753259807a157dde3d55"
                                 }
                                 ,{
-                                        "filename": "Eiffel_24.05_rev_107822-macosx-x86-64.tar.bz2",
-                                        "platform": "macosx-x86-64",
-                                        "size": "136453616",
-                                        "hash": "25fe43a4bd28bfdc75f193fa2a0a505c8c0345703c674df83e78601778223b29"
-                                }
-                                ,{
-                                        "filename": "Eiffel_24.05_rev_107822-linux-arm64.tar.bz2",
+                                        "filename": "Eiffel_25.02_rev_98723-linux-arm64.tar.bz2",
                                         "platform": "linux-arm64",
-                                        "size": "120859555",
-                                        "hash": "a3955c843cd4e423c0ef3251d51791add67f723d872dec19002eb9fc1a723017"
+                                        "size": "154580774",
+                                        "hash": "c86523998addd03bcddbfef11eb056c850ec3b9c62c261aafaddb7d5987ff07b"
                                 }
                                 ,{
-                                        "filename": "Eiffel_24.05_rev_107822-linux-armv7.tar.bz2",
+                                        "filename": "Eiffel_25.02_rev_98723-linux-armv7.tar.bz2",
                                         "platform": "linux-armv7",
-                                        "size": "139566164",
-                                        "hash": "1d3dc8461d87c5765d4c452ba3b507f2e868555dfcc17991162f6791ac385190"
+                                        "size": "114755892",
+                                        "hash": "dccd676fe62ebce64a5d489b74d1571bd474918f77f1ff0f9030263681cd5cc0"
+                                }
+                                ,{
+                                        "filename": "Eiffel_25.02_rev_98723-freebsd-x86-64.tar.bz2",
+                                        "platform": "freebsd-x86-64",
+                                        "size": "118895289",
+                                        "hash": "828a1a9c63734cccc9838b5492c2f313fc354712fe372849d0db28a9d65f5b0f"
                                 }
                         ]
                 }
