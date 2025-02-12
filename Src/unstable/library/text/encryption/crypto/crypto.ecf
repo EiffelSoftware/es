@@ -4,9 +4,8 @@
 	<target name="crypto">
 		<root all_classes="true"/>
 		<file_rule>
-			<exclude>/.svn$</exclude>
-			<exclude>/CVS$</exclude>
 			<exclude>/EIFGENs$</exclude>
+			<exclude>/\..*$</exclude>
 			<exclude>/tests$</exclude>
 		</file_rule>
 		<option warning="warning" namespace="EiffelSoftware.Library"/>
