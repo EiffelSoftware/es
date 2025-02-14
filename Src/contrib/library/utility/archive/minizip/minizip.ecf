@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="minizip" uuid="6F12D538-2DC3-40EA-A09F-59F6D05C7C25" library_target="minizip">
+	<target name="minizip">
+		<root all_classes="true"/>
+		<option warning="none" is_obsolete_iteration="true"/>
+		<setting name="total_order_on_reals" value="false"/>
+		<setting name="dead_code_removal" value="feature"/>
+		<external_include location="$(ECF_CONFIG_PATH)\Clib">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+		<external_include location="$(ECF_CONFIG_PATH)/Clib">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_include>
+		<external_object location="$(ECF_CONFIG_PATH)\spec\$(ISE_PLATFORM)\$(ISE_C_COMPILER)\lib\miniz.lib">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_object>
+		<external_object location="$(ECF_CONFIG_PATH)/spec/$(ISE_PLATFORM)/lib/libminiz.a">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_object>
+		<external_object location="-lz">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_object>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<cluster name="minizip" location=".\src\"/>
+	</target>
+	<target name="minizip_testing" extends="minizip">
+		<root class="APP" feature="make"/>
+		<setting name="console_application" value="true"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
+		<tests name="minizip_testing" location=".\testing\"/>
+	</target>
+</system>
