@@ -206,13 +206,27 @@ feature -- Element change
 	set_environment_variables (v: like environment_variables)
 			-- Set `environment_variables'
 		do
-			environment_variables := v
+			environment_variables := Void
+			if v /= Void then
+				across
+					v as ic
+				loop
+					set_environment_variable (ic.item, ic.key)
+				end
+			end
 		end
 
 	set_environment_files (v: like environment_files)
 			-- Set `environment_files'
 		do
-			environment_files := v
+			environment_files := Void
+			if v /= Void then
+				across
+					v as ic
+				loop
+					add_environment_file (ic.item)
+				end
+			end
 		end
 
 	set_parent (v: like parent)
@@ -297,7 +311,7 @@ invariant
 	arguments_attached: arguments /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2024, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2025, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
