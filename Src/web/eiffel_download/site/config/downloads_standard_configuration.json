@@ -45,6 +45,12 @@
                                         "hash": "7326775c92fefc0ff752dd627f1bdcb419ebe82346e1753259807a157dde3d55"
                                 }
                                 ,{
+                                        "filename": "Eiffel_25.02_rev_98723-macosx-x86-64.tar.bz2",
+                                        "platform": "macosx-x86-64",
+                                        "size": "108996861",
+                                        "hash": "6b8e14f3ad2f802b639b03d4c64fdd8de7a170fcea82d03deba608cf4147acc1"
+                                }                                
+                                ,{
                                         "filename": "Eiffel_25.02_rev_98723-linux-arm64.tar.bz2",
                                         "platform": "linux-arm64",
                                         "size": "154580774",
