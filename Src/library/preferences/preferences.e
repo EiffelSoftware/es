@@ -224,31 +224,34 @@ feature -- Importation
 		do
 			a_storage.initialize_with_preferences (Current)
 			vals := a_storage.session_values
-			across
-				vals as vs
-			from
-				i := 0
-				n := vals.count
-			loop
-				i := i + 1
-				k := @ vs.key
-				v := vs
-				p := preferences.item (k)
-				if a_ignore_hidden_preference and (p = Void or else p.is_hidden) then
-						-- Ignored
-				elseif
-					a_exclude_function /= Void and then
-					a_exclude_function (i, n, k, v)
-				then
-						-- Excluded
-				else
-					if a_callback /= Void then
-						a_callback (i, n, k, v)
-					end
-					session_values.force (v, k)
-					if p /= Void then
-						check preferences.has (k) end
-						p.set_value_from_string (v)
+				-- Note: do not try to use ` a_storage.preferences.preferences ` at the values are not the expected value.
+			if vals /= Void and then not vals.is_empty then
+				across
+					vals as vs
+				from
+					i := 0
+					n := vals.count
+				loop
+					i := i + 1
+					k := @ vs.key
+					v := vs
+					p := preferences.item (k)
+					if a_ignore_hidden_preference and (p = Void or else p.is_hidden) then
+							-- Ignored
+					elseif
+						a_exclude_function /= Void and then
+						a_exclude_function (i, n, k, v)
+					then
+							-- Excluded
+					else
+						if a_callback /= Void then
+							a_callback (i, n, k, v)
+						end
+						session_values.force (v, k)
+						if p /= Void then
+							check preferences.has (k) end
+							p.set_value_from_string (v)
+						end
 					end
 				end
 			end
@@ -659,7 +662,7 @@ invariant
 	has_preferences_storage: preferences_storage /= Void
 
 note
-	copyright: "Copyright (c) 1984-2021, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
