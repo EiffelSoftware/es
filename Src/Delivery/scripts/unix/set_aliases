@@ -204,13 +204,14 @@ ise_exprt ()
 {
 repo=$DEFAULT_ISE_SVN
 path=$1
-dest=$1
+dest=$2
 	# svn export from ISE svn repository $repo the path $path into path $dest
 
 nb=1
 svncmd="svn --force export --config-option config:miscellany:use-commit-times=yes $repo$path $dest"
 
 until \
+	echo $svncmd >> $INSTALL_LOG; \
 	$svncmd >> $INSTALL_LOG; \
 	do \
 		echo "svn export .. $* failed [$nb]" >> $INSTALL_LOG
