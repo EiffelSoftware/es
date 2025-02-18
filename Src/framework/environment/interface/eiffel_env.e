@@ -2548,7 +2548,7 @@ feature -- Preferences
 				Result.append_string_general (application_name)
 				Result.append_string_general ("\Preferences")
 			else
-				p := hidden_files_path_for_version (version_name, a_create_dir)
+				p := hidden_files_path_for_version (a_version_name, a_create_dir)
 				p := p.extended (l_prod_version_name).appended_with_extension ("rc")
 				create Result.make_from_string_general (p.name)
 			end
@@ -2649,7 +2649,7 @@ feature {NONE} -- Helper
 		end
 
 note
-	copyright: "Copyright (c) 1984-2024, Eiffel Software"
+	copyright: "Copyright (c) 1984-2025, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
