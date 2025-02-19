@@ -5,7 +5,7 @@
                         "id": "eiffelstudio-ent", "name": "EiffelStudio",
                         "version": "25.02 Enterprise Evaluation Edition",
                         "number": "25.02",
-                        "build": "98723",
+                        "build": "98732",
                         "download_link_pattern": "${mirror}${name}/${number}/${build}/${filename}",
                         "release": "Official Release",
                         "date": "02/2025",
@@ -15,77 +15,79 @@
                         "for_evaluation": "true",
                         "mirrors": "private",
                         "license": { "name": "Enterprise", "url": "enterprise.html" },
-                        "blerb": "<h2>EiffelStudio: A Contract for Success</h2>\n<p>\nTake full advantage of the power of Object Technology ... and more\n<p>\nEiffelStudio is more than just an IDE. With EiffelStudio you can model your\nsystem as you think - capturing your requirements and your thought processes in\nEiffel. Then, when you are ready to design, you build upon the model you just\ncreated, still with EiffelStudio. And then you implement, in EiffelStudio. You\nnever need to throw anything out and start over. You don't need extra tools to\nbe able to go back and make changes in architecture safely. Roundtrip\nengineering? It's built in by design. Testing, metrics and productivity tools?\nThey're built in. What about debugging? EiffelStudio native Design by Contract(c)\nmechanism prevents 90% of the bugs from ever occurring - and what bugs remain\nare easily traced and fixed. If you are using other languages and tools chances\nare that EiffelStudio will interface with the code you already have.\n<p>\nWe thank you for downloading EiffelStudio. If you have questions please post\nthem to our <a href=\"https://groups.eiffel.com\">user mailing-list</a>.\n<p>\nEnjoy EiffelStudio and if you do let your friends know!\n<p>",
+                        "blerb": "<h2>EiffelStudio: A Contract for Success</h2>\n<p>\nTake full advantage of the power of Object Technology ... and more\n<p>\nEiffelStudio is more than just an IDE. With EiffelStudio you can model your\nsystem as you think - capturing your requirements and your thought processes in\nEiffel. Then, when you are ready to design, you build upon the model you just\ncreated, still with EiffelSt
+udio. And then you implement, in EiffelStudio. You\nnever need to throw anything out and start over. You don't need extra tools to\nbe able to go back and make changes in architecture safely. Roundtrip\nengineering? It's built in by design. Testing, metrics and productivity tools?\nThey're built in. What about debugging? EiffelStudio native Design by Contract(c)\nmechanism prevents 90% of the bugs from ever occurring - a
+nd what bugs remain\nare easily traced and fixed. If you are using other languages and tools chances\nare that EiffelStudio will interface with the code you already have.\n<p>\nWe thank you for downloading EiffelStudio. If you have questions please post\nthem to our <a href=\"https://groups.eiffel.com\">user mailing-list</a>.\n<p>\nEnjoy EiffelStudio and if you do let your friends know!\n<p>",
                         "download": [
                                 {
         "cdkey": "21151-36412-21309-39511-92975-57742",
-                                        "filename": "Eiffel_25.02_ent_98723-win64.msi",
+                                        "filename": "Eiffel_25.02_ent_98732-win64.msi",
                                         "platform": "win64",
-                                        "size": "199262756",
-                                        "hash": "84e64ccab6eb6f596d1b12d6cc6ecc754753b497fb4eb74737874ba6e1eaf792"
+                                        "size": "199251737",
+                                        "hash": "870b3b484de804cb8e53b2525132e47df2c09df9efedb8853910cddc49fd1678"
                                 }
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
-                                        "filename": "Eiffel_25.02_ent_98723-win64.7z",
+                                        "filename": "Eiffel_25.02_ent_98732-win64.7z",
                                         "platform": "win64",
-                                        "size": "124512103",
-                                        "hash": "7b473db5b1a37e9f1e4839ec92010d39af9681d4580ea40adfed0bf3dbf9791d"
+                                        "size": "124517194",
+                                        "hash": "66f3bfe4745ac22d520f5121b62df05becdc4dbc5416045b5a3ba2e3c597ee9e"
                                 }
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
-                                        "filename": "Eiffel_25.02_ent_98723-windows.msi",
+                                        "filename": "Eiffel_25.02_ent_98732-windows.msi",
                                         "platform": "windows",
-                                        "size": "147861536",
-                                        "hash": "a5153886fbdda02d8f29ee6b7dc07596ff2346ab067735874a98ca88b9b2307f"
+                                        "size": "147812416",
+                                        "hash": "3cea48dd8fa4de8aad6f3e4a080349d2b00f4047863c833599199ce13dc812df"
                                 }
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
-                                        "filename": "Eiffel_25.02_ent_98723-windows.7z",
+                                        "filename": "Eiffel_25.02_ent_98732-windows.7z",
                                         "platform": "windows",
-                                        "size": "86450499",
-                                        "hash": "c177ae741e4eca97e499e9132eb7970864d78318395b2bd0807acf4468880b5b"
+                                        "size": "86425964",
+                                        "hash": "fbe6df960c406b0791ff724ded0556a6c7efa02a3c5e9a1f1bde572af8ad4b32"
                                 }
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
-                                        "filename": "Eiffel_25.02_ent_98723-linux-x86-64.tar.bz2",
+                                        "filename": "Eiffel_25.02_ent_98732-linux-x86-64.tar.bz2",
                                         "platform": "linux-x86-64",
-                                        "size": "158965277",
-                                        "hash": "81d611c9fe1b66f20557ea001f017c4da118058f222341162f7d1411162d4455"
+                                        "size": "166360272",
+                                        "hash": "a5f028062434305105797c3380d93207ed50bfefb4eb237242e9c80d20d68180"
                                 }
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
-                                        "filename": "Eiffel_25.02_ent_98723-macosx-armv6.tar.bz2",
+                                        "filename": "Eiffel_25.02_ent_98732-macosx-armv6.tar.bz2",
                                         "platform": "macosx-armv6",
-                                        "size": "106561977",
-                                        "hash": "d2cc90715b3c4b0cc53aebbe040140691c85e1c42d16988647e8f788fc35aa4a"
+                                        "size": "113225338",
+                                        "hash": "512e9c512da01f2ad8c38f939c3531b8aad9bea18a974ecb1b10d9788f2dd0b7"
                                 }
-								,{
-	    "cdkey": "21151-36412-21309-39511-92975-57742",
-										"filename": "Eiffel_25.02_ent_98723-macosx-x86-64.tar.bz2",
-										"platform": "macosx-x86-64",
-										"size": "108987609",
-										"hash": "968f1d5f0e135400abbd3ebe04ea7f998f397920baff71a593c6710b44d85ea9"
-								}
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
-                                        "filename": "Eiffel_25.02_ent_98723-linux-arm64.tar.bz2",
+                                        "filename": "Eiffel_25.02_ent_98732-macosx-x86-64.tar.bz2",
+                                        "platform": "macosx-x86-64",
+                                        "size": "115894416",
+                                        "hash": "f80aed405f3c69fe84fd889b2d612e1b6b80dbcaa321a4b810640d722f63c9ae"
+                                }
+                                ,{
+        "cdkey": "21151-36412-21309-39511-92975-57742",
+                                        "filename": "Eiffel_25.02_ent_98732-linux-arm64.tar.bz2",
                                         "platform": "linux-arm64",
-                                        "size": "154585672",
-                                        "hash": "ae3ec9d1bbc31e6dafbedcb6bca52c7aee7a35fed5caf9b7953a1b96837e151c"
+                                        "size": "161754822",
+                                        "hash": "f98052542b087827d1fab2ee6515d0b517d23cee2e2016ad61009dee2d6aeaa9"
                                 }
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
-                                        "filename": "Eiffel_25.02_ent_98723-linux-armv7.tar.bz2",
+                                        "filename": "Eiffel_25.02_ent_98732-linux-armv7.tar.bz2",
                                         "platform": "linux-armv7",
-                                        "size": "114753101",
-                                        "hash": "a30bb2b38c09400f8b077f3b3a119c654663838e7470f066474fb8705fb1b1a9"
+                                        "size": "121741755",
+                                        "hash": "2e5504681a0ac0546bc1af8cd183b4c7df5d5bee6f66d8ecee8dff04a2735289"
                                 }
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
-                                        "filename": "Eiffel_25.02_ent_98723-freebsd-x86-64.tar.bz2",
+                                        "filename": "Eiffel_25.02_ent_98732-freebsd-x86-64.tar.bz2",
                                         "platform": "freebsd-x86-64",
-                                        "size": "118894317",
-                                        "hash": "1f611bead87d07c363fbe80c9d94d1d07162a2c575d8319bc6dc1c1993d17a8f"
+                                        "size": "125705127",
+                                        "hash": "e1449f76c2b70a64d0f80d12d1c9fb18b672ad8320fb27e390df60cad98f9dae"
                                 }
                         ]
                 }
