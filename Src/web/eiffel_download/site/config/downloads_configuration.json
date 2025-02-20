@@ -15,23 +15,21 @@
                         "for_evaluation": "true",
                         "mirrors": "private",
                         "license": { "name": "Enterprise", "url": "enterprise.html" },
-                        "blerb": "<h2>EiffelStudio: A Contract for Success</h2>\n<p>\nTake full advantage of the power of Object Technology ... and more\n<p>\nEiffelStudio is more than just an IDE. With EiffelStudio you can model your\nsystem as you think - capturing your requirements and your thought processes in\nEiffel. Then, when you are ready to design, you build upon the model you just\ncreated, still with EiffelSt
-udio. And then you implement, in EiffelStudio. You\nnever need to throw anything out and start over. You don't need extra tools to\nbe able to go back and make changes in architecture safely. Roundtrip\nengineering? It's built in by design. Testing, metrics and productivity tools?\nThey're built in. What about debugging? EiffelStudio native Design by Contract(c)\nmechanism prevents 90% of the bugs from ever occurring - a
-nd what bugs remain\nare easily traced and fixed. If you are using other languages and tools chances\nare that EiffelStudio will interface with the code you already have.\n<p>\nWe thank you for downloading EiffelStudio. If you have questions please post\nthem to our <a href=\"https://groups.eiffel.com\">user mailing-list</a>.\n<p>\nEnjoy EiffelStudio and if you do let your friends know!\n<p>",
+                        "blerb": "<h2>EiffelStudio: A Contract for Success</h2>\n<p>\nTake full advantage of the power of Object Technology ... and more\n<p>\nEiffelStudio is more than just an IDE. With EiffelStudio you can model your\nsystem as you think - capturing your requirements and your thought processes in\nEiffel. Then, when you are ready to design, you build upon the model you just\ncreated, still with EiffelStudio. And then you implement, in EiffelStudio. You\nnever need to throw anything out and start over. You don't need extra tools to\nbe able to go back and make changes in architecture safely. Roundtrip\nengineering? It's built in by design. Testing, metrics and productivity tools?\nThey're built in. What about debugging? EiffelStudio native Design by Contract(c)\nmechanism prevents 90% of the bugs from ever occurring - and what bugs remain\nare easily traced and fixed. If you are using other languages and tools chances\nare that EiffelStudio will interface with the code you already have.\n<p>\nWe thank you for downloading EiffelStudio. If you have questions please post\nthem to our <a href=\"https://groups.eiffel.com\">user mailing-list</a>.\n<p>\nEnjoy EiffelStudio and if you do let your friends know!\n<p>",
                         "download": [
                                 {
         "cdkey": "21151-36412-21309-39511-92975-57742",
                                         "filename": "Eiffel_25.02_ent_98732-win64.msi",
                                         "platform": "win64",
-                                        "size": "199251737",
-                                        "hash": "870b3b484de804cb8e53b2525132e47df2c09df9efedb8853910cddc49fd1678"
+                                        "size": "228401912",
+                                        "hash": "30dc88c0cc4c261effdd722c0f54097c3c294b0bf19de0cc1bf6bbb28febf8e6"
                                 }
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
                                         "filename": "Eiffel_25.02_ent_98732-win64.7z",
                                         "platform": "win64",
-                                        "size": "124517194",
-                                        "hash": "66f3bfe4745ac22d520f5121b62df05becdc4dbc5416045b5a3ba2e3c597ee9e"
+                                        "size": "144308208",
+                                        "hash": "341ba508ba3466f893f62ebe53a32a81ffd186a8da762fe09a8ccb44b38d1136"
                                 }
                                 ,{
         "cdkey": "21151-36412-21309-39511-92975-57742",
