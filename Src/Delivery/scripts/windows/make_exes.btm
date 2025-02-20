@@ -507,6 +507,7 @@ cdd %INIT_DIR
 call make_vision2_demo.btm
 
 iff defined EIF_BUILD_LEGACY_PP then
+	cdd %INIT_DIR
 	remtrace Recompile Legacy++
 	set T_LEGACY_PP_STUDIO_FILE=%STUDIO_DIR%\studio\spec\%ISE_PLATFORM%\bin\legacy.exe
 	iff defined NO_REUSE then
@@ -530,6 +531,8 @@ iff defined EIF_BUILD_LEGACY_PP then
 	endiff
 endiff
 set T_LEGACY_PP_STUDIO_FILE=
+
+cdd %INIT_DIR
 
 remtrace Getting eweasel source code
 safe_md %EIFFEL_SRC%\eweasel
