@@ -32,6 +32,9 @@ project
 	wsf_standalone_websocket = "wsf/connector/standalone_websocket.ecf"
 	default_nino = "wsf/default/nino.ecf"
 	default_openshift = "wsf/default/openshift.ecf"
+	wsf_compression = "wsf/wsf_compression.ecf"
+	wsf_security = "wsf/wsf_security.ecf"
+	wsf_all = "wsf/connector/all.ecf"
 
 note
 	title: EiffelWeb framework
