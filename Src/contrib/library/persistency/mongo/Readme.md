@@ -19,7 +19,6 @@ The project is organized into several main components:
 - `/C`: C driver build utilities
   - Contains scripts for building the required C libraries
  
-
 - `/bson`: BSON implementation wrapper
  
 - `/mongodb`: Core MongoDB driver
@@ -31,10 +30,9 @@ The project is organized into several main components:
       - REST API example showing real-world usage
   
 
-
 ## Prerequisites
 
-- Eiffel Studio (latest version recommended)
+- EiffelStudio (latest version recommended)
 - C compiler (for building the MongoDB C Driver)
 - MongoDB server (for running the examples)
 

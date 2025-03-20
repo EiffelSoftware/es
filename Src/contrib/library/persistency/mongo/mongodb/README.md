@@ -1,6 +1,5 @@
 # mongodb
 
-
 Update the mongodb.ecf file to force the Windows SDK headers in the correct order:
 
 ```xml
@@ -16,7 +15,6 @@ Update the mongodb.ecf file to force the Windows SDK headers in the correct orde
 			</condition>
 		</external_cflag>
 ```
-
 
 ## -DWIN32:
 Defines that we're building for Windows 32-bit or 64-bit platforms

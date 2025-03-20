@@ -38,3 +38,4 @@ This prevents compiler warnings about them
 
 ## -DWIN32_LEAN_AND_MEAN:
 Excludes rarely-used Windows headers. Helps prevent conflicts between windows.h and winsock2.h. Reduces compilation time and potential header conflicts
+

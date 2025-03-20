@@ -10,9 +10,7 @@ http://mongoc.org/libmongoc/current/installing.html
 
 Tutorial: 
   * Windows: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/
-
   * Linux:   http://mongoc.org/libmongoc/current/installing.html#building-from-a-release-tarball
-
 	
 ## Setting Up MongoDB with Docker Compose
 
@@ -65,7 +63,4 @@ This project uses Docker Compose to set up a MongoDB server and a Mongo Express 
 - **Networks**: The `mongodb_network` is used to facilitate communication between the MongoDB server and the Mongo Express client.
 
 For more information on Docker Compose, refer to the [official documentation](https://docs.docker.com/compose/).
-
-
-
 
