@@ -62,6 +62,12 @@
 					content: "Installed: ";
 				}
 			}
+			span.duration {
+				font-size: smaller;
+				&:before {
+					content: "Duration: ";
+				}
+			}
 			span.access {
 				font-size: smaller;
 				&:before {
@@ -71,6 +77,7 @@
 			&.session {
 				margin-top: 5px;
 				span.creation:before { content: "Started: "; }
+				span.duration:before { content: "Duration: "; }
 				&.active {
 					span { background-color: #cfc; }
 					border-left: solid 5px orange;

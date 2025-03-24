@@ -94,6 +94,9 @@
 #main div.es-installations li.session span.creation:before {
   content: "Started: ";
 }
+#main div.es-installations li.session span.duration:before {
+  content: "Duration: ";
+}
 #main div.es-installations li.session.active {
   border-left: solid 5px orange;
   border-top: dotted 1px orange;

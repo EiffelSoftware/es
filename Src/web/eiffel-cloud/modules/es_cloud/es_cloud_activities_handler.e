@@ -233,6 +233,7 @@ feature -- Execution
 		local
 			k: READABLE_STRING_GENERAL
 			s: STRING
+			l_is_active: BOOLEAN
 		do
 			a_html.append ("<li class=%"session")
 			if a_session.is_paused then
@@ -245,6 +246,7 @@ feature -- Execution
 				k := "expired"
 				a_html.append (" expired")
 			else
+				l_is_active := True
 				k := "active"
 				a_html.append (" active")
 			end
@@ -268,12 +270,16 @@ feature -- Execution
 
 			a_html.append (" <span class=%"creation datetime_ago%" datetime=%""+ date_time_to_timestamp_string (a_session.first_date) +"%" title=%"" + date_time_to_string (a_session.first_date) + "%">")
 			ago.append_date_to ("", a_session.first_date, a_html)
---									a_html.append (date_time_to_string (a_session.first_date))
 			a_html.append ("</span>")
-			a_html.append (" <span class=%"access datetime_ago%" datetime=%""+ date_time_to_timestamp_string (a_session.last_date) +"%" title=%"" + date_time_to_string (a_session.last_date) + "%">")
-			ago.append_date_to ("", a_session.last_date, a_html)
---									a_html.append (date_time_to_string (a_session.last_date))
-			a_html.append ("</span>")
+			if l_is_active then
+				a_html.append (" <span class=%"access datetime_ago%" datetime=%""+ date_time_to_timestamp_string (a_session.last_date) +"%" title=%"" + date_time_to_string (a_session.last_date) + "%">")
+				ago.append_date_to ("", a_session.last_date, a_html)
+				a_html.append ("</span>")
+			else
+				a_html.append (" <span class=%"duration datetime_ago%">")
+				a_html.append (duration_to_string (a_session.first_date, a_session.last_date))
+				a_html.append ("</span>")
+			end
 			if
 				api.has_permission ({ES_CLOUD_MODULE}.perm_view_any_es_activities)
 			then
@@ -285,6 +291,49 @@ feature -- Execution
 			end
 			a_html.append ("</li>")
 		end
+
+	duration_to_string (d1, d2: DATE_TIME): STRING
+		local
+			l_duration: DATE_TIME_DURATION
+			y,m,d,h,mi,s: INTEGER
+		do
+			l_duration := d2.relative_duration (d1)
+			y := l_duration.year
+			m := l_duration.month
+			d := l_duration.day
+			h := l_duration.hour
+			mi := l_duration.minute
+			s := l_duration.second
+			Result := ""
+
+			if y > 1 then
+				Result.append (y.out + " years")
+			else
+				if y > 0 then
+					Result.append (y.out + " year")
+				end
+				if m > 0 then
+					Result.append (m.out + " months")
+				else
+					if d > 0 then
+						Result.append (m.out + " days")
+					else
+						if h > 0 then
+							Result.append (h.out + " hours")
+						else
+							if mi > 0 then
+								Result.append (mi.out + " minutes")
+							else
+								if s > 0 then
+									Result.append (s.out + " seconds")
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
 
 note
 	copyright: "2011-2017, Jocelyn Fiat, Javier Velilla, Eiffel Software and others"

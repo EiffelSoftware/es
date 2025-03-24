@@ -98,6 +98,12 @@
 #main div.es-installations li span.creation:before {
   content: "Installed: ";
 }
+#main div.es-installations li span.duration {
+  font-size: smaller;
+}
+#main div.es-installations li span.duration:before {
+  content: "Duration: ";
+}
 #main div.es-installations li span.access {
   font-size: smaller;
 }
@@ -109,6 +115,9 @@
 }
 #main div.es-installations li.session span.creation:before {
   content: "Started: ";
+}
+#main div.es-installations li.session span.duration:before {
+  content: "Duration: ";
 }
 #main div.es-installations li.session.active {
   border-left: solid 5px orange;
