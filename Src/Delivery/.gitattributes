@@ -1,0 +1,7 @@
+scripts/windows/misc/es_signtool eol=lf
+studio/bitmaps/src/svgcleaner binary
+tools/spec/unix/estudio-open-file eol=lf
+tools/spec/unix/estudio-open-url eol=lf
+tools/spec/unix/estudio-terminal eol=lf
+tools/spec/unix/estudio-terminal-execution eol=lf
+

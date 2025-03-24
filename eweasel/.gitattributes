@@ -1,0 +1,11 @@
+tests/*/tcf text
+tests/*/notes text
+tests/*/output text
+
+bin/eiffel_freeze eol=lf
+bin/run_eweasel eol=lf
+bin/run_eweasel_catalog eol=lf
+bin/run_eweasel_filter eol=lf
+bin/run_eweasel_keyword -text
+bin/set_eweasel_env -text
+

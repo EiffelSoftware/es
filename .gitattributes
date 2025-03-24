@@ -159,26 +159,6 @@ LICENSING text
 README text
 .htaccess text
 
-Src/C/CONFIGS/* text
-eweasel/tests/*/tcf text
-eweasel/tests/*/notes text
-eweasel/tests/*/output text
-
-Src/.git-svn/scm text
-Src/Delivery/scripts/windows/misc/es_signtool eol=lf
-Src/Delivery/studio/bitmaps/src/svgcleaner binary
-Src/Delivery/tools/spec/unix/estudio-open-file eol=lf
-Src/Delivery/tools/spec/unix/estudio-open-url eol=lf
-Src/Delivery/tools/spec/unix/estudio-terminal eol=lf
-Src/Delivery/tools/spec/unix/estudio-terminal-execution eol=lf
-Src/dotnet/helpers/isekey.snk -text
-eweasel/bin/eiffel_freeze eol=lf
-eweasel/bin/run_eweasel eol=lf
-eweasel/bin/run_eweasel_catalog eol=lf
-eweasel/bin/run_eweasel_filter eol=lf
-eweasel/bin/run_eweasel_keyword -text
-eweasel/bin/set_eweasel_env -text
-
 #
 # Exclude files from exporting
 #
