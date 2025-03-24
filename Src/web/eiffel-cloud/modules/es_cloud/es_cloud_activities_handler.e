@@ -316,7 +316,7 @@ feature -- Execution
 					Result.append (m.out + " months")
 				else
 					if d > 0 then
-						Result.append (m.out + " days")
+						Result.append (d.out + " days")
 					else
 						if h > 0 then
 							Result.append (h.out + " hours")
