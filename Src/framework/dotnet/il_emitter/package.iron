@@ -1,0 +1,18 @@
+package il_emitter
+
+setup
+	compile_library = Clib
+
+project
+	il_emitter = "il_emitter.ecf"
+
+note
+	title: IL Emitter
+	description: "[
+Eiffel `il_emitter` is a library which abstracts managed information such as namespaces, classes, fields, methods, properties, and instructions. 
+The information can then be used to generate intermediate language source files, or PE executables or DLLs.	
+	]"
+	tags: dotnet,il,emitter,PEfile
+	copyright: 1984-2025 Eiffel Software and others
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+end
